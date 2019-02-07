@@ -1,0 +1,14 @@
+	Population
+Brazil	179383500
+Argentina	37740400
+Venezuela	24705900
+Uruguay	3428900
+Paraguay	5469600
+Bolivia	8879600
+Peru	27639000
+Chile	15482300
+Ecuador	12664700
+Colombia	45299400
+French Guyana	196800
+Suriname	460300
+Guyana	869100

@@ -1,0 +1,29 @@
+@chartset "utf-8";/* content > 수질 오염 감시 > 경보 관리 > 사전 조치 통보 */ 
+ h4 {height:27px; padding:0 0 0 16px !important; color:#2f8bc0;} 
+ .sms_target {float:none;width:630px;}
+ .sms_target_form {clear:both; padding:18px 0 32px 0;}
+ .sms_target_form dt {width:50px; padding-left:20px; font-weight:bold;}
+ .sms_target_form dd {width:500px;}
+ .sms_target_form dd.first_form {height:33px; padding-top:3px;}
+ .sms_target_form dd.third_form {height:36px;}
+ .sms_target_form dd.second_form {width:400px;}
+
+ .sms_target_form dd .treeview .hitarea {cursor:pointer;width:18px; float:left; width:18px; height:16px; margin-left:-16px;}
+ .sms_target_form dd ul {padding-top:5px;}
+ .sms_target_form dd ul#groupDiv {padding-top:0;}
+ .sms_target_form dd .treeview li {padding:3px 0pt 3px 16px; background:url('../images/tree/treeview-default-line.gif') no-repeat 0 0;}
+ .sms_target_form dd .treeview li.lastCollapsable, 
+ .sms_target_form dd .treeview li.lastExpandable {background-image:url('../images/tree/treeview-default.gif');}  
+ .sms_target_form dd .treeview li.lastCollapsable {background-position: 0 -111px}
+ .sms_target_form dd .treeview li.lastExpandable {background-position:-32px -67px}
+ .sms_target_form dd .treeview div.lastCollapsable-hitarea,
+ .sms_target_form dd .treeview div.lastExpandable-hitarea {background-position:0;}
+ .sms_target_form dd .treeview li.last {background-position:0 -1766px;}
+ .sms_target_form dd .expandable-hitarea{background:url('../images/tree/icon_folder_plus.gif') no-repeat 0 0;}
+ .sms_target_form dd .collapsable-hitarea{background:url('../images/tree/icon_folder_minus.gif') no-repeat 0 0;}
+
+ .sms_target_form dd .first_label {margin-right:25px;}
+ .sms_target_form dd.first_form input {vertical-align:top;}
+ .sms_target_form dd label {display:inline-block; padding-top:1px;}
+ .smsForm_btn {padding-top:43px; text-align:right;}
+ .smsForm_btn li {display:inline;}

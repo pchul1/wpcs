@@ -1,0 +1,509 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
+<title>PKCS#7 message Sample</title>
+</head>
+
+<body>
+
+<script language='javascript' src='./sg_scripts/sg_basic.js'></script>
+<script language='javascript' src='./sg_scripts/sg_error.js'></script>
+<script language='javascript' src='./sg_scripts/sg_util.js'></script>
+<script language='javascript' src='./sg_scripts/sg_cert.js'></script>
+<script language='javascript' src='./sg_scripts/sg_sign.js'></script>
+<script language='javascript' src='./sg_scripts/sg_encrypt.js'></script>
+<script language='javascript' src='./sg_scripts/sg_pkcs7.js'></script>
+<script language='javascript' src='./sg_scripts/sg_hash.js'></script>
+<script language='javascript' src='./sg_scripts/sg_base64.js'></script>
+
+<h3>PKCS7 메시지</h3>
+
+<form name="sample">
+메시지<br>
+<textarea name=OriginalMessage rows="3" cols="80">이것은 원문 메시지 입니다. This is original message.</textarea><br>
+암호화용 인증서<br>
+<textarea name=KmCert rows="3" cols="80"></textarea><br>
+PKCS7 메시지<br>
+<textarea name=PKCS7Message rows="5" cols="80"></textarea><br>
+파일<br>
+<input type=file name=FilePath size=80><br><br>
+<input type=button value="PKCS7 Signed message" onClick="p7_signed()"> <br>
+<input type=button value="Add Signature to PKCS7 Signed message" onClick="add_sign()"> <br>
+<input type=button value="PKCS7 Enveloped message" onClick="p7_enveloped()"> <br>
+<input type=button value="PKCS7 Signed and Enveloped message" onClick="p7_signed_enveloped()"> <br>
+<input type=button value="Verify PKCS7 message" onClick="p7_verify()"> <br><br>
+<input type=button value="PKCS7 Signed message File" onClick="file_p7_signed()"> <br>
+<input type=button value="Add Signature to PKCS7 Signed message File" onClick="file_add_sign()"> <br>
+<input type=button value="PKCS7 Enveloped message File" onClick="file_p7_enveloped()"> <br>
+<input type=button value="PKCS7 Signed and Enveloped message File" onClick="file_p7_signed_enveloped()"> <br>
+<input type=button value="Verify PKCS7 message File" onClick="file_p7_verify()"> <br><br>
+<input type=button value="암호화용 인증서 얻기" onClick="select_cert()"> <br>
+<input type=button value="선택한 인증서 정보를 지우고 초기화" onClick="clear_cert()"> <br>
+</form>
+
+<script language="javascript">
+
+function clear_cert()
+{
+	var strCertID = "LoginID@DomainName";
+	var strCertIDForAddSign = "CertIDForAddSign";
+
+	clearCertificateInfo( strCertID );
+	clearCertificateInfo( strCertIDForAddSign );
+}
+
+function select_cert()
+{
+	var strCertID = "LoginID@DomainName";
+
+	//	사용자 키관리용 인증서 얻기
+	var strKMCert = getUserKMCert( strCertID );
+	if ( strKMCert == "" )
+	{
+		var strErr = getErrorString();
+		if ( strErr == "" )	//	사용자가 인증서 선택을 취소한 경우
+		{
+			alert( "인증서 선택을 취소하였습니다");
+			return;
+		}
+		else
+		{
+			alert( strErr );
+			return;
+		}
+	}
+	else
+	{
+		document.sample.KmCert.value = strKMCert;
+	}
+}
+
+function p7_signed()
+{
+	var strCertID = "LoginID@DomainName";
+	var strMessage = document.sample.OriginalMessage.value;
+
+	//	PKCS7 signed message 생성하기
+	var strPKCS7Message = generatePKCS7SignedMsg( strCertID, strMessage );
+	if ( strPKCS7Message == "" )
+	{
+		var strErr = getErrorString();
+		if ( strErr == "" )	//	사용자가 인증서 선택을 취소한 경우
+		{
+			alert( "인증서 선택을 취소하였습니다");
+			return;
+		}
+		else
+		{
+			alert( strErr );
+			return;
+		}
+	}
+	else
+	{
+		document.sample.PKCS7Message.value = strPKCS7Message;
+	}
+}
+
+function add_sign()
+{
+	var strMessage = document.sample.OriginalMessage.value;
+	var strCertIDForAddSign = "CertIDForAddSign";
+	var strPKCS7Message = document.sample.PKCS7Message.value;
+
+	//	PKCS7 signed message에 전자서명 추가하기
+	var strPKCS7Message2 = addPKCS7SignMsg( strCertIDForAddSign, strPKCS7Message );	
+	alert( strPKCS7Message2 );
+	if ( strPKCS7Message2 == "" )
+	{
+		var strErr = getErrorString();
+		if ( strErr == "" )	//	사용자가 인증서 선택을 취소한 경우
+		{
+			alert( "인증서 선택을 취소하였습니다");
+			return;
+		}
+		else
+		{
+			alert( strErr );
+			return;
+		}
+	}
+	else
+	{
+		document.sample.PKCS7Message.value = strPKCS7Message2;
+	}
+}
+
+function p7_enveloped()
+{
+	var strCertID = "LoginID@DomainName";
+	var strMessage = document.sample.OriginalMessage.value;
+
+	//	사용자 키분배용 인증서 얻기
+	var strKmCert = getUserKMCert( strCertID );
+	if ( strKmCert == "" )
+	{
+		var strErr = getErrorString();
+		if ( strErr == "" )	//	사용자가 인증서 선택을 취소한 경우
+		{
+			alert( "인증서 선택을 취소하였습니다");
+			return;
+		}
+		else
+		{
+			alert( strErr );
+			return;
+		}
+	}
+	else
+	{
+		alert( "키분배용 인증서: " + strKmCert );
+	}
+
+	var strPKCS7Message = generatePKCS7EnvelopedMsg( strMessage, strKmCert, "" )
+	if ( strPKCS7Message == "" )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		document.sample.PKCS7Message.value = strPKCS7Message;
+	}
+}
+
+function p7_signed_enveloped()
+{
+	var strCertID = "LoginID@DomainName";
+	var strMessage = document.sample.OriginalMessage.value;
+
+	//	사용자 키분배용 인증서 얻기
+	var strKmCert = getUserKMCert( strCertID );
+	if ( strKmCert == "" )
+	{
+		var strErr = getErrorString();
+		if ( strErr == "" )	//	사용자가 인증서 선택을 취소한 경우
+		{
+			alert( "인증서 선택을 취소하였습니다");
+			return;
+		}
+		else
+		{
+			alert( strErr );
+			return;
+		}
+	}
+	else
+	{
+		alert( "키분배용 인증서: " + strKmCert );
+	}
+
+	var strPKCS7Message = generatePKCS7SignedEnvelopedMsg( strCertID, strMessage, strKmCert, "" );
+	if ( strPKCS7Message == "" )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		document.sample.PKCS7Message.value = strPKCS7Message;
+	}
+}
+
+function p7_verify()
+{
+	var strCertID = "LoginID@DomainName";
+	var strPKCS7Message = document.sample.PKCS7Message.value;
+
+	if ( strPKCS7Message == "" || strPKCS7Message == null )
+	{
+		alert( "PKCS7 메시지가 없습니다." );
+		return;
+	}
+
+	var strType = getPKCS7TypeMsg( strPKCS7Message );
+
+	if ( strType == "PKCS7SignedMessage" )
+	{
+		alert( strType );
+		//	PKCS7 signed message 검사하고 원문 얻기
+		var strOriginalMessage = verifyPKCS7SignedMsg( strPKCS7Message );
+		if ( strOriginalMessage == "" )
+		{
+			alert( getErrorString() );
+			return;
+		}
+		else
+		{
+			document.sample.OriginalMessage.value = strOriginalMessage;
+			var count = getPKCS7SignerCount();
+			alert( "count: " + count );
+			var i = 1;
+			for ( i = 1; i <= count; i++ )
+			{
+				var strSignCert = getPKCS7SignerCert(i)
+				alert( i + " 번째 전자서명 인증서: " + strSignCert );
+				alert( i + " 번째 전자서명 시각: " + getPKCS7SigningTime(i) );
+				alert( i + " 번째 전자서명 인증서 소유자 식별명칭: " + getCertSubjectDN( strSignCert ) );
+				alert( i + " 번째 전자서명 인증서 일련번호: " + getCertSerialNumber( strSignCert ) );
+			}
+		}
+		clearPKCS7MessageInfo();
+	}
+	else if ( strType == "PKCS7EnvelopedMessage" || strType == "PKCS7SignedAndEnvelopedMessage" )
+	{
+		alert( strType );
+		var strOriginalMessage = verifyPKCS7EnvelopedMsg( strCertID, strPKCS7Message );
+		if ( strOriginalMessage == "" )
+		{
+			var strErr = getErrorString();
+			if ( strErr == "" )	//	사용자가 인증서 선택을 취소한 경우
+			{
+				alert( "인증서 선택을 취소하였습니다");
+				return;
+			}
+			else
+			{
+				alert( strErr );
+				return;
+			}
+		}
+		else
+		{
+			document.sample.OriginalMessage.value = strOriginalMessage;
+			var count = getPKCS7SignerCount();
+			alert( "count: " + count );
+			var i = 1;
+			for ( i = 1; i <= count; i++ )
+			{
+				var strSignCert = getPKCS7SignerCert(i)
+				alert( i + " 번째 전자서명 인증서: " + strSignCert );
+				alert( i + " 번째 전자서명 시각: " + getPKCS7SigningTime(i) );
+				alert( i + " 번째 전자서명 인증서 소유자 식별명칭: " + getCertSubjectDN( strSignCert ) );
+				alert( i + " 번째 전자서명 인증서 일련번호: " + getCertSerialNumber( strSignCert ) );
+			}
+		}
+		clearPKCS7MessageInfo();
+	}
+	if ( strType == "" )
+	{
+		alert( getErrorString() );
+		return;
+	}
+}
+
+function file_p7_signed()
+{
+	var strCertID = "LoginID@DomainName";
+	var strFilePath = document.sample.FilePath.value;
+	var strPKCS7FilePath = strFilePath + ".p7";
+
+	var bReturn = generatePKCS7SignedFile( strCertID, strFilePath, strPKCS7FilePath );
+	if ( !bReturn )
+	{
+		var strErr = getErrorString();
+		if ( strErr == "" )	//	사용자가 인증서 선택을 취소한 경우
+		{
+			alert( "인증서 선택을 취소하였습니다");
+			return;
+		}
+		else
+		{
+			alert( strErr );
+			return;
+		}
+	}
+	else
+	{
+		alert( "generatePKCS7SignedFile() succeed" );
+	}
+}
+
+function file_add_sign()
+{
+	var strCertIDForAddSign = "CertIDForAddSign";
+	var strFilePath = document.sample.FilePath.value;
+	var strPKCS7FilePath = strFilePath + ".p7";
+
+	if ( strFilePath == null || strFilePath == "" )
+	{
+		alert( "선택된 파일이 없습니다." );
+		return;
+	}
+
+	var bReturn = addPKCS7SignFile( strCertIDForAddSign, strPKCS7FilePath, strPKCS7FilePath )
+	if ( !bReturn )
+	{
+		var strErr = getErrorString();
+		if ( strErr == "" )	//	사용자가 인증서 선택을 취소한 경우
+		{
+			alert( "인증서 선택을 취소하였습니다");
+			return;
+		}
+		else
+		{
+			alert( strErr );
+			return;
+		}
+	}
+	else
+	{
+		alert( "addPKCS7SignFile() succeed" );
+	}
+}
+
+function file_p7_enveloped()
+{
+	var strCertID = "LoginID@DomainName";
+	var strFilePath = document.sample.FilePath.value;
+	var strPKCS7FilePath = strFilePath + ".p7";
+
+	//	사용자 키분배용 인증서 얻기
+	var strKmCert = getUserKMCert( strCertID );
+	if ( strKmCert == "" )
+	{
+		var strErr = getErrorString();
+		if ( strErr == "" )	//	사용자가 인증서 선택을 취소한 경우
+		{
+			alert( "인증서 선택을 취소하였습니다");
+			return;
+		}
+		else
+		{
+			alert( strErr );
+			return;
+		}
+	}
+	else
+	{
+		alert( "키분배용 인증서: " + strKmCert );
+	}
+
+	var bReturn = generatePKCS7EnvelopedFile( strFilePath, strKmCert, "", strPKCS7FilePath );
+	if ( !bReturn )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		alert( "generatePKCS7EnvelopedFile() succeed" );
+	}
+}
+
+function file_p7_signed_enveloped()
+{
+	var strCertID = "LoginID@DomainName";
+	var strFilePath = document.sample.FilePath.value;
+	var strPKCS7FilePath = strFilePath + ".p7";
+
+	//	사용자 키분배용 인증서 얻기
+	var strKmCert = getUserKMCert( strCertID );
+	if ( strKmCert == "" )
+	{
+		var strErr = getErrorString();
+		if ( strErr == "" )	//	사용자가 인증서 선택을 취소한 경우
+		{
+			alert( "인증서 선택을 취소하였습니다");
+			return;
+		}
+		else
+		{
+			alert( strErr );
+			return;
+		}
+	}
+	else
+	{
+		alert( "키분배용 인증서: " + strKmCert );
+	}
+
+	var bReturn = generatePKCS7SignedEnvelopedFile( strCertID, strFilePath, strKmCert, "", strPKCS7FilePath );
+	if ( !bReturn )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		alert( "generatePKCS7SignedEnvelopedFile() succeed" );
+	}
+}
+
+function file_p7_verify()
+{
+	var strCertID = "LoginID@DomainName";
+	var strFilePath = document.sample.FilePath.value;
+	var strPKCS7FilePath = strFilePath + ".p7";
+	var strOriginalFile = strFilePath.substring( 0, strFilePath.length - 4) + ".p7" + strFilePath.substring( strFilePath.length - 4, strFilePath.length );
+
+	var strType = getPKCS7TypeFile( strPKCS7FilePath );
+
+	if ( strType == "PKCS7SignedMessage" )
+	{
+		alert( strType );
+		//	PKCS7 signed message 검사하고 원문 얻기
+		var bReturn = verifyPKCS7SignedFile( strPKCS7FilePath, strOriginalFile );
+		if ( !bReturn )
+		{
+			alert( getErrorString() );
+			return;
+		}
+		else
+		{
+			var count = getPKCS7SignerCount();
+			alert( "count: " + count );
+			var i = 1;
+			for ( i = 1; i <= count; i++ )
+			{
+				var strSignCert = getPKCS7SignerCert(i)
+				alert( i + " 번째 전자서명 인증서: " + strSignCert );
+				alert( i + " 번째 전자서명 시각: " + getPKCS7SigningTime(i) );
+				alert( i + " 번째 전자서명 인증서 소유자 식별명칭: " + getCertSubjectDN( strSignCert ) );
+				alert( i + " 번째 전자서명 인증서 일련번호: " + getCertSerialNumber( strSignCert ) );
+			}
+		}
+		clearPKCS7MessageInfo();
+	}
+	else if ( strType == "PKCS7EnvelopedMessage" || strType == "PKCS7SignedAndEnvelopedMessage" )
+	{
+		alert( strType );
+		var bReturn = verifyPKCS7EnvelopedFile( strCertID, strPKCS7FilePath, strOriginalFile );
+		if ( !bReturn )
+		{
+			var strErr = getErrorString();
+			if ( strErr == "" )	//	사용자가 인증서 선택을 취소한 경우
+			{
+				alert( "인증서 선택을 취소하였습니다");
+				return;
+			}
+			else
+			{
+				alert( strErr );
+				return;
+			}
+		}
+		else
+		{
+			var count = getPKCS7SignerCount();
+			alert( "count: " + count );
+			var i = 1;
+			for ( i = 1; i <= count; i++ )
+			{
+				var strSignCert = getPKCS7SignerCert(i)
+				alert( i + " 번째 전자서명 인증서: " + strSignCert );
+				alert( i + " 번째 전자서명 시각: " + getPKCS7SigningTime(i) );
+				alert( i + " 번째 전자서명 인증서 소유자 식별명칭: " + getCertSubjectDN( strSignCert ) );
+				alert( i + " 번째 전자서명 인증서 일련번호: " + getCertSerialNumber( strSignCert ) );
+			}
+		}
+		clearPKCS7MessageInfo();
+	}
+	if ( strType == "" )
+	{
+		alert( getErrorString() );
+		return;
+	}
+}
+
+
+</script>
+
+</body>
+</html>

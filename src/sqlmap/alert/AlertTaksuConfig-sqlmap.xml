@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="alertTaksuConfigDAO">
+
+	<typeAlias alias="alertTaksuConfigVO" type="daewooInfo.alert.bean.AlertTaksuConfigVO"/>
+	<typeAlias alias="alertSearchVO" type="daewooInfo.alert.bean.AlertSearchVO"/>
+	
+	<!-- get Alert Taksu Config List -->
+	<select id="getAlertTaksuConfig" resultClass="alertTaksuConfigVO">
+        SELECT A.FACT_CODE as factCode,
+               A.FACT_NAME as factName,
+               B.WARNING_FLAG as alertFlag,
+               CASE  B.WARNING_FLAG 
+               WHEN  '1' THEN TO_CHAR(TO_DATE (B.WARNING_DATE,'yyyymmddhh24mi'), 'yyyy-mm-dd hh24:mi')  || ' ~ ' || TO_CHAR(TO_DATE (B.WARNING_DATE,'yyyymmddhh24mi') + 2, 'yyyy-mm-dd hh24:mi')  || ' 발송 중지'
+               WHEN  '2' THEN TO_CHAR(TO_DATE (B.WARNING_DATE,'yyyymmddhh24mi'), 'yyyy-mm-dd hh24:mi')  || ' ~ ' || TO_CHAR(TO_DATE (B.WARNING_DATE,'yyyymmddhh24mi') + 3 , 'yyyy-mm-dd hh24:mi')  || ' 발송 중지'
+               WHEN  '3' THEN TO_CHAR(TO_DATE (B.WARNING_DATE,'yyyymmddhh24mi'), 'yyyy-mm-dd hh24:mi')  || ' ~ ' || TO_CHAR(TO_DATE (B.WARNING_DATE,'yyyymmddhh24mi') + 4, 'yyyy-mm-dd hh24:mi')  || ' 발송 중지'
+               ELSE  
+                    CASE  WHEN B.WARNING_ETC_FLAG  = 'STOP' THEN 
+                     '발송중지(장비고장)' 
+                   ELSE
+                    '발송중'
+                   END 
+               END as alertDate,
+               B.WARNING_ETC_FLAG alertEtcFlag       
+          FROM T_FACT_INFO A, T_WARNING_TSM_CONFIG B
+         WHERE A.FACT_CODE = B.FACT_CODE(+) AND A.SYS_KIND = 'T'
+         AND A.FACT_USE_FLAG = 'Y'
+         ORDER BY A.FACT_CODE
+	</select>	
+	    
+    <!-- merge Alert Config Data -->
+    <statement id="mergeAlertTaksuConfig" parameterClass="alertTaksuConfigVO">
+        MERGE INTO T_WARNING_TSM_CONFIG A 
+        USING ( SELECT #factCode# AS FACT_CODE, #alertFlag# AS WARNING_FLAG, #alertEtcFlag# AS WARNING_ETC_FLAG
+                FROM DUAL) B
+        ON (A.FACT_CODE = B.FACT_CODE)
+        WHEN MATCHED THEN 
+            UPDATE SET 
+                A.WARNING_FLAG = B.WARNING_FLAG
+                , A.WARNING_DATE = TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI')
+                , A.WARNING_ETC_FLAG = B.WARNING_ETC_FLAG
+        WHEN NOT MATCHED THEN
+            INSERT (A.FACT_CODE, A.WARNING_FLAG, A.WARNING_DATE,A.WARNING_ETC_FLAG)
+            VALUES (B.FACT_CODE, B.WARNING_FLAG, TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI'),B.WARNING_ETC_FLAG)
+	</statement>  
+	
+	<!-- get Alert Taksu Config Hist List -->
+	<select id="getAlertTaksuConfigHist" parameterClass="alertSearchVO" resultClass="alertTaksuConfigVO">
+        SELECT A.FACT_CODE as factCode,
+               (SELECT FACT_NAME FROM T_FACT_INFO WHERE FACT_CODE = A.FACT_CODE) as factName,
+               A.WARNING_FLAG as alertFlag,
+               A.HIS_MSG as histMsg,
+               (SELECT MEMBER_NAME FROM T_MEMBER WHERE MEMBER_ID  = A.MEMBER_ID) as memberId,
+               TO_CHAR(TO_DATE (A.REG_DATE,'yyyymmddhh24mi'), 'yyyy-mm-dd hh24:mi') as regDate
+          FROM T_WARNING_TSM_CONFIG_HIS A,
+          		   T_FACT_INFO F
+         WHERE 1=1
+         AND	A.FACT_CODE = F.FACT_CODE 
+    <isNotEmpty property="factCode">
+         AND A.FACT_CODE = #factCode#    
+    </isNotEmpty>
+    <isNotEqual property="sugye" compareValue="all">
+    	AND F.RIVER_DIV = #sugye#
+    </isNotEqual>
+         AND A.REG_DATE BETWEEN #startDate# || '0000' AND #endDate# || '9999'          
+         ORDER BY REG_DATE DESC
+	</select>	
+	    
+    <!-- insert Alert Config Data -->
+    <statement id="insertAlertTaksuConfigHist" parameterClass="alertTaksuConfigVO">
+        INSERT INTO T_WARNING_TSM_CONFIG_HIS ( FACT_CODE, WARNING_FLAG, HIS_MSG, MEMBER_ID, REG_DATE )
+    <isNull property="histMsg">        
+        VALUES ( #factCode#, #alertFlag#, (SELECT COMMON_CODE_DESC || '    장비설정 : ' ||  ( CASE  #alertEtcFlag# WHEN 'STOP' THEN '장비고장'  ELSE '해당없음' END )  FROM T_COMMON_CODE WHERE COMMON_CODE_CATEGORY = '34' AND COMMON_CODE = #alertFlag#), #memberId#, TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI') )
+    </isNull> 
+    <isNotNull property="histMsg">
+        VALUES ( #factCode#, #alertFlag#, #histMsg#, #memberId#, TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI') )    
+    </isNotNull>
+	</statement> 
+	
+   <statement id="getAlertTaksuConfigAuto" parameterClass="alertTaksuConfigVO">
+        SELECT FACT_CODE,
+               WARNING_FLAG,
+               WARNING_DATE
+        FROM T_WARNING_TSM_CONFIG
+        WHERE WARNING_FLAG &gt; 0 AND WARNING_ETC_FLAG  ='START' AND TO_CHAR(TO_DATE(WARNING_DATE, 'yyyymmddhh24mi') + TO_NUMBER(WARNING_FLAG)+1, 'yyyymmddhh24mi')  &lt;= TO_CHAR(SYSDATE, 'yyyymmddhh24mi')  	
+	</statement>
+	 
+	<select id="getAlertTaksuConfigFlag" parameterClass="alertTaksuConfigVO" resultClass="java.lang.Integer">
+        SELECT TO_NUMBER(WARNING_FLAG) AS alertFlag 
+        FROM T_WARNING_TSM_CONFIG
+        WHERE FACT_CODE = #factCode#
+	</select>		
+</sqlMap>

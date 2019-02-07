@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="StatusDAO">
+
+	<typeAlias alias="statusVO" type="daewooInfo.status.bean.StatusVO"/>
+
+	<!-- 국가 수질 -->
+	<select id="StatusDAO.Water" parameterClass="statusVO" resultClass="statusVO">
+		SELECT 
+		       /*+ index_desc(A IX_MIN_DATA_02) */ 
+		       TO_CHAR(TO_DATE(A.MIN_TIME,'YYYYMMDDHH24MI'),'YYYY/MM/DD HH24:MI') TIME 
+		  FROM T_MIN_DATA A
+		 WHERE MIN_TIME <![CDATA[ <= ]]> TO_CHAR(SYSDATE,'YYYYMMDDHH24MI') 
+		       AND A.FACT_CODE = A.FACT_CODE
+		       AND ROWNUM = 1
+	</select>
+	
+	<!-- 환경과학원 -->
+	<select id="StatusDAO.Nier" parameterClass="statusVO" resultClass="statusVO">
+		SELECT MAX(TIME) TIME 
+		  FROM 
+		       (SELECT 
+		              /*+ index_desc(A T_BOMST_PK) */ 
+		              TO_CHAR(TO_DATE(A.YMDHM,'YYYYMMDDHH24MI'),'YYYY/MM/DD HH24:MI') TIME 
+		         FROM T_BOMST A 
+		        WHERE YMDHM <![CDATA[ <= ]]> TO_CHAR(SYSDATE,'YYYYMMDDHH24MI') 
+		              AND EXISTS 
+		              (SELECT * 
+		                FROM T_BOOBSIF B 
+		               WHERE A.BOOBSCD = B.BOOBSCD 
+		              ) 
+		              AND ROWNUM = 1 
+		           UNION ALL 
+		       SELECT 
+		              /*+ index_desc(A IX_T_FWHR_01) */ 
+		              TO_CHAR(TO_DATE(A.YMDH,'YYYYMMDDHH24MI'),'YYYY/MM/DD HH24:MI') TIME 
+		         FROM T_FWHR A 
+		        WHERE YMDH <![CDATA[ <= ]]> TO_CHAR(SYSDATE,'YYYYMMDDHH24MI') 
+		              AND EXISTS 
+		              (SELECT * 
+		                FROM T_FWOBSIF B 
+		               WHERE A.FWOBSCD = B.FWOBSCD 
+		              ) 
+		              AND ROWNUM = 1 
+		           UNION ALL 
+		       SELECT 
+		              /*+ index_desc(A IX_T_WLHR_01) */ 
+		              TO_CHAR(TO_DATE(A.YMDH,'YYYYMMDDHH24MI'),'YYYY/MM/DD HH24:MI') TIME 
+		         FROM T_WLHR A 
+		        WHERE YMDH <![CDATA[ <= ]]> TO_CHAR(SYSDATE,'YYYYMMDDHH24MI') 
+		              AND EXISTS 
+		              (SELECT * 
+		                FROM T_WLOBSIF B 
+		               WHERE A.WLOBSCD = B.WLOBSCD 
+		              ) 
+		              AND ROWNUM = 1
+		       )  
+	</select>
+	
+	<!-- 날씨 -->
+	<select id="StatusDAO.Weather" parameterClass="statusVO" resultClass="statusVO">
+		SELECT 
+		       /*+ index_desc(A IX_WEATHER_INFO_02) */ 
+		       TO_CHAR(TO_DATE(A.ANNOUNCE_TIME,'YYYYMMDDHH24MI'),'YYYY/MM/DD HH24:MI') TIME 
+		  FROM T_WEATHER_INFO A 
+		 WHERE A.ANNOUNCE_TIME <![CDATA[ <= ]]> TO_CHAR(SYSDATE,'YYYYMMDDHH24MI') 
+		       AND ROWNUM = 1 
+	</select>
+	
+	<!-- TMS -->
+	<select id="StatusDAO.TMS" parameterClass="statusVO" resultClass="statusVO">
+		SELECT 
+		       /*+ INDEX_DESC(A PK_MIN_REAL) */ 
+		       TO_CHAR(TO_DATE(A.min_time,'YYYYMMDDHH24MI'),'YYYY/MM/DD HH24:MI') TIME 
+		  FROM WTMSC_MIN_REAL@TMS A 
+		 WHERE MIN_TIME <![CDATA[ <= ]]> TO_CHAR(SYSDATE,'YYYYMMDDHH24MI') 
+		       AND EXISTS 
+		       (SELECT * 
+		         FROM WTMSC_FACT B 
+		        WHERE A.FACT_CODE = B.FACT_CODE 
+		       ) 
+		       AND ROWNUM = 1
+	</select>
+</sqlMap>	

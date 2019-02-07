@@ -1,0 +1,115 @@
+
+Button
+{
+	color :#3790C0;
+	fontWeight:bold;
+	fillAlphas:1.0, 1.0, 1.0, 1.0;
+	fillColors:#FFFFFF, #FFFFFF ;
+	font-weight :normal;
+}
+
+Alert
+{
+	fontSize: 12;
+}
+
+Accordion
+{
+	fontSize: 12; 
+	headerStyleName: accordionHeader;
+	color: #000000;
+}
+DataGrid
+{
+	headerStyleName: dataGridHeader;
+	textAlign: center;
+	headerColors: #EAF1F6, #EAF1F6;
+	selectionDisabledColor: #FFFFFF;
+	selectionColor: #BAD2F4;
+	verticalGridLineColor: #C9C9C9;
+	alternatingItemColors: #FFFFFF, #E9EEFF;
+	rollOverColor: #EDEDED;
+	backgroundDisabledColor: #FFFFFF;
+	horizontalGridLines: true;
+	horizontalGridLineColor: #C9C9C9;
+	backgroundAlpha: 0.5;
+	disabledColor: #FFFFFF;
+	color: #000000;
+	font-weight:normal; 
+}
+TabNavigator
+{
+	tabStyleName: tabNavigatorTab;
+	color: #000000;
+	firstTabStyleName: tabNavigatorFirstTab;
+	selectedTabTextStyleName: tabNavigatorSelectedTabText;
+	lastTabStyleName: tabNavigatorLastTab;
+	borderColor: #75A3D1;
+	borderThickness: 1;
+}
+
+ComboBox
+{
+	fillAlphas: 1.0, 1.0, 1.0, 1.0;
+	fillColors: #FFFFFF, #FFFFFF;
+	color: #000000;
+	
+}
+.accordionHeader
+{
+	fontSize: 14;
+	textAlign: left;
+	fontWeight: bold;
+	leading: 1;
+	paddingTop: 5;
+	paddingBottom: 5;
+	color: #3790C0;
+	horizontalGap: 5;
+	cornerRadius: 3;
+}
+.dataGridHeader
+{
+	textAlign: center;
+	fontFamily: Verdana;
+	fontSize: 12;
+	color: #2F8BC0;
+	fontWeight: bold; 
+}
+.tabNavigatorSelectedTabText
+{
+}
+.tabNavigatorTab
+{
+	borderColor: #2F8BC0;
+	textSelectedColor: #0078FF;
+	themeColor: #EAF1F6;
+	fillAlphas: 1.0, 1.0;
+	fillColors: #E3E7F4, #A5D3EA, #FFFFFF, #EAF1F6;
+}
+.tabNavigatorFirstTab
+{
+	fillAlphas: 1.0, 1.0;
+	fillColors: #E3E7F4, #A5D3EA, #FFFFFF, #EAF1F6;
+	borderColor: #2F8BC0;
+	themeColor: #EAF1F6;
+}
+.tabNavigatorLastTab
+{
+	fillAlphas: 1.0, 1.0;
+	fillColors: #E3E7F4, #A5D3EA, #FFFFFF, #EAF1F6;
+	themeColor: #EAF1F6;
+	borderColor: #2F8BC0;
+}
+.titleWindowControlBar
+{
+	color: #000000;
+	fontSize: 12;
+}
+.titleWindowStatus
+{
+}
+.titleWindowTitle
+{
+	fontSize: 14;
+	fontWeight: bold;
+}

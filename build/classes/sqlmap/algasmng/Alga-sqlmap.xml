@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+        
+<sqlMap namespace="algasDAO">
+
+	<typeAlias alias="AlgaDataVO" type="daewooInfo.waterpolmnt.algasmng.bean.AlgaDataVO"/>
+	
+	<insert id="insertAlgaCast" parameterClass="AlgaDataVO" >
+		<selectKey resultClass="java.lang.Long" keyProperty="cast_num">
+			SELECT NVL(MAX(ALGA_NO),0)+1 AS CAST_NUM  FROM T_ALGA_FCAST
+		</selectKey>
+		<![CDATA[
+            INSERT INTO T_ALGA_FCAST
+            (
+                ALGA_NO, 
+                ALGA_SURV_DATE,
+                ALGA_SURV_POINT_1,
+                RIVER_DIV,
+                ALGA_SURV_NAME,
+                ALGA_SURV_ORG,
+                ALGA_ANLY_POINT_1,
+                ALGA_ANLY_DATE,
+                ALGA_ANLY_NAME,
+                ALGA_TEMP_1,
+                ALGA_PH_1,
+                ALGA_CHLA_1,
+                ALGA_CYAN_1,
+                ALGA_TEMP_2,
+                ALGA_PH_2,
+                ALGA_CHLA_2,
+                ALGA_CYAN_2,
+                ATCH_FILE,
+                RCD_STATE,
+                REG_DATE,
+                MOD_DATE
+			 ) 
+			VALUES
+			( 
+				#cast_num#,
+				#survey_time#,
+				#survey_point#,
+				#river_div#,
+				#name#,
+				#org#,
+				#analysis_point#,
+				#analysis_time#,
+				#analysis_name#,
+				#temp#,
+				#ph#,
+				#chla#,
+				#cyan#,
+				#temp2#,
+				#ph2#,
+				#chla2#,
+				#cyan2#,
+				#file#,
+				'I',
+				(SELECT CURRENT_DATE FROM DUAL),
+				NULL
+			 )			
+		]]>
+	</insert>
+</sqlMap>

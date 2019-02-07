@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="loginDAO">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="loginVO" type="daewooInfo.common.login.bean.LoginVO"/>
+	<typeAlias alias="memberVO" type="daewooInfo.common.login.bean.MemberVO"/>
+	
+	<!-- 로그인 처리를 위한 resultMap -->
+	<resultMap id="login" class="daewooInfo.common.login.bean.LoginVO">
+		<result property="id"       column="MEMBER_ID" columnIndex="1"/>
+		<result property="name"     column="MEMBER_NAME" columnIndex="2"/>
+		<result property="ihidNum"  column="IHIDNUM" columnIndex="3"/>
+		<result property="email"    column="EMAIL" columnIndex="4"/>
+		<result property="password" column="PASSWORD" columnIndex="5"/>
+		<result property="uniqId"   column="UNIQ_ID" columnIndex="6"/>		
+		<result property="roleCode" column="AUTHOR_CODE" columnIndex="7"/>
+	</resultMap>
+	
+	<!-- 공통코드성 -->
+	<resultMap  id="code" class="daewooInfo.cmmn.bean.CmmnDetailCode">
+		<result property="code" column="code" columnIndex="1"/>
+		<result property="codeName" column="codeName" columnIndex="2"/>
+	</resultMap>
+	
+	<!-- 부서정보 -->
+	<resultMap class="daewooInfo.cmmn.bean.DeptVO" id="deptCode">
+		<result property="deptNo" column="deptNo" columnIndex="1"/>
+		<result property="deptName" column="deptName" columnIndex="2"/>
+		<result property="upperDeptNo" column="upperDeptNo" columnIndex="3"/>
+		<result property="childCnt" column="childCnt" columnIndex="4"/>
+	</resultMap>
+	
+	
+	<!-- 로그인 -->	
+	<select id="actionLogin" resultMap="login" parameterClass="loginVO">
+		SELECT MEMBER_ID 
+		     , MEMBER_NAME 
+		     , IHIDNUM  
+		     , EMAIL 
+		     , PASSWORD 
+		     , UNIQ_ID  
+		     , AUTHOR_CODE 
+		  FROM T_MEMBER A
+         , T_EMPLYRSCRTYESTBS B
+         WHERE A.UNIQ_ID=B.SCRTY_ESTBSTRGET_ID(+)
+		   AND MEMBER_ID =#id#
+		   AND PASSWORD = #password#
+	</select>
+	
+	<!-- 인증서 정보를 업데이트 한다. -->
+	<update id="updateDn" parameterClass="loginVO">
+		UPDATE T_MEMBER
+		SET    DN = #dn#
+		WHERE  MEMBER_ID= #id#
+		AND    PASSWORD = #password#
+	</update>
+	
+	<select id="actionCrtfctLogin" resultMap="login" parameterClass="loginVO">
+		SELECT MEMBER_ID 
+		     , MEMBER_NAME 
+		     , IHIDNUM  
+		     , EMAIL 
+		     , PASSWORD 
+		     , UNIQ_ID  
+		     , AUTHOR_CODE 
+		  FROM T_MEMBER A
+         , T_EMPLYRSCRTYESTBS B
+         WHERE A.UNIQ_ID=B.SCRTY_ESTBSTRGET_ID(+)
+		   AND DN =#dn#
+	</select>
+		
+	<!-- 로그인 정보를 업데이트 한다. -->
+	<update id="updateConnectInfo" parameterClass="loginVO">
+		UPDATE T_MEMBER
+		SET    CONNECT_IP = #ip#
+			 , CONNECT_DATE = SYSDATE
+		WHERE  MEMBER_ID= #id#
+		AND    PASSWORD = #password#
+	</update>
+	
+	<!-- 비밀번호 암호화를 위한 쿼리 (기존데이터 비밀번호 암호화...) -->
+	
+	<select id="batch_password_md5" resultClass="loginVO">
+		SELECT  MEMBER_ID as id
+		      , PASSWORD_REPLY as passwordCnsr
+		FROM T_MEMBER
+	</select>
+	
+	<update id="batch_password_md5_update" parameterClass="loginVO">
+		     UPDATE T_MEMBER 
+               SET PASSWORD = #password#
+             WHERE MEMBER_ID = #id#
+	</update>
+	
+	<select id="batch_password_md5_action" resultClass="loginVO">
+		SELECT   MEMBER_ID AS id
+		       , PASSWORD_REPLY AS passwordCnsr
+		FROM T_MEMBER
+	</select>
+	
+	<!-- 회원가입 관련 - 시/도 정보 -->
+	<select id="getAreaDoCode" resultMap="code">
+		    SELECT *
+		    FROM (  SELECT DO_CODE code
+		                 , DO_NAME codeName
+		              FROM T_AREA
+		             WHERE CTY_USE = 'Y'
+		          GROUP BY DO_CODE, DO_NAME)
+		    ORDER BY CODENAME ASC 
+	</select>
+	
+	<select id="getGroupCode" resultMap="code">
+		SELECT 
+		      GROUP_CODE code
+		    , GROUP_NAME codeName
+		FROM T_GROUP_INFO
+		ORDER BY GROUP_CODE ASC
+	</select>
+	
+	<!-- 회원가입 관련 - 시/군 정보 where doCode -->
+	<select id="getAreaCtyCode" parameterClass="java.lang.String" resultMap="code">
+		SELECT 
+		      GROUP_ID code
+		    , GROUP_NM codeName
+		FROM  T_AUTHORGROUPINFO
+		ORDER BY GROUP_ID ASC
+	</select>
+	
+	<!-- 회원가입 관련 - 시/군 정보 where dept의 doCode -->
+	<select id="getAreaCtyCodeWhereDeptNo" parameterClass="java.lang.String" resultMap="code">
+         SELECT 
+                 CTY_CODE code
+		       , CTY_NAME codeName
+         FROM T_AREA
+         WHERE CTY_USE = 'Y' AND DO_CODE = (
+                                             SELECT DO_CODE 
+                                             FROM T_DEPT 
+                                             WHERE DEPT_NO = #deptCode# AND ROWNUM=1
+                                            )
+         ORDER BY CTY_CODE ASC
+        
+        
+	</select>
+	
+	<!-- 회원가입 관련 - 시/군 정보 -->
+	<select id="getAreaCtyCodeAll" resultMap="code">
+		 SELECT  CTY_CODE code
+		       , DO_NAME||' '||CTY_NAME codeName
+		 FROM T_AREA
+		 WHERE CTY_USE = 'Y'
+		 ORDER BY CTY_CODE ASC
+		
+		
+	</select>
+	
+	<!-- 회원가입관련 - 수계정보 -->
+	<select id="getRiverIdCode" resultMap="code">
+		 SELECT COMMON_CODE code
+		      , COMMON_CODE_NAME codeName
+		 FROM T_COMMON_CODE
+		 WHERE USE_FLAG = 'Y' AND COMMON_CODE_CATEGORY = '01'
+		 ORDER BY CODE_SORT ASC
+	</select>
+	
+	<!-- 회원가입관련 - 수계,공구정보 -->
+	<select id="getFactInfoCode" resultMap="code">
+		   SELECT  FACT_CODE code
+		         , FACT_FNAME codeName
+		   FROM T_FACT_INFO
+		   WHERE SYS_KIND = 'T'
+		   ORDER BY RIVER_DIV ASC 
+	</select>
+	
+	<!-- 회원가입관련 - 관련기관 -->
+	<select id="getOrganCode" resultMap="code">
+		 SELECT COMMON_CODE code
+		      , COMMON_CODE_NAME codeName
+		 FROM T_COMMON_CODE
+		 WHERE USE_FLAG = 'Y' 
+		 AND COMMON_CODE_CATEGORY = '30'
+		 ORDER BY CODE_SORT ASC
+	</select>
+	
+	<!-- 회원가입관련 - 부서정보 -->
+	<select id="getDeptCode" resultMap="deptCode" parameterClass="java.lang.String">
+		SELECT 
+		    DEPT_CODE AS "DEPTNO",
+		    DEPT_NAME AS "DEPTNAME",
+		    UPPER_DEPT_CODE AS "UPPERDEPTNO",
+		    (
+		        SELECT COUNT (DEPT_CODE)
+		        FROM T_DEPT_INFO B
+		        WHERE B.UPPER_DEPT_CODE = A.DEPT_CODE
+		    )
+		    AS "CHILDCNT"
+		  FROM T_DEPT_INFO A
+		 WHERE UPPER_DEPT_CODE = #upperDeptNo#
+	</select>
+	
+	<!-- 아이디 중복체크 -->
+	<select id="checkID" parameterClass="java.lang.String" resultClass="int">
+		SELECT COUNT(MEMBER_ID) AS "TOTCNT"
+		  FROM T_MEMBER
+		 WHERE MEMBER_ID = #checkID#
+	</select>
+	
+	<!-- 회원가입을 처리한다. -->
+	<insert id="insertMember" parameterClass="memberVO">
+		INSERT INTO T_MEMBER (
+		   MEMBER_ID, 
+		   PASSWORD, 
+		   PASSWORD_HINT, 
+		   PASSWORD_CNSR, 
+		   MEMBER_NM, 
+		   IHIDNUM, 
+		   ZIP, 
+		   ADDRESS, 
+		   DETAIL_ADDRESS, 
+		   MOBILE_NO, 
+		   GROUP_ID, 
+		   FAXNUM, 
+		   EMAIL, 
+		   REG_DATE, 
+		   MEMBER_STATUS, 
+		   UNIQ_ID, 
+		   OFFICE_NO, 
+		   OFFICE_NAME, 
+		   DEPT_NAME, 
+		   GRADE_NAME, 
+		   RIVER_NAME, 
+		   SPOT_NAME, 
+		   AREA_NAME, 
+		   CONNECT_IP, 
+		   CONNECT_DATE, 
+		   DEPT_NO, 
+		   DO_CODE, 
+		   CTY_CODE, 
+		   FACT_CODE, 
+		   ORGAN_CODE, 
+		   RIVER_ID
+		   ) 
+		VALUES ( #memberId#,
+		 #password#,
+		 null,
+		 null,
+		 #memberName#,
+		 #ihidNum#,
+		 null,
+		 null,
+		 null,
+		 #mobileNo#,
+		 null,
+		 #faxNum#,
+		 #email#,
+		 sysdate,
+		 null,
+		 #uniqId#,
+		 #officeNo#,
+		 null,
+		 null,
+		 #gradeName#,
+		 null,
+		 null,
+		 null,
+		 #connectIp#,
+		 sysdate,
+		 #deptNo#,
+		 ( select do_code from t_area where cty_code=#ctyCode# and rownum=1 ),
+		 #ctyCode#,
+		 #factCode#,
+		 #organCode#,
+		 #riverId#  )
+	</insert>
+	
+</sqlMap>

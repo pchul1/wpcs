@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<CHARTFX>
+	<COLUMNS>
+		<COLUMN NAME="Seattle" TYPE="Integer"/>
+		<COLUMN NAME="SanAntonio" TYPE="Integer"/>
+		<COLUMN NAME="NewYork" TYPE="Integer"/>
+		<COLUMN NAME="Miami" TYPE="Integer"/>
+		<COLUMN NAME="Chicago" TYPE="Integer"/>
+		<COLUMN NAME="SanDiego" TYPE="Integer"/>
+		<COLUMN NAME="Phoenix" TYPE="Integer"/>
+		<COLUMN NAME="Washington" TYPE="Integer"/>
+		<COLUMN NAME="Omaha" TYPE="Integer"/>
+		<COLUMN NAME="Atlanta" TYPE="Integer"/>
+		<COLUMN NAME="Newark" TYPE="Integer"/>
+		<COLUMN NAME="Biloxi" TYPE="Integer"/>
+	</COLUMNS>
+	<ROW Seattle="46" SanAntonio="61" NewYork="38" Miami="76" Chicago="43" SanDiego="67" Phoenix="88" Washington="54" Omaha="87" Atlanta="61" Newark="82" Biloxi="91"></ROW>
+	<ROW Seattle="51" SanAntonio="66" NewYork="40" Miami="59" Chicago="84" SanDiego="83" Phoenix="73" Washington="59" Omaha="50" Atlanta="52" Newark="83" Biloxi="92"></ROW>
+	<ROW Seattle="54" SanAntonio="74" NewYork="50" Miami="85" Chicago="56" SanDiego="72" Phoenix="58" Washington="80" Omaha="60" Atlanta="45" Newark="76" Biloxi="62"></ROW>
+	<ROW Seattle="58" SanAntonio="80" NewYork="61" Miami="70" Chicago="65" SanDiego="67" Phoenix="97" Washington="65" Omaha="86" Atlanta="74" Newark="67" Biloxi="41"></ROW>
+	<ROW Seattle="64" SanAntonio="85" NewYork="72" Miami="50" Chicago="66" SanDiego="67" Phoenix="51" Washington="95" Omaha="66" Atlanta="62" Newark="76" Biloxi="57"></ROW>
+	<ROW Seattle="70" SanAntonio="92" NewYork="80" Miami="91" Chicago="74" SanDiego="54" Phoenix="63" Washington="90" Omaha="88" Atlanta="60" Newark="50" Biloxi="62"></ROW>
+	<ROW Seattle="74" SanAntonio="95" NewYork="85" Miami="75" Chicago="44" SanDiego="65" Phoenix="62" Washington="71" Omaha="73" Atlanta="53" Newark="89" Biloxi="44"></ROW>
+	<ROW Seattle="74" SanAntonio="95" NewYork="84" Miami="81" Chicago="77" SanDiego="88" Phoenix="93" Washington="84" Omaha="77" Atlanta="55" Newark="100" Biloxi="65"></ROW>
+	<ROW Seattle="69" SanAntonio="89" NewYork="76" Miami="56" Chicago="77" SanDiego="75" Phoenix="45" Washington="76" Omaha="52" Atlanta="63" Newark="77" Biloxi="64"></ROW>
+	<ROW Seattle="60" SanAntonio="82" NewYork="65" Miami="79" Chicago="45" SanDiego="82" Phoenix="41" Washington="93" Omaha="65" Atlanta="54" Newark="90" Biloxi="87"></ROW>
+	<ROW Seattle="52" SanAntonio="72" NewYork="54" Miami="75" Chicago="71" SanDiego="46" Phoenix="51" Washington="45" Omaha="83" Atlanta="53" Newark="64" Biloxi="83"></ROW>
+	<ROW Seattle="46" SanAntonio="64" NewYork="43" Miami="56" Chicago="92" SanDiego="85" Phoenix="75" Washington="40" Omaha="69" Atlanta="53" Newark="59" Biloxi="66"></ROW>
+</CHARTFX>

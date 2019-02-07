@@ -1,0 +1,69 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
+<title>Message Digest Sample</title>
+</head>
+
+<body>
+
+<script language='javascript' src='./sg_scripts/sg_basic.js'></script>
+<script language='javascript' src='./sg_scripts/sg_error.js'></script>
+<script language='javascript' src='./sg_scripts/sg_util.js'></script>
+<script language='javascript' src='./sg_scripts/sg_cert.js'></script>
+<script language='javascript' src='./sg_scripts/sg_sign.js'></script>
+<script language='javascript' src='./sg_scripts/sg_encrypt.js'></script>
+<script language='javascript' src='./sg_scripts/sg_pkcs7.js'></script>
+<script language='javascript' src='./sg_scripts/sg_hash.js'></script>
+<script language='javascript' src='./sg_scripts/sg_base64.js'></script>
+
+<h3>메시지 다이제스트(해쉬) 예제</h3>
+
+<form name="sample">
+메시지<br>
+<textarea name=OriginalData rows="5" cols="80">이것은 원문 메시지 입니다. This is original message.</textarea>
+<br>메시지 다이제스트(해쉬)
+<input type=text name=MessageDigest size="50"></textarea>
+<br>파일
+<input type=file name=FilePath size=80><br>
+<input type=button value="Digest Message" onClick="hash()"><br>
+<input type=button value="File Digest Message" onClick="file_hash()"><br>
+</form>
+
+<script language="javascript">
+
+function hash()
+{
+	var strInput = document.sample.OriginalData.value;
+	
+	//	스트링에서 메시지 축약값 구하기
+	var strDigest = getMessageDigest( strInput );
+	if ( strDigest == "" )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		document.sample.MessageDigest.value = strDigest;
+	}
+}
+
+function file_hash()
+{
+	var strFilePath = document.sample.FilePath.value;
+
+	//	파일에서 메시지 축약값 구하기
+	var strDigest = getMessageDigestFromFile( strFilePath );
+	if ( strDigest == "" )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		document.sample.MessageDigest.value = strDigest;
+	}
+}
+
+</script>
+
+</body>
+</html>

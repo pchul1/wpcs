@@ -1,0 +1,40 @@
+package daewooInfo.waterpolmnt.waterinfo.bean;
+
+public class ExcelModelingVO {
+	private String factCode;
+	private String hourTime;
+	private String itemCode;
+	private String hourVl;
+	private String mesuType;
+	
+	public String getFactCode() {
+		return factCode;
+	}
+	public void setFactCode(String factCode) {
+		this.factCode = factCode;
+	}
+	public String getHourTime() {
+		return hourTime;
+	}
+	public void setHourTime(String hourTime) {
+		this.hourTime = hourTime;
+	}
+	public String getItemCode() {
+		return itemCode;
+	}
+	public void setItemCode(String itemCode) {
+		this.itemCode = itemCode;
+	}
+	public String getHourVl() {
+		return hourVl;
+	}
+	public void setHourVl(String hourVl) {
+		this.hourVl = hourVl;
+	}
+	public String getMesuType() {
+		return mesuType;
+	}
+	public void setMesuType(String mesuType) {
+		this.mesuType = mesuType;
+	}
+}

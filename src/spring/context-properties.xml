@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+	<bean name="propertiesService" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<!-- 
+		<property name="extFileName">
+			<set>
+				<map>
+					<entry key="encoding" value="UTF-8"/>
+					<entry key="filename" value="file:./src/**/refresh-resource.properties"/>
+				</map>
+				<value>file:./src/**/resource.properties</value>
+				<map>
+					<entry key="encoding" value="UTF-8"/>
+					<entry key="filename" value="classpath*:META-INF/korean-resource.properties"/>
+				</map>
+			</set>
+		</property>
+		 -->
+		<property name="properties">
+			<map>
+				<entry key="inquiryURL" value="http://10.101.164.220:8089/uddi/inquiry"/>
+				<entry key="publishURL" value="http://10.101.164.220:8089/uddi/publish"/> 
+				<entry key="pageUnit" value="20"/>
+				<entry key="pageSize" value="10"/>
+				<!-- 운영 -->
+<!-- 				<entry key="Globals.fileStorePath" value="/data/webapps/upload/wpcs/"/> -->
+<!-- 				<entry key="Globals.alertPath" value="/data/webapps/upload/wpcs/alert/"/> -->
+<!-- 				<entry key="Globals.wpStepPath" value="/data/webapps/upload/wpcs/wpStep/"/> -->
+				
+				<entry key="Globals.fileStorePath" value="/was_data/upload/wpcs/"/>
+				<entry key="Globals.alertPath" value="/was_data/upload/wpcs/alert/"/>
+				<entry key="Globals.wpStepPath" value="/was_data/upload/wpcs/wpStep/"/>
+				
+				<!-- 개발 -->
+<!-- 				<entry key="Globals.fileStorePath" value="C:\SMCube\file\upload\"/> -->
+<!-- 				<entry key="Globals.alertPath" value="C:\SMCube\file\upload\"/> -->
+<!-- 				<entry key="Globals.wpStepPath" value="C:\SMCube\file\upload\wpStep\"/> -->
+			</map>
+		</property>
+	</bean>
+</beans>

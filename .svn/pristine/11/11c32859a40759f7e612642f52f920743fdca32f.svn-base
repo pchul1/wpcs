@@ -1,0 +1,22 @@
+@chartset "utf-8";
+
+/* YYM(2012) */
+
+@import url("reset.css");
+
+h3#blueText{color:#2F8BC0; font-weight:bold; font-size:20px;}
+
+span.liTitle{color:#2F8BC0; font-weight:bold; background:#EAF1F6; padding:5px 10px;}
+
+table#searchWrap{border:0px; width:"99%";}
+table#searchWrap td, table#searchWrap th{border:0px;}
+
+img.cal{border:0px;}
+
+input.inputText{height:16px;}
+
+select{height:20px;}
+select.time{height:20px;}
+
+input.radio{margin:0 3px 5px 3px;}
+label{height:20px; margin-right:10px;}

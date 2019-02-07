@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////
+//
+// Copyright © 2008 - 2009 ESRI
+//
+// All rights reserved under the copyright laws of the United States.
+// You may freely redistribute and use this software, with or
+// without modification, provided you include the original copyright
+// and use restrictions.  See use restrictions in the file:
+// <install location>/FlexViewer/License.txt
+//
+////////////////////////////////////////////////////////////////////////////////
+-->
+<configuration>
+	<userinterface>
+		<banner>visible</banner>
+		<title>방제지원 시스템</title>
+		<subtitle>환경공단</subtitle>
+		<logo>com/esri/solutions/flexviewer/assets/images/icons/logo.png</logo>
+		
+		<menus>
+			<menu id="1st_menu1" visible="true" icon="com/esri/solutions/flexviewer/assets/images/icons/i_sugae.png">수질상황모니터링</menu>
+			<menu id="1st_menu2" visible="true" icon="com/esri/solutions/flexviewer/assets/images/icons/icon04.png">기초정보관리</menu>
+			<menu id="1st_menu3" visible="true" icon="com/esri/solutions/flexviewer/assets/images/icons/icon18.png">방제지원</menu>
+			<menu id="1st_menu4" visible="true" icon="com/esri/solutions/flexviewer/assets/images/icons/icon19.png">방제관리</menu>
+
+		</menus>
+	</userinterface>
+ 
+	<Menu_1st>   
+			<MENU label="수질상황모니터링" type="tiled" visible="true" alpha="1" icon="com/esri/solutions/flexviewer/assets/images/icons/icon17.png" menu="1st_menu1"></MENU>
+											
+    </Menu_1st>
+	
+	<Menu_1st>
+		<MENU label="오염원 관리" icon="com/esri/solutions/flexviewer/assets/images/icons/icon08.png" menu="1st_menu2"></MENU>
+		<MENU label="측정소관리" icon="com/esri/solutions/flexviewer/assets/images/icons/icon06.png" menu="1st_menu2"></MENU>
+		<MENU label="취정수장관리" icon="com/esri/solutions/flexviewer/assets/images/icons/icon11.png" menu="1st_menu2"></MENU>
+		<MENU label="댐 관리" icon="com/esri/solutions/flexviewer/assets/images/icons/icon09.png" menu="1st_menu2"></MENU>	
+	</Menu_1st>
+
+	<Menu_1st>
+		<MENU label="사고방제" icon="com/esri/solutions/flexviewer/assets/images/icons/icon02.png" menu="1st_menu3" ></MENU>
+		<MENU label="경로탐색" icon="com/esri/solutions/flexviewer/assets/images/icons/i_servicearea.png" menu="1st_menu3" ></MENU>
+		
+	</Menu_1st>
+
+	<Menu_1st>
+		<MENU label="유관기관 조회" icon="com/esri/solutions/flexviewer/assets/images/icons/i_policestation.png" menu="1st_menu4"></MENU>
+		<MENU label="방제업체 관리" icon="com/esri/solutions/flexviewer/assets/images/icons/icon12.png" menu="1st_menu4"></MENU>
+		<MENU label="위치정보 조회" icon="com/esri/solutions/flexviewer/assets/images/icons/i_rss.png" menu="1st_menu4"></MENU>
+		<MENU label="방제물품 조회" icon="com/esri/solutions/flexviewer/assets/images/icons/icon13.png" menu="1st_menu4"></MENU>
+		<MENU label="방제물품 관리" icon="com/esri/solutions/flexviewer/assets/images/icons/icon05.png" menu="1st_menu4"></MENU>
+		<MENU label="방제물품 코드관리" icon="com/esri/solutions/flexviewer/assets/images/icons/icon16.png" menu="1st_menu4"></MENU>
+	</Menu_1st>
+	
+	
+	
+	<proxytype>asp</proxytype> <!-- apache|jsp||php -->
+</configuration>
+

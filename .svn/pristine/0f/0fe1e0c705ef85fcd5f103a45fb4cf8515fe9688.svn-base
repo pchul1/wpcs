@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+        
+<sqlMap namespace="airDAO">
+
+	<typeAlias alias="AirDataVO" type="daewooInfo.waterpolmnt.airmntmng.bean.AirDataVO"/>
+	<typeAlias alias="airPointVO" type="daewooInfo.waterpolmnt.airmntmng.bean.AirPointVO"/>
+	<typeAlias alias="airPointMntVO" type="daewooInfo.waterpolmnt.airmntmng.bean.AirPointMntVO"/>
+	
+	<insert id="insertAirMnt" parameterClass="AirDataVO" >
+		<selectKey resultClass="java.lang.Long" keyProperty="obv_num">
+			SELECT NVL(MAX(AVIA_NO),0)+1 AS OBV_NUM  FROM T_AVIA_OBV
+		</selectKey>
+		<![CDATA[
+            INSERT INTO T_AVIA_OBV
+            (
+                AVIA_NO,
+                AVIA_PLANE,
+                AVIA_FLT_DATE,
+                AVIA_FLT_SECT,
+                AVIA_LAND_CNT,
+                AVIA_TKO_TIME,
+                AVIA_ARV_TIME,
+                AVIA_FLT_TIME,
+                AVIA_PILOT, 
+                AVIA_PGR,
+                AVIA_NOTE,
+                AVIA_WEATHER,
+                AVIA_SUNRISE,
+                AVIA_SUNSET,
+                AVIA_FCAST,
+                AVIA_WEATHER_TIME_1,
+                AVIA_WIND_1,
+                AVIA_SIGHT_1,
+                AVIA_CLOUD_1,
+                AVIA_WEATHER_TIME_2,
+                AVIA_WIND_2,    
+                AVIA_SIGHT_2,   
+                AVIA_CLOUD_2, 
+                AVIA_WEATHER_TIME_3,
+                AVIA_WIND_3,        
+                AVIA_SIGHT_3,       
+                AVIA_CLOUD_3,      
+                AVIA_WEATHER_TIME_4,
+                AVIA_WIND_4,        
+                AVIA_SIGHT_4,       
+                AVIA_CLOUD_4,       
+                AVIA_RESULT_1,      
+                AVIA_RESULT_2,     
+                AVIA_RESULT_3,      
+                AVIA_RESULT_4,      
+                AVIA_RESULT_5,              
+                AVIA_RESULT_6,      
+                AVIA_RESULT_7,      
+                AVIA_RESULT_8,      
+                AVIA_RESULT_9,      
+                AVIA_RESULT_10,     
+                AVIA_RESULT_11,
+                RIVER_DIV,
+                ATCH_FILE,
+                RCD_STATE,
+                REG_DATE
+			 ) 
+			VALUES
+			( 
+				#obv_num#,
+				#plane#,
+				#flight_date#,
+				#fly_section#,
+				#land_cnt#,
+				#start_time#,
+				#reach_time#,
+				#flight_time#,
+				#pilot#,
+				#rider#,
+				#note#,
+				#weather#,
+				#sunrise#,
+				#sunset#,
+				#forecast#,
+				#weather_time1#,
+				#wind1#,
+				#sight1#,
+				#cloud1#,
+				#weather_time2#,
+				#wind2#,
+				#sight2#,
+				#cloud2#,
+				#weather_time3#,
+				#wind3#,
+				#sight3#,
+				#cloud3#,
+				#weather_time4#,
+				#wind4#,
+				#sight4#,
+				#cloud4#,
+				#result1#,
+				#result2#,
+				#result3#,
+				#result4#,
+				#result5#,
+				#result6#,
+				#result7#,
+				#result8#,
+				#result9#,
+				#result10#,
+				#result11#,			
+				#sugye#,
+				#obv_file#,
+				'I',
+				(SELECT CURRENT_DATE FROM DUAL)
+			 )			
+		]]>
+	</insert>
+</sqlMap>

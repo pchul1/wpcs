@@ -1,0 +1,69 @@
+package daewooInfo.admin.member.service;
+
+import java.util.List;
+
+import daewooInfo.admin.cmmncode.bean.CmmnCode;
+import daewooInfo.admin.member.bean.MemberSearchVO;
+import daewooInfo.common.login.bean.MemberVO;
+
+public interface MemberService {
+	
+	/**
+	 * 유저를 삭제한다.
+	 * @param memberVO
+	 * @throws Exception
+	 */
+	void deleteMember(MemberVO memberVO) throws Exception;
+
+	/**
+	 * 유저를 등록한다.
+	 * @param memberVO
+	 * @throws Exception
+	 */
+	void insertMember(MemberVO memberVO) throws Exception;
+
+	/**
+	 * 유저의 상세항목을 조회한다.
+	 * @param memberVO
+	 * @return MemberVO
+	 * @throws Exception
+	 */
+	MemberVO selectMemberDetail(MemberVO memberVO) throws Exception;
+	
+	/**
+	 * 유저의 목록을 조회한다.
+	 * @param searchVO
+	 * @return List(유저 목록)
+	 * @throws Exception
+	 */
+	List<MemberSearchVO> selectMemberList(MemberSearchVO searchVO) throws Exception;
+
+    /**
+	 * 유저의 총 갯수를 조회한다.
+     * @param searchVO
+     * @return int(유저 총 갯수)
+     */
+    int selectMemberListTotCnt(MemberSearchVO memberVO) throws Exception;
+	
+	/**
+	 * 유저를 수정한다.
+	 * @param memberVO
+	 * @throws Exception
+	 */
+	void updateMember(MemberVO memberVO) throws Exception;
+
+	/**
+	 * 유저를 수정한다.
+	 * @param memberVO
+	 * @throws Exception
+	 */
+	void updateInfo(MemberVO memberVO) throws Exception;
+	
+	/**
+	 * 비밀번호를 변경한다.
+	 * @param memberVO
+	 * @throws Exception
+	 */
+	void changePassword(MemberVO memberVO) throws Exception;
+    
+}

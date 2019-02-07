@@ -1,0 +1,116 @@
+@chartset "utf-8";
+
+/* LKH(2014~) */
+
+/* @import url("reset.css"); */
+
+a {color:#333; text-decoration:none;}
+
+/* common */
+.hidden {overflow:hidden; position:absolute; left:-1000; width:0; height:0; visibility:hidden;}
+
+/* =button */
+.btn_basic,
+.btn_basic span {cursor:pointer; display:inline-block; line-height:1; vertical-align:top; background-repeat:no-repeat; background-position:left top;}
+.btn_basic span {background-position:right top;}
+
+.btn_bgBlue,
+.btn_bgBlue span {background-color:#fff; background-image:url(../images/board/btn_blueBg.gif);}
+.btn_bgBlue {padding-left:22px;}
+.btn_bgBlue span {height:16px; padding:6px 21px 0 0; color:#fff; font-weight:bold;}
+
+/* =form */
+.inputText {height:16px; color:#333; font-size:12px; line-height:16px; font-family:NanumGothic,'나눔고딕','Nanum Gothic','돋움',dotum,sans-serif;}
+.inputCheck {width:13px; height:13px; margin:0; padding:0; vertical-align:middle;}
+select {margin:0;}
+.textArea {color:#333; font-size:12px; line-height:1.2; font-family:NanumGothic,'나눔고딕','Nanum Gothic','돋움',dotum,sans-serif;}
+
+/* =paginate */
+.paginate {padding-top:10px; text-align:center;}
+.paginate li {display:inline-block; padding:0 3px; *display:inline; *zoom:1; *padding:0 5px; }
+.paginate li em {font-style:normal; font-weight:bold;}
+.paginate li a:focus,
+.paginate li a:hover {color:#fd992d}
+
+
+/* content_board */
+h3.PointTit {font-size:13px !important; font-family:NanumGothic,'나눔고딕','Nanum Gothic','돋움',dotum,sans-serif;}
+.board_wrap {color:#333; font-size:12px; font-family:NanumGothic,'나눔고딕','Nanum Gothic','돋움',dotum,sans-serif;}
+.board_wrap h1 {height:50px;}
+.board_wrap .innerBox {border:2px solid #fd992d; border-width:2px 0;}
+.board_wrap .btn_menu {_zoom:1; overflow:hidden; float:right; padding-top:10px;}
+.board_wrap .btn_menu li {float:left; padding-left:4px;}
+
+/* 글보기 */
+.board_wrap .board_view {clear:both;}
+.board_wrap .board_view .innerBox {padding-bottom: 30px;}
+.board_wrap .board_view h8 {padding:8px 7px; border-bottom:2px solid #fd992d; font-size:20px; display:inline-block; width:742px; }
+.board_wrap .board_view h8 span {display:inline-block; padding:1px 45px 0 5px; color:#fd992d; font-size:20px;}
+.board_wrap .board_view .date_name_file {padding-right:5px; text-align:right;}
+.board_wrap .board_view .date_name_file span,
+.board_wrap .board_view .date_name_file a {display:inline-block; height:14px; padding-top:10px;}
+.board_wrap .board_view .date_name_file a.file {padding-left:30px; background:url(../images/board/ico_file.gif) no-repeat 8px 8px;}
+
+.board_wrap .board_view .content {padding:15px 35px 35px; line-height:1.6;}
+
+.board_wrap .board_view .btn_menu li.pw {padding:0 8px 0 0;}
+.board_wrap .board_view .btn_menu li label {float:left; padding:5px 4px 0 0;}
+.board_wrap .board_view .btn_menu li input {width:130px; _margin:-1px 0 0; vertical-align:middle;}
+
+.board_wrap .board_view .addFile {overflow:hidden; margin-top: 30px;}
+.board_wrap .board_view .addFile h3 {float:left; width:80px; height:20px; padding:10px 0 0 7px; color:#fd992d;}
+.board_wrap .board_view .addFile ul {clear:both; position:relative; top:-30px; margin-bottom:-20px; padding:10px 0 0 87px; _border-top:1px solid #fd992d;}
+.board_wrap .board_view .addFile li {padding-bottom:5px;}
+
+/* 글쓰기 */
+.board_wrap .board_write {clear:both;}
+.board_wrap .board_write table.writeForm {width:100%; border-collapse:collapse; table-layout:fixed;}
+.board_wrap .board_write table.writeForm th,
+.board_wrap .board_write table.writeForm td {border-bottom:1px solid #ccc; vertical-align:top;}
+.board_wrap .board_write table.writeForm th {padding-top:10px; color:#fd992d; font-weight:bold; background:url(../images/board/line_tit.gif) no-repeat right bottom;}
+.board_wrap .board_write table.writeForm th label {padding-left:8px;}
+.board_wrap .board_write table.writeForm td {padding:5px 15px 4px 15px;}
+.board_wrap .board_write table.writeForm td.title select {float:left; width:125px; height:22px;}
+.board_wrap .board_write table.writeForm td.title div {*zoom:1; position:relative; top:0px; padding-left:130px; *padding-left:5px;}
+.board_wrap .board_write table.writeForm td input {width:100%; vertical-align:top;}
+.board_wrap .board_write table.writeForm td input.pw {width:120px;}
+.board_wrap .board_write table.writeForm td input.inputFile {width:230px;}
+.board_wrap .board_write table.writeForm td textarea {width:100%; height:180px; vertical-align:top;}
+.board_wrap .board_write table.writeForm td.border {border-right:1px solid #ccc;}
+.board_wrap .board_write table.writeForm tr.borderNone th,
+.board_wrap .board_write table.writeForm tr.borderNone td {border-bottom:none;}
+
+/* 글목록 */
+.board_wrap h1.listTit {height:20px;}
+
+.board_wrap .board_list {clear:both; padding-top:10px;}
+.board_wrap .board_list .searchForm {float:right; height:30px;}
+.board_wrap .board_list .searchForm ul,
+.board_wrap .board_list .searchForm li {float:left;}
+.board_wrap .board_list .searchForm ul {padding:1px 5px 0 0;}
+.board_wrap .board_list .searchForm ul li label {padding:0 12px 0 5px;}
+.board_wrap .board_list .searchForm ul li select {vertical-align:middle;}
+.board_wrap .board_list .searchForm p {float:left;}
+.board_wrap .board_list .searchForm p input {vertical-align:top;}
+.board_wrap .board_list .searchForm p input.inputText {width:150px; height: 21px;}
+
+.board_wrap .board_list .listTable {width:100%; border-collapse:collapse; _table-layout:fixed; border:1px solid #b7b7b7;}
+.board_wrap .board_list table.listTable th,
+.board_wrap .board_list table.listTable td {_padding:9px 0 7px; text-align:center; _vertical-align:center;}
+
+/* padding: 4px; */
+/* border: 1px solid #b7b7b7; */
+/* line-height: 16px; */
+/* background-color: #e9e9e9; */
+/* text-align: center; */
+/* min-height: 26px; */
+
+
+.board_wrap .board_list .listTable th {border-bottom:2px solid #fd992d; _color:#fd992d; font-weight:bold;}
+.board_wrap .board_list table.listTable td {border-bottom:1px solid #ccc;}
+.board_wrap .board_list table.listTable td.con {_padding-left:10px; _text-align:left;}
+.board_wrap .board_list table.listTable td strong {padding-right:10px;}
+.board_wrap .board_list table.listTable td.file {padding:6px 0 4px;}
+.board_wrap .board_list table.listTable td .reply {padding-left:30px; background:url(../images/board/bu_reply.gif) no-repeat 0 0;}
+
+.board_wrap .board_list .btn_menu {padding-top:0;}

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="menuDAO">
+
+	<typeAlias  alias="egovMap"	 type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="menuVO"	  type="daewooInfo.common.menu.bean.MenuVO"/>
+	
+		
+	<select id="selectMenu" parameterClass="menuVO" resultClass="menuVO">
+		SELECT 
+			 A.MENU_ID AS "menuNo"
+			,A.MENU_NAME AS "menuName"
+			,A.UPPER_MENU_ID AS "menuUpperNo"
+			,A.MENU_SORT AS "menuOrder"
+			,A.IMAGE_PATH AS "relateImagePath"
+			,A.IMAGE_NAME AS "relateImageName"
+			,C.URL_PATH AS "url"
+			,C.SAVE_PATH AS "relatesavepath"
+		FROM T_MENU_INFO A, T_MENUCREATDTLS_INFO B, T_PROGRAM_INFO C
+		WHERE A.MENU_ID=B.MENU_NO
+		AND C.MENU_ID(+)=A.MENU_ID
+		AND A.DEL_YN = 'N'
+		<isNotEmpty prepend="AND" property="menuUpperNo" >
+			  A.UPPER_MENU_ID =  #menuUpperNo# 
+		</isNotEmpty>
+		<isNotEqual prepend="AND" property="menuNo" compareValue="0">
+			  A.MENU_ID = #menuNo#
+		</isNotEqual>
+		AND B.AUTHOR_CODE = #roleName#
+		AND A.MENU_VIEW = 'Y'
+		ORDER BY A.UPPER_MENU_ID ASC , A.MENU_SORT ASC
+	</select>
+	
+	<select id="selectSubMenuUrl" parameterClass="menuVO" resultClass="menuVO">
+	SELECT * FROM(
+			SELECT 
+				 A.MENU_ID AS "menuNo"
+				,A.MENU_NAME AS "menuName"
+				,A.UPPER_MENU_ID AS "menuUpperNo"
+				,A.MENU_SORT AS "menuOrder"
+				,A.IMAGE_PATH AS "relateImagePath"
+				,A.IMAGE_NAME AS "relateImageName"
+				,C.URL_PATH AS "url"
+				,C.SAVE_PATH AS "relatesavepath"
+			FROM T_MENU_INFO A, T_MENUCREATDTLS_INFO B, T_PROGRAM_INFO C
+			WHERE A.MENU_ID=B.MENU_NO
+			AND C.MENU_ID(+)=A.MENU_ID
+			AND A.DEL_YN = 'N'
+			<isNotEmpty prepend="AND" property="menuUpperNo" >
+				  A.UPPER_MENU_ID =  #menuUpperNo# 
+			</isNotEmpty>
+			<isNotEqual prepend="AND" property="menuNo" compareValue="0">
+				  A.MENU_ID = #menuNo#
+			</isNotEqual>
+			AND B.AUTHOR_CODE = #roleName#
+			AND A.MENU_VIEW = 'Y'
+			ORDER BY A.UPPER_MENU_ID ASC , A.MENU_SORT ASC
+	) WHERE ROWNUM=1
+	</select>
+	
+	<select id="TreeselectMenu" parameterClass="menuVO" resultClass="menuVO">
+		SELECT LEVEL lvl,
+			   A.MENU_ID AS "menuNo" , 
+		       A.MENU_NAME AS "menuName" , 
+		       A.UPPER_MENU_ID AS "menuUpperNo" , 
+		       A.MENU_SORT AS "menuOrder" , 
+		       A.IMAGE_PATH AS "relateImagePath" , 
+		       A.IMAGE_NAME AS "relateImageName" , 
+		       A.URL_PATH AS "url" , 
+		       A.SAVE_PATH AS "relatesavepath" 
+		  FROM 
+		       (SELECT A.MENU_ID , 
+		              A.MENU_NAME , 
+		              A.UPPER_MENU_ID , 
+		              A.MENU_SORT , 
+		              A.IMAGE_PATH , 
+		              A.IMAGE_NAME , 
+		              C.URL_PATH , 
+		              C.SAVE_PATH 
+		         FROM T_MENU_INFO A, 
+		              T_MENUCREATDTLS_INFO B, 
+		              T_PROGRAM_INFO C 
+		        WHERE A.MENU_ID=B.MENU_NO  
+		        	  AND A.DEL_YN = 'N'
+		              AND C.MENU_ID=A.MENU_ID 
+		              AND B.AUTHOR_CODE = 'ROLE_ADMIN' 
+		              AND A.MENU_VIEW = 'Y' 
+		       ) A 
+		 START WITH A.UPPER_MENU_ID = '0' 
+		CONNECT BY PRIOR A.MENU_ID = A.UPPER_MENU_ID 
+		ORDER SIBLINGS BY A.MENU_SORT
+	</select>
+	
+	<select id="selectUpperMenuVO" parameterClass="java.lang.String" resultClass="menuVO">
+		SELECT 
+			 MENU_ID AS "menuNo"
+			,MENU_NAME AS "menuName"
+			,UPPER_MENU_ID AS "menuUpperNo"
+			,MENU_SORT AS "menuOrder"
+			,IMAGE_PATH AS "relateImagePath"
+			,IMAGE_NAME AS "relateImageName"
+		FROM T_MENU_INFO
+		WHERE MENU_ID = (
+			SELECT UPPER_MENU_ID 
+			FROM T_MENU_INFO
+			WHERE MENU_ID = #menuNo#
+			AND DEL_YN = 'N'
+		)
+		AND ROWNUM=1
+	</select>
+	
+	<select id="selectRoleName" parameterClass="java.lang.String" resultClass="java.lang.String">
+		SELECT AUTHOR_CODE 
+		FROM T_EMPLYRSCRTYESTBS
+		WHERE SCRTY_ESTBSTRGET_ID = #uniqID#
+	</select>
+	
+	 
+	<select id="checkMenuDepth" parameterClass="java.lang.String" resultClass="java.lang.String">
+		<![CDATA[
+		SELECT UPPER_MENU_ID as upper_menu_id
+		FROM T_MENU_INFO
+		WHERE MENU_ID =
+		( SELECT 
+			  UPPER_MENU_ID
+		  FROM T_MENU_INFO 
+		  WHERE MENU_ID = #menuNo# 
+			AND DEL_YN = 'N')
+		 ]]> 
+	</select>
+	
+	<select id="selectOneChildMenuNo" parameterClass="java.lang.String" resultClass="java.lang.String">
+		<![CDATA[
+			SELECT MENU_ID as menu_no 
+			FROM (
+				SELECT ROWNUM RNUM, 
+					MENU_ID 
+				FROM T_MENU_INFO 
+				WHERE UPPER_MENU_ID = #menuNo#
+				AND DEL_YN = 'N'
+				ORDER BY MENU_SORT ASC
+			) WHERE RNUM=1
+		 ]]>
+	</select>
+	
+	<select id="selectTwoChildMenuNo" parameterClass="java.lang.String" resultClass="java.lang.String">
+		<![CDATA[
+			SELECT MENU_ID as menu_no 
+			FROM (
+				SELECT MENU_ID 
+				FROM T_MENU_INFO 
+				WHERE UPPER_MENU_ID IN (
+					SELECT MENU_ID
+					FROM ( 
+							SELECT ROWNUM RNUM, 
+							  MENU_ID 
+							FROM T_MENU_INFO 
+							WHERE UPPER_MENU_ID = #menuNo#
+							AND DEL_YN = 'N'
+							ORDER BY MENU_SORT ASC
+						) WHERE RNUM=1
+				) ORDER BY MENU_SORT ASC
+			) WHERE ROWNUM=1
+		 ]]> 
+	</select>
+	
+	
+	<select id="selectMenuCheck" parameterClass="menuVO" resultClass="menuVO">
+	    SELECT * 
+		  FROM 
+		       (SELECT ROW_NUMBER() OVER(ORDER BY MENU_ID DESC ) rnum, 
+		              MENU_ID AS "menuNo" , 
+		              UPPER_MENU_ID AS "menuUpperNo" , 
+		              URL_PATH AS "url" , 
+		              SAVE_PATH AS "relatesavepath" 
+		         FROM T_PROGRAM_INFO 
+		        WHERE URL_PATH = #url# 
+		       ) 
+		 WHERE rnum = 1  
+	</select>
+	
+	<select id="selectButtonAuth" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+	    SELECT	AUTH_C
+	    		,AUTH_U
+	    		,AUTH_D
+	      FROM	T_USER_MENU_AUTH
+	     WHERE	1 = 1
+	       AND	USER_ID = #userId#
+	       AND	MENU_ID = #menuId#  
+	</select>
+</sqlMap>							

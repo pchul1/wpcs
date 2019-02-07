@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="statsSpreadDAO">
+
+	<typeAlias alias="statsSearchVO" type="daewooInfo.stats.bean.StatsSearchVO"/>
+	<typeAlias alias="statsSpreadVO" type="daewooInfo.stats.bean.StatsSpreadVO"/>
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+
+	<statement id="statsSpreadDAO.getSpreadStatsList" parameterClass="statsSearchVO" resultClass="statsSpreadVO">
+    <![CDATA[    
+		SELECT FACTCODE AS factCode,
+		       BRANCHCODE AS branchNo,
+		       CASE #gubun#
+		          WHEN '1'
+		          THEN
+		             CONCAT(SUBSTR(MINDATE, 1, 4), '-', SUBSTR(MINDATE, 5, 2))
+		          WHEN '2'
+		          THEN
+		             CONCAT(SUBSTR(MINDATE, 1, 4),
+		                     '-',
+		                     SUBSTR(MINDATE, 5, 2),
+		                     '-',
+		                     SUBSTR(MINDATE, 7, 2))
+		          WHEN '3'
+		          THEN
+		             CONCAT(SUBSTR(MINDATE, 1, 4),
+		                     '-',
+		                     SUBSTR(MINDATE, 5, 2),
+		                     '-',
+		                     SUBSTR(MINDATE, 7, 2),
+		                     ' ',
+		                     SUBSTR(MINDATE, 9, 2))
+		       END
+		          AS timeFrm,
+		       CASE #gubun#
+		          WHEN '1'
+		          THEN
+		             CONCAT(SUBSTR(MINDATE, 5, 2))
+		          WHEN '2'
+		          THEN
+		             CONCAT(SUBSTR(MINDATE, 5, 2), '/', SUBSTR(MINDATE, 7, 2))
+		          WHEN '3'
+		          THEN
+		             CONCAT(SUBSTR(MINDATE, 5, 2),
+		                     '/',
+		                     SUBSTR(MINDATE, 7, 2),
+		                     ':',
+		                     SUBSTR(MINDATE, 9, 2))
+		       END
+		          AS time,
+		       SMSSUCC AS smsSucc,
+		       SMSFAIL AS smsFail,
+		       ACSSUCC AS acsSucc,
+		       ACSFAIL AS acsFail
+		  FROM (  SELECT FACTCODE AS factCode,
+		                 BRANCHCODE AS branchCode,
+		                 CASE #gubun#
+		                    WHEN '1' THEN SUBSTR(MINDATE, 1, 6)
+		                    WHEN '2' THEN SUBSTR(MINDATE, 1, 8)
+		                    WHEN '3' THEN SUBSTR(MINDATE, 1, 10)
+		                 END
+		                    AS MINDATE,
+		                 SUM(IF (GUBUN = 'SMS', IF (SUSIN = '수신', 1, 0), 0))
+		                    AS smsSucc,
+		                 SUM(IF (GUBUN = 'SMS', IF (SUSIN = '미수신', 1, 0), 0))
+		                    AS smsFail,
+		                 SUM(IF (GUBUN = 'ACS', IF (SUSIN = '수신', 1, 0), 0))
+		                    AS acsSucc,
+		                 SUM(IF (GUBUN = 'ACS', IF (SUSIN = '미수신', 1, 0), 0))
+		                    AS acsFail
+		            FROM (  SELECT UT.FACTCODE AS factCode,
+		                           UT.BRANCHCODE AS branchCode,
+		                           UT.MINDATE AS minDate,
+		                           UT.GUBUN AS gubun,
+		                           UT.SUSIN AS susin
+		                      FROM (SELECT SSR.RESERVED3 AS factCode,
+		                                   SSR.RESERVED4 AS branchCode,
+		                                   SSR.RESERVED5 AS minDate,
+		                                   "SMS" AS gubun,
+		                                   IF (SSR.FAIL_COUNT = 0, '수신', '미수신')
+		                                      AS susin
+		                              FROM SDK_SMS_REPORT SSR
+		                             WHERE     SSR.USER_ID = 'waterControl'
+		                                   AND SSR.RESERVED3 = #factCode#
+		                                   AND SSR.RESERVED4 = #branchNo#
+		                                   AND SSR.RESERVED5 LIKE "$startDate$%"
+		                            UNION
+		                            SELECT SVR.RESERVED3 AS factCode,
+		                                   SVR.RESERVED4 AS branchCode,
+		                                   SVR.RESERVED5 AS minDate,
+		                                   "ACS" AS gubun,
+		                                   IF (SVR.FAIL_COUNT = 0, '수신', '미수신')
+		                                      AS susin
+		                              FROM SDK_VMS_REPORT SVR
+		                             WHERE     SVR.USER_ID = 'waterControl'
+		                                   AND SVR.RESERVED3 = #factCode#
+		                                   AND SVR.RESERVED4 = #branchNo#
+		                                   AND SVR.RESERVED5 LIKE "$startDate$%") UT
+		                  ORDER BY UT.minDate ASC) UT
+		        GROUP BY FACTCODE,
+		                 BRANCHCODE,
+		                 CASE #gubun#
+		                    WHEN '1' THEN SUBSTR(MINDATE, 1, 6)
+		                    WHEN '2' THEN SUBSTR(MINDATE, 1, 8)
+		                    WHEN '3' THEN SUBSTR(MINDATE, 1, 10)
+		                 END) UT                   
+		ORDER BY minDate    	                 		               
+	]]>	                
+	</statement>							
+</sqlMap>

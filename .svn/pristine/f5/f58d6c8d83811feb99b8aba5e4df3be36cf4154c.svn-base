@@ -1,0 +1,37 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
+<title>수질오염 방제정보 시스템</title>
+<link href="../css/gis_style.css" rel="stylesheet" type="text/css"></head>
+
+<body>
+<div id="notice">
+	<div class="n_one">
+		<li><b>경보현황</b> : 측정장비 IP-SUN</li>
+	</div>
+	<div class="n_one">
+		<li><b>최종 수신시간</b> : 13시 40분 </li>
+	</div>
+	<div class="n_two">
+		<li><b>단계</b> : <img src="../images/notice_process_1.png" width="8" height="11"> 주의 </li>
+	</div>
+	<div class="n_two">
+		<li><b>수계</b> : 낙동강 </li>
+	</div>
+	<div class="n_three">
+		<li><b>측정소</b>: 예비31-13 </li>
+	</div>
+	<div class="n_two">
+		<li><b>용존산소</b> : 0.00 </li>
+	</div>
+	<div class="n_four">
+		<li><b>pH</b> : 0.00 </li>
+	</div>
+	<div class="n_four"><a href="#"><img src="../images/as_icon_1.png" width="16" height="14" border="0"></a><a href="#"><img src="../images/as_icon_2.png" width="16" height="14" border="0"></a><a href="#"><img src="../images/as_icon_3.png" width="16" height="14" border="0"></a><a href="#"><img src="../images/as_icon_4.png" width="16" height="14" border="0"></a></div>
+	<div class="n_five">
+		<a href="#">공지사항<b>(4)</b>
+		</li>
+	    </a></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!-- saved from url=(0014)about:internet -->
+<html lang="en">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css"/>
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
+	<link href="/gis/css/gis_style.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
+    
+	<!--link rel="stylesheet" href="cPark/jquery-custom.css"/-->
+	
+	
+    <style>
+      html,body,#mapDiv{
+        padding:0;
+        margin:0;
+        height:100%;
+        overflow: hidden;
+      }
+	.contentPane{
+		text-align: left;
+	}
+    </style>
+	<script type="text/javascript" src="/gis/gis/jsapi_vsdoc10_v36.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+ 	
+	<script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<script type="text/javascript" src="/gis/js/jquery.dialog.custom.js"></script>
+	
+	
+ 	<!--script type="text/javascript" src="cPark/jqueryUI-Dialog-Custom.js"></script-->
+ 	
+	   
+    <script src="http://js.arcgis.com/3.8/"></script>
+    <script src="/gis/js/common.js"></script>
+    <script src="/gis/js/simpleMap.js"></script>
+	<script>
+	</script>
+<script>
+<!--
+
+var Request = function()
+{
+    this.getParameter = function( name )
+    {
+        var rtnval = '';
+        var nowAddress = unescape(location.href);
+        var parameters = (nowAddress.slice(nowAddress.indexOf('?')+1,nowAddress.length)).split('&');
+
+        for(var i = 0 ; i < parameters.length ; i++)
+        {
+            var varName = parameters[i].split('=')[0];
+            if(varName.toUpperCase() == name.toUpperCase())
+            {
+                rtnval = parameters[i].split('=')[1];
+                break;
+            }
+        }
+        return rtnval;
+    }
+}
+
+var request = new Request();
+
+function setTMSMenu(){
+	document.getElementById("TMS_Manage").setMenuID(request.getParameter("menuID"));
+}
+function executeMenu(){
+	setTMSMenu();
+}
+function popup(){
+	var sw=screen.width;var sh=screen.height;var winHeight = 890;var winWidth = 1260;
+	var winLeftPost = (sw - winWidth) / 2;var winTopPost = 0;
+	var width = winWidth-20;
+	var height = winHeight-20;
+	
+	window.open("/psupport/TMS_POP.html?menuID=5110", 
+			'psView','width='+winWidth+',height='+winHeight+',toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,left='+winLeftPost+',top='+winTopPost);
+	
+	//alert(request.getParameter('menuID'))
+}
+//-->
+</script>
+</head>
+<body onload="">
+    <div id="mapDiv" class="claro" style="width:100%;height:100%;  border:1px solid #000;">
+    	<div id="tool"  style="right: 1px; top: 10px; position: absolute; width:100px; height:24px; z-index: 100000;' "> 
+			<div class="tool_bu1"><a href="javascript:$arcGIS.model.generalMap();" 	onMouseOut="MM_swapImgRestore('Image1','/gis/images/tool_1_off.gif')" onMouseOver="MM_swapImage('Image1','/gis/images/tool_1_over1.gif',1)" ><img idx="0" src="/gis/images/tool_1_over1.gif" id="Image1" width="42" height="24" border="0"></a></div>
+			<div class="tool_bu1"><a href="javascript:$arcGIS.model.flightMap();" 	onMouseOut="MM_swapImgRestore('Image2','/gis/images/tool_2_off.gif')" onMouseOver="MM_swapImage('Image2','/gis/images/tool_2_over1.gif',1)" ><img idx="1" src="/gis/images/tool_2_off.gif" id="Image2" width="42" height="24" border="0"></a></div>
+		</div>
+    </div>
+</body>
+</html>

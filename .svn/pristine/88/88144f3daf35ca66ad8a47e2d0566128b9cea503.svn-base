@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="deptManageDAO">
+
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+    <typeAlias  alias="deptManageVO" type="daewooInfo.admin.dept.bean.DeptManageVO"/>
+	<typeAlias  alias="comDefaultVO" type="daewooInfo.cmmn.bean.ComDefaultVO"/>
+
+	<insert id="insertDeptManage_S" parameterClass="deptManageVO">
+		<![CDATA[
+			INSERT INTO T_DEPT_INFO 
+				( DEPT_CODE
+            , DEPT_SORT
+            , DEPT_NAME
+            , UPPER_DEPT_CODE
+            , DEPT_DESC
+            , USE_FLAG
+            , DO_CODE)
+			VALUES (   #deptCode#
+                  , #deptSort#
+                  , #deptName#  
+                  , #upperDeptCode#
+                  , #deptDesc#
+                  , #useFlag#
+                  , #doCode#)
+		]]>
+	</insert>
+
+	<update id="updateDeptManage_S" parameterClass="deptManageVO">
+		<![CDATA[
+			UPDATE T_DEPT_INFO 
+			SET  DEPT_SORT     = #deptSort#       
+            , DEPT_NAME         = #deptName#         
+            , UPPER_DEPT_CODE     = #upperDeptCode#    
+            , DEPT_DESC         = #deptDesc#         
+            , USE_FLAG          = #useFlag#
+            , DO_CODE          = #doCode#
+			WHERE DEPT_CODE=#deptCode#
+		]]>
+	</update>
+
+	<delete id="deleteDeptManage_S" parameterClass="deptManageVO">
+		<![CDATA[                          
+			DELETE FROM T_DEPT_INFO              
+			WHERE DEPT_CODE=#deptCode#                 
+		]]>                                
+	</delete> 
+	
+	<select id="selectDeptNoByPk" parameterClass="deptManageVO" resultClass="int">
+		<![CDATA[
+		SELECT COUNT(DEPT_CODE) AS "totcnt"
+		  FROM T_DEPT_INFO
+		 WHERE DEPT_CODE = #deptCode#
+		]]>
+	</select>
+
+	<select id="selectDeptListT_D" parameterClass="comDefaultVO" resultClass="egovMap">
+		<![CDATA[ 
+            SELECT
+			      DEPT_CODE           AS "deptCode"
+				, DEPT_SORT        AS "deptSort"
+				, DEPT_NAME         AS "deptName"
+				, UPPER_DEPT_CODE     AS "upperDeptCode"
+				, DEPT_DESC         AS "deptDesc"
+				, USE_FLAG			AS "useFlag"
+            	, DO_CODE          as "doCode"
+			FROM T_DEPT_INFO 
+			WHERE DEPT_CODE > 0 
+			ORDER BY DEPT_SORT
+		]]> 
+	</select>
+</sqlMap>                            

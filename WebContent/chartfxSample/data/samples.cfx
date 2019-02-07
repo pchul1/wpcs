@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CFX6>
+	<SERLEGBOXOBJ>
+		<DOCKED>Right</DOCKED>
+	</SERLEGBOXOBJ>
+	<LEGENDBOXOBJ>
+		<DOCKED>Right</DOCKED>
+	</LEGENDBOXOBJ>
+	<DATAEDITOROBJ>
+		<DOCKED>Bottom</DOCKED>
+	</DATAEDITOROBJ>
+	<BORDEROBJECT type="SoftwareFX.ChartFX.Borders.ImageBorder" assembly="ChartFX.Borders">
+		<TYPE>RoundedShadow</TYPE>
+		<COLOR>#ff999999</COLOR>
+	</BORDEROBJECT>
+	<BACKOBJECT type="SoftwareFX.ChartFX.Borders.GradientBackground" assembly="ChartFX.Borders">
+		<TYPE>ForwardDiagonal</TYPE>
+		<COLORCOUNT>2</COLORCOUNT>
+		<COLOR0>#ffffffff</COLOR0>
+		<COLOR1>#ffcccccc</COLOR1>
+	</BACKOBJECT>
+</CFX6>

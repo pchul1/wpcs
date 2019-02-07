@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="RiverMainDAO">
+
+	<typeAlias  alias="egovMap"    type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="riverMainVO"   type="daewooInfo.dailywork.bean.RiverMainVO"/>
+	
+	<resultMap id="selectRiverInfoDetail" class="daewooInfo.dailywork.bean.RiverMainVO">
+		<result column="R_ID" 										property="rId" 									columnIndex="1" />
+	    <result column="DAILY_WORK_ID" 						property="dailyWorkId" 							columnIndex="2" />
+	    <result column="SITUATIONTEAM_CONTENT1" 		property="situationteamContent1" 			columnIndex="3" />
+	    <result column="SITUATIONTEAM_CONTENT2" 		property="situationteamContent2" 			columnIndex="4" />
+	    <result column="CAPITAL_AREA_CONTENT1" 			property="capitalAreaContent1" 				columnIndex="5" />
+	    <result column="CAPITAL_AREA_CONTENT2" 			property="capitalAreaContent2" 				columnIndex="6" />
+	    <result column="GYEONGBUK1_CONTENT1" 			property="gyeongbuk1Content1" 			columnIndex="7" />
+	    <result column="GYEONGBUK1_CONTENT2" 			property="gyeongbuk1Content2" 			columnIndex="8" />
+	    <result column="GYEONGBUK2_CONTENT1"		 	property="gyeongbuk2Content1" 			columnIndex="9" />
+	    <result column="GYEONGBUK2_CONTENT2" 			property="gyeongbuk2Content2" 			columnIndex="10" />
+	    <result column="CHUNGCHEONG_CONTENT1" 		property="chungcheongContent1" 			columnIndex="11" />
+		<result column="CHUNGCHEONG_CONTENT2" 		property="chungcheongContent2" 			columnIndex="12" />
+		<result column="HONAM_CONTENT1" 					property="honamContent1" 					columnIndex="13" />
+		<result column="HONAM_CONTENT2" 					property="honamContent2" 					columnIndex="14" />
+	</resultMap>
+	
+	<!-- 상황실근무일지 저장 -->
+	<insert id="insertRiverMainInfo" parameterClass="riverMainVO">
+		INSERT INTO T_DAILY_WORK_R (
+														  R_ID
+														, DAILY_WORK_ID
+														, SITUATIONTEAM_CONTENT1
+														, SITUATIONTEAM_CONTENT2
+														, CAPITAL_AREA_CONTENT1
+														, CAPITAL_AREA_CONTENT2
+														, GYEONGBUK1_CONTENT1
+														, GYEONGBUK1_CONTENT2
+														, GYEONGBUK2_CONTENT1
+														, GYEONGBUK2_CONTENT2
+														, CHUNGCHEONG_CONTENT1
+														, CHUNGCHEONG_CONTENT2
+														, HONAM_CONTENT1
+														, HONAM_CONTENT2
+												    )
+    									VALUES (
+    													  #rId#
+    													, #dailyWorkId#
+    													, #situationteamContent1#
+    													, #situationteamContent2#
+    													, #capitalAreaContent1#
+    													, #capitalAreaContent2#
+    													, #gyeongbuk1Content1#
+    													, #gyeongbuk1Content2#
+    													, #gyeongbuk2Content1#
+    													, #gyeongbuk2Content2#
+    													, #chungcheongContent1#
+    													, #chungcheongContent2#
+    													, #honamContent1#
+    													, #honamContent2#
+    												)
+	</insert>
+	
+	<!-- 업무일지 결재정보 조회 -->
+	<select id="selectRiverMainInfo" resultMap="selectRiverInfoDetail" >
+		<![CDATA[
+			SELECT    R_ID
+						, DAILY_WORK_ID
+						, SITUATIONTEAM_CONTENT1
+						, SITUATIONTEAM_CONTENT2
+						, CAPITAL_AREA_CONTENT1
+						, CAPITAL_AREA_CONTENT2
+						, GYEONGBUK1_CONTENT1
+						, GYEONGBUK1_CONTENT2
+						, GYEONGBUK2_CONTENT1
+						, GYEONGBUK2_CONTENT2
+						, CHUNGCHEONG_CONTENT1
+						, CHUNGCHEONG_CONTENT2
+						, HONAM_CONTENT1
+						, HONAM_CONTENT2
+			FROM T_DAILY_WORK_R
+		  WHERE DAILY_WORK_ID = #dailyWorkId#
+		]]>				
+	</select>
+	
+	<!-- 상황실근무일지 수정 -->
+	<insert id="updateRiverMainInfo" parameterClass="riverMainVO">
+		UPDATE	  T_DAILY_WORK_R 
+			 SET 	  SITUATIONTEAM_CONTENT1 = #situationteamContent1#
+					, SITUATIONTEAM_CONTENT2 = #situationteamContent2#
+					, CAPITAL_AREA_CONTENT1 = #capitalAreaContent1#
+					, CAPITAL_AREA_CONTENT2 = #capitalAreaContent2#
+					, GYEONGBUK1_CONTENT1 = #gyeongbuk1Content1#
+					, GYEONGBUK1_CONTENT2 = #gyeongbuk1Content2#
+					, GYEONGBUK2_CONTENT1 = #gyeongbuk2Content1#
+					, GYEONGBUK2_CONTENT2 = #gyeongbuk2Content2#
+					, CHUNGCHEONG_CONTENT1 = #chungcheongContent1#
+					, CHUNGCHEONG_CONTENT2 = #chungcheongContent2#
+					, HONAM_CONTENT1 = #honamContent1#
+					, HONAM_CONTENT2 = #honamContent2#
+    	WHERE R_ID = #rId#
+    	    AND DAILY_WORK_ID = #dailyWorkId#   
+	</insert>
+</sqlMap>

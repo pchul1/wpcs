@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<CHARTFX>
+	<COLUMNS>
+		<COLUMN NAME="Country" TYPE="String"/>
+		<COLUMN NAME="LEI" TYPE="Double"/>
+		<COLUMN NAME="GDPPC" TYPE="Integer"/>
+	</COLUMNS>
+	<ROW Country="Argentina" LEI="75.91" GDPPC="12468"></ROW>
+	<ROW Country="Australia" LEI="80.39" GDPPC="29893"></ROW>
+	<ROW Country="Bosnia and Herzegovina" LEI="77.83" GDPPC="5504"></ROW>
+	<ROW Country="Botswana" LEI="33.87" GDPPC="10169"></ROW>
+	<ROW Country="Brazil" LEI="71.69" GDPPC="8049"></ROW>
+	<ROW Country="Canada" LEI="80.1" GDPPC="32921"></ROW>
+	<ROW Country="Denmark" LEI="77.62" GDPPC="33089"></ROW>
+	<ROW Country="Gabon" LEI="55.02" GDPPC="6922"></ROW>
+	<ROW Country="Germany" LEI="78.65" GDPPC="28988"></ROW>
+	<ROW Country="Ghana" LEI="58.47" GDPPC="2475"></ROW>
+	<ROW Country="Grenada" LEI="64.53" GDPPC="7917"></ROW>
+	<ROW Country="Haiti" LEI="52.92" GDPPC="1625"></ROW>
+	<ROW Country="Hungary" LEI="72.4" GDPPC="15546"></ROW>
+	<ROW Country="India" LEI="64.35" GDPPC="3080"></ROW>
+	<ROW Country="Ireland" LEI="77.56" GDPPC="37663"></ROW>
+	<ROW Country="Israel" LEI="79.32" GDPPC="22077"></ROW>
+	<ROW Country="Japan" LEI="81.15" GDPPC="29906"></ROW>
+	<ROW Country="Kuwait" LEI="77.03" GDPPC="16066"></ROW>
+	<ROW Country="Laos" LEI="55.08" GDPPC="1921"></ROW>
+	<ROW Country="Lesotho" LEI="34.47" GDPPC="2074"></ROW>
+	<ROW Country="Malaysia" LEI="72.24" GDPPC="10423"></ROW>
+	<ROW Country="Mexico" LEI="75.19" GDPPC="9666"></ROW>
+	<ROW Country="Namibia" LEI="43.93" GDPPC="6449"></ROW>
+	<ROW Country="Nepal" LEI="59.8" GDPPC="1402"></ROW>
+	<ROW Country="New Zealand" LEI="78.66" GDPPC="23943"></ROW>
+	<ROW Country="Nicaragua" LEI="70.33" GDPPC="2677"></ROW>
+	<ROW Country="Niger" LEI="43.5" GDPPC="865"></ROW>
+	<ROW Country="Norway" LEI="79.4" GDPPC="40005"></ROW>
+	<ROW Country="China" LEI="72.27" GDPPC="5642"></ROW>
+	<ROW Country="Portugal" LEI="77.53" GDPPC="18503"></ROW>
+	<ROW Country="Qatar" LEI="73.67" GDPPC="28919"></ROW>
+	<ROW Country="Russia" LEI="67.1" GDPPC="10179"></ROW>
+	<ROW Country="Rwanda" LEI="46.96" GDPPC="1351"></ROW>
+	<ROW Country="Slovakia" LEI="74.5" GDPPC="15066"></ROW>
+	<ROW Country="South Africa" LEI="43.27" GDPPC="10798"></ROW>
+	<ROW Country="South Korea" LEI="76.85" GDPPC="21419"></ROW>
+	<ROW Country="Bahamas" LEI="65.54" GDPPC="17865"></ROW>
+	<ROW Country="Turkmenistan" LEI="61.39" GDPPC="7266"></ROW>
+	<ROW Country="United Kingdom" LEI="78.38" GDPPC="28938"></ROW>
+	<ROW Country="United States" LEI="77.71" GDPPC="39496"></ROW>
+	<ROW Country="Venezuela" LEI="74.31" GDPPC="5571"></ROW>
+	<ROW Country="Zimbabwe" LEI="39.13" GDPPC="2309"></ROW>
+</CHARTFX>

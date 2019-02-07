@@ -1,0 +1,21 @@
+import java.io.IOException;
+import java.util.Calendar;
+
+public class Test2 {
+    public static void main(String[] args) throws IOException {
+
+     		System.out.println(getWeek());
+
+    }
+    
+    public static String getWeek(){
+
+ 		Calendar c = Calendar.getInstance();
+
+ 		String week = String.valueOf(c.get(Calendar.WEEK_OF_MONTH));
+
+ 		return week;
+
+ 	}
+
+}

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="alertSchUsnDAO">
+ 
+    <typeAlias alias="alertMinVO" 		type="daewooInfo.alert.bean.AlertMinVO"/>
+    <typeAlias alias="alertLawVO" 		type="daewooInfo.alert.bean.AlertLawVO"/>
+    <typeAlias alias="alertConfigVO" 	type="daewooInfo.alert.bean.AlertConfigVO"/>
+      
+    <!-- IP-USN 사업장별 항목별  측정값목록-->
+    <statement id="alertSchUsnDAO.getMinList" resultClass="alertMinVO">
+     SELECT 
+            FACT_CODE        as factCode,
+            BRANCH_NO        as branchNo,
+            MIN_TIME        as minTime,
+             SUM(CASE ITEM_CODE WHEN 'TUR00' THEN MIN_VL ELSE 0 END) as tur,
+               SUM(CASE ITEM_CODE WHEN 'PHY00' THEN MIN_VL ELSE 0 END) as phy,
+               SUM(CASE ITEM_CODE WHEN 'CON00' THEN MIN_VL ELSE 0 END) as con,
+               SUM(CASE ITEM_CODE WHEN 'DOW00' THEN MIN_VL ELSE 0 END) as dow
+      FROM T_MIN_DATA  
+      WHERE MIN_DCD = '1' AND FACT_CODE  IN (
+            SELECT  unique  B.FACT_CODE 
+            FROM T_FACT_LAW A,T_FACT_INFO B
+            WHERE A.FACT_CODE = B.FACT_CODE
+            AND A.LAW_APPLY = 'Y' AND B.SYS_KIND = 'U'
+      )  
+      GROUP BY FACT_CODE, BRANCH_NO, MIN_TIME 
+    </statement>  
+    <!-- IP-USN 사업장별 항목별  측정값목록-->
+    
+    <statement id="alertSchUsnDAO.getLaw" parameterClass="alertSearchVO" resultClass="alertLawVO">
+    SELECT 
+        FACT_CODE    as factCode
+        , BRANCH_NO    as branchNo
+        , SUM(CASE ITEM_CODE WHEN 'TUR00' THEN STD_HVAL ELSE 0 END) as turHVal
+        , SUM(CASE ITEM_CODE WHEN 'PHY00' THEN STD_HVAL ELSE 0 END) as phyHval
+        , SUM(CASE ITEM_CODE WHEN 'PHY00' THEN STD_LVAL ELSE 0 END) as phyLVal
+        , SUM(CASE ITEM_CODE WHEN 'CON00' THEN STD_HVAL ELSE 0 END) as conHval
+        , SUM(CASE ITEM_CODE WHEN 'DOW00' THEN STD_LVAL ELSE 0 END) as dowLval
+    FROM 
+        (
+        SELECT FACT_CODE
+            , BRANCH_NO
+            , ITEM_CODE
+            , STD_HVAL
+            , STD_LVAL
+        FROM T_WQ_STD
+        WHERE FACT_CODE = #factCode#
+        AND BRANCH_NO = #branchNo#
+        AND USE_FLAG = 'Y'
+        ) 
+    GROUP BY FACT_CODE, BRANCH_NO  
+    </statement>
+    <statement id="alertSchUsnDAO.getConfig" parameterClass="alertSearchVO" resultClass="alertConfigVO">
+    SELECT    
+            ARS_FLAG        as arsFlag,
+            SMS_FLAG        as smsFlag,
+            SEND_CYCLE        as alertTerm 
+    FROM 
+        T_WARNING_STD
+    WHERE FACT_CODE = #factCode#
+    AND BRANCH_NO = #branchNo#
+    AND ITEM_CODE = #itemCode#
+    AND USE_FLAG = 'Y'
+    </statement>  
+    <select id="alertSchUsnDAO.getLastIpusnAlert" parameterClass="alertSearchVO" resultClass="alertStepLastVO">
+        SELECT     
+            IW_NO             as asId
+            , ACCT_ACT_STEP     as alertStep
+            , MIN_OR        as minOr
+            , ACCT_CNT    as alertCount
+            , ACCT_ACT_TIME     as alertTime
+            , ((TO_DATE(#minTime#,'YYYYMMDDHH24MI') - TO_DATE(ACCT_ACT_TIME,'YYYYMMDDHH24MI')) * 24*60) as timeDiff
+        FROM 
+        (
+            SELECT 
+                ROW_NUMBER() OVER (ORDER BY TO_NUMBER(IW_NO) DESC) AS RNO
+                , IW_NO             
+                , ACCT_ACT_STEP
+                , MIN_OR
+                , ACCT_CNT
+                , ACCT_ACT_TIME
+            FROM    T_IW_HIS 
+            WHERE    ACCT_KIND = 'U'
+            AND DEl_YN = 'N'
+            AND        FACT_CODE = #factCode#
+            AND     BRANCH_NO = #branchNo#
+            AND     ITEM_CODE = #excessItemCode_1#
+            <isNotNull property="excessItemCode_2"> 
+            AND    EXECES_ITEM_CODE = #excessItemCode_2# 
+            </isNotNull>             
+            AND     ACCT_ACT_TEST = '0'
+            AND     ACCT_ACT_STEP &lt; 4
+        )
+        WHERE RNO = 1
+	</select> 
+	
+	<statement id="alertSchUsnDAO.updateStepAlertCount" parameterClass="alertStepVO">
+    UPDATE T_IW_HIS 
+    SET ACCT_CNT = ACCT_CNT+1 
+    WHERE IW_NO = #asId# 
+    </statement> 
+    
+    
+</sqlMap>

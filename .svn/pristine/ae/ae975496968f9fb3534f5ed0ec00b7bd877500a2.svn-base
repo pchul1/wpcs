@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="IpusnDAO">
+	<typeAlias alias="ipUsnVO" type="daewooInfo.ipusn.bean.IpUsnVO"/>
+	
+	<select id="IpUsnDAO.getIpUsnList" parameterClass="ipUsnVO" resultClass="ipUsnVO">
+	    SELECT * FROM(
+			SELECT ROW_NUMBER() OVER(ORDER BY NVL(C.STATUS_FLAG, 'A') DESC, A.FACT_CODE, B.BRANCH_NO ASC) RN ,
+				   A.RIVER_DIV, 
+				   (SELECT COMMON_CODE_NAME FROM T_COMMON_CODE WHERE USE_FLAG = 'Y' AND COMMON_CODE = A.RIVER_DIV) RIVER_DIV_NAME,
+			       A.FACT_CODE, 
+			       B.BRANCH_NO, 
+			       A.FACT_CODE || '.' || B.BRANCH_NO BRANCH, 
+			       B.BRANCH_NAME || '-' || B.BRANCH_NO BRANCH_NAME, 
+			       B.GPS_DIST, 
+			       TO_CHAR(TO_DATE(C.INPUT_TIME,'YYYYMMDDHH24MISS'),'YYYY-MM-DD HH24:MI') INPUT_TIME, 
+			       C.STATUS_FLAG , 
+			       C.TEMPERATURE, 
+			       C.HUMIDITY, 
+			       C.BATTERY,  
+			       '' NOWLOCATION,
+			       A.FACT_CODE||'-'||B.BRANCH_NO FACT_NAME , 
+			       NVL(B.LATITUDE, '0') LATITUDE1 , 
+			       NVL(B.LONGITUDE, '0') LONGITUDE1 , 
+			       NVL(B.DEVICE_ST, '0') DEVICE_ST , 
+			       NVL(C.LATITUDE, '0') LATITUDE2 , 
+			       NVL(C.LONGITUDE, '0') LONGITUDE2
+			  FROM T_FACT_INFO A 
+			   JOIN T_FACT_BRANCH_INFO B 
+			       ON A.FACT_CODE = B.FACT_CODE 
+			       AND A.FACT_CODE LIKE '99%' 
+			       AND B.BRANCH_USE_FLAG = 'Y' 
+	<!-- 		       상태값 체크 부분 이나 -->
+	<!-- 		       현제 T_IPUSN_GPS 에 들어오는 데이터는 상태구분하고 리스트 표출     -->
+	<!-- 		       AND B.DEVICE_ST != 'Z9'   -->
+			   LEFT JOIN 
+			       (SELECT * 
+			         FROM 
+			              (SELECT FACT_CODE, 
+			                     BRANCH_NO, 
+			                     LATITUDE, 
+			                     LONGITUDE, 
+			                     INPUT_TIME, 
+			                     STATUS_FLAG , 
+			                     TEMPERATURE, 
+			                     HUMIDITY, 
+			                     BATTERY, 
+			                     ROW_NUMBER() OVER (PARTITION BY FACT_CODE, BRANCH_NO ORDER BY INPUT_TIME DESC) RN 
+			                FROM T_IPUSN_GPS 
+			               WHERE INPUT_TIME BETWEEN TO_CHAR(SYSDATE, 'YYYYMMDD')||'0000'   AND TO_CHAR(SYSDATE+1, 'YYYYMMDD')||'0000'
+			              ) 
+			        WHERE RN = 1 
+			       ) C 
+			       ON B.FACT_CODE = C.FACT_CODE 
+			       AND B.BRANCH_NO = C.BRANCH_NO 
+			 <isNotEqual property="userGubun" compareValue="ROLE_ADMIN">
+				JOIN T_MEMBER_AUTHORINFO D
+				  ON A.RIVER_DIV = D.RIVER_DIV
+				 AND B.FACT_CODE = D.FACT_CODE
+				 AND B.BRANCH_NO = D.BRANCH_NO
+				 AND D.MEmBER_ID = #userId#
+			</isNotEqual>
+			 WHERE A.FACT_USE_FLAG = 'Y' 
+			 	<isNotEmpty property="sugye">
+			 		<isNotEqual  property="sugye" compareValue="all">
+					AND A.RIVER_DIV = #sugye#
+					</isNotEqual>
+				</isNotEmpty>
+			) 
+		WHERE RN <![CDATA[>]]> #firstIndex#
+	  AND RN <![CDATA[<=]]> #lastIndex#
+	 	<isNotEmpty property="branch_name">
+			AND BRANCH_NAME = #branch_name# 
+		</isNotEmpty>
+	</select>
+	
+	<select id="IpUsnDAO.getIpUsnMap" parameterClass="ipUsnVO" resultClass="ipUsnVO">
+		SELECT A.RIVER_DIV, 
+		       A.FACT_CODE, 
+		       B.BRANCH_NO, 
+		       A.FACT_CODE || '.' || B.BRANCH_NO BRANCH, 
+		       B.BRANCH_NAME, 
+		       B.GPS_DIST, 
+		       C.INPUT_TIME, 
+		       C.STATUS_FLAG , 
+		       A.FACT_CODE||'-'||B.BRANCH_NO FACT_NAME , 
+		       NVL(B.LATITUDE, '0') LATITUDE1 , 
+		       NVL(B.LONGITUDE, '0') LONGITUDE1 , 
+		       NVL(B.DEVICE_ST, '0') DEVICE_ST , 
+		       NVL(C.LATITUDE, '0') LATITUDE2 , 
+		       NVL(C.LONGITUDE, '0') LONGITUDE2 
+		  FROM T_FACT_INFO A 
+		   JOIN T_FACT_BRANCH_INFO B 
+		       ON A.FACT_CODE = B.FACT_CODE 
+		       AND A.FACT_CODE LIKE '99%' 
+		       AND B.BRANCH_USE_FLAG = 'Y' 
+<!-- 		       상태값 체크 부분 이나 -->
+<!-- 		       현제 T_IPUSN_GPS 에 들어오는 데이터는 상태구분하고 리스트 표출     -->
+<!-- 		       AND B.DEVICE_ST != 'Z9'   --> 
+		   LEFT JOIN 
+		       (SELECT * 
+		         FROM 
+		              (SELECT FACT_CODE, 
+		                     BRANCH_NO, 
+		                     LATITUDE, 
+		                     LONGITUDE, 
+		                     INPUT_TIME, 
+		                     STATUS_FLAG , 
+		                     ROW_NUMBER() OVER (PARTITION BY FACT_CODE, BRANCH_NO ORDER BY INPUT_TIME DESC) RN 
+		                FROM T_IPUSN_GPS 
+		               WHERE INPUT_TIME BETWEEN TO_CHAR(SYSDATE, 'YYYYMMDD')||'0000'   AND TO_CHAR(SYSDATE+1, 'YYYYMMDD')||'0000'
+		              ) 
+		        WHERE RN = 1 
+		       ) C 
+		       ON B.FACT_CODE = C.FACT_CODE 
+		       AND B.BRANCH_NO = C.BRANCH_NO 
+		 WHERE A.FACT_USE_FLAG = 'Y' 
+				AND A.FACT_CODE = #fact_code#
+				AND B.BRANCH_NO = #branch_no#
+	</select>
+	
+	<select id="IpUsnDAO.getIpUsnView" parameterClass="ipUsnVO" resultClass="ipUsnVO">
+		SELECT BRANCH_NAME,
+		       BRANCH_FNAME,
+		       FACT_CODE,
+		       BRANCH_NO,
+		       BRANCH_MGR_TEL_NO,
+		       BRANCH_IP,
+		       BRANCH_PORT,
+		       LATITUDE,
+		       LONGITUDE,
+		       CDMA_GROUP,
+		       CDMA_TEL_NO,
+		       GPS_DIST,
+		       DEVICE_ST
+		  FROM T_FACT_BRANCH_INFO
+		WHERE FACT_CODE = #fact_code#
+		  AND BRANCH_NO = #branch_no#
+	</select>
+	
+	<select id="IpUsnDAO.getIpUsnLocationList" parameterClass="ipUsnVO" resultClass="ipUsnVO">
+		SELECT A.FACT_CODE, 
+		       B.BRANCH_NO, 
+		       NVL(B.BRANCH_NAME,A.FACT_NAME) ||'-'|| B.BRANCH_NO BRANCH_NAME   
+		  FROM T_FACT_INFO A 
+		   INNER JOIN T_FACT_BRANCH_INFO B 
+		       ON A.FACT_CODE = B.FACT_CODE
+		       AND B.BRANCH_USE_FLAG = 'Y'
+		  <isNotEqual property="roleCode" compareValue="ROLE_ADMIN">
+			   INNER JOIN 
+			       (SELECT FACT_CODE , BRANCH_NO 
+			         FROM T_MEMBER_AUTHORINFO C 
+			        WHERE C.MEMBER_ID = #id# 
+			       ) C 
+			       ON B.FACT_CODE = C.FACT_CODE
+			       AND B.BRANCH_NO = C.BRANCH_NO
+		  </isNotEqual>		      
+		 WHERE A.FACT_USE_FLAG = 'Y' 
+		       AND A.RIVER_DIV = #river_div#
+		       AND A.SYS_KIND = #sys# 
+		       <isNotEmpty prepend="and" property="fact_name">
+		       	AND A.FACT_NAME LIKE '%' || #fact_name# || '%'
+		       </isNotEmpty>
+		ORDER BY A.FACT_NAME ASC, 
+		       B.BRANCH_NO ASC  
+	</select>
+	
+	<select id="IpUsnDAO.getIpUsnLocationView" parameterClass="ipUsnVO" resultClass="ipUsnVO">
+		SELECT A.FACT_CODE, 
+		       B.BRANCH_NO, 
+		       NVL(B.BRANCH_NAME,A.FACT_NAME) ||'-'|| B.BRANCH_NO BRANCH_NAME,
+		       C.SYS_KIND_NAME,
+		       A.FACT_NAME,
+		       A.FACT_ADDR,
+		       B.LATITUDE,
+		       B.LONGITUDE,
+		       B.GPS_DIST,
+		       A.RIVER_DIV,
+               (SELECT COMMON_CODE_NAME FROM T_COMMON_CODE WHERE COMMON_CODE=A.RIVER_DIV) RIVER_DIV_NAME 
+		  FROM T_FACT_INFO A 
+		   LEFT JOIN T_FACT_BRANCH_INFO B 
+		       ON A.FACT_CODE = B.FACT_CODE 
+		   LEFT JOIN T_SYS_KIND C 
+		       ON A.SYS_KIND = C.SYS_KIND
+		 WHERE B.BRANCH_USE_FLAG = 'Y' 
+		       AND A.FACT_CODE = #fact_code#
+		       AND B.BRANCH_NO = #branch_no# 
+		ORDER BY A.FACT_NAME ASC, 
+		       B.BRANCH_NO ASC  
+	</select>
+	
+	<select id="IpUsnDAO.IpUsnBranchHistoryList" parameterClass="ipUsnVO" resultClass="ipUsnVO">
+		SELECT * FROM(
+			SELECT ROW_NUMBER() OVER(ORDER BY C.INPUT_TIME DESC) RN,
+			   	  (SELECT COMMON_CODE_NAME FROM T_COMMON_CODE WHERE USE_FLAG = 'Y' AND COMMON_CODE = B.RIVER_DIV) RIVER_DIV_NAME,
+			       C.FACT_CODE, 
+			       C.BRANCH_NO, 
+			       TO_CHAR(TO_DATE(C.INPUT_TIME,'YYYYMMDDHH24MISS'),'YYYY-MM-DD HH24:MI') INPUT_TIME, 
+			       NVL(A.LATITUDE, '0') LATITUDE1 , 
+			       NVL(A.LONGITUDE, '0') LONGITUDE1 , 
+			       NVL(A.DEVICE_ST, '0') DEVICE_ST , 
+			       NVL(C.LATITUDE, '0') LATITUDE2 , 
+			       NVL(C.LONGITUDE, '0') LONGITUDE2, 
+			       C.TEMPERATURE, 
+			       C.HUMIDITY, 
+			       C.BATTERY, 
+			       A.BRANCH_NAME || '-' || C.BRANCH_NO BRANCH_NAME, 
+			       A.GPS_DIST 
+			  FROM T_IPUSN_GPS C 
+	          INNER JOIN T_FACT_INFO B
+	          	  ON B.FACT_CODE = C.FACT_CODE 
+			   LEFT JOIN T_FACT_BRANCH_INFO A 
+			       ON A.FACT_CODE = C.FACT_CODE 
+			       AND A.BRANCH_NO = C.BRANCH_NO 
+			 WHERE C.FACT_CODE = #fact_code#
+			       AND C.BRANCH_NO = #branch_no# 
+			       AND C.INPUT_TIME BETWEEN #startDate# || '00' and #endDate# || '00' 
+		 )
+		WHERE RN <![CDATA[>]]> #firstIndex#
+	  AND RN <![CDATA[<=]]> #lastIndex#
+	</select>
+	
+	<select id="IpUsnDAO.IpUsnBranchHistoryTotCount" parameterClass="ipUsnVO" resultClass="java.lang.Integer">
+			SELECT COUNT(*) CNT
+			  FROM T_IPUSN_GPS C 
+	          INNER JOIN T_FACT_INFO B
+	          	  ON B.FACT_CODE = C.FACT_CODE 
+			   LEFT JOIN T_FACT_BRANCH_INFO A 
+			       ON A.FACT_CODE = C.FACT_CODE 
+			       AND A.BRANCH_NO = C.BRANCH_NO 
+			 WHERE C.FACT_CODE = #fact_code#
+			       AND C.BRANCH_NO = #branch_no# 
+			       AND C.INPUT_TIME BETWEEN #startDate# || '00' and #endDate# || '00' 
+	</select>
+	
+	<update id="IpUsnDAO.UpdateIpUsnDeviceStatus" parameterClass="ipUsnVO">
+		UPDATE T_FACT_BRANCH_INFO 
+		       SET DEVICE_ST = #device_st#
+		 WHERE FACT_CODE = #fact_code# 
+		       AND BRANCH_NO = #branch_no# 
+	</update>
+	
+	<update id="IpUsnDAO.UpdateIpUsnStatusFlag" parameterClass="ipUsnVO">
+		UPDATE T_IPUSN_GPS 
+		       SET STATUS_FLAG = 'Y' 
+		 WHERE FACT_CODE = #fact_code# 
+		       AND BRANCH_NO = #branch_no# 
+		       AND INPUT_TIME = #input_time# 
+	</update>
+	
+	<update id="IpUsnDAO.UpdateIpUsnLocationSet" parameterClass="ipUsnVO">
+		UPDATE T_FACT_BRANCH_INFO 
+		       SET LATITUDE = #latitude#, 
+		       LONGITUDE = #longitude# 
+		 WHERE FACT_CODE = #fact_code# 
+		       AND BRANCH_NO = #branch_no#
+	</update>
+	
+	
+	<update id="IpUsnDAO.InsertTMinData" parameterClass="ipUsnVO">
+		MERGE INTO T_MIN_DATA A 
+		  USING  
+		    (SELECT #fact_code#	FACT_CODE,
+					#item_code#	ITEM_CODE,
+					#min_time#	MIN_TIME,
+					#branch_no#	BRANCH_NO,
+					#min_rtime#	MIN_RTIME,
+					#min_dump#	MIN_DUMP,
+					#min_vl#	MIN_VL,
+					#min_or#	MIN_OR,
+					#min_st#	MIN_ST,
+					#min_dcd#	MIN_DCD
+		      FROM DUAL 
+		    ) B 
+		ON ( A.FACT_CODE = B.FACT_CODE
+		  AND A.ITEM_CODE = B.ITEM_CODE
+		  AND A.MIN_TIME = B.MIN_TIME
+		  AND A.BRANCH_NO = B.BRANCH_NO) 
+		WHEN NOT MATCHED THEN 
+		 INSERT VALUES 
+		        ( 
+                  B.FACT_CODE, 
+                  B.ITEM_CODE, 
+                  B.MIN_TIME, 
+                  B.BRANCH_NO,
+                  B.MIN_RTIME,
+                  B.MIN_DUMP, 
+                  B.MIN_VL, 
+                  B.MIN_OR, 
+                  B.MIN_ST, 
+                  B.MIN_DCD 
+		        )
+	</update>
+	
+	<update id="IpUsnDAO.InsertIpUsnGps" parameterClass="ipUsnVO">
+		MERGE INTO T_IPUSN_GPS A 
+		  USING  
+		    (SELECT #fact_code#	FACT_CODE,
+					#branch_no#	BRANCH_NO,
+					#input_time#	INPUT_TIME,
+					#longitude#	LONGITUDE,
+					#latitude#	LATITUDE,
+					'N'	STATUS_FLAG,
+					#battery#	BATTERY,
+					#altitude#	ALTITUDE,
+					(SELECT DEVICE_ST 
+					  FROM T_FACT_BRANCH_INFO 
+					 WHERE FACT_CODE = #fact_code# 
+					       AND BRANCH_NO = #branch_no# 
+					       AND BRANCH_USE_FLAG = 'Y')	DEVICE_ST,
+					#temperature#	TEMPERATURE,
+					#humidity#	HUMIDITY
+		      FROM DUAL 
+		    ) B 
+		ON ( A.FACT_CODE = B.FACT_CODE
+		  AND A.BRANCH_NO = B.BRANCH_NO
+		  AND A.INPUT_TIME = B.INPUT_TIME) 
+		WHEN NOT MATCHED THEN 
+		 INSERT VALUES 
+		        ( 
+			        B.FACT_CODE,       
+					B.BRANCH_NO,       
+					B.INPUT_TIME,      
+					B.LONGITUDE,       
+					B.LATITUDE,        
+					B.STATUS_FLAG,     
+					B.BATTERY,         
+					B.ALTITUDE,        
+					B.DEVICE_ST,       
+					B.TEMPERATURE,     
+					B.HUMIDITY     
+		        )
+	</update>
+	
+	<update id="IpUsnDAO.MergeTMinDataTHourData" parameterClass="ipUsnVO">
+		MERGE INTO T_HOUR_DATA A USING 
+		    (SELECT FACT_CODE, 
+		           BRANCH_NO, 
+		           ITEM_CODE, 
+		           SUBSTR(MIN_TIME, 0, 10) HOUR_TIME, 
+		           AVG(MIN_VL) HOUR_VL ,
+		           '0' HOUR_DUMP,
+		           TO_CHAR(SYSDATE,'YYYYMMDDHH24') HOUR_RTIME,
+		           '0' HOUR_OR,
+		           '00' HOUR_ST,
+		           '1' HOUR_DCD
+		      FROM T_MIN_DATA 
+		     WHERE FACT_CODE IN ('99U1001','99U2001','99U3001','99U4001') 
+		           AND MIN_TIME LIKE #min_time# || '%' 
+		     GROUP BY FACT_CODE, 
+		           BRANCH_NO, 
+		           ITEM_CODE, 
+		           SUBSTR(MIN_TIME, 0, 10) 
+		    ) B ON 
+		    ( A.FACT_CODE = B.FACT_CODE 
+		    AND A.BRANCH_NO = B.BRANCH_NO 
+		    AND A.ITEM_CODE = B.ITEM_CODE 
+		    AND A.HOUR_TIME = B.HOUR_TIME) 
+		WHEN MATCHED THEN 
+		   UPDATE 
+		          SET A.HOUR_VL = B.HOUR_VL 
+		WHEN NOT MATCHED THEN 
+		   INSERT 
+		          (
+		              A.ITEM_CODE,
+		              A.BRANCH_NO,
+		              A.FACT_CODE,
+		              A.HOUR_TIME,
+		              A.HOUR_RTIME,
+		              A.HOUR_DUMP,
+		              A.HOUR_VL,
+		              A.HOUR_OR,
+		              A.HOUR_ST,
+		              A.HOUR_DCD
+		          ) 
+		          VALUES 
+		          ( 
+		              B.ITEM_CODE,
+		              B.BRANCH_NO,
+		              B.FACT_CODE,
+		              B.HOUR_TIME,
+		              B.HOUR_RTIME,
+		              B.HOUR_DUMP,
+		              B.HOUR_VL,
+		              B.HOUR_OR,
+		              B.HOUR_ST,
+		              B.HOUR_DCD 
+		          )
+	</update>
+</sqlMap>            

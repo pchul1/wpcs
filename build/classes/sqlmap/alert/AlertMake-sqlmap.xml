@@ -1,0 +1,1153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="alertMakeDAO">
+
+    <typeAlias alias="alertCallBackVO" type="daewooInfo.alert.bean.AlertCallBackVO"/>
+    <typeAlias alias="alertMinVO" type="daewooInfo.alert.bean.AlertMinVO"/>
+    <typeAlias alias="alertHourVO" type="daewooInfo.alert.bean.AlertHourVO"/>
+    <typeAlias alias="alertSearchVO" type="daewooInfo.alert.bean.AlertSearchVO"/>
+    <typeAlias alias="alertLawVO" type="daewooInfo.alert.bean.AlertLawVO"/>
+    <typeAlias alias="alertNewLawVO" type="daewooInfo.alert.bean.AlertNewLawVO"/>
+    <typeAlias alias="alertConfigVO" type="daewooInfo.alert.bean.AlertConfigVO"/>
+    <typeAlias alias="alertTargetVO" type="daewooInfo.alert.bean.AlertTargetVO"/>
+    <typeAlias alias="alertAlarmVO" type="daewooInfo.alert.bean.AlertAlarmVO"/>
+    <typeAlias alias="alertStepVO" type="daewooInfo.alert.bean.AlertStepVO"/>
+    <typeAlias alias="alertDataVO" type="daewooInfo.alert.bean.AlertDataVO"/>
+    <typeAlias alias="alertSmsBranchVO" type="daewooInfo.alert.bean.AlertSmsBranchVO"/>
+    <typeAlias alias="alertSmsCommVO" type="daewooInfo.alert.bean.AlertSmsCommVO"/>
+    <typeAlias alias="alertSmsListVO" type="daewooInfo.alert.bean.AlertSmsListVO"/>
+    <typeAlias alias="alertSmsListSearchVO" type="daewooInfo.alert.bean.AlertSmsListSearchVO"/>
+    <typeAlias alias="alertSendDataVO" type="daewooInfo.alert.bean.AlertSendDataVO"/>
+    <typeAlias  alias="FileVO"		   type="daewooInfo.cmmn.bean.FileVO"/>
+    <typeAlias  alias="dailyWorkApprovalVO"		   type="daewooInfo.dailywork.bean.DailyWorkApprovalVO"/>
+	<!-- Select Minute Data -->
+	
+	<statement id="alertMakeDAO.getMinList" resultClass="alertMinVO">
+	SELECT 
+	    FACT_CODE      as factCode
+	  , BRANCH_NO      as branchNo
+	  , MIN_TIME       as minTime
+	  , SUM(CASE ITEM_CODE WHEN 'TUR00' THEN MIN_VL ELSE 0 END) as tur
+	  , SUM(CASE ITEM_CODE WHEN 'PHY00' THEN MIN_VL ELSE 0 END) as phy
+	  , SUM(CASE ITEM_CODE WHEN 'CON00' THEN MIN_VL ELSE 0 END) as con
+	  , SUM(CASE ITEM_CODE WHEN 'DOW00' THEN MIN_VL ELSE 0 END) as dow
+	  , SUM(CASE ITEM_CODE WHEN 'TMP00' THEN MIN_VL ELSE 0 END) as tmp
+	  , SUM(CASE ITEM_CODE WHEN 'TOF00' THEN MIN_VL ELSE 0 END) as tof
+	FROM T_MIN_DATA 
+	WHERE (FACT_CODE, BRANCH_NO, MIN_TIME)IN (
+	SELECT
+	          FACT_CODE
+	        , BRANCH_NO
+	        , MAX(MIN_TIME) AS MIN_TIME
+	    FROM
+	        (
+	        SELECT
+	            FACT_CODE
+	            , BRANCH_NO
+	            , MIN_TIME
+	            , ITEM_CODE
+	            , MIN_VL
+	        FROM T_MIN_DATA
+	        WHERE MIN_DCD = '1' AND FACT_CODE  IN (
+	            SELECT  unique  B.FACT_CODE
+	            FROM T_WQ_STD A,T_FACT_INFO B
+	            WHERE A.FACT_CODE = B.FACT_CODE
+	            AND A.USE_FLAG = 'Y' AND B.SYS_KIND = 'U'
+	            )
+	        <![CDATA[
+		        AND MIN_TIME <= TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI')
+		        AND MIN_TIME >= TO_CHAR(SYSDATE-60/24/60*3, 'YYYYMMDDHH24MI')
+		    ]]>
+	        )
+	    GROUP BY FACT_CODE, BRANCH_NO)
+	GROUP BY FACT_CODE, BRANCH_NO, MIN_TIME
+	ORDER BY FACT_CODE, BRANCH_NO, MIN_TIME
+	</statement>
+	
+    <statement id="alertMakeDAO.getMinList_old" resultClass="alertMinVO">
+    SELECT 
+          FACT_CODE      as factCode
+        , BRANCH_NO      as branchNo
+        , MIN_TIME       as minTime
+        , SUM(CASE ITEM_CODE WHEN 'TUR00' THEN MIN_VL ELSE 0 END) as tur
+        , SUM(CASE ITEM_CODE WHEN 'PHY00' THEN MIN_VL ELSE 0 END) as phy
+        , SUM(CASE ITEM_CODE WHEN 'CON00' THEN MIN_VL ELSE 0 END) as con
+        , SUM(CASE ITEM_CODE WHEN 'DOW00' THEN MIN_VL ELSE 0 END) as dow
+        , SUM(CASE ITEM_CODE WHEN 'TMP00' THEN MIN_VL ELSE 0 END) as tmp
+        , SUM(CASE ITEM_CODE WHEN 'TOF00' THEN MIN_VL ELSE 0 END) as tof
+    FROM 
+        (
+        SELECT 
+            FACT_CODE 
+            , BRANCH_NO
+            , MIN_TIME
+            , ITEM_CODE
+            , MIN_VL
+        FROM T_MIN_DATA 
+        WHERE MIN_DCD = '1' AND FACT_CODE  IN (
+            SELECT  unique  B.FACT_CODE 
+            FROM T_WQ_STD A,T_FACT_INFO B
+            WHERE A.FACT_CODE = B.FACT_CODE
+            AND A.USE_FLAG = 'Y' AND B.SYS_KIND = 'U'
+            )
+         <![CDATA[
+	        AND MIN_TIME <= TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI')
+	        AND MIN_TIME >= TO_CHAR(SYSDATE-60/24/60*3, 'YYYYMMDDHH24MI')
+        ]]>
+        ) 
+    GROUP BY FACT_CODE, BRANCH_NO, MIN_TIME
+    ORDER BY FACT_CODE, BRANCH_NO, MIN_TIME
+    </statement>
+    
+    <!-- Select Minute Data -->
+    <statement id="alertMakeDAO.getMinListNew" resultClass="alertMinVO">
+    SELECT 
+          FACT_CODE      as factCode
+        , BRANCH_NO      as branchNo
+        , MIN_TIME       as minTime
+        , SUM(CASE ITEM_CODE WHEN 'TUR00' THEN MIN_VL ELSE 0 END) as tur
+        , SUM(CASE ITEM_CODE WHEN 'PHY00' THEN MIN_VL ELSE 0 END) as phy
+        , SUM(CASE ITEM_CODE WHEN 'CON00' THEN MIN_VL ELSE 0 END) as con
+        , SUM(CASE ITEM_CODE WHEN 'DOW00' THEN MIN_VL ELSE 0 END) as dow
+        , SUM(CASE ITEM_CODE WHEN 'TMP00' THEN MIN_VL ELSE 0 END) as tmp
+        , SUM(CASE ITEM_CODE WHEN 'TOF00' THEN MIN_VL ELSE 0 END) as tof
+    FROM 
+        (
+        SELECT 
+            FACT_CODE 
+            , BRANCH_NO
+            , MIN_TIME
+            , ITEM_CODE
+            , MIN_VL
+        FROM T_MIN_DATA_NEW 
+        WHERE FACT_CODE IN ('99U1001','99U2001','99U3001','99U4001')
+         <![CDATA[
+	        AND MIN_TIME <= '201412319999'
+	        AND MIN_TIME >= '201401010000'
+        ]]>
+        ) 
+    GROUP BY FACT_CODE, BRANCH_NO, MIN_TIME
+    ORDER BY FACT_CODE, BRANCH_NO, MIN_TIME
+    </statement>
+        
+    <!-- Select Law Data -->
+    <statement id="alertMakeDAO.getLaw" parameterClass="alertSearchVO" resultClass="alertLawVO">
+    SELECT 
+        FACT_CODE    as factCode
+        , BRANCH_NO    as branchNo
+        , SUM(CASE ITEM_CODE WHEN 'TUR00' THEN STD_HVAL ELSE 0 END) as turHVal
+        , SUM(CASE ITEM_CODE WHEN 'PHY00' THEN STD_HVAL ELSE 0 END) as phyHval
+        , SUM(CASE ITEM_CODE WHEN 'PHY00' THEN STD_LVAL ELSE 0 END) as phyLVal
+        , SUM(CASE ITEM_CODE WHEN 'CON00' THEN STD_HVAL ELSE 0 END) as conHval
+        , SUM(CASE ITEM_CODE WHEN 'DOW00' THEN STD_LVAL ELSE 0 END) as dowLval
+    FROM 
+        (
+        SELECT FACT_CODE
+            , BRANCH_NO
+            , ITEM_CODE
+            , STD_HVAL
+            , STD_LVAL
+        FROM T_WQ_STD
+        WHERE FACT_CODE = #factCode#
+        AND BRANCH_NO = #branchNo#
+        AND USE_FLAG = 'Y'
+        ) 
+    GROUP BY FACT_CODE, BRANCH_NO
+    ORDER BY FACT_CODE, BRANCH_NO
+    </statement>
+    
+    <!-- Select Alert Configure Data -->
+    <statement id="alertMakeDAO.getConfig" parameterClass="alertSearchVO" resultClass="alertConfigVO">
+    SELECT 
+        ARS_FLAG        as arsFlag
+        , SMS_FLAG        as smsFlag
+        , SEND_CYCLE    as alertTerm
+    FROM 
+        T_WARNING_STD
+    WHERE FACT_CODE = #factCode#
+    AND BRANCH_NO = #branchNo#
+    AND ITEM_CODE = #itemCode#
+    AND USE_FLAG = 'Y'
+    </statement>
+    
+    <!-- Select Over Count Data -->
+    <statement id="alertMakeDAO.getOverCount" parameterClass="map" resultClass="int">
+    SELECT COUNT(*)
+    FROM T_MIN_DATA
+    WHERE  FACT_CODE = #factCode#
+    AND BRANCH_NO = #branchNo#
+    AND ITEM_CODE = #itemCode#
+    AND MIN_TIME BETWEEN TO_CHAR(TO_DATE(#minTime# ,'YYYYMMDDHH24MI') - (1/24),'YYYYMMDDHH24MI') AND #minTime#
+    AND MIN_VL &gt;= #highValue#
+    </statement>
+    
+    <!-- Select Fact Name Data -->
+    <statement id="alertMakeDAO.getFactName" parameterClass="alertSearchVO" resultClass="String">
+	SELECT FACT_NAME
+	FROM T_FACT_INFO 
+	WHERE FACT_CODE = #factCode#
+    </statement>
+    
+    <!-- Select Item Name Data -->
+    <statement id="alertMakeDAO.getItemName" parameterClass="alertSearchVO" resultClass="String">
+    SELECT ITEM_NAME as ITEM_NAME 
+    FROM T_ITEM_INFO
+    WHERE ITEM_CODE = #itemCode#
+    </statement>
+    
+    <!-- Select Item Name Data -->
+    <statement id="alertMakeDAO.getBranchName" parameterClass="alertSearchVO" resultClass="String">
+    SELECT BRANCH_NAME as BRANCH_NAME
+    FROM T_FACT_BRANCH_INFO
+    WHERE FACT_CODE = #factCode#
+    	and BRANCH_NO = #branchNo#
+    </statement>
+    
+    <statement id="alertMakeDAO.getTargetSmSList" parameterClass="HashMap" resultClass="alertTargetVO">
+    SELECT         
+            atPart,
+            atPartGubun,
+            atName,
+            atArsTele,
+            atSmsTele
+    FROM (
+        SELECT 
+            ROWNUM  as atNo
+            , AT.SPREAD_TARGET_NO            as atId
+            ,(SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ' > ')), 4))
+              FROM T_DEPT_INFO 
+              WHERE DEPT_CODE =  M.DEPT_CODE
+              START WITH UPPER_DEPT_CODE = '0'
+              CONNECT BY PRIOR DEPT_CODE = UPPER_DEPT_CODE) as atPart
+            , (SELECT DECODE(UPPER_DEPT_CODE, 8000, 1, 0) FROM T_DEPT_INFO WHERE DEPT_CODE = M.DEPT_CODE) as atPartGubun
+            , M.MEMBER_NAME        as atName
+            , M.OFFICE_NO    as atArsTele
+            , AT.ACS_FLAG            as atArs
+            , M.MOBILE_NO    as atSmsTele
+            , AT.SMS_FLAG        as atSms
+        FROM T_SPREAD_TARGET AT, T_MEMBER M
+        WHERE (M.OFFICE_NO IS NOT NULL OR M.MOBILE_NO IS NOT NULL)
+        AND (AT.DAY IS NOT NULL OR AT.NIGHT IS NOT NULL)
+        AND AT.MEMBER_ID = M.MEMBER_ID
+        <iterate prepend="AND M.MEMBER_ID IN " property="memberId" open="(" close=")" conjunction=",">
+            #memberId[]#
+        </iterate>
+        )
+    GROUP BY atPart, atPartGubun, atName, atArsTele, atSmsTele
+	</statement>
+	
+    <!-- Select CallBack Data -->
+    <statement id="alertMakeDAO.getCallBack" parameterClass="alertSearchVO" resultClass="alertCallBackVO">
+        SELECT COMMON_CODE_NAME as callBackName
+            , COMMON_CODE_DESC  as callBackTel      
+        FROM T_COMMON_CODE
+         WHERE COMMON_CODE_CATEGORY = '18' 
+        AND USE_FLAG = 'Y'
+        AND COMMON_CODE = '0'||SUBSTR(#factCode#,4,1)
+    </statement>
+    
+    <!-- Select Alert Target Data -->
+    <statement id="alertMakeDAO.getTargetList" parameterClass="alertSearchVO" resultClass="alertTargetVO">
+    SELECT 
+        ROWNUM                 as atNo
+        , AT.SPREAD_TARGET_NO            as atId
+        ,(SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ' > ')), 4))
+          FROM T_DEPT_INFO 
+          WHERE DEPT_CODE =  M.DEPT_CODE
+          START WITH UPPER_DEPT_CODE = '0'
+          CONNECT BY PRIOR DEPT_CODE = UPPER_DEPT_CODE) as atPart                 
+        , (SELECT DECODE(UPPER_DEPT_CODE, 8000, 1, 0) FROM T_DEPT_INFO WHERE DEPT_CODE = M.DEPT_CODE) as atPartGubun
+        , M.MEMBER_NAME        as atName
+        , M.OFFICE_NO    as atArsTele
+        , AT.ACS_FLAG            as atArs
+        , M.MOBILE_NO    as atSmsTele
+        , AT.SMS_FLAG        as atSms
+    FROM T_SPREAD_TARGET AT, T_MEMBER M
+    WHERE (M.OFFICE_NO IS NOT NULL OR M.MOBILE_NO IS NOT NULL)
+    AND (AT.DAY IS NOT NULL OR AT.NIGHT IS NOT NULL)
+    AND AT.MEMBER_ID = M.MEMBER_ID
+    AND AT.USE_FLAG = 'Y'
+    AND (AT.DAY = (CASE WHEN TO_CHAR(SYSDATE,'HH24') &gt;= '09' AND TO_CHAR(SYSDATE,'HH24') &lt;= '18' THEN 'D' ELSE 'N' END) OR AT.NIGHT = (CASE WHEN TO_CHAR(SYSDATE,'HH24') &lt;= '09' OR TO_CHAR(SYSDATE,'HH24') &gt;= '18' THEN 'N' ELSE 'D' END))
+    AND AT.FACT_CODE = #factCode#
+    AND AT.BRANCH_NO = #branchNo# 
+    AND STEP &lt;= #minOr#
+	</statement>
+	
+    <!-- Select Alert Target Data -->
+    <statement id="alertMakeDAO.getTargetManualList_OLD" parameterClass="map" resultClass="alertTargetVO">
+    SELECT atPart,
+                atPartGubun,
+                atName,
+                atArsTele,  
+                atSmsTele
+    FROM (                               
+        SELECT 
+            ROWNUM                 as atNo
+            , AT.SPREAD_TARGET_NO            as atId
+            ,(SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ' > ')), 4))
+              FROM T_DEPT_INFO 
+              WHERE DEPT_CODE =  M.DEPT_CODE
+              START WITH UPPER_DEPT_CODE = '0'
+              CONNECT BY PRIOR DEPT_CODE = UPPER_DEPT_CODE) as atPart                 
+            , (SELECT DECODE(UPPER_DEPT_CODE, 8000, 1, 0) FROM T_DEPT_INFO WHERE DEPT_CODE = M.DEPT_CODE) as atPartGubun
+            , M.MEMBER_NAME        as atName
+            , M.OFFICE_NO    as atArsTele
+            , AT.ACS_FLAG            as atArs
+            , M.MOBILE_NO    as atSmsTele
+            , AT.SMS_FLAG        as atSms
+        FROM T_SPREAD_TARGET AT, T_MEMBER M
+        WHERE (M.OFFICE_NO IS NOT NULL OR M.MOBILE_NO IS NOT NULL)
+        AND (AT.DAY IS NOT NULL OR AT.NIGHT IS NOT NULL)
+        AND AT.MEMBER_ID = M.MEMBER_ID
+        AND (AT.DAY = (CASE WHEN TO_CHAR(SYSDATE,'HH24') &gt;= '09' AND TO_CHAR(SYSDATE,'HH24') &lt;= '18' THEN 'D' ELSE 'N' END) OR AT.NIGHT = (CASE WHEN TO_CHAR(SYSDATE,'HH24') &lt;= '09' OR TO_CHAR(SYSDATE,'HH24') &gt;= '18' THEN 'N' ELSE 'D' END))
+        <iterate prepend="AND M.MEMBER_ID IN " property="memberId" open="(" close=")" conjunction=",">
+            #memberId[]#
+        </iterate>
+        )
+    GROUP BY atPart, atPartGubun, atName, atArsTele, atSmsTele
+	</statement>
+		
+    <!-- Select Alert Target Data -->
+    <statement id="alertMakeDAO.getTargetManualList" parameterClass="map" resultClass="alertTargetVO">
+    SELECT atPart,
+                atPartGubun,
+                atName,
+                atArsTele,  
+                atSmsTele
+    FROM (                               
+        SELECT 
+            ROWNUM                 as atNo
+            ,(SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ' > ')), 4))
+              FROM T_DEPT_INFO 
+              WHERE DEPT_CODE =  M.DEPT_CODE
+              START WITH UPPER_DEPT_CODE = '0'
+              CONNECT BY PRIOR DEPT_CODE = UPPER_DEPT_CODE) as atPart                 
+            , (SELECT DECODE(UPPER_DEPT_CODE, 8000, 1, 0) FROM T_DEPT_INFO WHERE DEPT_CODE = M.DEPT_CODE) as atPartGubun
+            , M.MEMBER_NAME        as atName
+            , M.OFFICE_NO    as atArsTele
+            , M.MOBILE_NO    as atSmsTele
+        FROM T_SPREAD_TARGET AT, T_MEMBER M
+        WHERE (M.OFFICE_NO IS NOT NULL OR M.MOBILE_NO IS NOT NULL)
+        <iterate prepend="AND M.MEMBER_ID IN " property="memberId" open="(" close=")" conjunction=",">
+            #memberId[]#
+        </iterate>
+        )
+    GROUP BY atPart, atPartGubun, atName, atArsTele, atSmsTele
+	</statement>
+	
+	<!-- update Minute Data -->
+    <statement id="alertMakeDAO.updateMin">
+    UPDATE T_MIN_DATA
+    SET MIN_DCD = '0'
+    WHERE MIN_DCD = '1' AND FACT_CODE  IN (
+            SELECT  unique  B.FACT_CODE 
+            FROM T_WQ_STD A,T_FACT_INFO B
+            WHERE A.FACT_CODE = B.FACT_CODE
+            AND A.USE_FLAG = 'Y' AND B.SYS_KIND = 'U'
+            ) 
+    AND MIN_TIME BETWEEN TO_CHAR(SYSDATE-1/24,'yyyymmddhh24')||'00' AND TO_CHAR(SYSDATE,'yyyymmddhh24')||'00'
+
+    </statement>
+    
+    <!-- update Minute Data -->
+    <statement id="alertMakeDAO.updateMinOr" parameterClass="map">
+    UPDATE T_MIN_DATA
+    SET MIN_OR = #minOr#
+    WHERE FACT_CODE = #factCode#
+    AND BRANCH_NO = #branchNo#    
+    AND MIN_TIME = #minTime#
+    AND ITEM_CODE IN ( #itemCode# )
+    </statement>   
+        
+    <!-- update Minute Data -->
+    <statement id="alertMakeDAO.updateMinOrNew" parameterClass="map">
+    UPDATE T_MIN_DATA_NEW
+    SET MIN_OR = #minOr#
+    WHERE FACT_CODE = #factCode#
+    AND BRANCH_NO = #branchNo#    
+    AND MIN_TIME = #minTime#
+    AND ITEM_CODE IN ( #itemCode# )
+    </statement>  
+    
+    <!-- Select 수질측정망 alert 국가수질자동측정망 연동후에 주석 풀 것
+    <statement id="alertMakeDAO.getAlarmList" resultClass="alertAlarmVO">
+	SELECT SITE_ID AS factCode,
+	       ALARM_ID AS alarmId,
+	       MSG_TYPE AS msgType,
+	       ALARM_MSG AS alarmMsg,
+	       MAX (SEND_DATE) AS sendDate
+	  FROM ALARMMSGHIST_TB
+	 WHERE ALARM_ID IS NOT NULL
+	 AND SEND_FLAG = '0'
+	GROUP BY RIVER_ID,
+	         SITE_ID,
+	         ALARM_ID,
+	         ALARM_MSG,
+	         MSG_TYPE        
+	ORDER BY RIVER_ID, SITE_ID, ALARM_ID 
+    </statement>
+    -->        
+    
+    <!-- update 수질측정망 alert 국가수질자동측정망 연동후에 주석 풀 것
+    <statement id="alertMakeDAO.updateAlarm" parameterClass="alertAlarmVO">
+	UPDATE ALARMMSGHIST_TB
+	SET SEND_FLAG = '1'
+	WHERE ALARM_ID = #alarmId#
+    </statement>   
+     -->    
+    
+    <!-- SMS 발송 메세지 내역을 가져온다. -->
+    <statement id="alertMakeDAO.getSendSmsMsgList" parameterClass="map" resultClass="HashMap">
+    SELECT  A.SMS_HIST_ID                                 AS smsHistId,
+    		A.SMS_CONTENT 								AS smsMsg,
+            A.REG_ID 										AS regId,
+            A.AD_ACT_DATE 								AS actDate,
+            A.FACT_CODE									AS factCode,
+            A.BRANCH_NO									AS branchNo,
+            A.RIVER_DIV									AS riverDiv,
+            A.AD_ACT_KIND									AS actKind,
+            A.SYS_KIND									AS sysKind,
+            TO_CHAR(A.REG_DATE, 'YYYY/MM/DD/ HH24:MI')	AS regDate,
+            TO_CHAR(A.MOD_DATE, 'YYYY/MM/DD/ HH24:MI')	AS modDate,
+            (SELECT NVL(COUNT(B.SMS_HIST_ID),0)
+               FROM T_WARNING_SMS_HIST_DETAIL B 
+              WHERE B.SMS_HIST_ID = A.SMS_HIST_ID) 		AS cnt
+      FROM  T_WARNING_SMS_HIST A
+     WHERE  REG_ID = #REG_ID#
+    ORDER BY A.REG_DATE DESC
+    </statement>      
+    
+    <!-- SMS 발송 메세지 내역을 가져온다. -->
+    <statement id="alertMakeDAO.saveSmsMsgList" parameterClass="map">
+    INSERT INTO 
+    	T_WARNING_SMS_CONTENT(
+    		SMS_CONTENT, 
+    		REG_ID, 
+    		AD_ACT_DATE,
+    		FACT_CODE,
+    		BRANCH_NO,
+    		RIVER_DIV,
+    		AD_ACT_KIND,
+    		SYS_KIND,
+    		REG_DATE,
+    		MOD_DATE
+    	) 
+    VALUES
+    	(
+    		#smsMsg#, 
+    		#regId#,
+    		TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI'),
+    		#factCode#,
+    		#branchNo#,
+    		#riverDiv#,
+    		#actKind#,
+    		#sysKind#,
+    		SYSDATE,
+    		SYSDATE
+    	)
+    </statement>
+    
+     <!-- 발령 대상등록 -->
+     <statement id="alertMakeDAO.saveAlertData" parameterClass="map"> 
+	INSERT INTO T_ALERT_DATA(
+		FACT_CODE,
+		BRANCH_NO,
+		ITEM_CODE,
+		MIN_TIME,
+		INSERT_TIME,
+		ITEM_UNIT,
+		ALARM_TYPE,
+		TEL,
+		ALERT_VALUE,
+		ALERT_FLAG,
+		MSG,
+		IDX)
+	VALUES(
+			#FACT_CODE#,
+			#BRANCH_NO#,
+			#ITEM_CODE#,
+			#MIN_TIME#,
+			TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI'),
+			'0',
+			#ALARM_TYPE#,
+			'0',
+			#ALERT_VALUE#,
+			#ALERT_FLAG#,
+			#MSG#,
+			SEQ_ALERT_DATA.NEXTVAL  
+	       )
+    </statement>
+    
+    
+	<!-- Select Minute Data -->
+    <statement id="alertMakeDAO.getPreMin" parameterClass="alertStepVO" resultClass="alertMinVO">
+    SELECT MIN_VL as tur,  
+           MIN_TIME as minTime 
+      FROM (SELECT ROW_NUMBER () OVER (ORDER BY TO_NUMBER (MIN_TIME) DESC) AS RNO,
+                   MIN_VL,
+                   MIN_TIME
+              FROM T_MIN_DATA
+             WHERE min_time BETWEEN SUBSTR (#minTime#, 0, 8) || '0000'
+                                AND  #minTime#
+                   AND FACT_CODE = #factCode#
+                   AND BRANCH_NO = #branchNo#
+                   AND ITEM_CODE = #itemCode#)
+     WHERE RNO = 1
+    </statement>          
+    
+	<!-- Select Minute Data -->
+    <statement id="alertMakeDAO.getMinPreUsnList" parameterClass="alertStepVO" resultClass="alertMinVO">
+     SELECT 
+        FACT_CODE        as factCode
+        , BRANCH_NO        as branchNo
+        , MIN_TIME        as minTime
+        , SUM(CASE ITEM_CODE WHEN 'TUR00' THEN MIN_VL ELSE 0 END) as tur
+        , SUM(CASE ITEM_CODE WHEN 'PHY00' THEN MIN_VL ELSE 0 END) as phy
+        , SUM(CASE ITEM_CODE WHEN 'CON00' THEN MIN_VL ELSE 0 END) as con
+        , SUM(CASE ITEM_CODE WHEN 'DOW00' THEN MIN_VL ELSE 0 END) as dow
+    FROM 
+        (
+        SELECT 
+            FACT_CODE 
+            , BRANCH_NO
+            , MIN_TIME
+            , ITEM_CODE
+            , MIN_VL
+        FROM T_MIN_DATA 
+        WHERE FACT_CODE = #factCode#
+        AND BRANCH_NO = #branchNo#
+        AND MIN_TIME BETWEEN TO_CHAR( (to_date(#minTime#,'yyyymmddhh24mi')-30/24/60),'yyyymmddhh24mi') AND #minTime#
+        ) 
+    GROUP BY FACT_CODE, BRANCH_NO, MIN_TIME
+    ORDER BY FACT_CODE, BRANCH_NO, MIN_TIME
+    </statement>
+    
+    <insert id="alertMakeDAO.saveSmsMsgHist" parameterClass="map">
+    	 <selectKey keyProperty="smsHistId" resultClass="java.lang.String">
+            (SELECT NVL(MAX(TO_NUMBER(SMS_HIST_ID,'99999999999999')),0) + 1 FROM T_WARNING_SMS_HIST)
+        </selectKey>
+    INSERT INTO T_WARNING_SMS_HIST(
+   		SMS_HIST_ID,
+   		SMS_CONTENT, 
+   		REG_ID, 
+   		AD_ACT_DATE,
+   		FACT_CODE,
+   		BRANCH_NO,
+   		RIVER_DIV,
+   		AD_ACT_KIND,
+   		SYS_KIND,
+   		REG_DATE,
+   		MOD_DATE
+   	) 
+    VALUES(
+   		#smsHistId#,
+   		#smsMsg#, 
+   		#regId#,
+   		TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI'),
+   		#factCode#,
+   		#branchNo#,
+   		#riverDiv#,
+   		#actKind#,
+   		#sysKind#,
+   		SYSDATE,
+   		SYSDATE
+   	)    
+    </insert>
+    
+    
+    <insert id="alertMakeDAO.saveSmsMsgHistDetail" parameterClass="map">
+    	<selectKey keyProperty="smsHistDetailId" resultClass="java.lang.String">
+            (SELECT NVL(MAX(SMS_HIST_DETAIL_ID), 0) + 1 FROM T_WARNING_SMS_HIST_DETAIL )
+        </selectKey>
+    INSERT INTO T_WARNING_SMS_HIST_DETAIL(
+   		SMS_HIST_DETAIL_ID,
+		SMS_HIST_ID,
+		REG_ID,                
+		MEMBER_ID,
+   		REG_DATE,
+   		MOD_DATE,
+   		PHONE_NO
+   	) 
+    VALUES(
+    	#smsHistDetailId#,
+   		#smsHistId#,
+   		#regId#,
+   		#memberId#,
+   		SYSDATE,
+   		SYSDATE,
+   		#phoneNo#
+   	)    
+    </insert>
+    
+    <!-- SMS 수신인 목록  -->
+    <statement id="alertMakeDAO.getSendSmsMsgMemberList" parameterClass="map" resultClass="HashMap">    
+      SELECT A.SMS_HIST_DETAIL_ID 							AS smsHistDetailId,
+	         A.MEMBER_ID 									AS memberId,
+	         (SELECT MEMBER_NAME
+	            FROM T_MEMBER
+	           WHERE MEMBER_ID = A.MEMBER_ID) 				AS memberName,
+	         CASE WHEN A.PHONE_NO IS NULL
+	                THEN (SELECT MOBILE_NO
+	                        FROM T_MEMBER
+	                       WHERE MEMBER_ID = A.MEMBER_ID)
+	              ELSE A.PHONE_NO              
+	         END 											AS mobileNo,
+	         (SELECT D.DEPT_NAME || ' > ' || C.DEPT_NAME
+	            FROM T_MEMBER B, T_DEPT_INFO C, T_DEPT_INFO D
+	           WHERE B.DEPT_CODE = C.DEPT_CODE
+	             AND C.UPPER_DEPT_CODE = D.DEPT_CODE
+	             AND B.MEMBER_ID = A.MEMBER_ID) 			AS deptName
+	    FROM T_WARNING_SMS_HIST_DETAIL A
+	   WHERE SMS_HIST_ID = #smsHistId#
+	   ORDER BY SMS_HIST_DETAIL_ID ASC
+    </statement>     
+    
+    <!-- Select Sms Send Data -->
+    <statement id="alertMakeDAO.getAlertSmSList" resultClass="alertDataVO">
+     SELECT A.ALERT_ID                   AS alertId
+          , A.SEND_MSG                   AS smsMsg
+          , C.MEMBER_NAME||'^'||A.TEL_NO AS destInfo
+          , A.MEMBER_ID                  AS memberId
+          , B.FACT_CODE                  AS factCode
+          , B.BRANCH_NO                  AS branchNo
+          , B.ALERT_TIME                 AS minTime
+          , A.SUBJECT                    AS subject
+          , (SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ' > ')), 4))
+               FROM T_DEPT_INFO 
+              WHERE DEPT_CODE =  C.DEPT_CODE
+              START WITH UPPER_DEPT_CODE = '0'
+              CONNECT BY PRIOR DEPT_CODE = UPPER_DEPT_CODE) AS part
+       FROM T_ALERT_INFO_SEND_HIS A, T_ALERT_INFO B, T_MEMBER C
+      WHERE A.ALERT_ID  = B.ALERT_ID
+        AND A.MEMBER_ID = C.MEMBER_ID
+        AND A.SEND_STAT = 'N'
+    </statement>
+    <!-- T_ALERT_INFO_SEND_HIS update -->
+    <statement id="alertMakeDAO.updateAlertData" parameterClass="alertDataVO">
+	UPDATE T_ALERT_INFO_SEND_HIS
+	   SET SEND_STAT = 'Y'
+	 WHERE ALERT_ID  = #alertId#
+	   AND MEMBER_ID = #memberId#
+    </statement> 
+    
+     <statement id="alertMakeDAO.getTargetLeaveSms" parameterClass="alertSearchVO" resultClass="alertTargetVO">
+     SELECT A.SMS_TARGET_NO, 
+       A.FACT_CODE, 
+       A.BRANCH_NO, 
+       A.MEMBER_ID, 
+       A.USE_FLAG, 
+       A.REG_DATE, 
+       A.REG_ID, 
+       A.RECV_TYPE, 
+       A.DET_CODE, 
+       FN_GET_DEPT_NAME(MEMBER.DEPT_CODE) AS DEPTNONAME, 
+       (SELECT DECODE(UPPER_DEPT_CODE, 8000, 1, 0) FROM T_DEPT_INFO WHERE DEPT_CODE = M.DEPT_CODE) as atPartGubun
+       MEMBER.MEMBER_NAME MEMBERNAME, 
+       MEMBER.MOBILE_NO MOBILENO 
+  FROM T_SMS_TARGET A, 
+       T_MEMBER MEMBER 
+ WHERE MEMBER.MEMBER_ID = A.MEMBER_ID 
+       AND A.RECV_TYPE = 'B' 
+       AND A.DET_CODE = 'SMSCD004'
+       AND A.FACT_CODE = #factCode# 
+       AND A.BRANCH_NO = #branchNo#
+     
+     </statement>
+    <statement id="alertMakeDAO.getTargetCommSmsList" parameterClass="alertSearchVO" resultClass="alertTargetVO">
+	SELECT A.SMS_TARGET_NO, 
+	       #factCode# factCode, 
+	       #branchNo# branchNo, 
+	       A.MEMBER_ID, 
+	       A.USE_FLAG, 
+	       A.REG_DATE, 
+	       A.REG_ID, 
+	       A.RECV_TYPE, 
+	       A.DET_CODE, 
+	       FN_GET_DEPT_NAME(MEMBER.DEPT_CODE) AS DEPTNONAME, 
+	       (SELECT DECODE(UPPER_DEPT_CODE, 8000, 1, 0) FROM T_DEPT_INFO WHERE DEPT_CODE = MEMBER.DEPT_CODE) as atPartGubun,
+	       (SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ' > ')), 4))
+	          FROM T_DEPT_INFO 
+	          WHERE DEPT_CODE =  MEMBER.DEPT_CODE
+	          START WITH UPPER_DEPT_CODE = '0'
+	          CONNECT BY PRIOR DEPT_CODE = UPPER_DEPT_CODE) as atPart ,
+	       MEMBER.MEMBER_NAME atName, 
+	       MEMBER.MOBILE_NO atSmsTele 
+	  FROM T_SMS_TARGET A, 
+	       T_MEMBER MEMBER 
+	 WHERE MEMBER.MEMBER_ID = A.MEMBER_ID 
+	   AND A.RECV_TYPE = 'C' 
+	   AND A.DET_CODE  = #detCode#
+	</statement>
+	<statement id="alertMakeDAO.getTargetBranchSmsList_old" parameterClass="alertSearchVO" resultClass="alertTargetVO">
+    SELECT A.SMS_TARGET_NO, 
+	       A.FACT_CODE factCode, 
+	       A.BRANCH_NO branchNo, 
+	       A.MEMBER_ID, 
+	       A.USE_FLAG, 
+	       A.REG_DATE, 
+	       A.REG_ID, 
+	       A.RECV_TYPE, 
+	       A.DET_CODE, 
+	       FN_GET_DEPT_NAME(MEMBER.DEPT_CODE) AS DEPTNONAME, 
+	       (SELECT DECODE(UPPER_DEPT_CODE, 8000, 1, 0) FROM T_DEPT_INFO WHERE DEPT_CODE = MEMBER.DEPT_CODE) as atPartGubun,
+	       (SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ' > ')), 4))
+	          FROM T_DEPT_INFO 
+	          WHERE DEPT_CODE =  MEMBER.DEPT_CODE
+	          START WITH UPPER_DEPT_CODE = '0'
+	          CONNECT BY PRIOR DEPT_CODE = UPPER_DEPT_CODE) as atPart ,
+	       MEMBER.MEMBER_NAME atName, 
+	       MEMBER.MOBILE_NO atSmsTele 
+	  FROM T_SMS_TARGET A, 
+	       T_MEMBER MEMBER 
+	 WHERE MEMBER.MEMBER_ID = A.MEMBER_ID 
+	     AND A.RECV_TYPE = 'B' 
+	     AND A.DET_CODE  = #detCode#
+	     AND A.FACT_CODE = #factCode#
+	     AND A.BRANCH_NO = #branchNo#
+	UNION ALL
+	SELECT A.SMS_TARGET_NO, 
+	       #factCode# factCode, 
+	       #branchNo# branchNo, 
+	       A.MEMBER_ID, 
+	       A.USE_FLAG, 
+	       A.REG_DATE, 
+	       A.REG_ID, 
+	       A.RECV_TYPE, 
+	       A.DET_CODE, 
+	       FN_GET_DEPT_NAME(MEMBER.DEPT_CODE) AS DEPTNONAME, 
+	       (SELECT DECODE(UPPER_DEPT_CODE, 8000, 1, 0) FROM T_DEPT_INFO WHERE DEPT_CODE = MEMBER.DEPT_CODE) as atPartGubun,
+	       (SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ' > ')), 4))
+	          FROM T_DEPT_INFO 
+	          WHERE DEPT_CODE =  MEMBER.DEPT_CODE
+	          START WITH UPPER_DEPT_CODE = '0'
+	          CONNECT BY PRIOR DEPT_CODE = UPPER_DEPT_CODE) as atPart ,
+	       MEMBER.MEMBER_NAME atName, 
+	       MEMBER.MOBILE_NO atSmsTele 
+	  FROM T_SMS_TARGET A, 
+	       T_MEMBER MEMBER 
+	 WHERE MEMBER.MEMBER_ID = A.MEMBER_ID 
+	     AND A.RECV_TYPE = 'C' 
+	     AND A.DET_CODE  = #detCode#
+	</statement>
+	<statement id="alertMakeDAO.getTargetBranchSmsList" parameterClass="alertSearchVO" resultClass="alertTargetVO">
+	SELECT #factCode# factCode, 
+	       #branchNo# branchNo, 
+	       AAA.MEMBER_ID, 
+	       'Y' USE_FLAG, 
+	       'B' RECV_TYPE, 
+	       #detCode# DET_CODE, 
+	       FN_GET_DEPT_NAME(MEMBER.DEPT_CODE) AS DEPTNONAME, 
+	       (SELECT DECODE(UPPER_DEPT_CODE, 8000, 1, 0) 
+	         FROM T_DEPT_INFO 
+	        WHERE DEPT_CODE = MEMBER.DEPT_CODE
+	       ) AS atPartGubun, 
+	       (SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ' > ')), 4)) 
+	         FROM T_DEPT_INFO 
+	        WHERE DEPT_CODE = MEMBER.DEPT_CODE START 
+	       WITH UPPER_DEPT_CODE = '0' CONNECT BY PRIOR DEPT_CODE = UPPER_DEPT_CODE
+	          ) AS atPart , 
+	          MEMBER.MEMBER_NAME atName, 
+	          MEMBER.MOBILE_NO atSmsTele 
+	     FROM 
+	          (SELECT AA.MEMBER_ID 
+	            FROM 
+	                 (SELECT A.MEMBER_ID, 
+	                        NVL(A.FACT_CODE, #factCode#) FACT_CODE, 
+	                        NVL(A.BRANCH_NO, #branchNo#) BRANCH_NO, 
+	                        A.RECV_TYPE 
+	                   FROM T_SMS_TARGET A 
+	                  WHERE A.DET_CODE = #detCode# 
+	                        AND A.USE_FLAG = 'Y'
+	                 ) AA 
+	           WHERE AA.FACT_CODE = #factCode# 
+	                 AND AA.BRANCH_NO = #branchNo# 
+	              UNION 
+	          SELECT B.BRANCH_MGR MEMBER_ID 
+	            FROM T_FACT_BRANCH_INFO B 
+	           WHERE B.FACT_CODE = #factCode# 
+	                 AND B.BRANCH_NO = #branchNo#
+	          ) AAA, 
+	          T_MEMBER MEMBER 
+	    WHERE AAA.MEMBER_ID = MEMBER.MEMBER_ID
+	</statement>
+    <statement id="alertMakeDAO.getNewLaw" parameterClass="alertSearchVO" resultClass="alertNewLawVO">
+     SELECT T1.ITEM_CODE AS itemCode ,
+       		ITEM_NAME AS itemName ,
+       		NVL(LEG_YN,
+       		(SELECT STAND_YN
+        	   FROM T_ITEM_INFO_ADD
+        	  WHERE T1.ITEM_CODE = ITEM_CODE
+       		)) AS legYn ,
+       		TRIM(TO_CHAR(NVL(ITEM_VALUE_HI,
+       		(SELECT ITEM_VALUE_HI 
+         	   FROM T_ITEM_INFO_ADD 
+        	  WHERE T1.ITEM_CODE = ITEM_CODE
+       		)),'999,999,999,990.99')) AS itemValueHi ,
+       		TRIM(TO_CHAR(NVL(ITEM_VALUE_LO,
+       		(SELECT ITEM_VALUE_LO 
+        	   FROM T_ITEM_INFO_ADD 
+        	  WHERE T1.ITEM_CODE = ITEM_CODE
+       		)),'999,999,999,990.99')) AS itemValueLo ,
+       		NVL(DRY_SEASON_YN,'') AS drySeasonYn ,
+       	    NVL(DRY_SEASON_FROM_MM,'') AS drySeasonFromMm ,
+       	    NVL(DRY_SEASON_TO_MM,'') AS drySeasonToMm ,
+	        TRIM(TO_CHAR(ITEM_DRY_VALUE_HI,'999,999,999,990.99')) AS itemDryValueHi ,
+	        TRIM(TO_CHAR(ITEM_DRY_VALUE_LO,'999,999,999,990.99')) AS itemDryValueLo ,
+	        USER_FLAG AS userFlag,
+	        TRIM(TO_CHAR(NVL(TIME_DUR_VAL,
+       		(SELECT TIME_DUR_VAL
+        	   FROM T_ITEM_INFO_ADD
+        	  WHERE T1.ITEM_CODE = ITEM_CODE
+       		)),'999,999,999,990.99')) timeDurVal,
+            NVL(STAND_YN,
+       		(SELECT STAND_YN
+        	   FROM T_ITEM_INFO_ADD
+        	  WHERE T1.ITEM_CODE = ITEM_CODE
+       		)) standYn
+  	   FROM 
+	   (   SELECT S.SYS_CODE ,
+	              G.GROUP_CODE ,
+	              G.GROUP_NAME ,
+	              I.ITEM_CODE ,
+	              IT.ITEM_NAME 
+	         FROM T_SYSTEM_GROUP S 
+	         LEFT OUTER JOIN T_FACT_MEASU_ITEM_GROUP G 
+	              ON S.GROUP_CODE = G.GROUP_CODE ,
+	              T_FACT_MEASU_GROUP_ITEM I ,
+	              T_ITEM IT 
+	        WHERE SYS_CODE IN 
+	              (SELECT DISTINCT SYS_CODE 
+	                FROM T_SYSTEM 
+	               WHERE SYS_TYPE = 'U' 
+	                     AND SYS_YN = 'Y' 
+	                     AND SYS_FLAG = 'Y' 
+	        ) 
+	          AND UPPER(DP_YN) = 'Y' 
+	          AND G.GROUP_CODE = I.GROUP_CODE 
+	          AND I.ITEM_CODE = IT.ITEM_CODE 
+	        ORDER BY G.GROUP_CODE 
+       )T1 
+   	   LEFT OUTER JOIN T_FACT_BRANCH_ITEM_INFO T2 
+       ON T1.ITEM_CODE = T2.ITEM_CODE 
+       AND T2.FACT_CODE = #factCode# 
+       AND T2.BRANCH_NO = #branchNo# 
+	   ORDER BY T1.ITEM_CODE DESC  
+	</statement>
+	<statement id="alertMakeDAO.getSmsCommConf" parameterClass="String" resultClass="alertSmsCommVO">
+     SELECT 
+			sys_kind,
+			det_code,
+			not_send_from,
+			not_send_to,
+			chk_delay,
+			chk_time,
+			chk_loc,
+			not_rcv,
+			same_val,
+			send_use_flag,
+			delay_use_flag,
+			not_rcv_use_flag,
+			loc_use_flag,
+			time_use_flag,
+			send_detail_explan,
+			delay_detail_explan,
+			not_rcv_detail_explan,
+			loc_detail_explan,
+			time_detail_explan,
+			'C' gubun
+	   FROM 
+			T_SMS_BRANCH_CONFIG
+	  WHERE 1=1
+	    AND SYS_KIND = 'U'
+		AND DET_CODE = #detCode#
+	</statement>
+	<statement id="alertMakeDAO.getSmsBranchConf" parameterClass="alertSearchVO" resultClass="alertSmsBranchVO">
+     SELECT 
+			sys_kind,
+			det_code,
+			fact_code,
+			branch_no,
+			not_send_from,
+			not_send_to,
+			chk_delay,
+			chk_time,
+			chk_loc,
+			not_rcv,
+			same_val,
+			send_use_flag,
+			delay_use_flag,
+			not_rcv_use_flag,
+			loc_use_flag,
+			time_use_flag,
+			send_detail_explan,
+			delay_detail_explan,
+			not_rcv_detail_explan,
+			loc_detail_explan,
+			time_detail_explan,
+			'B' gubun
+	   FROM 
+			T_SMS_BRANCH
+	  WHERE 1=1
+		AND SYS_KIND  = 'U'
+		AND FACT_CODE = #factCode#
+		AND BRANCH_NO = #branchNo#
+		AND DET_CODE  = #detCode#
+	</statement>
+	<statement id="alertMakeDAO.getIsAbnormal" parameterClass="alertSearchVO" resultClass="java.lang.Integer">
+    	SELECT
+		    COUNT(*)
+		FROM
+		    T_WARNING_SEND_DATA
+		WHERE 1=1
+		    AND WARNING_TYPE='ABNOR'
+		    AND MIN_TIME &gt; TO_CHAR((SYSDATE-(60/24/60/60 *  #alertDelayTime#)), 'YYYYMMDDHH24MI')
+		    AND FACT_CODE = #factCode#
+		    AND BRANCH_NO = #branchNo#
+		    AND ITEM_CODE = #itemCode#
+    </statement>
+	<statement id="alertMakeDAO.getBeforeItemValue" parameterClass="alertSearchVO" resultClass="String">
+		SELECT MIN_VL 
+		  FROM 
+		       (SELECT ROW_NUMBER() OVER (ORDER BY MIN_TIME DESC) AS RNO, 
+		              FACT_CODE, 
+		              ITEM_CODE, 
+		              MIN_TIME, 
+		              BRANCH_NO, 
+		              MIN_RTIME, 
+		              MIN_DUMP, 
+		              MIN_VL, 
+		              MIN_OR, 
+		              MIN_ST, 
+		              MIN_DCD 
+		         FROM T_MIN_DATA 
+		        WHERE FACT_CODE =#factCode# 
+		              AND BRANCH_NO =#branchNo# 
+		              AND MIN_TIME LIKE TO_CHAR(SYSDATE,'YYYYMMDD')||'%' 
+		              AND ITEM_CODE = #itemCode# 
+		       ) 
+		 WHERE RNO = 2
+    </statement>    
+    
+    <statement id="alertMakeDAO.getSmsDataList" parameterClass="alertSmsListSearchVO" resultClass="alertSmsListVO">
+    	SELECT * /* alertMakeDAO.getSmsDataList */ 
+		  FROM 
+		       (SELECT ROWNUM RNUM, 
+		              T.* 
+		         FROM 
+		              (SELECT
+		                     MSG AS smsMsg, 
+		                     REG_DATE AS sendDate, 
+		                     DEPT_INFO AS part, 
+		                     FACT_CODE AS factCode, 
+		                     RECV_NAME AS name, 
+		                     RECV_TEL_NO AS telNo, 
+		                     DECODE(WARNING_KIND, 'S', 'SMS', 'A', 'ACS') AS gubun, 
+		                     DECODE(SEND_FLAG, 'Y','수신', 'N','미수신') AS susin 
+		                FROM T_WARNING_SEND_DATA 
+		               WHERE 1 = 1
+		               <isNotEmpty prepend="AND" property="isPopup" >
+		               <isEqual property="isPopup" compareValue="Y">
+		                     SEND_FLAG IN ('Y') 
+		               </isEqual>
+		               </isNotEmpty>
+		               <isEmpty prepend="AND" property="isPopup" >
+		                     SEND_FLAG IN ('Y','N') 
+		               </isEmpty>
+		               <isNotEmpty prepend="AND" property="type" >
+		               <isEqual property="type" compareValue="ALL">
+		                     WARNING_KIND IN ('S', 'A')
+		               </isEqual>
+		               <isEqual property="type" compareValue="SMS">
+		                     WARNING_KIND = 'S' 
+		               </isEqual>
+		               <isEqual property="type" compareValue="ACS">
+		                     WARNING_KIND = 'A' 
+		               </isEqual>
+		               </isNotEmpty>
+		               <isNotEmpty prepend="AND" property="isAuto" >
+		               <isEqual property="isAuto" compareValue="all">
+		                     WARNING_TYPE IN ('MNSMS', 'NRECV','LEAVE','ABNOR','IPUSN')
+		               </isEqual>
+		               <isEqual property="isAuto" compareValue="auto">
+		                     WARNING_TYPE IN ('NRECV','LEAVE','ABNOR','IPUSN')
+		               </isEqual>
+		               <isEqual property="isAuto" compareValue="manual">
+		                     WARNING_TYPE = 'MNSMS' 
+		               </isEqual>
+		               </isNotEmpty>
+		               <!-- <isNotEmpty prepend="AND" property="isPassive">
+		               		 WARNING_TYPE = 'MNSMS'
+		               </isNotEmpty> -->
+		                <![CDATA[
+		                     AND REG_DATE >= #startDate#||'0000' 
+		                     AND REG_DATE <= #endDate#||'9999'
+		                ]]> 
+		                <isNotEmpty prepend="AND" property="factCode" >
+							 FACT_CODE = #factCode#
+						</isNotEmpty>
+						<isNotEmpty prepend="AND" property="branchNo" >
+						<isNotEqual property="branchNo" compareValue="0">
+							 BRANCH_NO = #branchNo#
+						</isNotEqual>
+						</isNotEmpty>
+		            ORDER BY seq_no DESC
+		              ) T
+		       ) 
+    <![CDATA[		       
+		 WHERE RNUM > #firstIndex# 
+		       AND RNUM <= #firstIndex# + #recordCountPerPage#
+	]]>		       
+    </statement>
+    
+    <statement id="alertMakeDAO.getSmsDataListCount" parameterClass="alertSmsListSearchVO" resultClass="java.lang.Integer">
+    	SELECT /* alertMakeDAO.getSmsDataListCount */ 
+              COUNT(*)
+         FROM T_WARNING_SEND_DATA 
+        WHERE 1 = 1
+              <isNotEmpty prepend="AND" property="isPopup" >
+              <isEqual property="isPopup" compareValue="Y">
+                    SEND_FLAG IN ('Y') 
+              </isEqual>
+              </isNotEmpty>
+              <isEmpty prepend="AND" property="isPopup" >
+                    SEND_FLAG IN ('Y','N') 
+              </isEmpty>
+              <isNotEmpty prepend="AND" property="type" >
+              <isEqual property="type" compareValue="ALL">
+                    WARNING_KIND IN ('S', 'A')
+              </isEqual>
+              <isEqual property="type" compareValue="SMS">
+                    WARNING_KIND = 'S' 
+              </isEqual>
+              <isEqual property="type" compareValue="ACS">
+                    WARNING_KIND = 'A' 
+              </isEqual>
+              </isNotEmpty>
+              <isNotEmpty prepend="AND" property="isAuto" >
+              <isEqual property="isAuto" compareValue="all">
+                    WARNING_TYPE IN ('MNSMS', 'NRECV','LEAVE','ABNOR','IPUSN')
+              </isEqual>
+              <isEqual property="isAuto" compareValue="auto">
+                    WARNING_TYPE IN ('NRECV','LEAVE','ABNOR','IPUSN')
+              </isEqual>
+              <isEqual property="isAuto" compareValue="manual">
+                    WARNING_TYPE = 'MNSMS' 
+              </isEqual>
+              </isNotEmpty>
+              <!-- <isNotEmpty prepend="AND" property="isPassive">
+              		 WARNING_TYPE = 'MNSMS'
+              </isNotEmpty> --> 
+         <![CDATA[
+              AND REG_DATE >= #startDate#||'0000' 
+              AND REG_DATE <= #endDate#||'9999'
+         ]]> 
+         <isNotEmpty prepend="AND" property="factCode" >
+              FACT_CODE = #factCode#
+         </isNotEmpty>
+         <isNotEmpty prepend="AND" property="branchNo" >
+         <isNotEqual property="branchNo" compareValue="0">
+              BRANCH_NO = #branchNo#
+         </isNotEqual>
+         </isNotEmpty>
+    </statement>
+    
+    <!-- 수동 SMS 통계를 기록 -->
+    <statement id="alertMakeDAO.insertManualSendData" parameterClass="alertSendDataVO">
+    INSERT INTO /* alertMakeDAO.insertManualSendData */
+    	T_WARNING_SEND_DATA(
+    		SEQ_NO,
+    		SEND_FLAG,
+			WARNING_KIND,
+			WARNING_TYPE,
+			MIN_TIME,
+			MSG,
+			REG_DATE,
+			DEPT_INFO,
+			FACT_CODE,
+			BRANCH_NO,
+			SNDR_NAME,
+			SNDR_TEL_NO,
+			RECV_NAME,
+			RECV_TEL_NO
+    	) 
+    VALUES
+    	(
+    		SEQ_ALERT_SEND_DATA.NEXTVAL,
+    		#sendFlag#,
+    		#alertKind#,
+    		#alertType#,
+    		TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI'),
+    		#msg#,
+    		TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI'),
+    		#part#,
+    		#factCode#,
+    		#branchNo#,
+    		#sendName#,
+    		#sendTel#,
+    		#receiveName#,
+    		#receiveTel#
+    	)
+    </statement>
+    
+    <statement id="alertMakeDAO.getAddressFileSeq" parameterClass="HashMap" resultClass="String">
+    	SELECT	MAX(TO_NUMBER(FILE_SEQ)) AS FILE_SEQ
+    	  FROM	T_FILEDETAIL
+    	 WHERE	ATCH_FILE_ID = #atchFileId#
+    </statement>
+    
+    <insert id="insertAddressFile" parameterClass="FileVO" >
+	INSERT INTO T_FILE
+	(
+		ATCH_FILE_ID, 
+		REG_DATE, 
+		USE_FLAG
+	)VALUES
+	( 
+		#atchFileId#, 
+		SYSDATE, 
+		'Y'
+	)
+	</insert>
+	
+	
+	<insert id="insertAddressFileDetail" parameterClass="FileVO" >
+	INSERT INTO T_FILEDETAIL
+	( 
+		ATCH_FILE_ID,
+		FILE_SEQ,
+		SAVE_PATH,
+		SAVE_FILE_NAME,
+		ORIGNL_FILE_NAME,
+		FILE_EXTSN,
+		FILE_MG,
+		FILE_CONTENT
+	)VALUES
+	( 
+		#atchFileId#,
+		#fileSn#,
+		#fileStreCours#,
+		#streFileNm#,
+		#orignlFileNm#,
+		#fileExtsn#,
+		#fileMg#,
+		#fileCn#
+	)
+	
+	</insert>
+	
+	<statement id="alertMakeDAO.getDailyWorkSmsList" parameterClass="dailyWorkApprovalVO" resultClass="alertSmsListVO">
+    	SELECT	MEMBER_NAME || GRADE_NAME || '님' AS name
+    			,MOBILE_NO  AS telNo
+    			,'상황일지 결재요청드립니다.' AS smsMsg
+    	  FROM	T_MEMBER
+    	 WHERE	MEMBER_ID IN
+    	 		(
+    	 			SELECT	APPROVAL_MEMBER_ID
+			    	  FROM	T_DAILY_WORK_APPROVAL
+			    	 WHERE	DAILY_WORK_ID = #dailyWorkId#
+			    	   AND	APPROVAL_MEMBER_ID <![CDATA[<>]]> #approvalRequestId# 
+    	 		)
+    </statement>
+</sqlMap>

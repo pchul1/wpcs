@@ -1,0 +1,163 @@
+@chartset "utf-8";
+
+/* YBH(2010~) */
+
+@import url("reset.css");
+
+/* common */
+body {font-family:"굴림", Gulim;}
+a {color:#000; text-decoration:none;}
+
+/* content */
+#wrap {font-size:75%; text-align:center;}
+ 
+/* content _요약, 시각 말풍선 */
+.summary_dateTime {padding-top:6px;}
+.summary_dateTime .box_tl,
+.summary_dateTime .box_tr,
+.summary_dateTime .box_bl,
+.summary_dateTime .box_br,
+.summary_dateTime .box_t {background:url(/images/monitoring/box_summary.gif) no-repeat 0 0;}
+.summary_dateTime .box_tl {padding-left:17px;}
+.summary_dateTime .box_tr {padding-right:4px; background-position:right 0;}
+.summary_dateTime .box_t {height:14px; background-color:#e7e7e7; background-repeat:repeat-x; background-position:0 -19px;}
+.summary_dateTime .box_bl {padding-left:17px; background-position:0 -14px;}
+.summary_dateTime .box_br {padding-right:4px; background-position:right -14px;}
+.summary_dateTime .box_b {height:3px; border-bottom:1px solid #ccc; font-size:0; background-color:#e7e7e7;}
+.summary_dateTime .box_con {overflow:hidden; padding:5px 8px 4px; border:1px solid #ccc; border-width:0 1px; background-color:#e7e7e7;}
+.summary_dateTime .summary {float:left; line-height:1.2;}
+.summary_dateTime .summary span {font-weight:bold;}
+.summary_dateTime .summary span.point {color:#369}
+.summary_dateTime .dateTime {float:right; line-height:1.2;}
+.summary_dateTime .dateTime img {vertical-align:middle;}
+
+.listBox {overflow:hidden; padding:5px 0 30px;}
+
+* html .summary_dateTime .box_con,
+* html .listBox {zoom:1;} /* ie6 hack */
+
+/* main */
+.content_main {overflow:hidden; width:1200px; margin:0 auto; padding:24px 12px 12px; text-align:left;}
+.content_main h1 {text-align:center;}
+
+.list {float:left; position:relative; margin-left:8px;}
+.firstList {margin-left:0;}
+
+.list h2 a {display:block; width:206px; height:19px; padding:9px 0 0 9px; border:2px solid #69c; border-bottom:none; color:#69c; font-size:12px;}
+.list h2 a.on {color:#fff; background-color:#69c;}
+
+.list table {border-collapse:collapse; border:2px solid #69c; line-height:1.2; table-layout:fixed;}
+.list table th {width:53px;}
+.list table th,
+.list table td {height:28px; border:1px solid #69c; font-weight:normal; text-align:center; vertical-align:middle;}
+.list table td div {height:26px; margin:2px;}
+.list table td div.readyData {height:18px; padding-top:8px;}
+.list table.other th {width:72px; height:44px;}
+.list table.other td {width:53px;}
+.list table.other td div {height:40px; margin:2px;}
+
+.list a.more {position:absolute; top:8px; right:8px;}
+
+.alert1 {color:#fff; background-color:blue;}
+.alert2 {background-color:yellow;}
+.alert3 {background-color:orange;}
+.alert4 {color:#fff;background-color:red;}
+.alert5 {color:#fff;background-color:black;}
+.alert6 {background-color:#fff;}
+
+
+.detailBox h3 {float:left; height:23px;}
+
+.mapBox {float:left; padding-right:10px;}
+.iframeBox {clear:both; width:584px; padding:1px; border:3px solid #ccc;}
+.conditionBox {overflow:hidden; float:left; width:598px;}
+.conditionBox .titleTable {clear:both; border-collapse:collapse; line-height:1.2; table-layout:fixed;}
+.conditionBox .titleTable td {height:28px; border:1px solid #c4c4d9; font-weight:bold; text-align:center; vertical-align:middle; background-color:#e3e3ea;}
+.conditionBox .titleTable td.thStyle1 {width:129px;}
+.conditionBox .titleTable td.thStyle2 {width:69px;}
+.conditionBox .titleTable td.thStyle3 {width:39px;}
+.conditionBox .titleTable td.thStyle4 {width:283px;}
+.conditionBox .titleTable td.thStyle5 {width:72px;}
+/*
+.conditionBox .tableCon {overflow:auto; width:596px; height:445px; border:1px solid #46649B;}
+*/
+.conditionBox .tableCon {overflow:auto; width:596px; height:564px; border-collapse:collapse;}
+.conditionBox .tableCon th {border:0px solid #8899ac; border-width:0px 1px; font-weight:bold; line-height:2.2; text-align:center; vertical-align:middle; background-color:#bfc7d0;}
+.conditionBox .tableCon td {height:28px; padding:0px 0; border:0px solid #ccc; line-height:1.2; text-align:center; vertical-align:middle;}
+.conditionBox .tableCon td.num {text-align:right;}
+.conditionBox .tableCon td.num span {padding:0 10px 0 0;}
+.conditionBox .tableCon th div {padding:0px 0;}
+.conditionBox .tableCon th.first_th div {border-left:0px solid #8899ac;}
+.conditionBox .tableCon th.last_th div {border-right:0px solid #8899ac;}
+.conditionBox .tableCon tr.addStyle td {background-color:#e7e7e7;}
+.conditionBox .tableCon tr:hover td {background-color:#c7d7df;}
+
+.conditionBox .causeResolve {width:100%; margin-top:8px; border-collapse:collapse; line-height:1.2; table-layout:fixed;}
+.conditionBox .causeResolve th {border:1px solid #c4c4d9; font-weight:bold; text-align:center; vertical-align:middle; background-color:#e3e3ea;}
+.conditionBox .causeResolve td {height:28px; border:1px solid #c4c4d9; text-align:center; vertical-align:middle;}
+.conditionBox .causeResolve th.thStyle1 {height:28px;}
+
+#waterPollutionControlData {width:100%; border-collapse:collapse; line-height:1.2; table-layout:fixed;}
+#waterPollutionControlData td {padding:3px 0; border-bottom:1px solid #ccc; text-align:center; vertical-align:middle;}
+#waterPollutionControlData td.tdStyle1 {width:130px;}
+#waterPollutionControlData td.tdStyle2 {width:70px;}
+#waterPollutionControlData td.tdStyle3 {width:40px;}
+#waterPollutionControlData td.tdStyle4 {width:284px; text-align:left;}
+#waterPollutionControlData td.tdStyle4 img {padding-left:2px;}
+#waterPollutionControlData td.tdStyle5 {}
+
+/* sub */
+.content_sub {overflow:hidden; width:1200px; margin:0 auto; padding:24px 12px 12px; text-align:left;}
+.content_sub h1 {text-align:center;}
+
+.stateTable {width:100%; border:2px solid #69c; border-collapse:collapse; line-height:1.2; table-layout:fixed;}
+.stateTable th {height:28px; border:1px solid #c4c4d9; text-align:center; vertical-align:middle;}
+.stateTable td {height:28px; border:1px solid #c4c4d9; font-weight:bold; text-align:center; vertical-align:middle;}
+.stateTable td div {height:16px; margin:2px; padding-top:7px;}
+.stateTable .point {font-weight:bold;}
+.stateTable th.thStyle1 {color:#fff; font-weight:bold; background-color:#69c;}
+
+.content_sub .detailBox h2 {float:left; width:480px; height:23px;}
+
+.alertBox {float:left; width:480px; padding-right:20px;}
+.alertBox dl {float:right; height:32px;}
+.alertBox dt {float:left; padding:5px 10px 0 10px; font-weight:bold;}
+.alertBox dd {float:left;}
+.alertBox dd select {margin:0; vertical-align:top;}
+
+.alertBox .innerData {clear:both;}
+.alertBox .titleTable {width:100%; border-collapse:collapse; line-height:1.2; table-layout:fixed;}
+.alertBox .titleTable td {height:28px; border:1px solid #c4c4d9; color:#fff; font-weight:bold; text-align:center; vertical-align:middle; background-color:#69c;}
+.alertBox .titleTable td.thStyle1 {width:139px;}
+.alertBox .titleTable td.thStyle2 {width:59px;}
+.alertBox .titleTable td.thStyle3 {width:59px;}
+.alertBox .titleTable td.thStyle4 {width:79px;}
+
+.alertBox .iframeBox {width:476px; height:500px; overflow:auto; border:1px solid #46649B;}
+
+.content_sub .conditionBox {width:700px;}
+.conditionBox .listFrame,
+.conditionBox .listFrame2 {float:left; width:350px;}
+.conditionBox .listFrame h3,
+.conditionBox .listFrame2 h3 {width:300px; padding-left:13px; color:#369; background:url(/images/monitoring/bu_circleArrowR.gif) no-repeat 0 1px;}
+.conditionBox .listFrame h3.h3Style1,
+.conditionBox .listFrame2 h3.h3Style1 {margin-top:10px;}
+.conditionBox .listFrame h3.h3Style2,
+.conditionBox .listFrame2 h3.h3Style2 {margin-top:40px;}
+
+.conditionBox .listFrame2 {display:block; width:700px;}
+
+.basicTable_title,
+.basicTable_con {border-collapse:collapse; line-height:1.2; table-layout:fixed;}
+.basicTable_title td {font-weight:bold;}
+.basicTable_title td,
+.basicTable_con td {padding:7px 0; border:1px solid #c4c4d9; font-size:12px; text-align:center; vertical-align:middle;}
+.basicTable_con td.num {padding:7px 10px; text-align:right;}
+.basicTable_title td {background-color:#c1d0e2;}
+.basicTable_con td {background-color:#fff;}
+.basicTable_con tr.addStyle td {background-color:#e7e7e7;}
+.basicTable_con tr.hover td,
+.basicTable_con tr:hover td {background-color:#ddd;}
+
+.fontReset {width:460px; font-size:75%; padding-right:0;}
+.fontReset .iframeBox {width:456px; height:483px;}

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SituationRoomDAO">
+
+	<typeAlias  alias="egovMap"    type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="situationRoomVO"   type="daewooInfo.dailywork.bean.SituationRoomVO"/>
+	
+	<resultMap id="situationRoomInfoDetail" class="daewooInfo.dailywork.bean.SituationRoomVO">
+		<result column="S_ID" 							property="sId" 						columnIndex="1" />
+	    <result column="DAILY_WORK_ID" 			property="dailyWorkId" 				columnIndex="2" />
+	    <result column="WEATHER" 					property="weather" 					columnIndex="3" />
+	    <result column="M_TIME" 						property="mTime"					columnIndex="4" />
+	    <result column="M_ID" 							property="mId" 						columnIndex="5" />
+	    <result column="M_REG_DATE" 				property="mRegDate" 				columnIndex="6" />
+	    <result column="M_CONTENT" 				property="mContent" 				columnIndex="7" />
+	    <result column="A_TIME" 						property="aTime"						columnIndex="8" />
+	    <result column="A_ID" 							property="aId" 						columnIndex="9" />
+	    <result column="A_REG_DATE" 				property="aRegDate" 				columnIndex="10" />
+	    <result column="A_CONTENT" 				property="aContent" 				columnIndex="11" />
+	    <result column="N_TIME" 						property="nTime"						columnIndex="12" />
+	    <result column="N_ID" 							property="nId" 						columnIndex="13" />
+	    <result column="N_REG_DATE"		 			property="nRegDate" 				columnIndex="14" />
+	    <result column="N_CONTENT"		 			property="nContent" 				columnIndex="15" />
+	    <result column="ACCIDENT_CONTENT" 	property="accidentContent" 		columnIndex="16" />
+	    <result column="ETC_CONTENT" 			property="etcContent" 				columnIndex="17" />
+	</resultMap>
+	
+	
+	<resultMap id="situationSpreadList" class="daewooInfo.dailywork.bean.SituationRoomVO">
+		<result column="SPREAD_ID" 					property="spreadId" 				columnIndex="1" />
+	    <result column="DAILY_WORK_ID" 			property="dailyWorkId" 				columnIndex="2" />
+	    <result column="SPREAD_GUBUN" 			property="spreadGubun" 			columnIndex="3" />
+	    <result column="SEQ" 							property="spreadSeq" 				columnIndex="4" />
+	    <result column="HOUR"	 						property="hour" 						columnIndex="5" />
+	    <result column="MIN" 							property="min" 						columnIndex="6" />
+	    <result column="TARGET_ME" 				property="targetMe" 				columnIndex="7" />
+	    <result column="TARGET_GOV" 				property="targetGov" 				columnIndex="8" />
+	    <result column="TARGET_KECO" 				property="targetKeco" 				columnIndex="9" />
+	    <result column="TARGET_AREA" 				property="targetArea" 				columnIndex="10" />
+	    <result column="TARGET_AREA_DETAIL" 	property="targetAreaDetail" 		columnIndex="11" />
+	    <result column="TARGET_SIGONGSA" 		property="targetSigongsa" 		columnIndex="12" />
+	    <result column="TARGET_ETC"			 	property="targetEtc" 				columnIndex="13" />
+	    <result column="CONTENT" 					property="content" 					columnIndex="14" />
+	</resultMap>
+	
+	<!-- 상황실근무일지 저장 -->
+	<insert id="insertSituationRoomInfo" parameterClass="situationRoomVO">
+		INSERT INTO T_DAILY_WORK_S (
+														S_ID
+													  , DAILY_WORK_ID
+													  , WEATHER
+													  , M_TIME
+													  , M_ID
+													  , M_REG_DATE
+													  , M_CONTENT
+													  , A_TIME
+													  , A_ID
+													  , A_CONTENT
+													  , N_TIME
+													  , N_ID
+													  , N_CONTENT
+													  , ACCIDENT_CONTENT
+													  , ETC_CONTENT
+												    )
+    									VALUES (
+    													#sId#
+    												  , #dailyWorkId#
+    												  , #weather#
+    												  , #mTime#
+    												  , #mId#
+    												  , sysdate
+    												  , #mContent#
+    												  , #aTime#
+    												  , #aId#
+    												  , #aContent#
+    												  , #nTime#
+    												  , #nId#
+    												  , #nContent#
+    												  , #accidentContent#
+    												  , #etcContent#
+    												)
+	</insert>
+	
+	<!-- 상황전파현황 저장 -->
+	<insert id="insertSituationSpreadInfo" parameterClass="situationRoomVO">
+		INSERT INTO T_DAILY_WORK_S_SPREAD (
+																	SPREAD_ID
+																  , DAILY_WORK_ID
+																  , SEQ
+																  , SPREAD_GUBUN
+																  , TIME
+																  , TARGET_ME
+																  , TARGET_GOV
+																  , TARGET_KECO
+																  , TARGET_AREA
+																  , TARGET_AREA_DETAIL
+																  , TARGET_SIGONGSA
+																  , TARGET_ETC
+																  , CONTENT
+															   )
+    												VALUES (
+    												                #spreadId#
+    												              , #dailyWorkId#
+    												              , #spreadSeq#
+    												              , #spreadGubun#
+    												              , #time#
+    												              , #targetMe#
+    												              , #targetGov#
+    												              , #targetKeco#
+    												              , #targetArea#
+    												              , #targetAreaDetail#
+    												              , #targetSigongsa#
+    												              , #targetEtc#
+    												              , #content#
+    												           )
+	</insert>
+	
+	<!-- 업무일지 결재정보 조회 -->
+	<select id="selectSituationRoomInfo" resultMap="situationRoomInfoDetail" >
+		<![CDATA[
+			SELECT S_ID
+				     , DAILY_WORK_ID
+				     , WEATHER
+				     , M_TIME
+				     , M_ID
+				     , NVL(TO_CHAR(M_REG_DATE, 'YYYY/MM/DD HH24:MI'), '') M_REG_DATE
+				     , M_CONTENT
+				     , A_TIME
+				     , A_ID
+				     , NVL(TO_CHAR(A_REG_DATE, 'YYYY/MM/DD HH24:MI'), '') A_REG_DATE
+				     , A_CONTENT
+				     , N_TIME
+				     , N_ID
+				     , NVL(TO_CHAR(N_REG_DATE, 'YYYY/MM/DD HH24:MI'), '') N_REG_DATE
+				     , N_CONTENT
+				     , ACCIDENT_CONTENT
+				     , ETC_CONTENT
+			FROM T_DAILY_WORK_S
+		  WHERE DAILY_WORK_ID = #dailyWorkId#
+		]]>				
+	</select>
+	
+	<!-- 상황실근무일지 수정 -->
+	<update id="updateSituationRoomInfo" parameterClass="situationRoomVO">
+		UPDATE  T_DAILY_WORK_S
+		     SET   WEATHER = #weather#
+		           , M_TIME = #mTime#
+				   , M_ID = #mId#
+				   , M_CONTENT = #mContent#
+				   , A_TIME = #aTime#
+				   , A_ID = #aId#
+				   , A_REG_DATE = sysdate
+				   , A_CONTENT = #aContent#
+				   , N_TIME = #nTime#
+				   , N_ID = #nId#
+				   , N_REG_DATE = #nRegDate#
+				   , N_CONTENT = #nContent#
+				   , ACCIDENT_CONTENT = #accidentContent#
+				   , ETC_CONTENT = #etcContent#
+		 WHERE S_ID = #sId#
+		     AND DAILY_WORK_ID = #dailyWorkId#
+	</update>
+	
+	<!-- 업무일지 결재정보 seq -->
+	<select id="getSituationSpreadSeq" resultClass="int">
+		SELECT NVL(MAX(SEQ)+1,1) SEQ
+		  FROM T_DAILY_WORK_S_SPREAD
+		WHERE DAILY_WORK_ID = #dailyWorkId# 
+	</select>
+	
+	<!-- 상황실근무일지 상황전파 현황 -->
+	<select id="selectSituationSpreadInfo" parameterClass="situationRoomVO" resultMap="situationSpreadList">
+		<![CDATA[
+			SELECT  SPREAD_ID
+				      , DAILY_WORK_ID
+				      , SPREAD_GUBUN
+				      , SEQ
+				      , SUBSTR(TIME,0,2) HOUR
+				      , SUBSTR(TIME,3,2) MIN
+				      , TARGET_ME
+				      , TARGET_GOV
+				      , TARGET_KECO
+				      , TARGET_AREA
+				      , TARGET_AREA_DETAIL
+				      , TARGET_SIGONGSA
+				      , TARGET_ETC
+				      , CONTENT
+			FROM T_DAILY_WORK_S_SPREAD
+		  WHERE DAILY_WORK_ID = #dailyWorkId#
+		      AND  SPREAD_GUBUN = #spreadGubun#
+		  ORDER BY SEQ
+		]]>		
+	</select>
+	
+	<!-- 상황실근무일지 삭제 -->
+	<delete id="deleteSituationSpreadInfo" parameterClass="string">
+		DELETE FROM T_DAILY_WORK_S_SPREAD
+		WHERE DAILY_WORK_ID = #dailyWorkId#
+	</delete>
+	
+</sqlMap>

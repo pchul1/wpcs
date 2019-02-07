@@ -1,0 +1,6 @@
+@chartset "utf-8";
+
+/* YBH(2010~) */
+
+.pop_news #pop_news_con .listClose .bgBox .con {display:none;}
+.pop_news #pop_news_con .title .tit {cursor:pointer;}

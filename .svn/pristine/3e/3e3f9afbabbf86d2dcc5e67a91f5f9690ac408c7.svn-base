@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans default-autowire="no" default-lazy-init="false"
+	default-dependency-check="none"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+	http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.0.xsd"> 
+		
+		<bean id="alertMakeDAO" class="daewooInfo.alert.dao.AlertMakeDAO">
+			<property name="sqlMapClient" ref="sqlMapClient"/>
+		</bean>
+		<bean id="alertStepDAO" class="daewooInfo.alert.dao.AlertStepDAO">
+			<property name="sqlMapClient" ref="sqlMapClient"/>
+		</bean>
+		<bean id="alertDAO" class="daewooInfo.alert.dao.AlertDAO">
+			<property name="sqlMapClientMySql" ref="sqlMapClientMySql"/>
+		</bean>
+		<bean id="alertSchDAO" class="daewooInfo.alert.dao.AlertSchDAO">
+			<property name="sqlMapClient" ref="sqlMapClient"/>
+		</bean>
+		<bean id="alertConfigDAO" class="daewooInfo.alert.dao.AlertConfigDAO">
+			<property name="sqlMapClient" ref="sqlMapClient"/>
+		</bean> 
+		<bean id="alertSchUsnDAO" class="daewooInfo.alert.dao.AlertSchUsnDAO">
+			<property name="sqlMapClient" ref="sqlMapClient"/>
+		</bean>  
+		<bean id="alertTaksuConfigDAO" class="daewooInfo.alert.dao.AlertTaksuConfigDAO">
+			<property name="sqlMapClient" ref="sqlMapClient"/>
+		</bean>
+		<bean id="sendSMS" class="daewooInfo.alert.util.SendSMS">
+			<property name="alertMakeDAO" ref="alertMakeDAO" />
+			<property name="alertDAO" ref="alertDAO" />
+		</bean>
+		
+		<bean id="rssKeywordDAO" class="daewooInfo.rss.dao.RssKeywordDAO">
+			<property name="sqlMapClient" ref="sqlMapClient"/>
+		</bean>
+		<bean id="rssManageDAO" class="daewooInfo.rss.dao.RssManageDAO">
+			<property name="sqlMapClient" ref="sqlMapClient"/>
+		</bean>
+		
+		<bean id="seminarDAO" class="daewooInfo.seminar.dao.SeminarDAO">
+			<property name="sqlMapClient" ref="sqlMapClient"/>
+		</bean>
+		<bean id="alrimDAO" class="daewooInfo.common.alrim.dao.AlrimDAO">
+			<property name="sqlMapClient" ref="sqlMapClient"/>
+		</bean>
+		
+		<bean id="mindataEmployeeDAO" class="daewooInfo.admin.mindataEmployee.dao.MindataEmployeeDAO">
+			<property name="sqlMapClient" ref="sqlMapClient"/>
+		</bean>
+		
+		
+        <!-- 기존작성 -->
+        <!-- IP-FUSN활성 -->
+		<bean id="alertBySchdlrJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<property name="jobClass" value="daewooInfo.alert.service.impl.AlertBySchdlrImpl" />
+			<property name="jobDataAsMap">
+		          <map>
+		              	<entry key="name" value="JobDetail"/>
+						<entry key="alertMakeDAO">
+		   	 				<ref local="alertMakeDAO" />
+		   	 			</entry>
+		   	 			<entry key="alertStepDAO">
+		   	 				<ref local="alertStepDAO" />
+		   	 			</entry>
+		   	 			<entry key="alertDAO">
+		   	 				<ref local="alertDAO" />
+		   	 			</entry>
+		   	 			<entry key="alertTaksuConfigDAO">
+		   	 				<ref local="alertTaksuConfigDAO" />
+		   	 			</entry>		   	 			
+		   	 			<entry key="alertSchDAO">
+		   	 				<ref local="alertSchDAO" />
+		   	 			</entry>		   	 			
+		   	 			<entry key="alertConfigDAO">
+		   	 				<ref local="alertConfigDAO" />
+		   	 			</entry>		   	 			
+		          </map>
+		      </property>
+		</bean> 
+		 <bean id="cronTrigerAlert" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   	 	<property name="jobDetail">
+	   	 		<ref bean="alertBySchdlrJobDetail"/>
+	   	 	</property>
+	   	 	<property name="cronExpression">
+	   	 		<value>0 0/5 * * * ?</value><!-- 5분마다 -->
+	   	 	</property>
+	   	 </bean> 
+		
+        <!-- 신규 경보 재작업 -->
+        <!-- IP-FUSN활성 -->
+		<bean id="alertBySchdlrJobDetailNew" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<property name="jobClass" value="daewooInfo.alert.service.impl.AlertBySchdlrImplNew" />
+			<property name="jobDataAsMap">
+		          <map>
+		              	<entry key="name" value="JobDetail"/>
+						<entry key="alertMakeDAO">
+		   	 				<ref local="alertMakeDAO" />
+		   	 			</entry>
+		   	 			<entry key="alertStepDAO">
+		   	 				<ref local="alertStepDAO" />
+		   	 			</entry>
+		   	 			<entry key="alertDAO">
+		   	 				<ref local="alertDAO" />
+		   	 			</entry>
+		   	 			<entry key="alertTaksuConfigDAO">
+		   	 				<ref local="alertTaksuConfigDAO" />
+		   	 			</entry>		   	 			
+		   	 			<entry key="alertSchDAO">
+		   	 				<ref local="alertSchDAO" />
+		   	 			</entry>		   	 			
+		   	 			<entry key="alertConfigDAO">
+		   	 				<ref local="alertConfigDAO" />
+		   	 			</entry>		   	 			
+		          </map>
+		      </property>
+		</bean> 
+		 <bean id="cronTrigerAlertNew" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   	 	<property name="jobDetail">
+	   	 		<ref bean="alertBySchdlrJobDetailNew"/>
+	   	 	</property>
+	   	 	<property name="cronExpression">
+	   	 		<value>0 03 06 * * ?</value><!-- 5분마다 -->
+	   	 	</property>
+	   	 </bean> 	   	 
+		<!-- 이상데이터 판단 -->  
+		<bean id="alertIpUsnAbnormal" class="org.springframework.scheduling.quartz.JobDetailBean">
+					<property name="jobClass" value="daewooInfo.alert.service.impl.AlertIpUsnAbnormalImpl" />
+					<property name="jobDataAsMap">
+				          <map>
+				              	<entry key="name" value="JobDetail"/>
+								<entry key="alertMakeDAO">
+				   	 				<ref local="alertMakeDAO" />
+				   	 			</entry>
+				   	 			<entry key="alertStepDAO">
+				   	 				<ref local="alertStepDAO" />
+				   	 			</entry>
+				   	 			<entry key="alertDAO">
+				   	 				<ref local="alertDAO" />
+				   	 			</entry>
+				   	 			<entry key="alertTaksuConfigDAO">
+				   	 				<ref local="alertTaksuConfigDAO" />
+				   	 			</entry>		   	 			
+				   	 			<entry key="alertSchDAO">
+				   	 				<ref local="alertSchDAO" />
+				   	 			</entry>		   	 			
+				   	 			<entry key="alertConfigDAO">
+				   	 				<ref local="alertConfigDAO" />
+				   	 			</entry>		   	 			
+				          </map>
+				      </property>
+				</bean> 
+		 <bean id="cronTrigerUsnAbnormal" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   	 	<property name="jobDetail">
+	   	 		<ref bean="alertIpUsnAbnormal"/>
+	   	 	</property>
+	   	 	<property name="cronExpression">
+	   	 		<value>0 3/10 * * * ?</value>
+	   	 	</property>
+	   	 </bean>
+		 <!-- IP-USN 처음 미수신 판단 -->
+		<bean id="alertIpUsnNorecv" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<property name="jobClass" value="daewooInfo.alert.service.impl.AlertIpUsnNorecv" />
+			<property name="jobDataAsMap">
+		          <map>
+		              	<entry key="name" value="JobDetail"/>
+						<entry key="alertMakeDAO">
+		   	 				<ref local="alertMakeDAO" />
+		   	 			</entry>
+		   	 			<entry key="alertStepDAO">
+		   	 				<ref local="alertStepDAO" />
+		   	 			</entry>
+		   	 			<entry key="alertDAO">
+		   	 				<ref local="alertDAO" />
+		   	 			</entry>
+		   	 			<entry key="alertTaksuConfigDAO">
+		   	 				<ref local="alertTaksuConfigDAO" />
+		   	 			</entry>		   	 			
+		   	 			<entry key="alertSchDAO">
+		   	 				<ref local="alertSchDAO" />
+		   	 			</entry>		   	 			
+		   	 			<entry key="alertConfigDAO">
+		   	 				<ref local="alertConfigDAO" />
+		   	 			</entry>		   	 			
+		          </map>
+		      </property>
+		</bean> 
+		 <bean id="cronTrigerNoRecv" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   	 	<property name="jobDetail">
+	   	 		<ref bean="alertIpUsnNorecv"/>
+	   	 	</property>
+	   	 	<property name="cronExpression">
+	   	 		<value>0 1/10 * * * ?</value><!--10분마다 -->
+	   	 	</property>
+	   	 </bean> 
+	   	  <!-- IP-USN 위치이탈 판단 -->
+		<bean id="alertIpUsnLeave" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<property name="jobClass" value="daewooInfo.alert.service.impl.AlertIpUsnLeave" />
+			<property name="jobDataAsMap">
+		          <map>
+		              	<entry key="name" value="JobDetail"/>
+						<entry key="alertMakeDAO">
+		   	 				<ref local="alertMakeDAO" />
+		   	 			</entry>
+		   	 			<entry key="alertStepDAO">
+		   	 				<ref local="alertStepDAO" />
+		   	 			</entry>
+		   	 			<entry key="alertDAO">
+		   	 				<ref local="alertDAO" />
+		   	 			</entry>
+		   	 			<entry key="alertTaksuConfigDAO">
+		   	 				<ref local="alertTaksuConfigDAO" />
+		   	 			</entry>		   	 			
+		   	 			<entry key="alertSchDAO">
+		   	 				<ref local="alertSchDAO" />
+		   	 			</entry>		   	 			
+		   	 			<entry key="alertConfigDAO">
+		   	 				<ref local="alertConfigDAO" />
+		   	 			</entry>		   	 			
+		          </map>
+		      </property>
+		</bean> 
+		 <bean id="cronTrigerUsnLeave" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   	 	<property name="jobDetail">
+	   	 		<ref bean="alertIpUsnLeave"/>
+	   	 	</property>
+	   	 	<property name="cronExpression">
+	   	 		<value>0 2/10 * * * ?</value>
+	   	 	</property>
+	   	 </bean> 
+	  
+ 		<!-- VOCS 관리기준 초과 체크 -->
+		<bean id="alertAutoVocs" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<property name="jobClass" value="daewooInfo.alert.service.impl.AlertAutoVocs" />
+			<property name="jobDataAsMap">
+		          <map>
+		              	<entry key="name" value="JobDetail"/>
+						<entry key="alertMakeDAO">
+		   	 				<ref local="alertMakeDAO" />
+		   	 			</entry>
+		   	 			<entry key="alertStepDAO">
+		   	 				<ref local="alertStepDAO" />
+		   	 			</entry>
+		   	 			<entry key="alertDAO">
+		   	 				<ref local="alertDAO" />
+		   	 			</entry>
+		   	 			<entry key="alertTaksuConfigDAO">
+		   	 				<ref local="alertTaksuConfigDAO" />
+		   	 			</entry>		   	 			
+		   	 			<entry key="alertSchDAO">
+		   	 				<ref local="alertSchDAO" />
+		   	 			</entry>		   	 			
+		          </map>
+		      </property>
+		</bean> 
+		 <bean id="cronTrigerVocs" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   	 	<property name="jobDetail">
+	   	 		<ref bean="alertAutoVocs"/>
+	   	 	</property>
+	   	 	<property name="cronExpression">
+	   	 		<value>0 0/5 * * * ?</value><!-- 5분마다 -->
+	   	 	</property>
+	   	 </bean> 
+	<!-- 탁수스케줄호출 -->
+		<bean id="taksuJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<property name="jobClass" value="daewooInfo.alert.service.sch.AlertTaksuScheduler" />
+			<property name="jobDataAsMap">
+		          <map> 
+		          		<entry key="alertSchDAO">
+		   	 				<ref local="alertSchDAO" />
+		   	 			</entry>  	
+		   	 			<entry key="alertTaksuConfigDAO">
+		   	 				<ref local="alertTaksuConfigDAO" />
+		   	 			</entry>
+		   	 			<entry key="alertStepDAO">
+		   	 				<ref local="alertStepDAO" />
+		   	 			</entry> 		
+		          </map>
+		      </property> 
+		</bean>
+		<!-- 탁수스케줄호출 -->
+		
+		<!-- IP-USN스케줄호출(현재안씀) -->
+		<bean id="ipusnJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<property name="jobClass" value="daewooInfo.alert.service.sch.AlertIPUSNScheduler" />
+			<property name="jobDataAsMap">
+		          <map> 
+		          		<entry key="alertSchUsnDAO">
+		   	 				<ref local="alertSchUsnDAO" />
+		   	 			</entry>  	
+		   	 			<entry key="alertTaksuConfigDAO">
+		   	 				<ref local="alertTaksuConfigDAO" />
+		   	 			</entry>
+		   	 			<entry key="alertStepDAO">
+		   	 				<ref local="alertStepDAO" />
+		   	 			</entry> 		
+		          </map>
+		      </property> 
+		</bean>
+		<!-- IP-USN스케줄호출(현재안씀) -->
+
+		<!-- 탁수 SMS스케줄호출  -->
+		<bean id="agentSmsSend" class="org.springframework.scheduling.quartz.JobDetailBean">
+   	 	<property name="jobClass" value="daewooInfo.alert.service.sch.McsAgentSmSProcess" />
+           <property name="jobDataAsMap">
+               <map> 
+	          		<entry key="alertSchDAO">
+	   	 				<ref local="alertSchDAO" />
+	   	 			</entry> 
+	   	 			<entry key="alertDAO">
+	   	 				<ref local="alertDAO" />
+	   	 			</entry>		
+		          </map>
+           </property>
+	    </bean>
+		<!-- 탁수 SMS스케줄호출  -->
+		<!-- ARS스케줄호출 -->
+		<bean id="agentArsSend" class="org.springframework.scheduling.quartz.JobDetailBean">
+   	 	<property name="jobClass" value="daewooInfo.alert.service.sch.McsAgentArsProcess" />
+           <property name="jobDataAsMap">
+               <map> 
+	          		<entry key="alertSchDAO">
+	   	 				<ref local="alertSchDAO" />
+	   	 			</entry> 
+	   	 			<entry key="alertDAO">
+	   	 				<ref local="alertDAO" />
+	   	 			</entry>		
+		          </map>
+           </property>
+	    </bean>
+		<!-- ARS스케줄호출 -->
+
+		<!-- 경보발령 SMS 스케줄러 -->
+		<bean id="alertBySmsSchdlrJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<property name="jobClass" value="daewooInfo.alert.service.impl.AlertBySmsSchdlrImpl" />
+			<property name="jobDataAsMap">
+				  <map>
+						<entry key="name" value="JobDetail"/>
+						<entry key="alertDAO">
+							<ref local="alertDAO" />
+						</entry>
+						<entry key="alertMakeDAO">
+							<ref local="alertMakeDAO" />
+						</entry>
+				  </map>
+			  </property>
+		</bean>
+		
+		<!-- 보도자료 조회 스케줄러 -->
+		<bean id="rssReaderSchdlrJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<property name="jobClass" value="daewooInfo.rss.service.impl.RssReaderSchdlrImpl" />
+			<property name="jobDataAsMap">
+				  <map>
+						<entry key="name" value="JobDetail"/>
+						<entry key="rssKeywordDAO">
+							<ref local="rssKeywordDAO" />
+						</entry>
+						<entry key="rssManageDAO">
+							<ref local="rssManageDAO" />
+						</entry>
+				  </map>
+			  </property>
+		</bean>
+		
+		<!-- 교육 알림 조회 스케줄러 -->
+		<bean id="seminarInfoSchdlrJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<property name="jobClass" value="daewooInfo.seminar.service.impl.SeminarSchdlrImpl" />
+			<property name="jobDataAsMap">
+				  <map>
+						<entry key="name" value="JobDetail"/>
+						<entry key="seminarDAO">
+							<ref local="seminarDAO" />
+						</entry>
+						<entry key="alrimDAO">
+							<ref local="alrimDAO" />
+						</entry>
+				  </map>
+			  </property>
+		</bean>
+		
+		<!-- 데이터 선별 스케줄러 -->
+		<bean id="MindataEmployeeSchdlrJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<property name="jobClass" value="daewooInfo.admin.mindataEmployee.service.impl.MindataEmployeeSchdlrImpl" />
+			<property name="jobDataAsMap">
+				  <map>
+						<entry key="name" value="JobDetail"/>
+						<entry key="mindataEmployeeDAO">
+							<ref local="mindataEmployeeDAO" />
+						</entry>
+						<entry key="alrimDAO">
+							<ref local="alrimDAO" />
+						</entry>
+				  </map>
+			  </property>
+		</bean>
+		
+		<!-- 탁수실행주기 -->
+	   	<bean id="cronTrigerTaksu" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   	 	<property name="jobDetail">
+	   	 		<ref bean="taksuJobDetail"/>
+	   	 	</property>
+	   	 	<property name="cronExpression">
+	   	 		<value>0 0/4 * * * ?</value><!-- 2분마다 -->
+	   	 	</property>
+	   	 </bean> 
+	   	 <!-- 탁수실행주기 -->  
+	   	 <!-- IP-USN 실행주기 -->
+	   	<bean id="cronTrigerIpusn" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   	 	<property name="jobDetail">
+	   	 		<ref bean="ipusnJobDetail"/>
+	   	 	</property>
+	   	 	<property name="cronExpression">
+	   	 		<value>0 0/4 * * * ?</value><!-- 2분마다 -->
+	   	 	</property>
+	   	 </bean> 
+	   	 <!-- IP-USN 실행주기--> 
+	   	 <!-- SMS 실행주기 --> 
+	   	 <bean id="cronTrigerSms" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   	 	<property name="jobDetail" ref="agentSmsSend" /> 
+	   	 	<property name="cronExpression">
+	   	 		<value>0 0/1 * * * ?</value><!-- 1분마다 -->
+	   	 	</property>
+		</bean> 
+	    <!-- SMS 실행주기 -->
+	     <!--ARS 실행주기 --> 
+	   	 <bean id="cronTrigerArs" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   	 	<property name="jobDetail" ref="agentArsSend" /> 
+	   	 	<property name="cronExpression">
+	   	 		<value>0 0/1 * * * ?</value><!-- 1분마다 -->
+	   	 	</property>
+		</bean> 
+	    <!-- ARS 실행주기 -->
+
+		<!-- 경보 발령 cron -->
+		<bean id="cronTriggerAlertSms" class="org.springframework.scheduling.quartz.CronTriggerBean">
+			<property name="jobDetail">
+				<ref bean="alertBySmsSchdlrJobDetail"/>
+			</property>
+			<property name="cronExpression">
+				<value>30 * * * * ?</value>
+			</property>
+		</bean>
+		
+		<!-- 보도자료 cron --><!-- 0 0 15 * * ? -->
+		<bean id="cronTriggerRssReader" class="org.springframework.scheduling.quartz.CronTriggerBean">
+			<property name="jobDetail">
+				<ref bean="rssReaderSchdlrJobDetail"/>
+			</property>
+			<property name="cronExpression">
+				<!-- <value>0 8 15 * * ?</value> -->
+				<value>0 0/5 * * * ?</value>
+			</property>
+		</bean>
+		
+		<!-- 교육 알림 cron -->
+		<bean id="cronTriggerSeminarInfo" class="org.springframework.scheduling.quartz.CronTriggerBean">
+			<property name="jobDetail">
+				<ref bean="seminarInfoSchdlrJobDetail"/>
+			</property>
+			<property name="cronExpression">
+				<value>0 6 08 * * ?</value>
+			</property>
+		</bean>
+		
+		<!-- 데이터 선별 알림 cron -->
+		<bean id="cronTriggerMindataEmployeeInfo" class="org.springframework.scheduling.quartz.CronTriggerBean">
+			<property name="jobDetail">
+				<ref bean="MindataEmployeeSchdlrJobDetail"/>
+			</property>
+			<property name="cronExpression">
+				<value>0 7 01 * * ?</value>
+			</property>
+		</bean>
+		
+		
+		<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean" autowire="no">
+			<property name="triggers">
+				<list>
+<!-- 					cronTrigerAlert : IP-USN -->
+<!-- 	   	 			cronTrigerNoRecv : IP-USN 첫 미수신 판단 -->
+<!-- 	   	 			cronTrigerVocs : VOcS       -->
+<!-- 				    ///////////////실서버 반영시 주석제거///////////// -->
+
+ 	   	 			<!-- <ref local="cronTrigerAlertNew"/> -->										
+                        <!--  <ref local="cronTrigerAlert"/>							   		
+                         <ref local="cronTrigerNoRecv"/>							   
+                         <ref local="cronTrigerUsnLeave"/> 						   
+                         <ref local="cronTrigerUsnAbnormal"/>   -->         			   	   
+	   	 			<!-- <ref local="cronTrigerVocs"/> -->
+                        <!--  <ref local="cronTriggerRssReader"/>						   
+                         <ref local="cronTriggerSeminarInfo"/>					   
+                         <ref local="cronTriggerMindataEmployeeInfo"/>   -->   	   	   
+<!-- <ref local="cronTriggerRssReader"/> -->
+<!-- 				    ///////////////실서버 반영시 주석제거///////////// -->	   	 			
+
+
+<!-- 				이건 풀지 말것!!  kys
+	 				<ref local="cronTrigerTaksu"/>					탁수없어짐!! 
+	   	 			<ref local="cronTrigerSms"/>					탁수 SMS 스케쥴러   	
+	   	 			<ref local="cronTrigerArs"/>					탁수 ARS    	
+
+					잡 실행으로 미수신,이상데이터,기준치초과등 경보 관련 내역을 쌓아둔 테이블인 
+					T_ALERT_INFO_SEND_HIS , T_ALERT_INFO 테이블을 조회하여
+					SMS를 발송하는 스케쥴러이긴 하나.
+					안씀!!
+	 				<ref local="cronTriggerAlertSms"/>	
+-->
+				</list>
+			</property>
+			<property name="quartzProperties">
+				<props>
+					<prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>
+					<prop key="org.quartz.threadPool.threadCount">10</prop>
+					<prop key="org.quartz.threadPool.threadPriority">4</prop>
+					<prop key="org.quartz.jobStore.class">org.quartz.simpl.RAMJobStore</prop>
+					<prop key="org.quartz.jobStore.misfireThreshold">60000</prop>
+				</props>
+			</property>
+		</bean>
+</beans>

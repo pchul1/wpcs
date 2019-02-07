@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<CHARTFX>
+	<COLUMNS>
+		<COLUMN NAME="Date" TYPE="Date"/>
+		<COLUMN NAME="orders" TYPE="Integer"/>
+		<COLUMN NAME="calls" TYPE="Integer"/>
+	</COLUMNS>
+	<ROW Date="2003-02-01" orders="5" calls="40"></ROW>
+	<ROW Date="2003-02-02" orders="10" calls="63"></ROW>
+	<ROW Date="2003-02-03" orders="12" calls="47"></ROW>
+	<ROW Date="2003-02-04" orders="7" calls="52"></ROW>
+	<ROW Date="2003-02-05" orders="3" calls="34"></ROW>
+	<ROW Date="2003-02-06" orders="21" calls="59"></ROW>
+	<ROW Date="2003-02-07" orders="12" calls="36"></ROW>
+	<ROW Date="2003-02-08" orders="7" calls="71"></ROW>
+	<ROW Date="2003-02-09" orders="11" calls="53"></ROW>
+	<ROW Date="2003-02-10" orders="3" calls="50"></ROW>
+	<ROW Date="2003-02-11" orders="12" calls="41"></ROW>
+	<ROW Date="2003-02-12" orders="10" calls="48"></ROW>
+	<ROW Date="2003-02-13" orders="5" calls="67"></ROW>
+	<ROW Date="2003-02-14" orders="12" calls="45"></ROW>
+	<ROW Date="2003-02-15" orders="18" calls="54"></ROW>
+</CHARTFX>

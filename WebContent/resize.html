@@ -1,0 +1,33 @@
+<SCRIPT type="text/javascript">
+<!--
+
+try {
+	var url = location.href;
+	var arr = url.split("?");
+	var param = new Array();
+	if(arr.length > 1) {
+		arr = arr[1].split("&");
+		for(var i=0; i<arr.length; i++) {
+			var arr2 = arr[i].split("=");
+			if(arr2.length == 2) {
+				param[arr2[0]] = arr2[1];
+			}
+		}
+	}
+
+	if(param['h']) {
+		var height = parseInt(param['h']);
+		if(height > 500) {
+			window.top.document.getElementById("mrd_ifrm").height = height;
+		}
+	} else {
+		alert('No parent Iframe');
+	}
+} catch(e) {
+	if(location.host == "www.waterkorea.or.kr") {
+		location.href = location.href.replace("http://www.", "http://");
+	}
+}
+
+//-->
+</SCRIPT>

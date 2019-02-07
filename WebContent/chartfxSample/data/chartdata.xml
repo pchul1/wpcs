@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <CHARTFX>
+      <COLUMNS>
+        <COLUMN NAME="d239552e198" TYPE="String" DESCRIPTION="High Rise Multi-Family" />
+        <COLUMN NAME="d239552e201" TYPE="String" DESCRIPTION="Mid Rise Multi-Family" />
+        <COLUMN NAME="d239552e204" TYPE="String" DESCRIPTION="Low Rise Multi-Family" />
+        <COLUMN NAME="d239552e207" TYPE="String" DESCRIPTION="Single-Family" />
+        <COLUMN NAME="value" TYPE="Integer" />
+      </COLUMNS>
+      <ROW d239552e198="High Rise Multi-Family" value="7" />
+      <ROW d239552e201="Mid Rise Multi-Family" value="1" />
+      <ROW d239552e204="Low Rise Multi-Family" value="47" />
+      <ROW d239552e207="Single-Family" value="57" />
+    </CHARTFX>

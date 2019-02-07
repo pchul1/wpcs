@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="alertTargetDAO">
+
+	<typeAlias alias="alertTargetVO" type="daewooInfo.alert.bean.AlertTargetVO"/>
+	
+	<!-- get Alert Target List -->
+	<select id="getAlertTargetList" parameterClass="alertTargetVO" resultClass="alertTargetVO">
+		SELECT 
+			ROWNUM						 as atNo
+			, AT.FACT_CODE				as factCode
+			, AT.BRANCH_NO				as branchNo
+			, AT.SPREAD_TARGET_NO		as atId 
+			, (	SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ' > ')), 4))
+				  FROM T_DEPT_INFO 
+				  WHERE DEPT_CODE =  M.DEPT_CODE
+				  START WITH UPPER_DEPT_CODE = '0'
+				  CONNECT BY PRIOR DEPT_CODE = UPPER_DEPT_CODE) as atDept 
+			, (SELECT DEPT_NAME FROM T_DEPT_INFO WHERE DEPT_CODE = M.DEPT_CODE) as atPart
+			, M.MEMBER_NAME		as atName
+			, M.GRADE_NAME	as atPosition
+			, M.OFFICE_NO	as atArsTele
+			, M.MOBILE_NO	as atSmsTele
+			, AT.ACS_FLAG			as atArs
+			, AT.SMS_FLAG			as atSms
+			, AT.DAY			as atDay
+			, AT.NIGHT		as atNight
+			, AT.USE_FLAG		as atRece
+			, AT.SEQ		as atClass
+			, AT.STEP		as atDepth
+		FROM T_SPREAD_TARGET AT, T_MEMBER M
+		WHERE TRIM(AT.FACT_CODE) = #factCode#
+		AND AT.BRANCH_NO = #branchNo#
+		AND AT.MEMBER_ID = M.MEMBER_ID
+		ORDER BY M.DEPT_CODE, M.GRADE_NAME, M.MEMBER_NAME
+	</select>
+	
+	<!-- get Alert Target List -->
+	<select id="getUserList" resultClass="HashMap">
+		SELECT MEMBER_ID,
+				MEMBER_NAME,
+				(	SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ' > ')), 4))
+				  FROM T_DEPT_INFO 
+				  WHERE DEPT_CODE =  M.DEPT_CODE
+				  START WITH UPPER_DEPT_CODE = '0'
+				  CONNECT BY PRIOR DEPT_CODE = UPPER_DEPT_CODE) AS OFFICE_NAME,
+				GRADE_NAME
+		  FROM T_MEMBER M
+	</select>	
+	
+	<!-- get Alert Target User check -->
+	<select id="getAlertTargetUserCheck" parameterClass="alertTargetVO" resultClass="java.lang.Integer">
+		SELECT COUNT(MEMBER_ID)
+		FROM T_SPREAD_TARGET
+		WHERE FACT_CODE = #factCode#
+		AND BRANCH_NO = #branchNo#
+		AND MEMBER_ID = #atMemberId#
+	</select>
+	
+	<!-- get Alert Target -->
+	<select id="getAlertTarget" parameterClass="alertTargetVO" resultClass="alertTargetVO">
+		SELECT 
+			ROWNUM						 as atNo
+			, AT.FACT_CODE				as factCode
+			, AT.BRANCH_NO				as branchNo
+			, AT.SPREAD_TARGET_NO		as atId
+			, M.OFFICE_NAME	as atDept
+			, (SELECT DEPT_NAME FROM T_DEPT_INFO WHERE DEPT_CODE = M.DEPT_CODE) as atPart
+			, M.MEMBER_NAME		as atName
+			, M.GRADE_NAME	as atPosition
+			, M.OFFICE_NO	as atArsTele
+			, M.MOBILE_NO	as atSmsTele
+			, AT.ACS_FLAG			as atArs
+			, AT.SMS_FLAG			as atSms
+			, AT.DAY			as atDay
+			, AT.NIGHT		as atNight
+			, AT.USE_FLAG		as atRece
+			, AT.SEQ		as atClass
+			, AT.STEP		as atDepth
+		FROM T_SPREAD_TARGET AT, T_MEMBER M
+		WHERE SPREAD_TARGET_NO = #atId#
+		ORDER BY M.OFFICE_NAME, atPart, M.GRADE_NAME, M.MEMBER_NAME
+	</select>
+		
+	<!-- merge Alert Target Data -->
+	<statement id="mergeAlertTarget" parameterClass="alertTargetVO">
+		MERGE INTO T_SPREAD_TARGET A 
+		USING ( SELECT #atId# AS SPREAD_TARGET_NO, #factCode# AS FACT_CODE, #branchNo# AS BRANCH_NO, #atMemberId# AS MEMBER_ID,
+						#atArs# AS ACS_FLAG, #atSms# AS SMS_FLAG, #atDay# AS DAY, #atNight# AS NIGHT, 
+						#atRece# AS USE_FLAG
+				FROM DUAL) B
+		ON (A.SPREAD_TARGET_NO = B.SPREAD_TARGET_NO)
+		WHEN MATCHED THEN 
+			UPDATE SET 
+				A.ACS_FLAG = B.ACS_FLAG
+				, A.SMS_FLAG = B.SMS_FLAG
+				, A.DAY = B.DAY
+				, A.NIGHT = B.NIGHT
+				, A.USE_FLAG = B.USE_FLAG
+		WHEN NOT MATCHED THEN
+			INSERT (A.SPREAD_TARGET_NO, A.FACT_CODE, A.BRANCH_NO, A.MEMBER_ID, A.ACS_FLAG, A.SMS_FLAG, A.DAY, A.NIGHT, A.USE_FLAG)
+			VALUES (B.SPREAD_TARGET_NO, B.FACT_CODE, B.BRANCH_NO, B.MEMBER_ID, B.ACS_FLAG, B.SMS_FLAG, B.DAY, B.NIGHT, B.USE_FLAG)
+	</statement>
+	
+	<!-- delete Alert Target Data -->
+	<statement id="deleteAlertTarget" parameterClass="alertTargetVO">
+		DELETE FROM T_SPREAD_TARGET		
+		WHERE SPREAD_TARGET_NO IN ( #atId# )
+	</statement>
+	
+	<select id="getAlertTargetPk" resultClass="java.lang.Integer">
+		SELECT SEQ_ALERT_TARGET.NEXTVAL FROM DUAL
+	</select>
+	
+	<select id="getGroupList" parameterClass="HashMap" resultClass="HashMap">
+		SELECT DEPT_CODE as VALUE, 
+				 (SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ' > ')), 4))
+				  FROM T_DEPT_INFO 
+				  WHERE DEPT_CODE =  M.DEPT_CODE
+				  START WITH UPPER_DEPT_CODE = '0'
+				  CONNECT BY PRIOR DEPT_CODE = UPPER_DEPT_CODE) as CAPTION,
+				  TO_CHAR(DEPT_CODE) as KEY,
+				  1 as ORDER_TYPE
+		  FROM T_DEPT_INFO M
+		 WHERE DEPT_CODE IN
+					 (SELECT DISTINCT DEPT_CODE
+						FROM T_MEMBER
+						WHERE MEMBER_ID IN
+									(SELECT DISTINCT MEMBER_ID
+									  FROM T_SPREAD_TARGET
+									 WHERE 1 = 1
+	<isNotNull property="system">
+											AND FACT_CODE IN (SELECT FACT_CODE
+															FROM T_FACT_INFO
+														  WHERE SYS_KIND = #system#)
+	</isNotNull>
+	<isNotNull property="sugye">
+											AND FACT_CODE IN
+													(SELECT FACT_CODE
+														FROM T_FACT_INFO
+													  WHERE RIVER_DIV = #sugye#)
+	</isNotNull>
+	<isNotNull property="factCode">
+											AND FACT_CODE = #factCode#
+	</isNotNull>
+	<isNotNull property="branchNo">
+											AND BRANCH_NO = #branchNo#
+	</isNotNull>
+									 ))
+		UNION 
+		SELECT DEPT_CODE,
+					MEMBER_NAME,
+					MEMBER_ID,
+					2 as ORDER_TYPE
+		FROM  T_MEMBER
+		WHERE MEMBER_ID IN
+					(SELECT DISTINCT MEMBER_ID
+					  FROM T_SPREAD_TARGET
+					 WHERE 1 = 1
+	<isNotNull property="system">
+											AND FACT_CODE IN (SELECT FACT_CODE
+															FROM T_FACT_INFO
+														  WHERE SYS_KIND = #system#)
+	</isNotNull>
+	<isNotNull property="sugye">
+											AND FACT_CODE IN
+													(SELECT FACT_CODE
+														FROM T_FACT_INFO
+													  WHERE RIVER_DIV = #sugye#)
+	</isNotNull>
+	<isNotNull property="factCode">
+											AND FACT_CODE = #factCode#
+	</isNotNull>
+	<isNotNull property="branchNo">
+											AND BRANCH_NO = #branchNo#
+	</isNotNull>
+					 )
+		ORDER BY VALUE, ORDER_TYPE, CAPTION
+	</select>
+	
+	<statement id="getGroupAndMember" parameterClass="alertTargetVO" resultClass="HashMap">
+		SELECT 
+			VALUE as ID,
+			CAPTION as CAPTION,
+			KEY as VALUE,
+			MOBILE_NO AS MOBILE_NO
+		FROM (
+					SELECT DEPT_CODE as VALUE, 
+						 (SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ' > ')), 4))
+						  FROM T_DEPT_INFO 
+						  WHERE DEPT_CODE =  M.DEPT_CODE
+						  START WITH UPPER_DEPT_CODE = '0'
+						  CONNECT BY PRIOR DEPT_CODE = UPPER_DEPT_CODE) as CAPTION,
+						  TO_CHAR(DEPT_CODE) as KEY,
+						  TO_CHAR(DEPT_CODE) as MOBILE_NO,
+						  1 as ORDER_TYPE		
+					FROM T_DEPT_INFO M
+					WHERE DEPT_CODE IN
+					(SELECT DISTINCT DEPT_CODE
+						FROM T_MEMBER
+					  WHERE MEMBER_ID IN
+								  (SELECT DISTINCT MEMBER_ID
+									 FROM T_SPREAD_TARGET
+									WHERE 1 = 1
+										<isNotNull property="system">
+											AND FACT_CODE IN (SELECT FACT_CODE
+															FROM T_FACT_INFO
+														  WHERE SYS_KIND = #system#)
+										</isNotNull>
+										<isNotNull property="sugye">
+																				AND FACT_CODE IN
+																						(SELECT FACT_CODE
+																							FROM T_FACT_INFO
+																						  WHERE RIVER_DIV = #sugye#)
+										</isNotNull>
+										<isNotNull property="factCode">
+																				AND FACT_CODE = #factCode#
+										</isNotNull>
+										 <isNotEqual property="branchNo" compareValue="0">
+																				AND BRANCH_NO = #branchNo#
+										</isNotEqual>
+									))
+						  UNION 
+						  SELECT DEPT_CODE,
+									  MEMBER_NAME,
+									  MEMBER_ID,
+									  MOBILE_NO,
+									  2 as ORDER_TYPE
+							FROM  T_MEMBER
+						  WHERE MEMBER_ID IN
+									  (SELECT DISTINCT MEMBER_ID
+										 FROM T_SPREAD_TARGET
+										WHERE 1 = 1
+											<isNotNull property="system">
+											AND FACT_CODE IN (SELECT FACT_CODE
+															FROM T_FACT_INFO
+														  WHERE SYS_KIND = #system#)
+											</isNotNull>
+											<isNotNull property="sugye">
+																					AND FACT_CODE IN
+																							(SELECT FACT_CODE
+																								FROM T_FACT_INFO
+																							  WHERE RIVER_DIV = #sugye#)
+											</isNotNull>
+											<isNotNull property="factCode">
+																					AND FACT_CODE = #factCode#
+											</isNotNull>
+											<isNotEqual property="branchNo" compareValue="0">
+																					AND BRANCH_NO = #branchNo#
+											</isNotEqual>
+					)
+					ORDER BY VALUE, ORDER_TYPE, CAPTION
+		 )
+		 where 
+			ORDER_TYPE = #orderType#
+		 <isNotNull property="value">
+			AND VALUE = #value#
+		 </isNotNull>
+		 <isEqual property="step" compareValue="1">
+			AND VALUE like '1%'
+		 </isEqual>
+		 <isEqual property="step" compareValue="2">
+			AND (VALUE like '4%' OR VALUE like '6%')
+		 </isEqual>
+		 <isEqual property="step" compareValue="3">
+			AND (VALUE like '1%' OR VALUE like '7%')
+		 </isEqual>
+	</statement>
+	
+	<statement id="getSmsGroupList" resultClass="HashMap">
+		SELECT	ID,
+				CAPTION,
+				VALUE,
+				MOBILE_NO
+		  FROM	(
+		  			SELECT	0 AS ID,
+		  					GROUP_NM AS CAPTION,
+		  					GROUP_ID AS VALUE,
+		  					GROUP_ID AS MOBILE_NO
+		  			  FROM	T_SMS_GROUP
+		  			 ORDER	BY GROUP_ID
+		  		)
+		 UNION
+		SELECT 
+			VALUE as ID,
+			CAPTION as CAPTION,
+			KEY as VALUE,
+			MOBILE_NO AS MOBILE_NO
+		FROM (
+					SELECT DEPT_CODE as VALUE, 
+						 (SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ' > ')), 4))
+						  FROM T_DEPT_INFO 
+						  WHERE DEPT_CODE =  M.DEPT_CODE
+						  START WITH UPPER_DEPT_CODE = '0'
+						  CONNECT BY PRIOR DEPT_CODE = UPPER_DEPT_CODE) as CAPTION,
+						  TO_CHAR(DEPT_CODE) as KEY,
+						  TO_CHAR(DEPT_CODE) as MOBILE_NO,
+						  1 as ORDER_TYPE		
+					FROM T_DEPT_INFO M
+					WHERE DEPT_CODE IN
+					(SELECT DISTINCT DEPT_CODE
+						FROM T_MEMBER
+					  WHERE MEMBER_ID IN
+								  (SELECT DISTINCT MEMBER_ID
+									 FROM T_SPREAD_TARGET
+									WHERE 1 = 1
+									)
+					)
+		 )
+	</statement>
+	
+	<statement id="getSmsGroupListMobile" parameterClass="alertTargetVO" resultClass="HashMap">
+		SELECT	ID,
+				CAPTION,
+				VALUE,
+				MOBILE_NO
+		  FROM	(
+		  			SELECT	0 AS ID,
+		  					GROUP_NM AS CAPTION,
+		  					GROUP_ID AS VALUE,
+		  					GROUP_ID AS MOBILE_NO
+		  			  FROM	T_SMS_GROUP
+		  			 ORDER	BY GROUP_ID
+		  		)
+		 UNION
+		SELECT 
+			VALUE as ID,
+			CAPTION as CAPTION,
+			KEY as VALUE,
+			MOBILE_NO AS MOBILE_NO
+		FROM (
+					SELECT DEPT_CODE as VALUE, 
+						 (SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ' > ')), 4))
+						  FROM T_DEPT_INFO 
+						  WHERE DEPT_CODE =  M.DEPT_CODE
+						  START WITH UPPER_DEPT_CODE = '0'
+						  CONNECT BY PRIOR DEPT_CODE = UPPER_DEPT_CODE) as CAPTION,
+						  TO_CHAR(DEPT_CODE) as KEY,
+						  TO_CHAR(DEPT_CODE) as MOBILE_NO,
+						  1 as ORDER_TYPE		
+					FROM T_DEPT_INFO M
+					WHERE DEPT_CODE IN
+					(SELECT DISTINCT DEPT_CODE
+						FROM T_MEMBER
+					  WHERE MEMBER_ID IN
+								  (SELECT DISTINCT MEMBER_ID
+									 FROM T_SPREAD_TARGET
+									WHERE 1 = 1
+										<isNotNull property="system">
+											AND FACT_CODE IN (SELECT FACT_CODE
+															FROM T_FACT_INFO
+														  WHERE SYS_KIND = #system#)
+										</isNotNull>
+										<isNotNull property="sugye">
+																				AND FACT_CODE IN
+																						(SELECT FACT_CODE
+																							FROM T_FACT_INFO
+																						  WHERE RIVER_DIV = #sugye#)
+										</isNotNull>
+										<isNotNull property="factCode">
+																				AND FACT_CODE = #factCode#
+										</isNotNull>
+										 <isNotEqual property="branchNo" compareValue="0">
+																				AND BRANCH_NO = #branchNo#
+										</isNotEqual>
+									)
+					)
+		 )
+		 where 
+			ORDER_TYPE = #orderType#
+		 <isNotNull property="value">
+			AND VALUE = #value#
+		 </isNotNull>
+		 <isEqual property="step" compareValue="1">
+			AND VALUE like '1%'
+		 </isEqual>
+		 <isEqual property="step" compareValue="2">
+			AND (VALUE like '4%' OR VALUE like '6%')
+		 </isEqual>
+		 <isEqual property="step" compareValue="3">
+			AND (VALUE like '1%' OR VALUE like '7%')
+		 </isEqual>
+	</statement>
+	
+	<statement id="getSmsMemberList" parameterClass="alertTargetVO" resultClass="HashMap">
+		SELECT 
+			VALUE as ID,
+			CAPTION as CAPTION,
+			KEY as VALUE,
+			MOBILE_NO AS MOBILE_NO
+		FROM (
+						  SELECT TO_CHAR(DEPT_CODE) as VALUE,
+									  MEMBER_NAME as CAPTION,
+									  MEMBER_ID as KEY,
+									  MOBILE_NO as MOBILE_NO
+							FROM  T_MEMBER
+						  WHERE MEMBER_ID IN
+									  (SELECT DISTINCT MEMBER_ID
+										 FROM T_SPREAD_TARGET
+										WHERE 1 = 1)
+						  UNION
+						 SELECT	T1.GROUP_ID
+						 		,T2.MEMBER_NAME
+			            		,T2.MEMBER_ID
+			            		,T2.MOBILE_NO
+			              FROM 	T_SMS_GROUP_MEMBER T1
+			              		,T_MEMBER T2
+			             WHERE 	1=1
+			               AND	T1.MEMBER_ID = T2.MEMBER_ID
+		 )
+		 where 
+			1 = 1
+		 <isNotNull property="value">
+			AND VALUE = #value#
+		 </isNotNull>
+	</statement>	
+</sqlMap>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE form-validation PUBLIC 
+    "-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.1//EN" 
+    "http://jakarta.apache.org/commons/dtds/validator_1_1.dtd">
+
+<form-validation>
+
+<!-- 부서 등록 및 수정 -->
+    <formset>
+        <form name="deptManageVO">
+			<field property="deptNo" depends="required, integer">
+        		<arg0 key="부서번호" resource="false"/>
+			</field> 
+			<field property="deptOrder" depends="required, integer">
+        		<arg0 key="부서순서" resource="false"/>
+			</field>
+            <field property="deptName" depends="required, maxlength">
+        		<arg0 key="부서명" resource="false"/>
+        		<arg1 key="50" resource="false"/>
+				<var>
+					<var-name>maxlength</var-name>
+					<var-value>50</var-value>
+				</var>
+			</field> 
+			<field property="upperDeptNo" depends="required, integer">
+        		<arg0 key="부서상위번호" resource="false"/>
+			</field>
+			<field property="deptDesc" depends="maxlength">
+        		<arg0 key="부서설명" resource="false"/>
+        		<arg1 key="100" resource="false"/>
+				<var>
+					<var-name>maxlength</var-name>
+					<var-value>100</var-value>
+				</var>
+			</field> 
+			<field property="useFlag" depends="required">
+        		<arg0 key="사용여부" resource="false"/>
+			</field> 
+		</form>
+    </formset>
+
+</form-validation>

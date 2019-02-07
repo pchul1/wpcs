@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
+  <head>
+    <title>Google Maps + ArcGIS</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<link rel="stylesheet" type="text/css" href="/css/content.css" />
+<!--##############################################################################-->
+<!--## 시작:구글과 ESRI에서 관련 js파일을 가져오기위해 반드시 필요한 스크립트입니다.    ##-->
+<!--## 포팅시에 실제 도메인네임과 GIS서버를 사용하기 위한 키, IP변경이 필요합니다.      ##-->
+<!--## 해당키와 IP는 하단의 스크립트내에 주석으로 처리되어있으며 포팅시점에 변경바랍니다.##-->
+<!--##############################################################################-->
+    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAAUqzKskvQXw_UTKpILtz0BRqs7OO1Tb_cumvo_a2JFiOp5iBHRSME5u3O-Ts911e0yjTpD4PjiNW5g" type="text/javascript"></script>
+    <script src="http://serverapi.arcgisonline.com/jsapi/gmaps/?v=1.6" type="text/javascript" ></script>
+    <!--포팅시 아래의 도메인별 구글키의 변경이 필요합니다. -->
+    <!--http://www.watertms.or.kr:8080 : ABQIAAAAAUqzKskvQXw_UTKpILtz0BSiOMSd4UtbBOzDpvG2FihVLiCnJRTRZTnPp7LJJwNnfiOH7iRZT97aLg-->
+    <!--http://www.watertms.or.kr : ABQIAAAAAUqzKskvQXw_UTKpILtz0BRh65fw2Kxj1BIR7J7H70cBjtzx7hSqIHfLy7XBbpwf_EdihwInIGtqCw-->
+    <!--http://www.waterkorea.or.kr:8080 : ABQIAAAAAUqzKskvQXw_UTKpILtz0BRqs7OO1Tb_cumvo_a2JFiOp5iBHRSME5u3O-Ts911e0yjTpD4PjiNW5g-->
+    <!--http://www.waterkorea.or.kr : ABQIAAAAAUqzKskvQXw_UTKpILtz0BQXHMXAZIIXSp0UaSHdDYhAeGul3BQy7aUdJ-XNu3Mp0zfHROBvN2NJpQ-->
+    
+    <!-- <script src="http://gmaps-utility-library.googlecode.com/svn/trunk/progressbarcontrol/1.0/src/progressbarcontrol.js" type="text/javascript" ></script> -->
+		
+    <script type="text/javascript">
+    var gmap = null;
+    var dynMapOv = null;
+    var queryTask;
+    var geocoder = null;
+    var dynamicMap = null;
+    var layers = null ;
+    
+    var mapExtension, identifyTask, layers, overlays;
+    
+    function initialize() {
+      //Load Google Maps
+      gmap = new GMap2(document.getElementById("gmap"));
+	  gmap.setMapType(G_PHYSICAL_MAP);//G_NORMAL_MAP, G_SATELLITE_MAP, G_HYBRID_MAP, G_PHYSICAL_MAP
+	  gmap.addMapType(G_PHYSICAL_MAP);
+	  gmap.addControl(new GLargeMapControl());
+      var topRight = new GControlPosition(G_ANCHOR_TOP_RIGHT, new GSize(5,5));
+      gmap.addControl(new GMenuMapTypeControl(),topRight);
+      gmap.addControl(new GOverviewMapControl());
+      gmap.setCenter(new GLatLng(36.635412,128.287354),7);
+      gmap.enableScrollWheelZoom();
+
+      //create custom dynamic layer
+      //esri.arcgis.gmaps.DynamicMapServiceLayer(url,esri.arcgis.gmaps.ImageParameters?,opacity?,callback?);
+      dynamicMap = new esri.arcgis.gmaps.DynamicMapServiceLayer("http://10.101.164.227:8399/arcgis/rest/services/test/MapServer", null, 0.75, dynmapcallback);
+      geocoder = new GClientGeocoder();
+      
+      
+      layers=dynamicMap.getVisibleLayers() ;
+	  
+	  mapExtension = new esri.arcgis.gmaps.MapExtension(gmap);
+	 
+	  function legend() {}
+	  legend.prototype = new GControl;
+	  legend.prototype.initialize = function(gmap) {
+	    var me = this;
+	    me.panel = document.getElementById("legend");
+	    me.panel.style.border = "1px solid gray";
+	    me.panel.style.background = "white";
+	    gmap.getContainer().appendChild(me.panel);
+	    return me.panel;
+	  };
+
+	  legend.prototype.getDefaultPosition = function() {
+	    return new GControlPosition(
+	        G_ANCHOR_TOP_RIGHT, new GSize(100, 5));
+	  };
+
+	  legend.prototype.getPanel = function() {
+	    return me.panel;
+	  }
+	  gmap.addControl(new legend());
+
+	  function legendDetail() {}
+	  legendDetail.prototype = new GControl;
+	  legendDetail.prototype.initialize = function(gmap) {
+	    var me = this;
+	    me.panel = document.getElementById("legendDetail");
+	    me.panel.style.border = "1px solid gray";
+	    me.panel.style.background = "white";
+	    gmap.getContainer().appendChild(me.panel);
+	    return me.panel;
+	  };
+
+	  legendDetail.prototype.getDefaultPosition = function() {
+	    return new GControlPosition(
+	        G_ANCHOR_TOP_RIGHT, new GSize(100, 30));
+	  };
+
+	  legendDetail.prototype.getPanel = function() {
+	    return me.panel;
+	  }
+	  gmap.addControl(new legendDetail());
+
+	  getAreaMoveDisable(34.07086232376631,125.70556640625,38.58252615935333,129.55078125);
+	  getAreaLevelDisable(7,15);
+      
+     
+
+    }
+    
+	
+    function dynmapcallback(groundov) {
+      //Add groundoverlay to map using gmap.addOverlay()
+      gmap.addOverlay(groundov);
+      dynMapOv = groundov;
+    }
+
+   </script>
+
+</head>
+	<body onload="initialize();" onunload="GUnload();">
+	
+		<div id="gmap" style="width: 100%; height: 575px;"></div>
+
+
+	</body>
+</html>
+<!--must be inserted up for including map page-->

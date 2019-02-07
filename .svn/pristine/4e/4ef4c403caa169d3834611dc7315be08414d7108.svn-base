@@ -1,0 +1,303 @@
+@charset "utf-8";
+/*------------------------------------------------
+    project:    수질오염 방제정보 시스템
+    created:    2013-10-17
+------------------------------------------------ */
+
+html{overflow-y:hidden;}
+
+/*-- layout --------------------------------------*/
+/* #gisContainer {min-height: 100%; width: auto; overflow: hidden; margin:0 0 -237px 0;} */
+/* #gisContent_wrapper {width:100%;margin: 0 auto; text-align:center; background:url(/gis/images/bg_map.jpg) repeat-x 0 0;} */
+#mapBox {width:100%; position:relative; overflow:hidden; border:1px solid #999; min-height:640px; margin-bottom:80px;}
+#mapBoxTm {width:100%; position:relative; overflow:hidden; border:1px solid #999;}
+#map{ background:#94b7d4; position:absolute; top:0; left:0; right:0; bottom:0; }
+
+/*-- 상단 정보 --------------------------------------*/
+#topInfo{padding:0 10px;height:40px;text-align:left;position:relative}
+#topInfo ul{}
+#topInfo li{line-height:40px;}
+
+#mapInfo{background:#fff; filter:alpha(opacity:70);  opacity:0.7;  -moz-opacity:0.8;margin:1px;width:305px;line-height:28px;font-weight:600;position:absolute; z-index:1}
+
+/*-- 지도상단 버튼 --------------------------------------*/
+#mapTool{right:5px;top:5px;position:absolute;float:left; z-index:1}
+.tool{width:41px;height:24px;border:none;background:url(/gis/images/tool_sprite.gif) no-repeat;cursor:pointer;font-size:0; line-height:999px;padding:0;margin:0;}
+#tool01{}
+#tool01:hover , #tool01.on {background-position:-60px 0px;}
+#tool02{background-position:0 -30px;}
+#tool02:hover , #tool02.on {background-position:-60px -30px;}
+#tool03{width:58px;background-position:0 -60px;}
+#tool03:hover , #tool03.on {background-position:-60px -60px;}
+#tool04{width:58px;background-position:0 -90px;}
+#tool04:hover , #tool04.on {background-position:-60px -90px;}
+#tool05{background-position:0 -120px;}
+#tool05:hover , #tool05.on {background-position:-60px -120px;}
+#tool06{background-position:0 -150px;}
+#tool06:hover , #tool06.on {background-position:-60px -150px;}
+#tool07{width:42px;background-position:0 -180px;}
+#tool07:hover , #tool07.on {background-position:-60px -180px;}
+
+#tool {right: 10px; top: 5px; position: absolute; width:350px; height:24px; z-index:10 }
+#tool .tool_bu1 { width:42px; height:24px; float:left; }
+#tool .tool_bu2 { width:58px; height:24px; float:left; }
+#tool .tool_bu3 { width:42px; height:24px; float:left; }
+
+
+
+/*-- 지도우측 범례패널 --------------------------------------*/
+#berm { width:72px; color: #59637c; padding: 5px 10px; border: 1px solid #59657f; background-color: #f7f7f7;position:absolute;right:5px;bottom:5px;  z-index:1}
+#berm li{line-height:24px;text-align:left;}
+#berm li span{vertical-align:middle;}
+/* #berm .point1 { width:15px; height:15px; background: url(/gis/images/berm_point1.gif) no-repeat 0 bottom; display:inline-block; } */
+/* #berm .point2 { width:15px; height:15px; background: url(/gis/images/berm_point2.gif) no-repeat 0 bottom; display:inline-block; } */
+/* #berm .point3 { width:15px; height:15px; background: url(/gis/images/berm_point3.gif) no-repeat 0 bottom; display:inline-block; } */
+/* #berm .point4 { width:15px; height:15px; background: url(/gis/images/berm_point4.gif) no-repeat 0 bottom; display:inline-block; } */
+/* #berm .point5 { width:15px; height:15px; background: url(/gis/images/berm_point5.gif) no-repeat 0 bottom; display:inline-block; } */
+/* #berm .point6 { width:15px; height:15px; background: url(/gis/images/berm_point6.gif) no-repeat 0 bottom; display:inline-block; } */
+/* #berm .point7 { width:15px; height:15px; background: url(/gis/images/berm_point7.gif) no-repeat 0 bottom; display:inline-block; } */
+
+#berm .point1 { width:11px; height:17px; background: url(/gis/images/berm1.png) no-repeat 0 bottom; display:inline-block; }
+#berm .point2 { width:11px; height:17px; background: url(/gis/images/berm2.png) no-repeat 0 bottom; display:inline-block; }
+#berm .point3 { width:11px; height:17px; background: url(/gis/images/berm3.png) no-repeat 0 bottom; display:inline-block; }
+#berm .point4 { width:11px; height:17px; background: url(/gis/images/berm4.png) no-repeat 0 bottom; display:inline-block; }
+#berm .point5 { width:11px; height:17px; background: url(/gis/images/berm5.png) no-repeat 0 bottom; display:inline-block; }
+#berm .point6 { width:11px; height:17px; background: url(/gis/images/berm6.png) no-repeat 0 bottom; display:inline-block; }
+#berm .point7 { width:11px; height:17px; background: url(/gis/images/berm7.png) no-repeat 0 bottom; display:inline-block; }
+
+
+/*-- 지도우측 범례패널 --------------------------------------*/
+#bermTm { width:72px; color: #59637c; padding: 5px 10px; border: 1px solid #59657f; background-color: #f7f7f7;position:absolute;right:5px;bottom:5px;  z-index:1}
+#bermTm li{line-height:24px;text-align:left;}
+#bermTm li span{vertical-align:middle;}
+
+#bermTm .point1 { width:18px; height:18px; background: url(/gis/images/circle1.png) no-repeat 0 bottom; display:inline-block; }
+#bermTm .point2 { width:18px; height:18px; background: url(/gis/images/circle2.png) no-repeat 0 bottom; display:inline-block; }
+#bermTm .point3 { width:18px; height:18px; background: url(/gis/images/circle3.png) no-repeat 0 bottom; display:inline-block; }
+#bermTm .point4 { width:18px; height:18px; background: url(/gis/images/circle4.png) no-repeat 0 bottom; display:inline-block; }
+#bermTm .point5 { width:18px; height:18px; background: url(/gis/images/circle5.png) no-repeat 0 bottom; display:inline-block; }
+#bermTm .point6 { width:18px; height:18px; background: url(/gis/images/circle6.png) no-repeat 0 bottom; display:inline-block; }
+
+.stabMenu{position:relative;display:inline-block;height:100px;}
+.stabMenu .swrap{float: left;}
+.stabMenu .stab{float:left;margin-right:2px;position: relative;z-index:2;}
+.stabMenu .stab a{height: 21px;display: block;background: #ddd;border:1px solid #ccc;text-align: center;text-decoration: none;padding-top:2px;padding-left:3px;padding-right:3px;}
+.stabMenu .scnt{width: 280px;position: absolute;left:0;top:24px;z-index:1;border-top:1px solid #ccc;border-bottom:1px solid #ababab;background: #fff;display:none;overflow: hidden;}
+.stabMenu .h160{height: 222px}
+
+.stabMenu .swrap.son .stab a{height:22px;border-bottom:0;background: #fff;}
+.stabMenu .swrap.son .scnt{padding-top:3px;display:block;overflow:hidden;}
+
+/*-- 지도좌측 검색패널 --------------------------------------*/  
+/* url(/gis/images/bg_map_search.png) no-repeat 0 0 */ 
+#leftSearchBx{position:absolute;top:0; right:0; background:#FFF ; border:1px solid #999; height:600px;text-align:left; z-index:1}
+#leftSearchBx2{position:absolute;top:0; background:#FFF ; border:1px solid #999; height:270px ;text-align:left; z-index:1}
+/*
+#leftSearchBx{position:absolute;top:40px; background:url(/gis/images/bg_map_search.png) no-repeat 0 0; height:435px ;text-align:left; z-index:1}
+*/
+#leftSearch .list-wrap {height:405px ;width:285px;float:left;padding:5px 10px 15px 10px; }
+#leftSearch .list-wrap2 {height:405px ;width:235px;float:left;padding:5px 10px 15px 10px; }
+
+#leftSearch .top_search {width:285px; padding:10px 10px 0 10px; }
+/* #leftSearch .nav {float:right;} */
+/* #leftSearch .nav li {width: 34px; margin:0; position:absolute;} */
+/* #leftSearch .nav li.last {bottom:17px; background:none; color:#000} */
+/* #leftSearch .nav li a { display: block;text-align: center;  height:136px;background:url(/gis/images/map_sarch_tab_n.png) no-repeat 0 0;} */
+/* #leftSearch .nav li a:hover {background:url(/gis/images/map_sarch_tab_o.png) no-repeat 0 0; } */
+/* #leftSearch ul li.nav-one {top:6px;} */
+/* #leftSearch ul li.nav-two {top:113px;} */
+/* #leftSearch ul li.nav-three {top:226px;} */
+/* #leftSearch ul li.nav-one a.current {background:url(/gis/images/map_sarch_tab_o.png) no-repeat 0 0; top:6px;} */
+/* #leftSearch ul li.nav-two a.current {background:url(/gis/images/map_sarch_tab_o.png) no-repeat 0 0; top:113px;} */
+/* #leftSearch ul li.nav-three a.current {background:url(/gis/images/map_sarch_tab_o.png) no-repeat 0 0; top:226px;} */
+#searchToggle{right:306px;top:150px;position:absolute;}
+
+#searchToggleTm{right:-15px;top:234px;position:absolute;}
+
+#leftSearch .title{font-size:14px;text-align:left;font-weight:600;height:20px;display:inline-block; padding-left:15px; background:url('/images/renewal2/point_03.png') no-repeat no-repeat left center; margin-bottom:5px;}
+#leftSearch .divideBx{margin-top:15px;border-top:1px dashed #c6c6c6;height:10px;width:100%;}
+#leftSearch .grayBx{padding:3px 0;background:#fafafa;border:1px solid #bcbcbc;display:inline-block;width:100%;text-align:center;}
+#leftSearch .grayBx li{padding:0 10px; border-right:1px solid #cccccc;display:inline-block;}
+#leftSearch .grayBx li.last{ border-right:0px solid #cccccc;}
+#leftSearch .grayBx li:hover{color:#d06300;}
+#leftSearch .resultTit{border-top:2px solid #6b6b6b;border-bottom:1px solid #d2d2d2;margin-top:10px;text-align:left;padding:3px 7px;font-weight:600;color:#000}
+#leftSearch .resultTit span{float:right;font-weight:normal;color:#555;}
+#resultBx{height:245px;text-align:left;padding:5px 10px;overflow-y:auto;overflow-x:hidden;}
+#resultBx ul{border-bottom:1px dashed #c6c6c6;}
+#resultBx li{line-height:20px;padding:0 15px}
+#resultBx li.tit{background:url(/gis/images/ic_cir.png) no-repeat 0 3px;font-weight:600;color:#000}
+.table_info{border-left:0; border-right:0; border-bottom:1px solid #b7b7b7;border-top:0px;text-align:center;}
+.table_info th{background:#eaeef1;height:16px;text-align:center; border-top:1px solid #b7b7b7; border-bottom:0; border-left:0; border-right:1px solid #FFFFFF;}
+/* .table_info td{background:#fff;height:22px;border:0; border-top:1px solid #D5D5D5;} */
+.table_info td{background:#fff;height:22px;border:0; border-top:1px solid #D5D5D5; border-right:1px solid #D5D5D5; border-left:1px solid #D5D5D5;}
+.table_info .last{border-right:0px solid #e0e0e0}
+
+.table_info th.black{background:#4C4C4C; color:#FFFFFF;}
+.table_info th.green{background:#2F9D27; color:#FFFFFF;}
+.table_info th.blue{background:#4374D9; color:#FFFFFF;}
+.table_info th.yellow{background:#F0CA61; color:#FFFFFF;}
+.table_info th.orange{background:#FF9436; color:#FFFFFF;}
+.table_info th.red{background:#DB0000; color:#FFFFFF;}
+.table_info th.gray{background:#BDBDBD; color:#FFFFFF;}
+
+.table_info th.black2{background:#4C4C4C; color:#FFFFFF; border-bottom:1px solid #000000;}
+.table_info th.green2{background:#2F9D27; color:#FFFFFF;border-bottom:1px solid #000000;}
+.table_info th.blue2{background:#4374D9; color:#FFFFFF;border-bottom:1px solid #000000;}
+.table_info th.yellow2{background:#F0CA61; color:#FFFFFF;border-bottom:1px solid #000000;}
+.table_info th.orange2{background:#FF9436; color:#FFFFFF;border-bottom:1px solid #000000;}
+.table_info th.red2{background:#DB0000; color:#FFFFFF;border-bottom:1px solid #000000;}
+.table_info th.gray2{background:#BDBDBD; color:#FFFFFF;border-bottom:1px solid #000000;  border-right:1px solid #000000;}
+
+.table_info td.black{color:#4C4C4C; font-weight:bold;}
+.table_info td.green{color:#2F9D27; font-weight:bold;}
+.table_info td.blue{color:#4374D9; font-weight:bold;}
+.table_info td.yellow{color:#F0CA61; font-weight:bold;}
+.table_info td.orange{color:#FF9436; font-weight:bold;}
+.table_info td.red{color:#DB0000; font-weight:bold;}
+.table_info td.gray{color:#BDBDBD; font-weight:bold;}
+
+.table_info td.black2{color:#4C4C4C; font-weight:bold; border-top:1px solid #000000;}
+.table_info td.green2{color:#2F9D27; font-weight:bold; border-top:1px solid #000000;}
+.table_info td.blue2{color:#4374D9; font-weight:bold; border-top:1px solid #000000;}
+.table_info td.yellow2{color:#F0CA61; font-weight:bold; border-top:1px solid #000000;}
+.table_info td.orange2{color:#FF9436; font-weight:bold; border-top:1px solid #000000;}
+.table_info td.red2{color:#DB0000; font-weight:bold; border-top:1px solid #000000;}
+.table_info td.gray2{color:#BDBDBD; font-weight:bold; border-top:1px solid #000000; border-right:1px solid #000000;}
+.table_info td.bigo{color:#4C4C4C; font-weight:bold; border-top:1px solid #000000; border-left:1.5px solid #000000; border-bottom:1.5px solid #000000;}
+
+.bt_more{float:right;width:50px;height:15px;border:none;background:url(/gis/images/bt_more.gif) no-repeat;cursor:pointer;font-size:0; line-height:999px;padding:0;margin:10px 0 0 0;}
+.bt_more:hover{background-position:0px -15px;}
+
+#leftSearch .searchBoxTab{border-bottom:1px solid #D5D5D5;  height:26px; margin-bottom:5px;}
+#leftSearch .searchBoxTab li{background:#F6F6F6; float:left; border-top:1px solid #D5D5D5; border-left:1px solid #D5D5D5; border-right:1px solid #D5D5D5; margin-right:5px;}
+#leftSearch .searchBoxTab li a{color:#747474; font-weight:bold; padding:5px 40px; line-height:25px; cursor:pointer;}
+#leftSearch .searchBoxTab li a.current, #leftSearch .searchBoxTab li a:hover{color:#33A6E7; background:#FFFFFF; border-bottom:2px solid #FFFFFF;}
+
+#search_terms{text-align:left;padding:0 10px;}
+#search_terms li{line-height:30px;height:30px;}
+#search_terms li span{font-weight:600;color:#000;width:68px;display:inline-block;}
+#search_terms li span.point{padding-left:12px; background:url('/images/renewal2/point_04.png') no-repeat no-repeat left center;}
+#search_terms .btArea{height:25px; margin:5px 0;}
+/* #search_terms .btn_search{width:44px;height:21px;background:url('/gis/images/bt_search.gif') no-repeat;text;color:#fff;margin-top:15px;} */
+/* #search_terms .btn_search:hover {color:#ff9900;} */
+
+#chkInfoBx {display : inline-block; height:250px; margin-top:5px;}
+#chkInfoBx ul{display:inline-block;vertical-align:top;margin:0 5px 10px 7px;}
+#chkInfoBx li{line-height:20px;}
+#chkInfoBx li.tit{font-weight:600;color:#000; padding-left:12px; background:url('/images/renewal2/point_02.png') no-repeat no-repeat left center;line-height:17px; margin-bottom:3px;}
+
+ 
+/*-- 지도좌측 검색결과패널 --------------------------------------*/
+#search_result {position:absolute;bottom:-239px;left:25px;text-align:left; z-index:1}
+#rTit{background:#58637d;width:93px;height:23px;display:block;font-weight:600;color:#fff;line-height:23px;text-align:center}
+/*url(/gis/images/bg_map_search2.png) no-repeat 0 0*/
+#result{height:200px;width:1300px;background:#FFF ; border:1px solid #999;padding:25px 7px 7px;}
+
+#resultBtArea{position:absolute;right:5px;top:32px}
+#resultBtAreaTm{position:absolute;left:5px;top:32px}
+
+.bt_xls{border:none;background: #fff url(/gis/images/bt_xls.gif) no-repeat 0 0;cursor:pointer;font-weight:600;padding-left:20px;}
+.bt_xls:hover{color:#006699}
+
+.bt_graph{border:none;background: #fff url(/gis/images/bt_graph.gif) no-repeat 0 0;cursor:pointer;font-weight:600;padding-left:20px;}
+.bt_graph:hover{color:#006699}
+
+/* #resultToggle{right:0px;top:10px;position:absolute;} */
+#resultToggle{cursor:pointer;}
+.table_result{width:690px;}
+.table_result th{border-top:2px solid #6f8294; font-weight:600; height:22px;border-bottom:1px solid #6f8294;border-right:1px solid #6f8294;text-align:center;}
+.table_result td{height:20px;border-bottom:1px solid #ccc; border-right:1px solid #ccc}
+.table_result .last{border-right:0px solid #ccc}
+.scrollbx{overflow:hidden;overflow-y:auto;}
+
+
+/*-- 지도좌측 자동/수동패널 --------------------------------------*/
+/* #btTab{position:absolute;right:17px;top:310px;text-align:left;line-height:22px; z-index:1} */
+#btTab{position:absolute;right:17px;top:210px;text-align:left;line-height:22px; z-index:1}
+/* .tab_menu {width:107px;height:120px;} */
+.tab_menu {width:125px;height:120px;}
+.tab_menu .menuul {height:19px;}
+.tab_menu .menuli {width:34px;float:left; display:block; height:19px; text-align:center; position:relative;line-height:19px;font-weight:bold;}
+.tab_menu .menuli span {display:block; height:19px;padding-top:2px; cursor:pointer;background:url(/gis/images/bg_tabDisable.gif) no-repeat 0 0; color:#666666;}
+.tab_menu .menuli.on span {display:block; height:19px;padding-top:0px;  cursor:pointer;color:#fff;background:#fff url(/gis/images/bg_tabable.gif) no-repeat}
+/* .tab_menu div {display:none; padding:5px; width:107px;height:90px; border:1px solid #59647e; background:#f5f5f5;} */
+.tab_menu div {display:none; padding:5px; width:125px;height:90px; border:1px solid #59647e; background:#f5f5f5;}
+
+#btTabToggle{left:-13px;top:50px;position:absolute;}
+.autobtn{width:18px;height:18px;border:none;background:url(/gis/images/autobt_sprite.png) no-repeat;cursor:pointer;font-size:0; line-height:999px;padding:0;margin:0;}
+#autobt01{}
+#autobt01:hover , #autobt01.on {background-position: 0px -20px;}
+#autobt02{background-position:-19px 0px;}
+#autobt02:hover , #autobt02.on {background-position:-19px -20px;}
+#autobt03{background-position:-38px	 0px;}
+#autobt03:hover , #autobt03.on {background-position:-38px -20px;}
+#autobt04{background-position:-58px 0px;}
+#autobt04:hover , #autobt04.on {background-position:-58px -20px;}
+#autobt05{background-position:-76px 0px;}
+#autobt05:hover , #autobt05.on {background-position:-76px -20px;}
+
+
+
+.stabMenu{position:relative;display:inline-block;height:100px;text-align:left;padding:0 10px;}
+.stabMenu{text-align:left;padding:0 10px;}
+.stabMenu li{line-height:30px;height:30px;}
+.stabMenu li span{font-weight:600;color:#000;width:80px;display:inline-block;}
+.stabMenu li span.point{padding-left:12px; background:url('/images/renewal2/point_04.png') no-repeat no-repeat left center;}
+.stabMenu .swrap{float: left;}
+.stabMenu .stab{float:left;margin-right:2px;position: relative;z-index:2;}
+.stabMenu .stab a{height: 21px;display: block;background: #ddd;border:1px solid #ccc;text-align: center;text-decoration: none;padding-top:2px;padding-left:3px;padding-right:3px;}
+.stabMenu .scnt{width: 280px;position: absolute;left:0;top:24px;z-index:1;border-top:1px solid #ccc;border-bottom:1px solid #ababab;background: #fff;display:none;overflow: hidden;}
+.stabMenu .h160{height: 222px}
+
+.stabMenu .swrap.son .stab a{height:22px;border-bottom:0;background: #fff;}
+.stabMenu .swrap.son .scnt{padding-top:3px;display:block;overflow:hidden;}
+
+.totalNotice{position:absolute;right:10px;top:10px;}
+
+/* 2016-03-28 */
+.wareHouse{position:absolute;right:70px;top:10px;}
+
+.news {position:relative;display:inline-block;width:90%;}
+	.news .open-event {height:40px; position:relative; overflow:hidden;}
+	.news .open-event ul{position:absolute; top:0px;}
+	.news .open-event ul li {height:40px;}
+	.news .control {margin:3px 0 0 10px; }
+	.news .control a.son {background:url(/gis/images/notice_stop_on.gif)no-repeat center center;height:13px;width:13px;font-size:0;display:inline-block;}
+	.news .control a.pon {background:url(/gis/images/notice_play_on.gif)no-repeat center center;height:13px;width:13px;font-size:0;display:inline-block}
+	.news .control .play {background:url(/gis/images/notice_play.gif)no-repeat center center;height:13px;width:13px;font-size:0;display:inline-block}
+	.news .control .stop {background:url(/gis/images/notice_stop.gif)no-repeat center center;height:13px;width:13px;font-size:0;display:inline-block}
+
+
+
+/*-- accordion --------------------------------------*/
+.subBx{position:relative;border-top:1px solid #ababab;border-left:1px solid #ababab;border-right:1px solid #ababab;display:inline-block;height:132px;width: 278px;}
+.subBx h2.acc_trigger { padding: 0;margin: 0;background: url(/gis/images/h2_trigger_a.gif) no-repeat;height: 22px;line-height: 22px;width: 278px;font-size:12px;font-weight: 600;	float: left;}
+.subBx h2.acc_trigger a {color: #707070; text-decoration: none;display: block;padding: 0 0 0 15px;}
+.subBx h2.acc_trigger a:hover {color: #085071;}
+.subBx h2.active {background-position: left bottom;}
+.subBx h2.active a {color: #085071;}
+.subBx .acc_container {margin: 0; padding: 0;overflow: hidden;width: 100%;clear: both;background:#ffffff url(/gis/images/bg_trigger.gif) no-repeat right top;border-bottom:1px solid #ababab}
+.subBx .acc_container .block {	padding: 2px;height:61px;overflow:hidden;}
+
+.btn{height:21px;margin-left:4px;border:none;text-align:center;cursor:pointer;font-weight:600;}
+.btn_basic{width:69px;color:#156ea2;background:url(/gis/images/bt_basic.gif) no-repeat;}
+.btn_basic:hover {color:#ff9900;}
+
+
+.smTit{line-height:20px;background:url(/gis/images/ic_orange.gif) no-repeat 0 center;padding: 0 0 0 18px;float:left;display:inline-block}
+.grayBx120{border:1px solid #ccc;width:120px; height:50px;float:left}
+.arrBx{height:50px;float:left;margin:0 7px;}
+
+.divscroll{height:100px;overflow:hidden;overflow-y:auto;}
+
+
+
+/*-- 파폭핵 --------------------------------------*/
+@-moz-document url-prefix(){
+
+}
+
+/*-- 크롬핵 --------------------------------------*/
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+
+}

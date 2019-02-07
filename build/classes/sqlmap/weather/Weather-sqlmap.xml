@@ -1,0 +1,986 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+		
+<sqlMap namespace="weatherDAO">
+
+	<typeAlias alias="weatherAreaVO" type="daewooInfo.weather.bean.WeatherAreaVO"/>
+	<typeAlias alias="weatherInfoVO" type="daewooInfo.weather.bean.WeatherInfoVO"/>
+	<typeAlias alias="forecastInfoVO" type="daewooInfo.weather.bean.ForecastInfoVO"/>
+	<typeAlias alias="warningDataVO" type="daewooInfo.weather.bean.WarningDataVO"/>
+	<typeAlias alias="hourRainfallVO" type="daewooInfo.weather.bean.HourRainfallVO"/>
+	<typeAlias alias="searchTaksuVO" type="daewooInfo.waterpolmnt.waterinfo.bean.SearchTaksuVO"/>
+ 
+	<statement id="getRegionCode" parameterClass="weatherAreaVO" resultClass="weatherAreaVO">
+	    SELECT * FROM (
+		SELECT DISTINCT
+			A.FACT_CODE factCode,
+			A.RIVER_DIV riverId,
+			A.REG_ID regionCode, 
+			A.STATION_ID stationId,
+			A.REG_NAME stationName,
+			F.FACT_NAME factName,
+			B.BRANCH_NAME branch_name,
+			B.BRANCH_NO branch_no,
+			ROW_NUMBER() OVER(ORDER BY RIVER_SEQ ASC) RNUM,
+            COUNT(*) OVER () TOTAL_CNT 
+		FROM 
+			T_WEATHER_AREA A, T_FACT_INFO F, T_FACT_BRANCH_INFO B
+		WHERE 
+			A.FACT_CODE = F.FACT_CODE(+)
+			AND B.FACT_CODE = F.FACT_CODE
+			AND A.RIVER_DIV = #riverId#
+			AND A.BRANCH_NO = B.BRANCH_NO
+				AND F.FACT_USE_FLAG = 'Y'
+				AND B.BRANCH_USE_FLAG = 'Y'
+				AND F.SYS_KIND IN ('A','U')
+			<isNotNull property="sys_kind">
+				<isNotEqual prepend="AND" property="sys_kind" compareValue="all">
+						F.SYS_KIND = #sys_kind#
+				</isNotEqual>
+			</isNotNull>
+			<isNull prepend="AND" property="sys_kind">
+				F.SYS_KIND = 'T'
+			</isNull>
+			)
+		WHERE RNUM = #riverSq#	
+	</statement>
+	
+	<statement id="getAreaCode" parameterClass="HashMap" resultClass="weatherAreaVO">
+		SELECT DISTINCT
+			A.FACT_CODE factCode,
+			A.RIVER_DIV riverId,
+			A.RIVER_SEQ,
+			A.REG_ID regionCode, 
+			A.STATION_ID stationId,
+			A.REG_NAME stationName,
+			F.FACT_NAME factName,
+			B.BRANCH_NAME branch_name,
+			B.BRANCH_NO branch_no
+		FROM 
+			T_WEATHER_AREA A, T_FACT_INFO F, T_FACT_BRANCH_INFO B
+		WHERE 
+				A.FACT_CODE = F.FACT_CODE(+) AND
+				B.FACT_CODE = F.FACT_CODE
+				AND F.FACT_USE_FLAG = 'Y'
+				AND B.BRANCH_USE_FLAG = 'Y'
+				AND F.SYS_KIND IN ('A','U')
+			<isNotEqual prepend="AND" property="river" compareValue="all">
+				A.RIVER_DIV=#river#
+			</isNotEqual>
+				AND A.BRANCH_NO = B.BRANCH_NO
+			<isNotNull property="sys_kind">
+				<isNotEqual prepend="AND" property="sys_kind" compareValue="all">
+						F.SYS_KIND = #sys_kind#
+				</isNotEqual>
+			</isNotNull>
+		ORDER BY A.REG_NAME, A.RIVER_DIV, A.RIVER_SEQ
+	</statement>
+	
+	<statement id="getStationCode" parameterClass="HashMap" resultClass="weatherAreaVO">
+		SELECT
+			A.FACT_CODE factCode,
+			A.REG_ID regionCode,
+			A.REG_NAME regionName,
+			A.RIVER_DIV riverId,
+			A.STATION_ID stationId,
+			A.STATION_NAME stationName,
+			F.FACT_NAME factName,
+			B.BRANCH_NAME branch_name,
+			B.BRANCH_NO branch_no
+		FROM
+			T_WEATHER_AREA A, T_FACT_INFO F, T_FACT_BRANCH_INFO B
+		WHERE 
+			A.FACT_CODE = F.FACT_CODE
+			<isNotEqual prepend="AND" property="fact_code" compareValue="all">
+				A.FACT_CODE = #fact_code#
+			</isNotEqual>
+			AND A.BRANCH_NO =  B.BRANCH_NO
+			AND A.FACT_CODE = B.FACT_CODE
+			<isNotNull prepend="AND" property="branch_no">
+				A.BRANCH_NO = #branch_no#
+			 </isNotNull>
+			 <isNotNull property="sys_kind">
+				<isNotEqual prepend="AND" property="sys_kind" compareValue="all">
+						F.SYS_KIND = #sys_kind#
+				</isNotEqual>
+			 </isNotNull>
+			 <isNull prepend="AND" property="sys_kind">
+				F.SYS_KIND = 'T'
+			 </isNull>
+	</statement>
+	
+	<statement id="getUAStationCode" parameterClass="HashMap" resultClass="weatherAreaVO">
+		SELECT
+			A.FACT_CODE factCode,
+			A.REG_ID regionCode,
+			A.REG_NAME regionName,
+			A.RIVER_DIV riverId,
+			A.STATION_ID stationId,
+			A.STATION_NAME stationName,
+			F.FACT_NAME factName,
+			B.BRANCH_NAME branch_name,
+			B.BRANCH_NO branch_no
+		FROM
+			T_WEATHER_AREA A, T_FACT_INFO F, T_FACT_BRANCH_INFO B
+		WHERE 
+			A.FACT_CODE = F.FACT_CODE
+			AND A.BRANCH_NO =  B.BRANCH_NO
+			AND A.FACT_CODE = B.FACT_CODE
+			AND	F.SYS_KIND IN ('U', 'A')
+		ORDER BY A.STATION_ID
+	</statement>
+	
+	<statement id="getLastSeq" parameterClass="HashMap" resultClass="java.lang.Integer">
+		SELECT 
+			MAX(RIVER_SEQ)
+		FROM
+			T_WEATHER_AREA
+		WHERE RIVER_DIV = #river_id#
+	</statement>
+	
+	<statement id="getLastAnnounceTime" parameterClass="HashMap" resultClass="String">
+		SELECT
+			ANNOUNCE_TIME
+		FROM
+		(
+			SELECT 
+				ANNOUNCE_TIME
+			FROM
+				T_WEATHER_INFO
+			WHERE
+				FACT_CODE = #fact_code#
+				AND BRANCH_NO = #branch_no#
+				AND FCAST_FLAG = 'N'
+			ORDER BY ANNOUNCE_TIME DESC
+		)
+		WHERE
+			ROWNUM = 1
+	</statement>
+	
+	<statement id="getForecastAnnounceTime" parameterClass="HashMap" resultClass="String">
+		SELECT
+			ANNOUNCE_TIME
+		 FROM
+		 (
+			SELECT 
+				ANNOUNCE_TIME
+			FROM
+				T_WEATHER_INFO
+			WHERE
+				FACT_CODE = #fact_code#
+				AND BRANCH_NO = #branch_no#
+				AND FCAST_FLAG = 'Y'
+			ORDER BY ANNOUNCE_TIME DESC
+		 )
+		 WHERE
+			ROWNUM = 1
+	</statement>
+	
+	<statement id="getWarningAnnounceTime" parameterClass="HashMap" resultClass="String">
+		SELECT
+			ANNOUNCE_TIME
+		 FROM
+		 (
+			SELECT 
+				ANNOUNCE_TIME
+			FROM
+				T_WEATHER_SP
+			ORDER BY ANNOUNCE_TIME DESC
+		 )
+		 WHERE
+			ROWNUM = 1
+	</statement>
+	
+	<update id="updateWeatherInfo" parameterClass="weatherInfoVO">
+		UPDATE
+			T_WEATHER_INFO
+		SET
+			CURRENT_WEATHER = #current_weather#,
+			TEMP = #temp#,
+			WEATHER_CODE = #weather_code#,
+			WEATHER_SKY = #weather_sky#,
+			WIND_DIR = (select common_code_name from t_common_code where common_code_category='55' and common_code = #wind_dir#)
+		WHERE
+			ANNOUNCE_TIME = #announce_time#
+			AND FACT_CODE = #factCode#
+			AND BRANCH_NO = #branch_no#
+			AND FCAST_FLAG = 'N'
+	</update>
+	
+	<insert id="insertWeatherInfo" parameterClass="weatherInfoVO">
+		INSERT INTO T_WEATHER_INFO
+		(
+			ANNOUNCE_TIME,
+			FACT_CODE,
+			BRANCH_NO,
+			CURRENT_WEATHER,
+			DISCOMFORT_INDEX,
+			HUMIDITY,
+			RAINFALL_PROBABLITY,
+			RAIN_FALL,
+			SENSIBLE_TEMP,
+			TEMP,
+			TEMP_MAX,
+			TEMP_MIN,
+			VISIBILITY,
+			WEATHER_CODE,
+			WEATHER_SKY,
+			WIND_DIR,
+			WIND_SPEED,
+			SNOWCOVER,
+			FCAST_FLAG
+		)
+		VALUES
+		(
+			#announce_time#,
+			#factCode#,
+			#branch_no#,
+			#current_weather#,
+			#discomfort_index#,
+			#humidity#,
+			#rainfall_probability#,
+			#rain_fall#,
+			#sensible_temp#,
+			#temp#,
+			#temp_max#,
+			#temp_min#,
+			#visibility#,
+			#weather_code#,
+			#weather_sky#,
+			(select common_code_name from t_common_code where common_code_category='55' and common_code = #wind_dir#),
+			#wind_speed#,
+			#snowcover#,
+			'N'	
+		)		
+	</insert>
+	
+	
+	<insert id="insertWeatherWarn" parameterClass="warningDataVO">
+		INSERT INTO T_WEATHER_SP
+		(
+			ANNOUNCE_TIME,
+			ANNOUNCE_SEQ,
+			WARNING_CODE,
+			TITLE,
+			TYP_REGION,
+			EFFECTIVE_TIME,
+			CONTENTS,
+			WARNING_TIME,
+			WARNING_CONTENTS,
+			WARNING_EFFECTIVE,
+			REMARK,
+			STATION_ID
+		)
+		VALUES
+		(
+			#announce_time#,
+			#announce_seq#,
+			#warning_code#,
+			#title#,
+			#typ_region#,
+			#effective_time#,
+			#content#,
+			#warning_time#,
+			#warning_content#,
+			#pre_warning_effectinve#,
+			#remark#,
+			#station_id#
+		)		
+	</insert>
+	
+	
+	<insert id="insertForecast" parameterClass="weatherInfoVO">
+		INSERT INTO T_WEATHER_INFO
+		(
+			ANNOUNCE_TIME,
+			FACT_CODE,
+			BRANCH_NO,
+			CURRENT_WEATHER,
+			RAINFALL_PROBABLITY,
+			TEMP,
+			WEATHER_CODE,
+			WEATHER_SKY,
+			WIND_DIR,
+			FCAST_FLAG
+		)
+		VALUES
+		(
+			#announce_time#,
+			#factCode#,
+			#branch_no#,
+			#current_weather#,
+			#rainfall_probability#,
+			#temp#,
+			#weather_code#,
+			#weather_sky#,
+			#wind_dir#,
+			'Y'	
+		)		
+	</insert>
+	
+	<statement id="getWeatherWarn" parameterClass="warningDataVO" resultClass="warningDataVO">
+		SELECT
+			*
+		FROM
+		(
+			SELECT 
+				announce_time,
+				announce_seq,
+				warning_code,
+				title,
+				typ_region,
+				effective_time,
+				contents content,
+				warning_time,
+				warning_contents warning_content,
+				warning_effective,
+				remark,
+				station_id
+			FROM 
+				T_WEATHER_SP
+			ORDER BY ANNOUNCE_TIME DESC
+		)
+		WHERE
+			ROWNUM = 1
+	</statement>
+	
+	<statement id="getCurrentWeather_OLD" parameterClass="weatherInfoVO" resultClass="weatherInfoVO">
+		SELECT
+			*
+		FROM
+		(
+			SELECT 
+				announce_time,
+				F.fact_code factCode,
+				fact_name factName,
+				current_weather,
+				discomfort_index,
+				humidity,
+				rain_fall,
+				rainfall_probablity rainfall_probability,
+				sensible_temp,
+				TO_CHAR(temp, 'FM999,990.0') temp,
+				temp_max,
+				temp_min,
+				visibility, 
+				weather_code,
+				weather_sky,
+				wind_dir,
+				wind_speed,
+				snowcover,
+				branch_name
+			FROM 
+				T_WEATHER_INFO W,
+				T_FACT_INFO F,
+				T_FACT_BRANCH_INFO B
+			WHERE
+				W.FACT_CODE = F.FACT_CODE
+				AND W.FCAST_FLAG = 'N'
+				AND W.FACT_CODE=#factCode# 
+			<isNotNull  prepend="AND" property="announce_time">
+				<![CDATA[ W.ANNOUNCE_TIME <= #announce_time# ]]> 
+			</isNotNull>
+			<isNotNull prepend="AND" property="branch_no">
+				<![CDATA[ W.BRANCH_NO = #branch_no#  ]]> 
+			</isNotNull>
+				AND B.FACT_CODE = W.FACT_CODE
+				AND B.BRANCH_NO = W.BRANCH_NO
+			ORDER BY ANNOUNCE_TIME DESC
+		)
+		WHERE
+			ROWNUM = 1
+	</statement>
+	
+	<statement id="getCurrentWeather" parameterClass="weatherInfoVO" resultClass="weatherInfoVO">
+		SELECT /*+INDEX_DESC( W IX_WEATHER_INFO_01)*/
+			announce_time,
+			F.fact_code factCode,
+			fact_name factName,
+			current_weather,
+			discomfort_index,
+			humidity,
+			rain_fall,
+			rainfall_probablity rainfall_probability,
+			sensible_temp,
+			TO_CHAR(temp, 'FM999,990.0') temp,
+			temp_max,
+			temp_min,
+			visibility, 
+			weather_code,
+			weather_sky,
+			wind_dir,
+			wind_speed,
+			snowcover,
+			branch_name
+		FROM 
+			T_WEATHER_INFO W,
+			T_FACT_INFO F,
+			T_FACT_BRANCH_INFO B
+		WHERE
+			W.FACT_CODE = F.FACT_CODE
+			AND W.FCAST_FLAG = 'N'
+			AND W.FACT_CODE=#factCode# 
+		<isNotNull prepend="AND" property="announce_time">
+			<![CDATA[ W.ANNOUNCE_TIME <= #announce_time# ]]> 
+		</isNotNull>
+		<isNotNull prepend="AND" property="branch_no">
+			<![CDATA[ W.BRANCH_NO = #branch_no# ]]> 
+		</isNotNull>
+			AND B.FACT_CODE = W.FACT_CODE
+			AND B.BRANCH_NO = W.BRANCH_NO
+			AND ROWNUM =1
+	</statement>
+	
+	<statement id="getForecast" parameterClass="forecastInfoVO" resultClass="forecastInfoVO">
+		SELECT
+			*
+		FROM
+		(
+			SELECT 
+				announce_time,
+				F.fact_code,
+				fact_name factName,
+				current_weather,
+				discomfort_index,
+				humidity,
+				rain_fall,
+				rainfall_probablity rainfall_probability,
+				sensible_temp,
+				TO_CHAR(temp, 'FM999,990.0') temp,
+				temp_max,
+				temp_min,
+				visibility, 
+				weather_code,
+				weather_sky,
+				wind_dir,
+				wind_speed,
+				branch_name
+			FROM 
+				T_WEATHER_INFO W,
+				T_FACT_INFO F,
+				T_FACT_BRANCH_INFO B
+			WHERE
+				W.FACT_CODE = F.FACT_CODE
+				AND W.FCAST_FLAG = 'Y'
+				AND W.FACT_CODE=#factCode#
+				<isNotNull prepend="AND" property="branch_no">
+					W.BRANCH_NO = #branch_no#
+				</isNotNull>
+				AND W.FACT_CODE = B.FACT_CODE
+				AND W.BRANCH_NO = B.BRANCH_NO
+			ORDER BY ANNOUNCE_TIME DESC
+		)
+		WHERE
+			ROWNUM = 1
+	</statement>
+	
+
+	<statement id="getWeatherInfoList_cnt" parameterClass="weatherInfoVO" resultClass="Integer">
+	SELECT 
+			COUNT(*) 
+				FROM
+				(
+					SELECT TO_CHAR(TO_DATE(announce_time, 'YYYYMMDDHH24MI'),
+									'YYYY/MM/DD HH24:MI') announce_time,
+							F.fact_code,
+							fact_name factName,
+							current_weather,
+							discomfort_index,
+							humidity,
+							TO_CHAR(rain_fall, 'FM999,990.0') rain_fall,
+							rainfall_probablity rainfall_probability,
+							sensible_temp,
+							TO_CHAR(temp, 'FM999,990.0') temp,
+							temp_max,
+							temp_min,
+							visibility,
+							weather_code,
+							weather_sky,
+							wind_dir,
+							TO_CHAR(wind_speed, 'FM999,990.0') wind_speed,
+							branch_name,
+							DECODE(F.RIVER_DIV,
+								  'R01',
+								  '한강',
+								  'R02',
+								  '낙동강',
+								  'R03',
+								  '금강',
+								  'R04',
+								  '영산강') AS RIVER_NAME,
+							A.reg_name regionName,
+							(SELECT MAX(a.STATION_NAME) FROM T_WEATHER_STATION_CODE_INFO sc WHERE sc.STATION_ID = a.STATION_ID) stationName
+					  FROM T_WEATHER_INFO W,
+							T_FACT_INFO	F,
+							T_FACT_BRANCH_INFO  B,
+							T_WEATHER_AREA A
+					 WHERE W.FACT_CODE = F.FACT_CODE
+						AND W.ANNOUNCE_TIME BETWEEN #frDate#||#frTime#||'00' AND #toDate#||#toTime#||'59'
+						 <isNotEqual prepend="AND" property="factCode" compareValue="all">
+							W.FACT_CODE=#factCode#
+						 </isNotEqual>
+						 <isNotEqual prepend="AND" property="branch_no" compareValue="all">
+							 W.BRANCH_NO = #branch_no#
+						 </isNotEqual>
+						 <isNotEqual prepend="AND" property="sys" compareValue="all">
+							 F.SYS_KIND  = #sys#
+						 </isNotEqual>
+						 <isNotEqual prepend="AND" property="river_div" compareValue="all">
+								 F.RIVER_DIV  = #river_div#
+						 </isNotEqual>
+						  <isNotEqual prepend="AND" property="fcast_flag" compareValue="all">
+							 W.FCAST_FLAG = #fcast_flag#
+						 </isNotEqual>
+						AND B.FACT_CODE = W.FACT_CODE
+						AND B.BRANCH_NO = W.BRANCH_NO
+						AND W.FACT_CODE = A.FACT_CODE
+						AND W.BRANCH_NO = A.BRANCH_NO
+						AND F.FACT_USE_FLAG = 'Y'
+						AND B.BRANCH_USE_FLAG = 'Y'
+				)
+	</statement>
+
+	<statement id="getWeatherInfoList" parameterClass="weatherInfoVO" resultClass="weatherInfoVO">
+		SELECT *
+		  FROM (SELECT ROWNUM RNUM, T.*
+				  FROM (SELECT /*+  LEADING(F) USE_NL(F W) */
+								TO_CHAR(TO_DATE(announce_time, 'YYYYMMDDHH24MI'),
+										'YYYY/MM/DD HH24:MI') announce_time,
+								F.fact_code,
+								fact_name factName,
+								current_weather,
+								discomfort_index,
+								humidity,
+								TO_CHAR(rain_fall, 'FM999,990.0') rain_fall,
+								rainfall_probablity rainfall_probability,
+								sensible_temp,
+								TO_CHAR(temp, 'FM999,990.0') temp,
+								temp_max,
+								temp_min,
+								visibility,
+								weather_code,
+								weather_sky,
+								wind_dir,
+								TO_CHAR(wind_speed, 'FM999,990.0') wind_speed,
+								snowcover,
+								branch_name,
+								DECODE(F.RIVER_DIV,
+									  'R01',
+									  '한강',
+									  'R02',
+									  '낙동강',
+									  'R03',
+									  '금강',
+									  'R04',
+									  '영산강') AS RIVER_NAME,
+								A.reg_name regionName,
+								(SELECT MAX(a.STATION_NAME) FROM T_WEATHER_STATION_CODE_INFO sc WHERE sc.STATION_ID = a.STATION_ID) stationName
+						  FROM T_WEATHER_INFO W,
+								T_FACT_INFO	F,
+								T_FACT_BRANCH_INFO  B,
+								T_WEATHER_AREA A
+						 WHERE W.FACT_CODE = F.FACT_CODE
+							AND W.ANNOUNCE_TIME BETWEEN #frDate#||#frTime#||'00' AND #toDate#||#toTime#||'59'
+							 <isNotEqual prepend="AND" property="factCode" compareValue="all">
+								W.FACT_CODE=#factCode#
+							 </isNotEqual>
+							 <isNotEqual prepend="AND" property="branch_no" compareValue="all">
+								 W.BRANCH_NO = #branch_no#
+							 </isNotEqual>
+							 <isNotEqual prepend="AND" property="sys" compareValue="all">
+								 F.SYS_KIND  = #sys#
+							 </isNotEqual>
+							 <isNotEqual prepend="AND" property="river_div" compareValue="all">
+									 F.RIVER_DIV  = #river_div#
+							 </isNotEqual>
+							  <isNotEqual prepend="AND" property="fcast_flag" compareValue="all">
+								 W.FCAST_FLAG = #fcast_flag#
+							 </isNotEqual>
+							AND B.FACT_CODE = W.FACT_CODE
+							AND B.BRANCH_NO = W.BRANCH_NO
+							AND W.FACT_CODE = A.FACT_CODE
+							AND W.BRANCH_NO = A.BRANCH_NO
+							AND F.FACT_USE_FLAG = 'Y'
+							AND B.BRANCH_USE_FLAG = 'Y'
+						 ORDER BY ANNOUNCE_TIME $orderType1$, branch_name ASC ) T)
+			WHERE
+			<![CDATA[  
+				RNUM  > #firstIndex#
+				AND  RNUM <= #firstIndex# + #recordCountPerPage#
+			]]>	
+	</statement>
+
+	
+	<statement id="getWeatherInfoList_forExcel" parameterClass="weatherInfoVO" resultClass="weatherInfoVO">
+			SELECT /*+ LEADING(F) USE_NL(F W) */ 
+				TO_CHAR(TO_DATE(announce_time,'YYYYMMDDHH24MI'),'YYYY/MM/DD HH24:MI') announce_time,
+				F.fact_code,
+				fact_name factName,
+				NVL(current_weather,weather_sky) current_weather,
+				discomfort_index,
+				humidity,
+				TO_CHAR(rain_fall, 'FM999,990.0') rain_fall,
+				rainfall_probablity rainfall_probability,
+				sensible_temp,
+				TO_CHAR(temp, 'FM999,990.0') temp,
+				temp_max,
+				temp_min,
+				visibility, 
+				weather_code,
+				weather_sky,
+				wind_dir,
+				snowcover,
+				TO_CHAR(wind_speed, 'FM999,990.0') wind_speed,
+				branch_name,
+				DECODE(F.RIVER_DIV,'R01','한강','R02','낙동강','R03','금강','R04','영산강') AS RIVER_NAME,
+				A.reg_name regionName
+			FROM 
+				T_WEATHER_INFO W,
+				T_FACT_INFO F,
+				T_FACT_BRANCH_INFO B,
+				T_WEATHER_AREA A
+			WHERE
+				W.FACT_CODE = F.FACT_CODE
+				AND W.ANNOUNCE_TIME BETWEEN #frDate#||#frTime#||'00' AND #toDate#||#toTime#||'59'
+				 <isNotEqual prepend="AND" property="factCode" compareValue="all">
+						W.FACT_CODE=#factCode#
+					</isNotEqual>
+					<isNotEqual prepend="AND" property="branch_no" compareValue="all">
+						W.BRANCH_NO = #branch_no#
+					</isNotEqual>
+					<isNotEqual prepend="AND" property="sys" compareValue="all">
+						F.SYS_KIND  = #sys#
+				 </isNotEqual>
+				 <isNotEqual prepend="AND" property="river_div" compareValue="all">
+						F.RIVER_DIV  = #river_div#
+				 </isNotEqual>
+				  <isNotEqual prepend="AND" property="fcast_flag" compareValue="all">
+					W.FCAST_FLAG = #fcast_flag#
+				 </isNotEqual>
+				AND B.FACT_CODE = W.FACT_CODE
+				AND B.BRANCH_NO = W.BRANCH_NO
+				AND W.FACT_CODE = A.FACT_CODE
+				AND W.BRANCH_NO = A.BRANCH_NO
+			ORDER BY ANNOUNCE_TIME DESC, branch_name asc
+	</statement>
+	
+	<statement id="getWeatherWarnList" parameterClass="warningDataVO" resultClass="warningDataVO">
+			SELECT 
+			  * 
+			  FROM ( 
+				  SELECT 
+					  ROWNUM RNUM, T.*
+					 FROM
+					 (
+						SELECT DISTINCT
+							announce_time,
+							announce_seq,
+							warning_code,
+							title,
+							typ_region,
+							effective_time,
+							contents content,
+							warning_time,
+							warning_contents warning_content,
+							warning_effective,
+							remark,
+							station_id
+						FROM 
+							T_WEATHER_SP
+						WHERE
+							TO_CHAR(TO_DATE(ANNOUNCE_TIME,'YYYY/MM/DD HH24:MI:SS'),'YYYYMMDDHH24MI') BETWEEN #frDate#||'0000' AND #toDate#||'2359'
+						ORDER BY ANNOUNCE_TIME DESC
+					) T
+			)
+			WHERE
+			<![CDATA[
+				RNUM  > #firstIndex#
+				AND  RNUM <= #firstIndex# + #recordCountPerPage#
+			]]>	
+	</statement>
+	
+	<statement id="getWeatherWarnList_cnt" parameterClass="warningDataVO" resultClass="Integer">
+			SELECT 
+				COUNT(*) 
+			FROM
+				(
+					SELECT DISTINCT
+						announce_time,
+						announce_seq,
+						warning_code,
+						title,
+						typ_region,
+						effective_time,
+						contents content,
+						warning_time,
+						warning_contents warning_content,
+						warning_effective,
+						remark,
+						station_id
+					FROM 
+						T_WEATHER_SP
+					WHERE
+						TO_CHAR(TO_DATE(ANNOUNCE_TIME,'YYYY/MM/DD HH24:MI:SS'),'YYYYMMDDHH24MI') BETWEEN #frDate#||#frTime#||'00' AND #toDate#||#toTime#||'59'
+					ORDER BY ANNOUNCE_TIME DESC
+				)
+	</statement>
+	
+	<statement id="getWeatherWarnList_forExcel" parameterClass="warningDataVO" resultClass="warningDataVO">
+		SELECT DISTINCT
+			announce_time,	
+			announce_seq,
+			warning_code,
+			title,
+			typ_region,
+			effective_time,
+			contents content,
+			warning_time,
+			warning_contents warning_content,
+			warning_effective,
+			remark,
+			station_id
+		FROM 
+			T_WEATHER_SP
+		WHERE
+			TO_CHAR(TO_DATE(ANNOUNCE_TIME,'YYYY/MM/DD HH24:MI:SS'),'YYYYMMDDHH24MI') BETWEEN #frDate#||'0000' AND #toDate#||'2359'
+		ORDER BY ANNOUNCE_TIME DESC
+	</statement>
+	
+	
+	<statement id="getHourRainfallList_cnt" parameterClass="hourRainfallVO" resultClass="Integer">
+	SELECT 
+			COUNT(*) 
+				FROM
+				(
+							SELECT /*+ LEADING(F) USE_NL(F W) */
+								F.fact_code,
+								DECODE(F.RIVER_DIV,'R01','한강','R02','낙동강','R03','금강','R04','영산강') AS RIVER_NAME,
+								fact_name factName,
+								branch_name,
+								TO_CHAR(TO_DATE(W.MEASU_DATE, 'YYYYMMDD'), 'YYYY/MM/DD') MEASU_DATE,
+								W.MEASU_TIME,
+								W.HOUR_RAINFALL,
+								(
+									SELECT 
+										SUM(HOUR_RAINFALL) 
+									FROM 
+										T_WEATHER_HOUR_RAINFALL 
+									WHERE
+									<![CDATA[
+										MEASU_DATE = W.MEASU_DATE 
+										AND MEASU_TIME <= W.MEASU_TIME 
+										AND FACT_CODE = F.FACT_CODE
+									]]>
+								) ACC_RAINFALL,
+								A.reg_name regionName,
+								(SELECT MAX(a.STATION_NAME) FROM T_WEATHER_STATION_CODE_INFO sc WHERE sc.STATION_ID = a.STATION_ID) stationName
+							FROM 
+								T_WEATHER_HOUR_RAINFALL W,
+								T_FACT_INFO F,
+								T_FACT_BRANCH_INFO B,
+								T_WEATHER_AREA A
+								<isNotEqual property="userGubun" compareValue="ROLE_ADMIN">
+								  , T_MEMBER_AUTHORINFO D
+								</isNotEqual>
+							WHERE
+								W.FACT_CODE = F.FACT_CODE
+								<![CDATA[
+								AND (W.MEASU_DATE >= #frDate# AND W.MEASU_DATE <= #toDate#)
+								AND (W.MEASU_TIME >= #frTime# AND W.MEASU_TIME <= #toTime#)
+								]]>
+								 <isNotEqual prepend="AND" property="factCode" compareValue="all">
+									W.FACT_CODE=#factCode#
+								 </isNotEqual>
+								 <isNotEqual prepend="AND" property="branch_no" compareValue="all">
+									 W.BRANCH_NO = #branch_no#
+								 </isNotEqual>
+								 <isNotEqual prepend="AND" property="sys" compareValue="all">
+									  F.SYS_KIND  = #sys#
+								 </isNotEqual>
+								 <isNotEqual prepend="AND" property="river_div" compareValue="all">
+									  F.RIVER_DIV  = #river_div#
+								 </isNotEqual>
+								 AND B.FACT_CODE = W.FACT_CODE
+								 AND B.BRANCH_NO = W.BRANCH_NO
+								 AND W.FACT_CODE = A.FACT_CODE
+								 AND W.BRANCH_NO = A.BRANCH_NO
+								AND F.FACT_USE_FLAG = 'Y'
+								AND B.BRANCH_USE_FLAG = 'Y'
+								<isNotEqual property="userGubun" compareValue="ROLE_ADMIN">
+								    AND D.MEMBER_ID = #userId#
+									AND F.SYS_KIND = D.SYS_KIND
+						    		AND F.RIVER_DIV = D.RIVER_DIV
+						    		AND F.FACT_CODE = D.FACT_CODE
+						   		 	AND B.BRANCH_NO = D.BRANCH_NO
+							    </isNotEqual>
+				)
+	</statement>
+
+	<statement id="getHourRainfallList" parameterClass="hourRainfallVO" resultClass="hourRainfallVO">
+		SELECT 
+			 * 
+			 FROM ( 
+				 SELECT 
+					 ROWNUM RNUM, T.*
+					FROM
+					(
+						SELECT  /*+ LEADING(F) USE_NL(F W) */
+								F.fact_code,
+								DECODE(F.RIVER_DIV,'R01','한강','R02','낙동강','R03','금강','R04','영산강') AS RIVER_NAME,
+								fact_name factName,
+								branch_name,
+								TO_CHAR(TO_DATE(W.MEASU_DATE, 'YYYYMMDD'), 'YYYY/MM/DD') MEASU_DATE,
+								W.MEASU_TIME,
+								TO_CHAR(W.HOUR_RAINFALL, 'FM999,990.0') HOUR_RAINFALL,
+								(
+									SELECT 
+										TO_CHAR(SUM(HOUR_RAINFALL), 'FM999,990.0') 
+									FROM 
+										T_WEATHER_HOUR_RAINFALL 
+									WHERE
+									<![CDATA[
+										MEASU_DATE = W.MEASU_DATE 
+										AND MEASU_TIME <= W.MEASU_TIME 
+										AND FACT_CODE = F.FACT_CODE
+									]]>
+								) ACC_RAINFALL,
+								A.reg_name regionName,
+								(SELECT MAX(a.STATION_NAME) FROM T_WEATHER_STATION_CODE_INFO sc WHERE sc.STATION_ID = a.STATION_ID) stationName
+							FROM 
+								T_WEATHER_HOUR_RAINFALL W,
+								T_FACT_INFO F,
+								T_FACT_BRANCH_INFO B,
+								T_WEATHER_AREA A
+								<isNotEqual property="userGubun" compareValue="ROLE_ADMIN">
+								  , T_MEMBER_AUTHORINFO D
+								</isNotEqual>
+							WHERE
+							W.FACT_CODE = F.FACT_CODE
+								<![CDATA[
+								AND (W.MEASU_DATE >= #frDate# AND W.MEASU_DATE <= #toDate#)
+								AND (W.MEASU_TIME >= #frTime# AND W.MEASU_TIME <= #toTime#)
+								]]>
+								 <isNotEqual prepend="AND" property="factCode" compareValue="all">
+									W.FACT_CODE=#factCode#
+								 </isNotEqual>
+								 <isNotEqual prepend="AND" property="branch_no" compareValue="all">
+									 W.BRANCH_NO = #branch_no#
+								 </isNotEqual>
+								 <isNotEqual prepend="AND" property="sys" compareValue="all">
+									  F.SYS_KIND  = #sys#
+								 </isNotEqual>
+								 <isNotEqual prepend="AND" property="river_div" compareValue="all">
+									  F.RIVER_DIV  = #river_div#
+								 </isNotEqual>
+								 AND B.FACT_CODE = W.FACT_CODE
+								 AND B.BRANCH_NO = W.BRANCH_NO
+								 AND W.FACT_CODE = A.FACT_CODE
+								 AND W.BRANCH_NO = A.BRANCH_NO
+									AND F.FACT_USE_FLAG = 'Y'
+									AND B.BRANCH_USE_FLAG = 'Y'
+								<isNotEqual property="userGubun" compareValue="ROLE_ADMIN">
+								    AND D.MEMBER_ID = #userId#
+									AND F.SYS_KIND = D.SYS_KIND
+						    		AND F.RIVER_DIV = D.RIVER_DIV
+						    		AND F.FACT_CODE = D.FACT_CODE
+						   		 	AND B.BRANCH_NO = D.BRANCH_NO
+							    </isNotEqual>
+							ORDER BY MEASU_DATE DESC, TO_NUMBER(MEASU_TIME) DESC
+		) T
+			)
+			WHERE
+			<![CDATA[  
+				RNUM  > #firstIndex#
+				AND  RNUM <= #firstIndex# + #recordCountPerPage#
+			]]>	
+	</statement>
+	
+	
+	<statement id="getHourRainfallList_forExcel" parameterClass="hourRainfallVO" resultClass="hourRainfallVO">
+			SELECT 
+			 * 
+			 FROM ( 
+				 SELECT 
+					 ROWNUM RNUM, T.*
+					FROM
+					(
+						SELECT  /*+ LEADING(F) USE_NL(F W) */
+								F.fact_code,
+								DECODE(F.RIVER_DIV,'R01','한강','R02','낙동강','R03','금강','R04','영산강') AS RIVER_NAME,
+								fact_name factName,
+								branch_name,
+								TO_CHAR(TO_DATE(W.MEASU_DATE, 'YYYYMMDD'), 'YYYY/MM/DD') MEASU_DATE,
+								W.MEASU_TIME,
+								TO_CHAR(W.HOUR_RAINFALL, 'FM999,990.0') HOUR_RAINFALL,
+								(
+									SELECT 
+										TO_CHAR(SUM(HOUR_RAINFALL), 'FM999,990.0') 
+									FROM 
+										T_WEATHER_HOUR_RAINFALL 
+									WHERE
+									<![CDATA[
+										MEASU_DATE = W.MEASU_DATE 
+										AND MEASU_TIME <= W.MEASU_TIME 
+										AND FACT_CODE = F.FACT_CODE
+									]]>
+								) ACC_RAINFALL,
+								A.reg_name regionName,
+								(SELECT MAX(a.STATION_NAME) FROM T_WEATHER_STATION_CODE_INFO sc WHERE sc.STATION_ID = a.STATION_ID) stationName
+							FROM 
+								T_WEATHER_HOUR_RAINFALL W,
+								T_FACT_INFO F,
+								T_FACT_BRANCH_INFO B,
+								T_WEATHER_AREA A
+								<isNotEqual property="userGubun" compareValue="ROLE_ADMIN">
+								  , T_MEMBER_AUTHORINFO D
+								</isNotEqual>
+							WHERE
+							W.FACT_CODE = F.FACT_CODE
+								<![CDATA[
+								AND (W.MEASU_DATE >= #frDate# AND W.MEASU_DATE <= #toDate#)
+								AND (W.MEASU_TIME >= #frTime# AND W.MEASU_TIME <= #toTime#)
+								]]>
+								 <isNotEqual prepend="AND" property="factCode" compareValue="all">
+									W.FACT_CODE=#factCode#
+								 </isNotEqual>
+								 <isNotEqual prepend="AND" property="branch_no" compareValue="all">
+									 W.BRANCH_NO = #branch_no#
+								 </isNotEqual>
+								 <isNotEqual prepend="AND" property="sys" compareValue="all">
+									  F.SYS_KIND  = #sys#
+								 </isNotEqual>
+								 <isNotEqual prepend="AND" property="river_div" compareValue="all">
+									  F.RIVER_DIV  = #river_div#
+								 </isNotEqual>
+								 AND B.FACT_CODE = W.FACT_CODE
+								 AND B.BRANCH_NO = W.BRANCH_NO
+								 AND W.FACT_CODE = A.FACT_CODE
+								 AND W.BRANCH_NO = A.BRANCH_NO
+									AND F.FACT_USE_FLAG = 'Y'
+									AND B.BRANCH_USE_FLAG = 'Y'
+								<isNotEqual property="userGubun" compareValue="ROLE_ADMIN">
+								    AND D.MEMBER_ID = #userId#
+									AND F.SYS_KIND = D.SYS_KIND
+						    		AND F.RIVER_DIV = D.RIVER_DIV
+						    		AND F.FACT_CODE = D.FACT_CODE
+						   		 	AND B.BRANCH_NO = D.BRANCH_NO
+							    </isNotEqual>
+							ORDER BY MEASU_DATE DESC, TO_NUMBER(MEASU_TIME) DESC
+		) T
+			)
+	</statement>
+		
+	<statement id="getFactHourRainfall" parameterClass="searchTaksuVO" resultClass="HourRainfallVO">
+		SELECT 
+			HOUR_RAINFALL
+		FROM 
+			T_WEATHER_HOUR_RAINFALL
+		WHERE
+			FACT_CODE = #gongku#
+			AND BRANCH_NO = #chukjeongso#
+			AND MEASU_DATE = #frDate#
+			AND MEASU_TIME = #frTime#
+	</statement>		
+</sqlMap>

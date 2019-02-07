@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CmmnCodeManageDAO">
+	
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias alias="CmmnCode" type="daewooInfo.admin.cmmncode.bean.CmmnCode"/>
+	<typeAlias alias="CmmnCodeVO" type="daewooInfo.admin.cmmncode.bean.CmmnCodeVO"/>
+	
+	<select id="selectCmmnCodeList" parameterClass="CmmnCodeVO" resultClass="egovMap">
+		SELECT COMMON_CODE_CATEGORY CODE_ID
+			 , COMMON_CODE_CATEGORY_NAME CODE_ID_NAME
+			 , USE_FLAG
+		FROM T_COMMON_CODE_CATEGORY
+		WHERE COMMON_CODE_CATEGORY IS NOT NULL
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				COMMON_CODE_CATEGORY = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="2">
+				COMMON_CODE_CATEGORY_NAME LIKE '%$searchKeyword$%'
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="clCode">
+				USE_FLAG = 'Y'
+			AND COMMON_CODE_CATEGORY_NAME IS NOT NULL
+			</isEqual>
+					ORDER BY COMMON_CODE_CATEGORY DESC
+	</select>
+	
+	<select id="selectCmmnCodeListTotCnt" parameterClass="CmmnCodeVO" resultClass="int">
+		SELECT COUNT(*) totcnt 
+		FROM T_COMMON_CODE_CATEGORY
+		WHERE COMMON_CODE_CATEGORY IS NOT NULL
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				COMMON_CODE_CATEGORY = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="2">
+				COMMON_CODE_CATEGORY_NAME LIKE '%$searchKeyword$%'
+			</isEqual>
+	</select>
+	
+	<select id="selectCmmnCodeDetail" parameterClass="CmmnCode" resultClass="CmmnCode">
+		SELECT COMMON_CODE_CATEGORY codeId
+			 , COMMON_CODE_CATEGORY_NAME codeIdName
+			 , COMMON_CODE_CATEGORY_DESC codeIdDesc
+			 , USE_FLAG useFlag
+		FROM T_COMMON_CODE_CATEGORY
+			WHERE COMMON_CODE_CATEGORY = #codeId#
+	</select>
+	
+	<insert id="insertCmmnCode">
+		INSERT INTO  T_COMMON_CODE_CATEGORY (
+			   COMMON_CODE_CATEGORY
+			 , COMMON_CODE_CATEGORY_NAME
+			 , COMMON_CODE_CATEGORY_DESC
+			 , USE_FLAG
+			 , REG_DATE
+			 , REG_ID
+			 , MOD_DATE
+			 , MOD_ID
+			)
+		VALUES (
+			   #codeId#
+			 , #codeIdName#
+			 , #codeIdDesc#
+			 , #useFlag#
+			 , sysdate
+			 , #regId#
+			 , sysdate
+			 , #regId#
+			)
+	</insert>
+	
+	<update id="updateCmmnCode">
+		UPDATE T_COMMON_CODE_CATEGORY
+			SET COMMON_CODE_CATEGORY_NAME = #codeIdName#
+			 , COMMON_CODE_CATEGORY_DESC = #codeIdDesc#
+			 , USE_FLAG = #useFlag#
+			 , MOD_DATE = sysdate
+			 , MOD_ID = #modId#
+		WHERE COMMON_CODE_CATEGORY = #codeId#
+	</update>
+	
+	<delete id="deleteCmmnCode">
+		UPDATE T_COMMON_CODE_CATEGORY
+			SET USE_FLAG = 'N'
+		WHERE COMMON_CODE_CATEGORY = #codeId#
+	</delete>
+	
+	<!-- 공통코드카테고리 수정 -->
+	<statement id="updateCmmnDetailCode">
+		MERGE INTO T_COMMON_CODE_CATEGORY
+		USING DUAL
+		ON ( COMMON_CODE_CATEGORY  = #codeId# )
+		WHEN MATCHED THEN
+			UPDATE SET COMMON_CODE_CATEGORY_NAME = #codeIdName#
+					 , COMMON_CODE_CATEGORY_DESC = #codeIdDesc#
+					 , USE_FLAG = #useFlag#
+					 , MOD_DATE = sysdate
+					 , MOD_ID = #modId#
+		WHEN NOT MATCHED THEN
+			INSERT (
+					   COMMON_CODE_CATEGORY 
+					 , COMMON_CODE_CATEGORY_NAME
+					 , COMMON_CODE_CATEGORY_DESC
+					 , USE_FLAG
+					 , REG_DATE
+					 , REG_ID
+					 , MOD_DATE
+					 , MOD_ID
+					)
+			VALUES (
+					   #codeId#
+					 , #codeIdName#
+					 , #codeIdDesc#
+					 , #useFlag#
+					 , sysdate
+					 , #regId#
+					 , sysdate
+					 , #regId#
+					)
+	</statement>
+
+	<!-- 코드 중복체크 -->
+	<statement id="dupCmnCode" resultClass="java.lang.Integer" parameterClass="CmmnCode">
+		SELECT COUNT(*) AS totcnt
+		FROM T_COMMON_CODE_CATEGORY
+		WHERE COMMON_CODE_CATEGORY  = #codeId#
+	</statement>
+
+</sqlMap>

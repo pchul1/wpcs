@@ -1,0 +1,314 @@
+package daewooInfo.common.login.bean;
+
+import java.io.Serializable;
+
+public class MemberVO implements Serializable {
+	private String memberId;
+	private String password;
+	private String password_confirm;
+	private String memberName;
+	private String ihidNum;
+	private String ihidNum1;
+	private String zip;
+	private String address;
+	private String detailAddress;
+	private String mobileNo;
+	private String mobileNo1;
+	private String mobileNo2;
+	private String groupId;
+	private String groupName;
+	private String faxNum;
+	private String faxNum1;
+	private String faxNum2;
+	private String email;
+	private String email1;
+	private String email2;
+	private String regDate;
+	private String memberStatus;
+	private String uniqId;
+	private String officeNo;
+	private String officeNo1;
+	private String officeNo2;
+	private String officeName;
+	private String deptName;
+	private String gradeName;
+	private String deptNoTmp;
+	private String deptNo;
+	private String deptNoName;
+	private String doCode;
+	private String doCodeName;
+	private String ctyCode;
+	private String ctyCodeName;
+	private String factCode;
+	private String factCodeName;
+	private String organCode;
+	private String organCodeName;
+	private String connectIp;
+	private String roleName;
+	private String riverId;
+	
+	
+	public String getRiverId() {
+		return riverId;
+	}
+	public void setRiverId(String riverId) {
+		this.riverId = riverId;
+	}
+	public String getRoleName() {
+		return roleName;
+	}
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
+	public String getDeptNoTmp() {
+		return deptNoTmp;
+	}
+	public void setDeptNoTmp(String deptNoTmp) {
+		this.deptNoTmp = deptNoTmp;
+	}
+	public String getDeptNoName() {
+		return deptNoName;
+	}
+	public void setDeptNoName(String deptNoName) {
+		this.deptNoName = deptNoName;
+	}
+	public String getDoCodeName() {
+		return doCodeName;
+	}
+	public void setDoCodeName(String doCodeName) {
+		this.doCodeName = doCodeName;
+	}
+	public String getCtyCodeName() {
+		return ctyCodeName;
+	}
+	public void setCtyCodeName(String ctyCodeName) {
+		this.ctyCodeName = ctyCodeName;
+	}
+	public String getFactCodeName() {
+		return factCodeName;
+	}
+	public void setFactCodeName(String factCodeName) {
+		this.factCodeName = factCodeName;
+	}
+	public String getOrganCodeName() {
+		return organCodeName;
+	}
+	public void setOrganCodeName(String organCodeName) {
+		this.organCodeName = organCodeName;
+	}
+	public String getRegDate() {
+		return regDate;
+	}
+	public void setRegDate(String regDate) {
+		this.regDate = regDate;
+	}
+	public String getMemberId() {
+		return memberId;
+	}
+	public void setMemberId(String memberId) {
+		this.memberId = memberId;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	public String getPassword_confirm() {
+		return password_confirm;
+	}
+	public void setPassword_confirm(String password_confirm) {
+		this.password_confirm = password_confirm;
+	}
+	public String getMemberName() {
+		return memberName;
+	}
+	public void setMemberName(String memberName) {
+		this.memberName = memberName;
+	}
+	public String getIhidNum() {
+		return ihidNum;
+	}
+	public void setIhidNum(String ihidNum) {
+		this.ihidNum = ihidNum;
+	}
+	public String getIhidNum1() {
+		return ihidNum1;
+	}
+	public void setIhidNum1(String ihidNum1) {
+		this.ihidNum1 = ihidNum1;
+	}
+	public String getZip() {
+		return zip;
+	}
+	public void setZip(String zip) {
+		this.zip = zip;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getDetailAddress() {
+		return detailAddress;
+	}
+	public void setDetailAddress(String detailAddress) {
+		this.detailAddress = detailAddress;
+	}
+	public String getMobileNo() {
+		return mobileNo;
+	}
+	public void setMobileNo(String mobileNo) {
+		this.mobileNo = mobileNo;
+	}
+	public String getGroupName() {
+		return groupName;
+	}
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+	public String getGroupId() {
+		return groupId;
+	}
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
+	public String getFaxNum() {
+		return faxNum;
+	}
+	public void setFaxNum(String faxNum) {
+		this.faxNum = faxNum;
+	}
+	
+	public String getFaxNum1() {
+		return faxNum1;
+	}
+	public void setFaxNum1(String faxNum1) {
+		this.faxNum1 = faxNum1;
+	}
+	public String getFaxNum2() {
+		return faxNum2;
+	}
+	public void setFaxNum2(String faxNum2) {
+		this.faxNum2 = faxNum2;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getMemberStatus() {
+		return memberStatus;
+	}
+	public void setMemberStatus(String memberStatus) {
+		this.memberStatus = memberStatus;
+	}
+	public String getUniqId() {
+		return uniqId;
+	}
+	public void setUniqId(String uniqId) {
+		this.uniqId = uniqId;
+	}
+	public String getOfficeNo() {
+		return officeNo;
+	}
+	public void setOfficeNo(String officeNo) {
+		this.officeNo = officeNo;
+	}
+	public String getOfficeName() {
+		return officeName;
+	}
+	public void setOfficeName(String officeName) {
+		this.officeName = officeName;
+	}
+	public String getDeptName() {
+		return deptName;
+	}
+	public void setDeptName(String deptName) {
+		this.deptName = deptName;
+	}
+	public String getGradeName() {
+		return gradeName;
+	}
+	public void setGradeName(String gradeName) {
+		this.gradeName = gradeName;
+	}
+	public String getDeptNo() {
+		return deptNo;
+	}
+	public void setDeptNo(String deptNo) {
+		this.deptNo = deptNo;
+	}
+	public String getDoCode() {
+		return doCode;
+	}
+	public void setDoCode(String doCode) {
+		this.doCode = doCode;
+	}
+	public String getCtyCode() {
+		return ctyCode;
+	}
+	public void setCtyCode(String ctyCode) {
+		this.ctyCode = ctyCode;
+	}
+	public String getFactCode() {
+		return factCode;
+	}
+	public void setFactCode(String factCode) {
+		this.factCode = factCode;
+	}
+	public String getOrganCode() {
+		return organCode;
+	}
+	public void setOrganCode(String organCode) {
+		this.organCode = organCode;
+	}
+	public String getConnectIp() {
+		return connectIp;
+	}
+	public void setConnectIp(String connectIp) {
+		this.connectIp = connectIp;
+	}
+	public String getMobileNo1() {
+		return mobileNo1;
+	}
+	public void setMobileNo1(String mobileNo1) {
+		this.mobileNo1 = mobileNo1;
+	}
+	public String getMobileNo2() {
+		return mobileNo2;
+	}
+	public void setMobileNo2(String mobileNo2) {
+		this.mobileNo2 = mobileNo2;
+	}
+	public String getEmail1() {
+		return email1;
+	}
+	public void setEmail1(String email1) {
+		this.email1 = email1;
+	}
+	public String getEmail2() {
+		return email2;
+	}
+	public void setEmail2(String email2) {
+		this.email2 = email2;
+	}
+	public String getOfficeNo1() {
+		return officeNo1;
+	}
+	public void setOfficeNo1(String officeNo1) {
+		this.officeNo1 = officeNo1;
+	}
+	public String getOfficeNo2() {
+		return officeNo2;
+	}
+	public void setOfficeNo2(String officeNo2) {
+		this.officeNo2 = officeNo2;
+	}
+	
+	
+	
+}

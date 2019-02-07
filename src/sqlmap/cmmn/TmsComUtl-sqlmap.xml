@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="TmsComUtlDAO">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="deptVO" type="daewooInfo.cmmn.bean.DeptVO"/>
+	<typeAlias  alias="mainWeatherAreaVO" type="daewooInfo.cmmn.bean.MainweatherAreaVO"/>
+	
+	<select id="weatherAreaInfo" resultClass="mainWeatherAreaVO" parameterClass="java.lang.String">
+		SELECT 
+		    b.FACT_NAME AS factName,
+		    a.FACT_CODE as factCode,
+		    a.STATION_NAME as stationName,
+		    c.BRANCH_NO branchNo
+		FROM T_WEATHER_AREA a, T_FACT_INFO b, T_FACT_BRANCH c
+		WHERE a.FACT_CODE=b.FACT_CODE(+) 
+		AND a.FACT_CODE is not null
+		AND a.RIVER_DIV=#river_id#  
+		AND b.SYS_KIND = 'T'
+		AND c.FACT_CODE = a.FACT_CODE
+		AND c.BRANCH_NO = a.BRANCH_NO
+		ORDER BY a.RIVER_DIV ASC
+	</select>
+	
+	<select id="todayAccident" resultClass="java.util.HashMap">
+		SELECT          NVL(COUNT (ALERT_STEP),0) AS VAL1,
+                       NVL(SUM (DECODE (ALERT_STEP, '2', 1, '3', 1)),0) AS VAL2,
+                       NVL(SUM (DECODE (ALERT_STEP, '4', 1)),0) AS VAL3
+                  FROM T_ALERT_STEP
+                 WHERE  MIN_TIME LIKE TO_CHAR(SYSDATE, 'yyyymmdd') || '%'
+                 and ALERT_TEST = 0 
+	</select>
+	
+	<select id="getCode" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+		SELECT 
+		    COMMON_CODE VALUE,
+		    COMMON_CODE_NAME CAPTION    
+		FROM T_COMMON_CODE
+		WHERE USE_FLAG='Y'
+		AND COMMON_CODE_CATEGORY=#code_id#
+		ORDER BY CODE_SORT ASC
+	</select>
+	
+	<select id="deptTree" resultClass="deptVO">
+		SELECT
+		      DEPT_CODE AS "deptCode"
+		    , DEPT_NAME AS "deptName"
+		    , DEPT_DESC AS "deptDesc"
+		    , UPPER_DEPT_CODE AS "upperDeptCode"
+		FROM T_DEPT_INFO
+		WHERE USE_FLAG='Y'
+		ORDER BY DEPT_SORT ASC
+	</select>
+	
+</sqlMap>            

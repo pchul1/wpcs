@@ -1,0 +1,88 @@
+﻿-------------------------------- 시스템 정보 ------------------------------------
+
+서버 putty 및 FTP 정보
+IP : 10.101.164.231 , 10.101.164.232(이중화)
+ID : tmax
+PW : tmax!0070
+
+
+예전 waterkorea 서버 putty 및 FTP 정보
+10.101.164.18:28 (SSH)
+tmax/tnwlf#123
+
+
+
+
+
+
+DB 정보 
+TNS NAME : WAS_WPCS1 =
+	  (DESCRIPTION =
+	    (ADDRESS_LIST =
+	      (ADDRESS = (PROTOCOL = TCP)(HOST = 10.101.164.221)(PORT = 1521))
+	      (ADDRESS = (PROTOCOL = TCP)(HOST = 10.101.164.225)(PORT = 1521))
+	    )
+	    (CONNECT_DATA =
+	      (SERVER = DEDICATED)
+	      (SERVICE_NAME = WPCS)
+	    )
+	  ) 
+
+  	  WAS_WPCS2 =
+	  (DESCRIPTION =
+	    (ADDRESS_LIST =
+	      (ADDRESS = (PROTOCOL = TCP)(HOST = 10.101.164.225)(PORT = 1521))
+	      (ADDRESS = (PROTOCOL = TCP)(HOST = 10.101.164.221)(PORT = 1521))
+	    )
+	    (CONNECT_DATA =
+	      (SERVER = DEDICATED)
+	      (SERVICE_NAME = WPCS)
+	    )
+	  )
+ID : wpcs
+PW : wpcs
+
+
+추가 계정(김경환대리 요청)
+ID : dev
+PW : dev
+-------------------------------- 시스템 정보 ------------------------------------
+-------------------------------- 배포 방법 ------------------------------------
+FTP 소스 배포 경로 
+/app/2nd/wpcs.war
+
+1. FTP에 war소스 업로드
+2. 커맨드 창에서 ja입력 하여 제우스 실행
+3. applist 입력하여 컨테이너 정보 확인  
+	컨테이너 리스트 
+	ㄱ. wpcs : 수질오염1차 추가 개발
+	ㄴ. analysis : OLAP
+	ㄷ. wpcs_new : 수질오염2차 추가 개발(현재 운영소스)
+	ㄹ. gis : ARCGIS서버
+
+4. conlist 로 컨테이너 상태 출력
+5. downcon waterwas1_container5  (wpcs_new 컨테이너 정지)
+6. startcon waterwas1_container5  (wpcs_new 컨테이너 실행)
+
+주의사항
+1.context-datasource 이중화 아이피 체크
+2.cfxjava70.lic 이중화 아이피 체크(라이센스가 IP로 되어있음  was1 : cfxjava70.lic_was1   was2 : cfxjava70.lic_was2
+3.context-evalValBySchdlr.xml 231 에서만 스케쥴러 적용
+스케쥴러는 
+
+로그 경로
+/tmax/jeus6/logs/waterwas1/오늘날짜.log
+-------------------------------- 배포 방법 ------------------------------------
+
+
+---------------------------- 도메인 변경 이후 작업 내역 -----------------------------
+
+1. 도메인 변경후 담당관에게 VWORLD 라이센스 키 요청 및 소스 변경
+4EA77A23-29BC-37C9-A4EE-D3BCABCD9846 --> 도메인에 맞는 라이센스키
+
+2. 스케쥴러 주석 처리 풀기
+/src/spring/context-evalValBySchdlr.xml
+386~388번째줄 주석 풀기
+
+3. SSL 처리 (담당관에게 SSL 인증서 설치 요청 
+                         설치 완료 후 작업)                            

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="menuManageDAO">
+
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+    <typeAlias  alias="menuSiteMapVO" type="daewooInfo.admin.menu.bean.MenuSiteMapVO"/>
+	<typeAlias  alias="comDefaultVO" type="daewooInfo.cmmn.bean.ComDefaultVO"/>
+	
+	<select id="selectMenuCreatSiteMapList_D" parameterClass="menuSiteMapVO" resultClass="egovMap">
+		<![CDATA[
+			SELECT
+			       B.MENU_ID       AS "menuNo"
+				 , B.MENU_SORT     AS "menuOrdr"
+				 , B.MENU_NAME       AS "menuNm"
+				 , B.UPPER_MENU_ID AS "upperMenuId"
+				 , (SELECT C.URL_PATH FROM T_PROGRAM_INFO C WHERE B.PROGRM_NAME = C.PROGRM_NAME) AS "chkURL"	
+			FROM   T_MENUCREATDTLS_INFO A, T_MENU_INFO B
+			WHERE  A.MENU_NO  = B.MENU_ID 
+			AND B.DEL_YN = 'N'
+			AND    A.AUTHOR_CODE =  #authorCode#
+			ORDER BY B.MENU_SORT
+		 ]]>
+	</select> 
+
+    <select id="selectSiteMapByUser" parameterClass="menuSiteMapVO" resultClass="egovMap">
+        <![CDATA[
+             SELECT
+                  A.MENU_ID AS menuNo
+                , A.MENU_SORT AS menuOrdr
+                , A.MENU_NAME AS menuNm
+                , A.UPPER_MENU_ID AS upperMenuId
+                , (SELECT Z.URL_PATH FROM T_PROGRAM_INFO Z WHERE A.PROGRM_NAME = Z.PROGRM_NAME) AS chkURL 
+            FROM T_MENU_INFO A, T_MENUCREATDTLS_INFO B, T_EMPLYRSCRTYESTBS C, T_MEMBER D
+            WHERE A.MENU_ID > 0
+              AND A.DEL_YN = 'N'
+              AND A.MENU_ID             = B.MENU_NO 
+              AND B.AUTHOR_CODE         = C.AUTHOR_CODE
+              AND C.SCRTY_ESTBSTRGET_ID = D.UNIQ_ID
+              AND D.MEMBER_ID             = #creatPersonId#
+            ORDER BY A.MENU_SORT
+         ]]>
+    </select> 	
+
+	<select id="selectMenuCreatSiteMapURL_D" parameterClass="menuSiteMapVO" resultClass="egovMap">
+		<![CDATA[
+			SELECT 
+					B.PROGRM_NAME  AS "progrmFileNm",
+					B.SAVE_PATH    AS "progrmStrePath",
+					B.KOREAN_NAME  AS "progrmKoreanNm",
+					B.URL_PATH     AS "URL"        
+			FROM    T_MENU_INFO A, T_PROGRAM_INFO B
+			WHERE   A.PROGRM_NAME = B.PROGRM_NAME
+			AND     A.MENU_ID = #menuNo#
+			AND A.DEL_YN = 'N'
+		 ]]>
+	</select> 
+
+	<insert id="insertSiteMap_S">
+		<![CDATA[
+			INSERT INTO T_SITEMAP ( MAPCREAT_ID, CREAT_OPERTOR_ID, MAP_FILE_NM, MAP_FILE_PATH )
+			VALUES (  #mapCreatId#, #creatPersonId#, #bndeFileNm#, #bndeFilePath#)
+		]]>
+	</insert>
+	
+	<select id="selectSiteMapCnt_S" parameterClass="menuSiteMapVO" resultClass="int">
+		<![CDATA[
+			SELECT COUNT(MAPCREAT_ID) AS "totcnt"
+			  FROM T_SITEMAP
+			 WHERE MAPCREAT_ID like CONCAT(#mapCreatId#, '%')
+		]]>
+	</select>
+
+</sqlMap>                            

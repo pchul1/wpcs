@@ -1,0 +1,226 @@
+
+
+TextArea 
+{
+   color: #FFFFFF;
+   backgroundAlpha: 0.8;
+   backgroundColor: #000000;
+}
+
+TextInput 
+{
+   borderStyle: solid;
+   borderColor: #000000;
+   backgroundColor: #FFFFFF;
+   backgroundAlpha: 0.6;
+   color: #FFFFFF;
+	fontFamily: "돋움";
+}
+
+List
+{
+	backgroundAlpha: 0.75;
+	backgroundColor: #CCCCCC;
+}
+
+Tree 
+{
+   backgroundAlpha: 0;
+   borderStyle: none;
+   color: #FFFFFF;
+}
+
+
+
+
+/* Banner */
+	
+.BannerCanvas
+{
+   borderStyle: solid;
+   borderColor: #FFFFFF;
+   borderThickness: 1;
+   cornerRadius: 5;
+   backgroundAlpha: 0.6;
+   backgroundColor: #000000;
+   dropShadowEnabled: true;
+   shadowDirection: right;
+   shadowDistance: 5;
+}
+
+.BannerRule
+{
+	strokeColor: #3C84D0;
+	shadowColor: #2F6AA9;
+	strokeWidth: 1;
+}
+
+.BannerTitle
+{
+	fontFamily: Arial;
+	fontSize: 18;
+	fontWeight: normal;
+	color: #FFFFFF;
+}
+
+.BannerSubtitle
+{
+	fontFamily: Arial;
+	fontSize: 12;
+	fontWeight: bold;
+	color: #FFFFFF;
+}
+
+.BannerStatus
+{
+	fontFamily: Arial;
+	fontSize: 9;
+	fontWeight: bold;
+	color: #C8C8C8;
+}
+
+.BannerCopyright
+{
+	fontFamily: Arial;
+	fontSize: 9;
+	color: #C8C8C8;
+}
+
+
+/* Controller */
+
+.ControllerCanvas
+{
+   borderStyle: solid;
+   borderColor: #FFFFFF;
+   borderThickness: 1;
+   cornerRadius: 5;
+   backgroundAlpha: 0.6;
+   backgroundColor: #000000;
+   dropShadowEnabled: true;
+   shadowDirection: right;
+   shadowDistance: 5;
+}
+		
+.ControllerRule
+{
+	strokeColor: #FFFFFF;
+	strokeWidth: 1;
+}
+
+.ControllerTitle
+{
+	fontFamily: Arial;
+	fontSize: 12;
+	fontWeight: bold;
+	color: #FFFFFF;
+}
+
+.ControllerLinkButton
+{
+	cornerRadius: 4;
+	paddingLeft: 4;
+	paddingRight: 4;
+	rollOverColor: #222222;
+	selectionColor: #222222;
+	color: #FFFFFF;
+	textRollOverColor: #FFFFFF;
+	textSelectedColor: #FFFFFF;
+	fontFamily: Arial;
+	fontSize: 11;
+	fontWeight: bold;
+}
+
+.ControllerRoundButton
+{
+	cornerRadius: 10;
+	paddingLeft: 0;
+	paddingRight: 0;
+	rollOverColor: #6E6E6E;
+	selectionColor: #6E6E6E;
+	color: #FFFFFF;
+	width: 16;
+	height: 16;
+}
+
+.ControllerBreak
+{
+	strokeColor: #000000;
+	shadowColor: #FFFFFF;
+	strokeWidth: 2;
+}
+
+.MenuBox
+{
+	backgroundColor: #000000;
+	backgroundAlpha: 0;	
+}
+
+.MenuBoxActive
+{
+	backgroundColor: #000000;
+	backgroundAlpha: 0.6;	
+}
+
+.MenuItem
+{
+	color: #FFFFFF;
+	fontFamily: Arial;
+	fontSize: 11;
+	fontWeight: bold;
+}
+
+/* Widget */
+
+.WidgetCanvas
+{
+   borderStyle: solid;
+   borderColor: #FFFFFF;
+   borderThickness: 1;
+   cornerRadius: 5;
+   backgroundAlpha: 0.6;
+   backgroundColor: #000000;
+   dropShadowEnabled: true;
+   shadowDirection: right;
+   shadowDistance: 5;
+   horizontalScrollPolicy: off;
+   verticalScrollPolicy:off;
+}
+
+.WidgetContent
+{
+   backgroundAlpha: 0.6;
+   backgroundColor: #000000;
+   paddingLeft: 5;
+   paddingRight: 5;
+   paddingTop: 5;
+   paddingBottom: 5;
+}
+
+.WidgetTitle
+{
+	fontFamily: Arial;
+	fontSize: 12;
+	fontWeight: bold;
+	color: #FFFFFF;
+}
+
+.WidgetRule
+{
+	strokeColor: #000000;
+	shadowColor: #FFFFFF;
+}
+
+.WidgetText
+{
+	fontFamily: Arial;
+	fontSize: 11;
+	fontWeight: bold;
+	color: #FFFFFF;
+}
+
+
+
+
+
+

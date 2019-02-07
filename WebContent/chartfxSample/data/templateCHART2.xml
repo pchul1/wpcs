@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<CFX7>
+	<VIEW3D>
+		<ENABLED>True</ENABLED>
+	</VIEW3D>
+	<PANES>
+		<ITEM index="0">
+			<AXES>
+				<ITEM index="0"/>
+			</AXES>
+		</ITEM>
+	</PANES>
+	<AXESX>
+		<ITEM index="0">
+			<LABELSFORMAT>
+				<DECIMALS>0</DECIMALS>
+			</LABELSFORMAT>
+		</ITEM>
+		<ITEM index="2">
+			<LABELSFORMAT>
+				<DECIMALS>0</DECIMALS>
+			</LABELSFORMAT>
+		</ITEM>
+	</AXESX>
+	<ALLSERIES>
+		<POINTLABELS>
+			<VISIBLE>True</VISIBLE>
+		</POINTLABELS>
+		<GALLERYARRAY type="ChartFX.WebForms.Internal.IGalleryType[]">
+			<ITEM index="0" type="ChartFX.WebForms.Galleries.Line"/>
+			<ITEM index="4" type="ChartFX.WebForms.Galleries.Pie"/>
+		</GALLERYARRAY>
+		<GALLERY>Pie</GALLERY>
+	</ALLSERIES>
+	<SERIES>
+		<ITEM index="0">
+			<TEXT>value</TEXT>
+		</ITEM>
+	</SERIES>
+	<BORDER type="ChartFX.WebForms.Adornments.ImageBorder" assembly="ChartFX.WebForms.Adornments, Version=7.0.2893.24805, Culture=neutral, PublicKeyToken=a1878e2052c08dce"/>
+	<BACKGROUND type="ChartFX.WebForms.Adornments.GradientBackground" assembly="ChartFX.WebForms.Adornments, Version=7.0.2893.24805, Culture=neutral, PublicKeyToken=a1878e2052c08dce">
+		<COLORS type="ChartFX.WebForms.Adornments.GradientBackground+ColorCollection" assembly="ChartFX.WebForms.Adornments, Version=7.0.2893.24805, Culture=neutral, PublicKeyToken=a1878e2052c08dce"/>
+	</BACKGROUND>
+	<ID>chart1</ID>
+	<RENDERFORMAT>Image</RENDERFORMAT>
+</CFX7>

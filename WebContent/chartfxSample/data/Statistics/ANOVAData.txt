@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<CHARTFX>
+	<COLUMNS>
+		<COLUMN NAME="A" TYPE="Integer"/>
+		<COLUMN NAME="B" TYPE="Integer"/>
+		<COLUMN NAME="C" TYPE="Integer"/>
+		<COLUMN NAME="D" TYPE="Integer"/>
+		<COLUMN NAME="E" TYPE="Integer"/>
+	</COLUMNS>
+	<ROW A="250" B="310" C="250" D="340" E="250"></ROW>
+	<ROW A="260" B="330" C="230" D="270" E="240"></ROW>
+	<ROW A="230" B="280" C="220" D="300" E="270"></ROW>
+	<ROW A="270" B="360" C="260" D="320" E="290"></ROW>
+</CHARTFX>

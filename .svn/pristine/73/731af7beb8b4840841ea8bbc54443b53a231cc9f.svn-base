@@ -1,0 +1,70 @@
+/* CSS file */
+
+
+
+Text
+{
+	disabledColor: #000000;
+	color: #000000;
+	fontWeight: bold;
+	fontSize: 12;
+}
+Canvas
+{
+	borderColor: #FFFFFF;
+	backgroundColor: #F7F7F7;
+	fontSize: 12;
+}
+TabNavigator
+{
+	fontSize: 12;
+	color: #000000;
+	selectedTabTextStyleName: tabNavigatorSelectedTabText;
+	firstTabStyleName: tabNavigatorFirstTab;
+	tabStyleName: tabNavigatorTab;
+	lastTabStyleName: tabNavigatorLastTab;
+}
+
+.tabNavigatorFirstTab
+{
+	themeColor: #83A5FB;
+	fillAlphas: 1.0, 1.0, 1.0, 1.0;
+	fillColors: #F0F0F0, #F0F0F0, #CDCBCB, #F0F0F0;
+}
+.tabNavigatorTab
+{
+	themeColor: #83A5FB;
+	fillAlphas: 1.0, 1.0;
+	fillColors: #F0F0F0, #F0F0F0, #CDCBCB, #F0F0F0;
+}
+.tabNavigatorLastTab
+{
+	fillAlphas: 1.0, 1.0;
+	fillColors: #F0F0F0, #F0F0F0, #CDCBCB, #F0F0F0;
+	themeColor: #83A5FB;
+}
+.toolTipUpSide
+		{
+			borderSkin: ClassReference("com.common.utils.ToolTipSkin");
+			/* tooltipStyle: "TopLeft"; */
+			tooltipStyle: "BottomLeft"; 
+			/* tooltipStyle: "LeftTop";  */
+			/* tooltipStyle: "RightTop"; */
+		 	backgroundColor: #000000;
+			backgroundAlpha: 1; 
+			innerColor: #ECECEB;
+			cornerRadius: 3;
+			cornerRadiusInner: 2; 
+		
+			color: #3442FD;
+			fontSize: 11;
+			fontWeight: "bold";
+			borderColor: #80E300;
+			shadowColor: #000000;
+			paddingBottom: 4;
+			paddingLeft: 4;
+			paddingRight: 4;
+			paddingTop: 4;
+	fillAlphas: 1.0, 1.0;
+	fillColors: #F5F4F4, #F5F4F4;
+		}

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="authorRoleManageDAO">
+	
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias alias="authorRoleManageVO" type="daewooInfo.admin.security.bean.AuthorRoleManageVO"/>
+	<typeAlias alias="authorRoleManage" type="daewooInfo.admin.security.bean.AuthorRoleManage"/>
+
+	<resultMap id="authorRole" class="daewooInfo.admin.security.bean.AuthorRoleManageVO">
+		<result property="roleCode" column="ROLE_CODE" columnIndex="1"/>
+		<result property="roleNm" column="ROLE_NAME" columnIndex="2"/>
+		<result property="rolePtn" column="ROLE_PTN" columnIndex="3"/>
+		<result property="roleDc" column="ROLE_DESC" columnIndex="4"/>
+		<result property="roleTyp" column="ROLE_TYPE" columnIndex="5"/>
+		<result property="roleSort" column="ROLE_SORT" columnIndex="6"/>
+		<result property="authorCode" column="AUTHOR_CODE" columnIndex="7"/>
+		<result property="regYn" column="REG_YN" columnIndex="8"/>
+		<result property="creatDt" column="REG_DATE" columnIndex="9"/>
+	</resultMap>
+	
+	<select id="selectAuthorRoleList" parameterClass="authorRoleManageVO" resultMap="authorRole">
+			SELECT * 
+				FROM (
+					SELECT ROWNUM RNUM, ALL_LIST.*
+						FROM (
+							SELECT A.ROLE_CODE
+								, A.ROLE_NAME
+								, A.ROLE_PTN
+								, A.ROLE_DESC
+								, A.ROLE_TYPE
+								, A.ROLE_SORT
+								, B.AUTHOR_CODE
+								, B.REG_DATE
+								, B.REG_YN REG_YN
+							FROM T_ROLEINFO A,
+								(
+									SELECT AUTHOR_CODE, ROLE_CODE, REG_DATE, REG_YN
+									FROM T_AUTHORROLERELATE
+									WHERE AUTHOR_CODE IS NOT NULL
+								<isNotEmpty property="searchKeyword">
+										AND ROLE_CODE LIKE '%'||#searchKeyword#||'%'
+								</isNotEmpty>
+								) B
+							WHERE A.ROLE_CODE = B.ROLE_CODE
+							) ALL_LIST
+					)
+			WHERE RNUM > #firstIndex#
+			<![CDATA[
+				AND RNUM <= #firstIndex# + #recordCountPerPage#
+			]]>
+	</select>
+	
+	<select id="selectAuthorRoleListTotCnt" parameterClass="authorRoleManageVO" resultClass="int">
+			SELECT COUNT(*) totcnt
+				FROM T_ROLEINFO A
+					LEFT OUTER JOIN (SELECT ROLE_CODE FROM T_AUTHORROLERELATE WHERE AUTHOR_CODE = #searchKeyword#) B
+				ON A.ROLE_CODE = B.ROLE_CODE
+	</select>
+	
+	<insert id="insertAuthorRole" parameterClass="authorRoleManage">
+		MERGE INTO T_AUTHORROLERELATE
+		USING DUAL
+		ON (AUTHOR_CODE = #authorCode# AND ROLE_CODE = #roleCode#)
+		WHEN MATCHED THEN
+			UPDATE SET
+				REG_YN = #regYn#
+		WHEN NOT MATCHED THEN
+			INSERT (
+					 AUTHOR_CODE
+					, ROLE_CODE
+					, REG_DATE)
+			VALUES ( #authorCode#
+					, #roleCode#
+					, SYSDATE)
+	</insert>
+	
+	<delete id="deleteAuthorRole">
+		<![CDATA[
+			DELETE FROM T_AUTHORROLERELATE
+			WHERE AUTHOR_CODE=#authorCode#
+				AND ROLE_CODE=#roleCode#
+		]]>
+	</delete>
+	
+</sqlMap>

@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Microsoft Visual Studio .NET 7.1">
+<meta name=ProgId content=VisualStudio.HTML>
+<meta name=Originator content="Microsoft Visual Studio .NET 7.1">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<style type="text/css">
+<!--
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #333333;
+	background-image: url();
+	margin-left: 10px;
+	margin-top: 10px;
+	margin-right: 5px;
+	margin-bottom: 5px;
+}
+a:link {
+	color: #333333;
+}
+a:visited {
+	color: #333333;
+}
+a:hover {
+	color: #666666;
+}
+a:active {
+	color: #333333;
+}
+.button {
+	text-align: center;
+	color: #FFFFFF;
+	vertical-align: bottom;
+	background-color: #CBD0D4;
+	font-size: 12px;
+	padding: 2px 5px 5px;
+	border: 1px solid #666666;
+}
+.buttonOn {
+	text-align: center;
+	font-size: 12px;
+	color: #000000;
+	background-color: #FFFFFF;
+	padding: 2px 5px 5px;
+	border-top: 1px solid #000000;
+	border-right: 1px solid #000000;
+	border-left: 1px solid #000000;
+	vertical-align: bottom;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #CCCCCC;
+}
+.underLine {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #000000;
+}
+.buttonOver {
+	text-align: center;
+	color: #FFFFFF;
+	vertical-align: bottom;
+	background-color: #E2E6EC;
+	font-size: 12px;
+	padding: 2px 5px 5px;
+	border: 1px solid #666666;
+}
+-->
+</style>
+<script language="javascript">
+	
+	var isClicked = 'sScales';
+
+	function sSwapOver(id)
+	{
+		if(isClicked !=id)
+		{
+			var objP = document.getElementById(id);
+			objP.className = 'buttonOver';
+			objP.style.cursor = 'pointer';
+		}
+	}
+
+	function sSwapOut(id)
+	{
+		if(isClicked !=id)
+		{
+			var objP = document.getElementById(id);
+			objP.className = 'button';
+			objP.style.cursor = 'default';
+		}
+	}
+	
+	function sClick(id)
+	{
+		if(isClicked != null)
+		{
+			var objIsClicked = document.getElementById(isClicked);
+			objIsClicked.className = 'button';
+		}
+
+		var objP = document.getElementById(id);
+		objP.className = 'buttonOn';
+		isClicked = id;
+	}
+</script>
+</head>
+<body>
+<table width="696" height="25" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td nowrap class="buttonOn" id="sScales" onClick="sClick(id); parent.subMain.location='RadialGauges/MultipleScales.jsp';" onMouseOver="sSwapOver(id);" onMouseOut="sSwapOut(id);">Multiple
+        Scales</td>
+    <td class="underLine">&nbsp;</td>
+    <td nowrap class="button" id="sLocations" onClick="sClick(id); parent.subMain.location='RadialGauges/Locations.jsp';" onMouseOver="sSwapOver(id);" onMouseOut="sSwapOut(id);">Locations</td>
+    <td class="underLine">&nbsp;</td>
+    <td nowrap class="button" id="sSections" onClick="sClick(id); parent.subMain.location='RadialGauges/SectionsAndStripes.jsp';" onMouseOver="sSwapOver(id);" onMouseOut="sSwapOut(id);">Sections &amp; Stripes</td>
+    <td class="underLine">&nbsp;</td>
+    <td nowrap class="button" id="sCombo" onClick="sClick(id); parent.subMain.location='RadialGauges/Combination.jsp';" onMouseOver="sSwapOver(id);" onMouseOut="sSwapOut(id);">Combination</td>
+    <td class="underLine">&nbsp;</td>
+    <td nowrap class="button" id="sTickmarks" onClick="sClick(id); parent.subMain.location='RadialGauges/Tickmarks.jsp';" onMouseOver="sSwapOver(id);" onMouseOut="sSwapOut(id);">Tickmarks</td>
+    <td class="underLine">&nbsp;</td>
+    <td nowrap class="button" id="sNeedles" onClick="sClick(id); parent.subMain.location='RadialGauges/MultipleNeedles.jsp';" onMouseOver="sSwapOver(id);" onMouseOut="sSwapOut(id);">Multiple Needles</td>
+    <td class="underLine">&nbsp;</td>
+    <td nowrap class="button" id="sBgImage" onClick="sClick(id); parent.subMain.location='RadialGauges/BackgroundImage.jsp';" onMouseOver="sSwapOver(id);" onMouseOut="sSwapOut(id);">Background Image</td>
+  </tr>
+</table>
+</body>
+</html>

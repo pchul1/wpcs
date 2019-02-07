@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<!--The viewport meta tag is used to improve the presentation and behavior of the samples 
+	  on iOS devices-->
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+	<title>Create Map and add a dynamic layer</title>
+	<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css"/>
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
+	<link href="../css/gis_style.css" rel="stylesheet" type="text/css">
+	 <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css">
+	<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
+	
+	<!--link rel="stylesheet" href="cPark/jquery-custom.css"/-->
+	
+	
+	<style>
+		html,body,#mapDiv{
+		padding:0;
+		margin:0;
+		height:100%;
+		overflow: hidden;
+	}
+
+	</style>
+	<script type="text/javascript" src="jsapi_vsdoc10_v36.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	
+	<script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<script type="text/javascript" src="../js/jquery.dialog.custom.js"></script>
+	
+	<!--script type="text/javascript" src="cPark/jqueryUI-Dialog-Custom.js"></script-->
+	
+	<script src="http://js.arcgis.com/3.8/"></script>
+	<script src="../js/common.js"></script>
+	<script src="../js/simpleMap.js"></script>
+	<script>
+	</script>
+
+</head>
+<body >
+	<div id="mapDiv" class="claro" style="border:1px solid #000;"></div>
+
+	<div id="tool"  style="position: absolute; right: 10px; top: 10px; position: absolute; width:100px; height:24px "> 
+		<div class="tool_bu1"><a href="javascript:$arcGIS.model.generalMap();"	onMouseOut="MM_swapImgRestore('Image1','../images/tool_1_off.gif')" onMouseOver="MM_swapImage('Image1','../images/tool_1_over1.gif',1)" ><img idx="0" src="../images/tool_1_over1.gif" id="Image1" width="42" height="24" border="0"></a></div>
+		<div class="tool_bu1"><a href="javascript:$arcGIS.model.flightMap();"	onMouseOut="MM_swapImgRestore('Image2','../images/tool_2_off.gif')" onMouseOver="MM_swapImage('Image2','../images/tool_2_over1.gif',1)" ><img idx="1" src="../images/tool_2_off.gif" id="Image2" width="42" height="24" border="0"></a></div>
+	</div>
+</body>
+</html>

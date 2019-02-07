@@ -1,0 +1,42 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
+<title>수질오염 방제정보 시스템</title>
+<link href="../css/gis_style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+ <div id="search_result">
+	<div id="search_result_title"></div>
+	<div id="search_form">
+		<div id="search_cont">
+			<div class="xls_bt"><img src="../images/xls_bt.png"></div>
+			<div class="search_box_st" id="search_box">
+			  <table width="336" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td class="search_box_1">No</td>
+                  <td class="search_box_2">수계</td>
+                  <td class="search_box_3">지역</td>
+                  <td class="search_box_4">측정소</td>
+                  <td class="search_box_5">DO(MG/L)</td>
+                  <td class="search_box_6">PH</td>
+                </tr>
+                <tr>
+                  <td class="search_box_7">-</td>
+                  <td class="search_box_7">금강</td>
+                  <td class="search_box_7">전라북도 정읍시 </td>
+                  <td class="search_box_7">이평2-11</td>
+                  <td class="search_box_7">-</td>
+                  <td class="search_box_7">-</td>
+                </tr>
+              </table>
+			</div>
+	  </div>
+		<div id="ar_out_search"><a href="#"><img src="../images/arrow_out.png" width="15" height="36" border="0"></a></div>
+	</div>
+
+
+
+</div><!--search_result-->
+</body>
+</html>

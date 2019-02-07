@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="alertMngDAO">
+
+	<typeAlias alias="alertMngVO" type="daewooInfo.alert.bean.AlertMngVO"/>
+	<typeAlias alias="alertStepVO" type="daewooInfo.alert.bean.AlertStepVO"/>
+	
+	<!-- get Alert Mng List -->
+	<select id="getAlertMngList" parameterClass="alertMngVO" resultClass="alertMngVO">
+        <![CDATA[          
+        SELECT *
+        FROM (  
+                SELECT ROWNUM RNUM, T.*
+                FROM (
+                        SELECT T.ADMIN_ID as mngId,
+                               T.ADMIN_TITLE as mngTitle,
+                               T.REG_ID as regId,
+                               SUBSTR(T.REG_DATE,0,4) || '-' ||
+                               SUBSTR(T.REG_DATE,5,2) || '-' ||
+                               SUBSTR(T.REG_DATE,7,2) || ' ' ||
+                               SUBSTR(T.REG_DATE,9,2) || ':' ||
+                               SUBSTR(T.REG_DATE,11,2) as regDate
+                          FROM T_WARNING_ADMIN T
+                        ORDER BY T.REG_DATE DESC ) T )
+        WHERE  RNUM  > #firstIndex#
+        AND  RNUM <= #firstIndex# + #recordCountPerPage#
+        ]]>
+	</select>
+	
+	<select id="getAlertMngPk" resultClass="java.lang.Integer">
+		SELECT SEQ_ALERT_MNG.NEXTVAL FROM DUAL
+	</select>
+	    
+	<select id="getAlertMngCnt" resultClass="java.lang.Integer">
+		SELECT COUNT(*) as CNT FROM T_WARNING_ADMIN
+	</select>
+	    
+    <!-- get Alert Mng Data -->
+	<select id="getAlertMng" parameterClass="alertMngVO" resultClass="alertMngVO">
+        <![CDATA[            
+        SELECT T.ADMIN_ID as mngId,
+               T.ADMIN_TITLE as mngTitle,
+               T.RECEIPT_NAME as receiptName,
+               T.RECEIPT_TEL_NO as receiptTelNo,
+               SUBSTR(T.RECEIPT_DATE,0,4) || '-' ||
+               SUBSTR(T.RECEIPT_DATE,5,2) || '-' ||
+               SUBSTR(T.RECEIPT_DATE,7,2) || ' ' ||
+               SUBSTR(T.RECEIPT_DATE,9,2) || ':' ||
+               SUBSTR(T.RECEIPT_DATE,11,2) as receiptDate,
+               SUBSTR(T.RECEIPT_DATE,0,8) as receiptDate1,
+               SUBSTR(T.RECEIPT_DATE,9,2) as receiptDate2,
+               SUBSTR(T.RECEIPT_DATE,11,2) as receiptDate3,
+               T.RECEIPT_CONTENT as receiptContent,
+               (SELECT COMMON_CODE_NAME 
+                FROM T_COMMON_CODE
+                WHERE COMMON_CODE_CATEGORY = '31'
+                AND COMMON_CODE = T.RECEIPT_TYPE) as receiptType,
+               T.RIVER_DIV as sugye,
+               DECODE(T.RIVER_DIV, 'R01', '한강', 'R02', '낙동강', 'R03', '금강', 'R04', '영산강') as riverName,
+               T.FACT_CODE as factCode,
+               (SELECT FACT_NAME FROM T_FACT_INFO WHERE FACT_CODE = T.FACT_CODE) as factName,
+               T.BRANCH_NO as branchNo,
+               SUBSTR(T.SPREAD_DATE,0,4) || '-' ||
+               SUBSTR(T.SPREAD_DATE,5,2) || '-' ||
+               SUBSTR(T.SPREAD_DATE,7,2) || ' ' ||
+               SUBSTR(T.SPREAD_DATE,9,2) || ':' ||
+               SUBSTR(T.RECEIPT_DATE,11,2) as spreadDate,
+               SUBSTR(T.SPREAD_DATE,0,8) as spreadDate1,
+               SUBSTR(T.SPREAD_DATE,9,2) as spreadDate2,
+               SUBSTR(T.SPREAD_DATE,11,2) as spreadDate3,
+               T.SPREAD_CONTENT as spreadContent,
+               T.ETC as etc,
+               T.REG_ID as regId,
+               T.REG_DATE as regDate
+          FROM T_WARNING_ADMIN T
+          WHERE T.ADMIN_ID = #mngId#
+        ]]>    
+	</select>	
+	
+    <!-- merge Alert Mng Data -->
+    <statement id="mergeAlertMng" parameterClass="alertMngVO">
+        MERGE INTO T_WARNING_ADMIN A 
+        USING ( SELECT #mngId# AS ADMIN_ID, #mngTitle# AS ADMIN_TITLE, #receiptName# AS RECEIPT_NAME, #receiptTelNo# AS RECEIPT_TEL_NO, #receiptDate# AS RECEIPT_DATE,
+                       #receiptContent# AS RECEIPT_CONTENT, #receiptType# AS RECEIPT_TYPE, #sugye# AS RIVER_DIV, #factCode# AS FACT_CODE, #branchNo# AS BRANCH_NO, 
+                       #spreadContent# AS SPREAD_CONTENT, #etc# AS ETC, #regId# AS REG_ID
+                FROM DUAL) B
+        ON (A.ADMIN_ID = B.ADMIN_ID)
+        WHEN MATCHED THEN 
+            UPDATE SET 
+                A.ADMIN_TITLE = B.ADMIN_TITLE
+                , A.RECEIPT_NAME = B.RECEIPT_NAME
+                , A.RECEIPT_TEL_NO = B.RECEIPT_TEL_NO
+                , A.RECEIPT_DATE = B.RECEIPT_DATE
+                , A.RECEIPT_CONTENT = B.RECEIPT_CONTENT
+                , A.RECEIPT_TYPE = B.RECEIPT_TYPE
+                , A.RIVER_DIV = B.RIVER_DIV
+                , A.FACT_CODE = B.FACT_CODE
+                , A.BRANCH_NO = B.BRANCH_NO
+                , A.SPREAD_CONTENT = B.SPREAD_CONTENT
+                , A.ETC = B.ETC
+                , A.REG_ID = B.REG_ID
+        WHEN NOT MATCHED THEN
+            INSERT (A.ADMIN_ID, A.ADMIN_TITLE, A.RECEIPT_NAME, A.RECEIPT_TEL_NO, A.RECEIPT_DATE, A.RECEIPT_CONTENT, A.RECEIPT_TYPE, A.RIVER_DIV, A.FACT_CODE, A.BRANCH_NO, A.SPREAD_CONTENT, A.SPREAD_DATE, A.ETC, A.REG_ID, A.REG_DATE)
+            VALUES (B.ADMIN_ID, B.ADMIN_TITLE, B.RECEIPT_NAME, B.RECEIPT_TEL_NO, B.RECEIPT_DATE, B.RECEIPT_CONTENT, B.RECEIPT_TYPE, B.RIVER_DIV, B.FACT_CODE, B.BRANCH_NO, B.SPREAD_CONTENT, TO_CHAR(SYSDATE,'yyyymmddhh24mi'), B.ETC, B.REG_ID, TO_CHAR(SYSDATE,'yyyymmddhh24mi'))
+	</statement>  	
+	
+    <!-- delete Alert Mng Data -->
+    <statement id="deleteAlertMng" parameterClass="alertMngVO">
+		DELETE FROM T_WARNING_ADMIN		
+		WHERE ADMIN_ID = #mngId#
+	</statement>  	
+	
+    <!-- get Dpet String -->
+    <statement id="getAlertMngSpreadDept" parameterClass="alertMngVO" resultClass="java.lang.String">
+        SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ', ')), 2)) AS STR
+          FROM (SELECT DEPT_NAME, ROWNUM AS RN
+                  FROM T_DEPT_INFO
+                 WHERE DEPT_CODE IN
+                             (SELECT DISTINCT DEPT_CODE
+                                FROM T_SPREAD_TARGET A, T_MEMBER B
+                               WHERE     A.MEMBER_ID = B.MEMBER_ID
+                                     AND A.FACT_CODE = #factCode#
+                                     AND A.BRANCH_NO = #branchNo#))
+    START WITH RN = '1'
+    CONNECT BY PRIOR RN = RN - 1
+	</statement>  	
+	
+	<update id="alertMngHistDelete" parameterClass="alertStepVO">
+	UPDATE T_IW_HIS
+	   SET DEL_YN = 'Y'
+	 WHERE IW_NO = #asId#
+	</update>
+	
+</sqlMap>

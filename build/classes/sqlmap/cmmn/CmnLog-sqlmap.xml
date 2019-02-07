@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CmnLogCounterDAO">
+
+	<typeAlias alias="CmnLogCounterVO" type="daewooInfo.cmmn.bean.CmnLogCounterVO"/>
+	
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias alias="reportVOCmnLog" type="daewooInfo.cmmn.bean.ReportVO"/>
+
+	<select id="selectCmnLogCount" resultClass="egovMap">
+		/* 오늘의 방문자 수   */
+		SELECT SUM(count(*)) AS cnt
+		FROM T_CMN_WEBLOG_LOGIN 
+		WHERE CRTDATE BETWEEN TO_DATE(TO_CHAR(SYSDATE,'YYYYMMDD'),'YYYYMMDD') AND TO_DATE(TO_CHAR(SYSDATE+1,'YYYYMMDD'),'YYYYMMDD')
+		GROUP BY ID
+		UNION ALL
+		/* 전체 방문자 수  */
+		SELECT SUM(count(*)) AS cnt
+		FROM T_CMN_WEBLOG_LOGIN
+		GROUP BY ID
+		UNION ALL
+		/* 오늘의 페이지 수  */
+		SELECT NVL(SUM(COUNT(A.URI)),0) AS cnt
+		FROM T_CMN_WEBLOG A , T_CMN_WEBLOG_MENU B
+		WHERE A.URI = B.URI
+			AND A.PARAMS = B.PARAMS
+			AND A.ID != 'roleAnonymous'
+			AND CRTDATE BETWEEN TO_DATE(TO_CHAR(SYSDATE,'YYYYMMDD'),'YYYYMMDD') AND TO_DATE(TO_CHAR(SYSDATE+1,'YYYYMMDD'),'YYYYMMDD')
+		GROUP BY (A.URI)
+		UNION ALL
+		/* 전체 페이지 수  전체조회이기에 조건은 X*/
+		SELECT COUNT(*) 
+		  FROM T_CMN_WEBLOG A , 
+		       T_CMN_WEBLOG_MENU B 
+		 WHERE A.URI = B.URI 
+		       AND A.PARAMS = B.PARAMS 
+
+<!-- 		기존쿼리 -->
+<!-- 		/* 전체 페이지 수 */ -->
+<!-- 		SELECT NVL(SUM(COUNT(A.URI)),0) AS cnt -->
+<!-- 		FROM T_CMN_WEBLOG A , T_CMN_WEBLOG_MENU B -->
+<!-- 		WHERE A.URI = B.URI -->
+<!-- 			AND A.PARAMS = B.PARAMS -->
+<!-- 			AND A.ID != 'roleAnonymous' -->
+<!-- 		GROUP BY (A.URI) -->
+	</select>
+	
+	<select id="selectCmnLogList" resultClass="egovMap">
+		SELECT M1 AS g1, 
+				M2 AS g2, 
+				M3 AS g3,
+			NVL(U.CNT, '0') as cnt
+		FROM T_CMN_WEBLOG_MENU M,
+				(SELECT URI, PARAMS, COUNT(ID) AS CNT
+				FROM T_CMN_WEBLOG
+				WHERE ID != 'roleAnonymous'
+					AND CRTDATE BETWEEN TO_DATE(CONCAT(#frDate#, ' 00:00:00'), 'YY/MM/DD HH24:MI:SS') 
+					AND TO_DATE(CONCAT(#toDate#, ' 23:59:59'), 'YY/MM/DD HH24:MI:SS')
+				GROUP BY URI, PARAMS) U
+		WHERE M.URI = U.URI(+)
+			AND M.PARAMS = U.PARAMS(+)
+		ORDER BY SEQ ASC
+	</select>
+	<select id="getAvgPage" resultClass="egovMap">
+		SELECT NVL(SUM(COUNT(A.URI)),0) AS cnt
+		  FROM T_CMN_WEBLOG A , T_CMN_WEBLOG_MENU B
+		 WHERE A.URI = B.URI
+		   AND A.PARAMS = B.PARAMS
+		   AND A.ID != 'roleAnonymous'
+		   AND CRTDATE BETWEEN TO_DATE(#frDate# || ' 00:00' , 'YY/MM/DD HH24:MI') AND TO_DATE(#toDate#|| ' 23:59' , 'YY/MM/DD HH24:MI')
+		 GROUP BY (A.URI)
+		UNION ALL
+		SELECT SUM(count(*)) AS cnt
+		  FROM T_CMN_WEBLOG_LOGIN
+		 WHERE ID IS NOT NULL
+		   AND CRTDATE BETWEEN TO_DATE(#frDate# || ' 00:00' , 'YY/MM/DD HH24:MI') AND TO_DATE(#toDate#|| ' 23:59' , 'YY/MM/DD HH24:MI')
+		 GROUP BY ID 
+		UNION ALL
+		SELECT DECODE(cnt,0,1,cnt) AS cnt
+		  FROM (SELECT TO_DATE(#toDate#,'YYYY/MM/DD') - TO_DATE(#frDate#,'YYYY/MM/DD') AS cnt
+		          FROM DUAL) 		
+	</select>
+    <insert id="insertCmnLog"  parameterClass="CmnLogCounterVO">
+    	INSERT INTO T_CMN_WEBLOG
+    	(
+    	 ID, 
+   		 IP, 
+   		 URI, 
+   		 CONTROLLER, 
+   		 PARAMS, 
+   		 CRTDATE
+   		 )
+         VALUES
+         (
+          #id#,
+          #ip#,
+          #uri#,
+          #controller#,
+          #params#,
+          sysdate
+          )
+    </insert>
+    
+    <insert id="saveWeblogReportCmnLog" parameterClass="reportVOCmnLog">
+    	INSERT INTO T_CMN_WEBLOG_REPORT 
+    	(
+    	 SEQ_NO,
+    	 START_DATE,
+    	 END_DATE,
+    	 REPORT,
+    	 REG_DATE)
+		 VALUES
+		(
+		 SEQ_T_CMN_WEBLOG_REPORT.NEXTVAL,
+		 #start_date#,
+		 #end_date#,
+		 #report#,
+		 SYSDATE
+		 )
+    </insert>
+    
+    <select id="getWeblogReportListCmnLog" parameterClass="reportVOCmnLog" resultClass="reportVOCmnLog">
+		SELECT SEQ_NO,
+		       TO_CHAR (TO_DATE (START_DATE, 'YYYYMMDD'), 'YYYY/MM/DD') AS START_DATE,
+		       TO_CHAR (TO_DATE (END_DATE, 'YYYYMMDD'), 'YYYY/MM/DD') AS END_DATE,
+		       REPORT,
+		       TO_CHAR (REG_DATE, 'YYYY/MM/DD') AS REG_DATE
+		  FROM T_CMN_WEBLOG_REPORT
+		 ORDER BY SEQ_NO DESC
+	</select>
+	
+	<select id="getLoginCountChart" parameterClass="CmnLogCounterVO" resultClass="CmnLogCounterVO">
+	SELECT TO_CHAR(CRTDATE,'YYYY/MM/DD') AS loginDate, 
+	       COUNT(*) 					 AS loginCnt
+	  FROM T_CMN_WEBLOG_LOGIN
+	 WHERE CRTDATE BETWEEN TO_DATE(#frDate# || ' 00:00' , 'YY/MM/DD HH24:MI') AND TO_DATE(#toDate#|| ' 23:59' , 'YY/MM/DD HH24:MI') 
+	 GROUP BY TO_CHAR(CRTDATE,'YYYY/MM/DD')
+	 ORDER BY TO_CHAR(CRTDATE,'YYYY/MM/DD') ASC
+	</select>
+</sqlMap>            

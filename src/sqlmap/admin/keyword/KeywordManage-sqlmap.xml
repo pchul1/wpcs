@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+  
+<sqlMap namespace="KeywordManageDAO">
+
+	<typeAlias  alias="egovMap"    type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="keywordVO"   type="daewooInfo.admin.keyword.bean.KeywordVO"/>
+	<typeAlias  alias="keywordSearchVO" type="daewooInfo.admin.keyword.bean.KeywordSearchVO"/>
+
+	<select id="selectKeywordList" parameterClass="keywordSearchVO" resultClass="egovMap">
+		<![CDATA[
+                SELECT  * 
+			  	FROM  (
+					SELECT ROWNUM RNUM, ALL_LIST.* 
+			 			 FROM  (
+		        			   SELECT FILTER_NO AS "filterNo",
+			         		   FILTER_KIND AS "filterKind",
+                 			   KEYWORD_NM AS "keywordNm",
+                 			   FILTER_DT AS "filterDt",
+                 			   CONNECT_IP AS "connectIp",
+			       			   MEMBER_ID AS "memberId"
+			              FROM T_FILTER_KEYWORD A
+							]]>
+								<isEqual prepend="WHERE" property="searchCondition" compareValue="name">
+									<![CDATA[ a.KEYWORD_NM LIKE '%' || #searchKeyword# || '%']]>
+								</isEqual>
+								ORDER BY FILTER_NO DESC, A.FILTER_DT DESC
+							<![CDATA[
+						    ) ALL_LIST
+						    )
+					 		WHERE  RNUM  > #firstIndex#
+						    AND  RNUM <= #firstIndex# + #recordCountPerPage#
+					        ]]>
+	</select>
+
+	<select id="selectKeywordListTotCnt" parameterClass="keywordSearchVO" resultClass="int">
+		<![CDATA[
+			SELECT  COUNT(*) totcnt 
+			  FROM  T_FILTER_KEYWORD
+		]]>
+			<isEqual prepend="WHERE" property="searchCondition" compareValue="name">
+				<![CDATA[ KEYWORD_NM LIKE '%' || #searchKeyword# || '%']]>
+			</isEqual>
+	</select>
+
+	<select id="selectKeywordDetail" parameterClass="keywordVO" resultClass="keywordVO">
+		<![CDATA[
+              SELECT FILTER_NO AS "filterNo",
+			       FILTER_KIND AS "filterKind",
+			       KEYWORD_NM AS "keywordNm",
+			       FILTER_DT AS "filterDt",
+			       CONNECT_IP AS "connectIp",
+			       MEMBER_ID AS "memberId"
+			  FROM T_FILTER_KEYWORD a
+			  WHERE FILTER_NO = #filterNo#
+	 
+		]]>
+	</select>
+
+	<insert id="insertKeyword" parameterClass="keywordVO">
+		INSERT INTO T_FILTER_KEYWORD (
+		   FILTER_NO, 
+		   FILTER_KIND, 
+		   KEYWORD_NM, 
+		   FILTER_DT,
+		   CONNECT_IP,
+		   MEMBER_ID
+		   ) 
+		VALUES ( SEQ_FILTER_KEYWORD.NEXTVAL,
+		 		#filterKind#,
+		 		#keywordNm#,
+		 		sysdate,
+		 		#connectIp#,
+		 		#memberId#
+		 )
+	</insert>
+
+	<update id="updateKeyword" parameterClass="keywordVO">
+		<![CDATA[
+            UPDATE T_FILTER_KEYWORD
+			SET  KEYWORD_NM     = #keywordNm#,
+			     CONNECT_IP     = #connectIp#,
+			     MEMBER_ID     = #memberId#
+			WHERE  FILTER_NO     = #filterNo#
+		]]>
+	</update>
+	
+	<delete id="deleteKeyword">
+		<![CDATA[
+            DELETE T_FILTER_KEYWORD 
+             WHERE FILTER_NO=#filterNo#
+		]]>
+	</delete>
+	
+	<select id="selectKeywordCheckCnt" parameterClass="KeywordVO" resultClass="int">
+		<![CDATA[
+			SELECT  COUNT(*) totcnt 
+			  FROM  T_FILTER_KEYWORD
+			  WHERE  KEYWORD_NM     = #keywordNm#
+			  AND  FILTER_NO     != #filterNo#
+		]]>
+	</select>
+
+	<select id="selectKeywordCheckList" parameterClass="keywordSearchVO" resultClass="egovMap">
+		<![CDATA[
+                WITH T_KEYWORD AS
+				  (SELECT #searchKeyword# AS keyword,
+				    keyword_nm
+				  FROM t_filter_keyword
+				  WHERE filter_kind = 'PWD'
+				  )
+				SELECT 
+				  keyword_nm
+				FROM (
+				  SELECT keyword,
+				    keyword_nm,
+				    (SELECT COUNT(*) FROM T_KEYWORD WHERE keyword like '%' || A.keyword_nm || '%'
+				    ) AS keyword_cnt
+				  FROM
+				    ( SELECT keyword, keyword_nm FROM T_KEYWORD
+				  )A
+				) AA
+				WHERE  AA.keyword_cnt > 0 
+         ]]>
+	</select>
+	
+	<select id="rssKeywordSelect" resultClass="keywordVO">
+		<![CDATA[
+                SELECT  KEYWORD_NM AS "keywordNm"
+				  FROM  T_RSS_KEYWORD
+            	 WHERE STATUS <> 'D'
+		]]>
+	</select>
+
+</sqlMap>            

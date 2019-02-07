@@ -1,0 +1,108 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
+<title>Base64 Encoding and Decoding Sample</title>
+</head>
+
+<body>
+
+<script language='javascript' src='./sg_scripts/sg_basic.js'></script>
+<script language='javascript' src='./sg_scripts/sg_error.js'></script>
+<script language='javascript' src='./sg_scripts/sg_util.js'></script>
+<script language='javascript' src='./sg_scripts/sg_cert.js'></script>
+<script language='javascript' src='./sg_scripts/sg_sign.js'></script>
+<script language='javascript' src='./sg_scripts/sg_encrypt.js'></script>
+<script language='javascript' src='./sg_scripts/sg_pkcs7.js'></script>
+<script language='javascript' src='./sg_scripts/sg_hash.js'></script>
+<script language='javascript' src='./sg_scripts/sg_base64.js'></script>
+
+<h3>Base 64 Encode/Decode 예제</h3>
+
+<form name="sample">
+메시지<br>
+<textarea name=DecodedData rows="5" cols="80">이것은 원문 메시지 입니다. This is original message.</textarea>
+<br>
+<br>BASE 64 인코딩된 메시지<br>
+<textarea name=EncodedData rows="5" cols="80"></textarea><br>
+<br>파일<br>
+<input type=file name=FilePath size=80><br><br>
+<input type=button value="Base64 Encoding" onClick="base64_encode()"> <br>
+<input type=button value="Base64 Decoding" onClick="base64_decode()"> <br>
+<input type=button value="File Base64 Encoding" onClick="file_base64_encode()"> <br>
+<input type=button value="File Base64 Decoding" onClick="file_base64_decode()"> <br>
+</form>
+
+<script language="javascript">
+
+function base64_encode()
+{
+	var strInput = document.sample.DecodedData.value;
+
+	var strEncoded = base64Encode( strInput );
+	if ( strEncoded == "" )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		document.sample.EncodedData.value = strEncoded;
+	}
+}
+
+function base64_decode()
+{
+	var strInput = document.sample.EncodedData.value;
+
+	var strDecoded = base64Decode( strInput );
+	if ( strDecoded == "" )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		document.sample.DecodedData.value = strDecoded;
+	}
+}
+
+function file_base64_encode()
+{
+	var strFilePath = document.sample.FilePath.value;
+
+	var strEncodedFile = strFilePath + ".b64";
+	var strDecodedFile = strFilePath.substring( 0, strFilePath.length - 4) + ".b64" + strFilePath.substring( strFilePath.length - 4, strFilePath.length );
+
+	var bReturn = base64EncodeFromFile( strFilePath, strEncodedFile );
+	if ( !bReturn )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		alert( strEncodedFile + " OK!" );
+	}
+}
+
+function file_base64_decode()
+{
+	var strFilePath = document.sample.FilePath.value;
+
+	var strEncodedFile = strFilePath + ".b64";
+	var strDecodedFile = strFilePath.substring( 0, strFilePath.length - 4) + ".b64" + strFilePath.substring( strFilePath.length - 4, strFilePath.length );
+
+	bReturn = base64DecodeFromFile( strEncodedFile, strDecodedFile );
+	if ( !bReturn )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		alert( strDecodedFile + " OK!" );
+	}
+
+	return;
+}
+
+</script>
+
+</body>
+</html>

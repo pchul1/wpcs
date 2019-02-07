@@ -1,0 +1,1321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="DailyWorkDAO">
+
+	<typeAlias  alias="egovMap"    					type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="dailyWorkVO"   				type="daewooInfo.dailywork.bean.DailyWorkVO"/>
+	<typeAlias  alias="dailyWorkSearchVO"   		type="daewooInfo.dailywork.bean.DailyWorkSearchVO"/>
+	<typeAlias  alias="dailyWorkApprovalVO"   		type="daewooInfo.dailywork.bean.DailyWorkApprovalVO"/>
+	<typeAlias  alias="dailyWorkWriteAuthVO"   		type="daewooInfo.dailywork.bean.DailyWorkWriteAuthVO"/>
+	<typeAlias  alias="dailyWorkRainVO"   			type="daewooInfo.dailywork.bean.DailyWorkRainVO"/>
+	<typeAlias  alias="checkUseVO"   				type="daewooInfo.dailywork.bean.CheckUseVO"/>
+	<typeAlias  alias="checkUseDetailVO"   			type="daewooInfo.dailywork.bean.CheckUseDetailVO"/>
+	
+	
+	<resultMap id="dailyWorkList" class="daewooInfo.dailywork.bean.DailyWorkVO">
+		<result column="DAILY_WORK_ID" 			property="dailyWorkId" 			columnIndex="1" />
+	    <result column="GUBUN" 					property="gubun" 				columnIndex="2" />
+	    <result column="WORK_DAY" 				property="workDay" 				columnIndex="3" />
+	    <result column="APPROVAL_ID" 			property="approvalId" 			columnIndex="4"/>
+	    <result column="APPROVAL_NAME"			property="approvalName" 		columnIndex="5"/>
+	    <result column="APPROVAL_DATE"	 		property="approvalDate" 		columnIndex="6" />
+	    <result column="STATE" 					property="state" 				columnIndex="7" />
+	    <result column="REG_ID" 				property="regId" 				columnIndex="8"/>
+	    <result column="REG_NAME" 				property="regName" 				columnIndex="9"/>
+	    <result column="REG_DATE" 				property="regDate" 				columnIndex="10" />
+	    <result column="MOD_ID" 				property="modId" 				columnIndex="11"/>
+	    <result column="MOD_NAME" 				property="modName"				columnIndex="12"/>
+	    <result column="MOD_DATE" 				property="modDate" 				columnIndex="13" />
+	    <result column="ATCH_FILE_YN" 			property="atchFileYn"			columnIndex="14" />
+	    <result column="ATCH_FILE_ID" 			property="atchFileId" 			columnIndex="15" />
+	</resultMap>
+	
+	<resultMap id="dailyworkMasterDetail" class="daewooInfo.dailywork.bean.DailyWorkVO">
+		<result column="DAILY_WORK_ID" 		property="dailyWorkId" 			columnIndex="1" />
+	    <result column="GUBUN" 					property="gubun" 				columnIndex="2" />
+	    <result column="WORK_DAY" 				property="workDay" 				columnIndex="3" />
+	    <result column="APPROVAL_ID" 			property="approvalId" 			columnIndex="4"/>
+	    <result column="APPROVAL_DATE" 		property="approvalDate" 		columnIndex="5" />
+	    <result column="STATE" 					property="state" 					columnIndex="6" />
+	    <result column="REG_ID" 					property="regId"	 				columnIndex="7"/>
+	    <result column="REG_DATE" 				property="regDate" 				columnIndex="8" />
+	    <result column="MOD_ID" 					property="modId" 				columnIndex="9"/>
+	    <result column="MOD_DATE" 				property="modDate" 			columnIndex="10" />
+	    <result column="approvalName" 				property="approvalName" 			columnIndex="11" />
+	</resultMap>
+	
+	<resultMap id="dailyworkApprovalList" class="daewooInfo.dailywork.bean.DailyWorkApprovalVO">
+		<result column="SEQ" 							property="seq" 						columnIndex="1" />
+	    <result column="APPROVAL_MEMBER_ID" 	property="approvalMemberId" 	columnIndex="3" />
+	    <result column="APPROVAL_MEMBER" 	property="approvalMember" 	columnIndex="4" />
+	    <result column="APPROVAL_NAME" 			property="approvalName" 			columnIndex="5" />
+	    <result column="APPROVAL_DATE" 			property="approvalDate" 			columnIndex="6" />
+	    <result column="APPROVAL_COMMENT" 	property="approvalComment" 	columnIndex="7" />
+	    <result column="SIGNATURE_FILE" 	property="signature_file" 	columnIndex="8" />
+	</resultMap>
+	
+	<resultMap id="dailyWorkRainInfo" class="daewooInfo.dailywork.bean.DailyWorkRainVO">
+		<result column="RAIN_ID" 					property="rainId" 				columnIndex="1" />
+	    <result column="DAILY_WORK_ID"		property="dailyWorkId" 			columnIndex="2" />
+	    <result column="SEQ" 						property="rainSeq" 				columnIndex="3" />
+	    <result column="RIVER_DIV" 				property="riverDiv" 				columnIndex="4" />
+	    <result column="FACT_CODE"	 			property="factCode" 			columnIndex="5" />
+	    <result column="RAIN_FALL" 				property="rainFall" 				columnIndex="6" />
+	</resultMap>
+	
+	<resultMap id="receiveApprovalList" class="daewooInfo.dailywork.bean.DailyWorkVO">
+		<result column="DAILY_WORK_ID" 					property="dailyWorkId" 						columnIndex="1" />
+		<result column="SEQ" 									property="dailyWorkseq" 					columnIndex="2" />
+	    <result column="GUBUN" 								property="gubun" 							columnIndex="3" />
+	    <result column="GUBUN_NAME" 						property="gubunName" 					columnIndex="4" />
+	    <result column="WORK_DAY" 							property="workDay" 							columnIndex="5" />
+	    <result column="REG_ID" 								property="regId" 								columnIndex="6"/>
+	    <result column="REG_NAME" 							property="regName" 						columnIndex="7"/>
+	    <result column="STATE" 								property="state" 								columnIndex="8" />
+	    <result column="STATE_NAME"						property="stateName"						columnIndex="9" />
+	    <result column="APPROVAL_REQUEST_ID" 			property="approvalRequestId" 			columnIndex="10" />
+	    <result column="APPROVAL_REQUEST_DATE" 		property="approvalRequestDate" 		columnIndex="11" />
+	</resultMap>
+	
+	<resultMap id="workJournalList" class="daewooInfo.dailywork.bean.DailyWorkVO">
+	    <result column="SEQ_NO" 				property="seqNo" 				columnIndex="1" />
+	    <result column="WORK_DAY" 				property="workDay" 				columnIndex="2" />
+	    <result column="TITLE" 					property="title" 				columnIndex="3"/>
+	    <result column="DEPT_NAME" 				property="deptName" 			columnIndex="4"/>
+	    <result column="REG_NAME" 				property="regName" 				columnIndex="5"/>
+	    <result column="REG_ID" 				property="regId" 				columnIndex="6"/>
+	    <result column="REG_DATE" 				property="regDate" 				columnIndex="7" />
+	    <result column="ATCH_FILE_ID" 			property="atchFileId" 			columnIndex="7" />
+	</resultMap>
+	
+	<resultMap id="checkUseList" class="daewooInfo.dailywork.bean.CheckUseVO">
+		<result column="CHECK_USE_ID" 			property="checkUseId" 			columnIndex="1" />
+	    <result column="GUBUN" 					property="gubun" 				columnIndex="2" />
+	    <result column="WORK_DAY" 				property="workDay" 				columnIndex="3" />
+	    <result column="APPROVAL_ID" 			property="approvalId" 			columnIndex="4"/>
+	    <result column="APPROVAL_NAME"			property="approvalName" 		columnIndex="5"/>
+	    <result column="APPROVAL_DATE"	 		property="approvalDate" 		columnIndex="6" />
+	    <result column="STATE" 					property="state" 				columnIndex="7" />
+	    <result column="REG_ID" 				property="regId" 				columnIndex="8"/>
+	    <result column="REG_NAME" 				property="regName" 				columnIndex="9"/>
+	    <result column="REG_DATE" 				property="regDate" 				columnIndex="10" />
+	    <result column="MOD_ID" 				property="modId" 				columnIndex="11"/>
+	    <result column="MOD_NAME" 				property="modName"				columnIndex="12"/>
+	    <result column="MOD_DATE" 				property="modDate" 				columnIndex="13" />
+	    <!-- <result column="ATCH_FILE_YN" 			property="atchFileYn"			columnIndex="14" />
+	    <result column="ATCH_FILE_ID" 			property="atchFileId" 			columnIndex="15" /> -->
+	</resultMap>
+		
+	<resultMap id="checkUseDetailList" class="daewooInfo.dailywork.bean.CheckUseDetailVO">
+		<result column="DETAIL_ID" 			property="detailId" 		columnIndex="1" />
+	    <result column="CHECK_USE_ID" 		property="checkUseId" 		columnIndex="2" />
+	    <result column="GUBUN_CODE" 		property="gubunCode" 		columnIndex="3" />
+	    <result column="CHECK_CODE" 		property="checkCode" 		columnIndex="4"/>
+	    <result column="CHECK_RESULT"		property="checkResult" 		columnIndex="5"/>
+	    <result column="NOTE"	 			property="note" 			columnIndex="6" />
+	    <result column="PHOTO_ID" 			property="photoId" 			columnIndex="7" />
+	</resultMap>
+	
+	<resultMap id="checkUseMasterDetail" class="daewooInfo.dailywork.bean.CheckUseVO">
+		<result column="CHECK_USE_ID" 		property="checkUseId" 			columnIndex="1" />
+	    <result column="GUBUN" 					property="gubun" 				columnIndex="2" />
+	    <result column="WORK_DAY" 				property="workDay" 				columnIndex="3" />
+	    <result column="WEATHER" 				property="weather" 				columnIndex="4" />
+	    <result column="APPROVAL_ID" 			property="approvalId" 			columnIndex="5"/>
+	    <result column="APPROVAL_DATE" 		property="approvalDate" 		columnIndex="6" />
+	    <result column="STATE" 					property="state" 					columnIndex="7" />
+	    <result column="REG_ID" 					property="regId"	 				columnIndex="8"/>
+	    <result column="REG_DATE" 				property="regDate" 				columnIndex="9" />
+	    <result column="MOD_ID" 					property="modId" 				columnIndex="10"/>
+	    <result column="MOD_DATE" 				property="modDate" 			columnIndex="11" />
+	    <result column="approvalName" 				property="approvalName" 			columnIndex="12" />
+	</resultMap>
+	
+	<resultMap id="checkUseApprovalList" class="daewooInfo.dailywork.bean.DailyWorkApprovalVO">
+		<result column="SEQ" 							property="seq" 						columnIndex="1" />
+	    <result column="APPROVAL_MEMBER_ID" 	property="approvalMemberId" 	columnIndex="3" />
+	    <result column="APPROVAL_MEMBER" 	property="approvalMember" 	columnIndex="4" />
+	    <result column="APPROVAL_NAME" 			property="approvalName" 			columnIndex="5" />
+	    <result column="APPROVAL_DATE" 			property="approvalDate" 			columnIndex="6" />
+	    <result column="APPROVAL_COMMENT" 	property="approvalComment" 	columnIndex="7" />
+	    <result column="SIGNATURE_FILE" 	property="signature_file" 	columnIndex="8" />
+	</resultMap>
+	
+	<!-- 상황실근무일지 목록 -->
+	<select id="dailyWorkList" parameterClass="dailyWorkSearchVO" resultMap="dailyWorkList">
+		SELECT *  FROM (
+				   SELECT        ROW_NUMBER() OVER(ORDER BY T1.WORK_DAY DESC) RN 
+				   			   , T1.DAILY_WORK_ID
+					           , T1.GUBUN
+					           , T1.WORK_DAY
+					           , T1.APPROVAL_ID
+                    		   , T3.MEMBER_NAME APPROVAL_NAME
+					           , TO_CHAR(T1.APPROVAL_DATE, 'YYYY/MM/DD HH24:MI') APPROVAL_DATE
+					           , DECODE(T1.STATE,'S','저장','B','결재대기','A','결재진행','R','결재반려','F','결재완료') STATE
+					           , T1.REG_ID
+                    		   , T2.MEMBER_NAME REG_NAME
+					           , TO_CHAR(T1.REG_DATE, 'YYYY/MM/DD HH24:MI') REG_DATE
+					           , T1.MOD_ID
+					           , T6.MEMBER_NAME MOD_NAME
+					           , TO_CHAR(T1.MOD_DATE, 'YYYY/MM/DD HH24:MI') MOD_DATE
+					           , DECODE(T5.ATCH_FILE_ID,NULL,'N','Y') ATCH_FILE_YN
+					           , T5.ATCH_FILE_ID
+    				FROM  T_DAILY_WORK T1
+    				        , T_MEMBER T2
+    				        , T_MEMBER T3
+    				        , T_DAILY_WORK_M T4
+    						, T_FILEDETAIL T5
+    						, T_MEMBER T6
+            	  WHERE GUBUN = #searchGubun#
+            	      AND STATE <![CDATA[<>]]> 'D'
+            	      AND WORK_DAY BETWEEN #startDate# AND #endDate#
+            	      AND T1.REG_ID = T2.MEMBER_ID(+)
+                      AND T1.APPROVAL_ID = T3.MEMBER_ID(+)
+                      AND T1.DAILY_WORK_ID = T4.DAILY_WORK_ID(+)
+  					  AND T4.ATCH_FILE_ID = T5.ATCH_FILE_ID(+)
+  					  AND T1.MOD_ID = T6.MEMBER_ID(+)
+		  		  	  <isNotEmpty property="searchState">
+					  AND STATE = #searchState#
+					  </isNotEmpty>
+		 
+          )  WHERE RN BETWEEN #firstIndex# + 1 AND #firstIndex# + #recordCountPerPage#
+	</select>
+	
+	<!-- 상황실근무일지 목록 카운트 -->
+	<select id="dailyWorkListCnt" parameterClass="dailyWorkSearchVO" resultClass="int">
+		SELECT  COUNT(*) AS totcnt
+		  FROM T_DAILY_WORK T1, T_MEMBER T2, T_MEMBER T3
+  	     WHERE GUBUN = #searchGubun#
+  	        AND STATE <![CDATA[<>]]> 'D'
+  	        AND WORK_DAY BETWEEN #startDate# AND #endDate#
+            AND T1.REG_ID = T2.MEMBER_ID(+)
+            AND T1.APPROVAL_ID = T3.MEMBER_ID(+)
+		<isNotEmpty property="searchState">
+			AND STATE = #searchState#
+	   </isNotEmpty>
+	</select>
+	
+	<!-- 결재자 정보 -->
+	<select id="approvalNameSelect" resultClass="String">
+		SELECT GRADE_NAME||' '||MEMBER_NAME APP_NAME
+		  FROM T_MEMBER
+		WHERE MEMBER_ID = #approvalId#
+	</select>
+	
+	<!-- 업무일지 중복체크 -->
+	<select id="selectDailyWorkInfo" resultClass="int" parameterClass="dailyWorkVO">
+		SELECT COUNT(*) AS CNT 
+		  FROM T_DAILY_WORK
+		WHERE GUBUN = #gubun# 
+		   AND WORK_DAY = #workDay# 
+		   AND STATE <![CDATA[<>]]> 'D'
+	</select>
+	
+	<!-- 업무일지 결재정보 seq -->
+	<select id="getDailyWorkApprovalSeq" resultClass="int">
+		SELECT NVL(MAX(SEQ)+1,1) SEQ
+		  FROM T_DAILY_WORK_APPROVAL
+		WHERE DAILY_WORK_ID = #dailyWorkId# 
+	</select>
+	
+	<!-- 업무일지 작성권한 seq -->
+	<select id="getDailyWorkWriteAuthSeq" resultClass="int">
+		SELECT NVL(MAX(SEQ)+1,1) SEQ
+		  FROM T_DAILY_WORK_WRITE_AUTH
+		WHERE DAILY_WORK_ID = #dailyWorkId# 
+	</select>
+	
+	<!-- 업무일지 기본정보 저장 -->
+	<insert id="insertDailyWorkInfo" parameterClass="dailyWorkVO">
+		INSERT INTO T_DAILY_WORK 
+		(
+			DAILY_WORK_ID
+		  , GUBUN
+		  , WORK_DAY
+		  , STATE
+		  , REG_ID
+		  , REG_DATE
+		  , MOD_ID
+		  , MOD_DATE
+		)
+       VALUES
+       (
+	       	  #dailyWorkId#
+	       	, #gubun#
+	       	, #workDay#
+	       	, 'S'
+	       	, #regId#
+	       	, sysdate
+	       	, #regId#
+	       	, sysdate
+       )
+	</insert>
+	
+	<!-- 업무일지 수정이력 저장 -->
+	<insert id="insertDailyWorkHisInfo" parameterClass="dailyWorkVO">
+		INSERT INTO T_DAILY_WORK_HIS 
+		(
+			DAILY_WORK_ID
+		  , REG_ID
+		  , REG_DATE
+		)
+       VALUES
+       (
+	       	  #dailyWorkId#
+	       	, #modId#
+	       	, sysdate
+       )
+	</insert>
+	
+	<!-- 업무일지 결재정보 저장 -->
+	<insert id="insertDailyWorkApprovalInfo" parameterClass="dailyWorkApprovalVO">
+		INSERT INTO T_DAILY_WORK_APPROVAL 
+		(
+			 APPROVAL_ID
+		   , DAILY_WORK_ID
+		   , SEQ
+		   , APPROVAL_MEMBER_ID
+		)
+       VALUES
+       (
+	       	  #approvalId#
+	       	, #dailyWorkId#
+	       	, #seq#
+	       	, #approvalMemberId#
+       )
+	</insert>
+	
+	<!-- 업무일지 작성권한 저장 -->
+	<insert id="insertDailyWriteAuthInfo" parameterClass="dailyWorkWriteAuthVO">
+		INSERT INTO T_DAILY_WORK_WRITE_AUTH 
+		(
+			 AUTH_ID
+		   , DAILY_WORK_ID
+		   , SEQ
+		   , WRITE_AUTH_ID
+		)
+       VALUES
+       (
+	       	  #authId#
+	       	, #dailyWorkId#
+	       	, #seq#
+	       	, #writeAuthId#
+       )
+	</insert>
+	
+	<!-- 업무일지 기본정보 조회 -->
+	<select id="selectDailyWorkMasterInfo" resultMap="dailyworkMasterDetail" >
+		<![CDATA[
+			SELECT DAILY_WORK_ID
+				     , GUBUN
+				     , WORK_DAY
+				     , APPROVAL_ID
+				     , TO_CHAR(APPROVAL_DATE,'YYYY/MM/DD HH24:MI') APPROVAL_DATE
+				     , STATE
+				     , REG_ID
+				     , TO_CHAR(REG_DATE,'YYYY/MM/DD HH24:MI') REG_DATE
+				     , MOD_ID
+				     , MOD_DATE
+				     ,(SELECT wm_concat(GRADE_NAME  ||'  '||MEMBER_NAME) FROM T_MEMBER WHERE MEMBER_ID = REG_ID) AS approvalName 
+				FROM T_DAILY_WORK
+			WHERE DAILY_WORK_ID = #dailyWorkId#
+		]]>				
+	</select>
+	
+	<!-- 업무일지 결재정보 조회 -->
+	<select id="selectDailyWorkApprovalList" resultMap="dailyworkApprovalList" >
+	<!-- 
+		SELECT SEQ
+			     , APPROVAL_MEMBER_ID
+			     , T2.GRADE_NAME||' '||T2.MEMBER_NAME APPROVAL_NAME
+			     , DECODE(APPROVAL_STATE,'A',TO_CHAR(APPROVAL_DATE,'YYYY/MM/DD'),'') APPROVAL_DATE 
+                 , APPROVAL_COMMENT
+                 , DECODE(APPROVAL_STATE,'A',T2.SIGNATURE_FILE,'') SIGNATURE_FILE 
+		  FROM T_DAILY_WORK_APPROVAL T1, T_MEMBER T2
+		WHERE DAILY_WORK_ID = #dailyWorkId#
+            AND T1.APPROVAL_MEMBER_ID = T2.MEMBER_ID(+)
+		ORDER BY SEQ
+	 -->
+		SELECT 
+				T1.SEQ
+				 ,APPROVAL_MEMBER_ID
+			     , T2.MEMBER_NAME APPROVAL_MEMBER
+			     , T2.GRADE_NAME||' '||T2.MEMBER_NAME APPROVAL_NAME
+			     , DECODE(APPROVAL_STATE,'A',TO_CHAR(APPROVAL_DATE,'YYYY/MM/DD HH24:MI'),'') APPROVAL_DATE 
+                 , APPROVAL_COMMENT
+                 , DECODE(APPROVAL_STATE,'A',T2.SIGNATURE_FILE,'') SIGNATURE_FILE 
+		  FROM T_DAILY_WORK_APPROVAL T1, T_MEMBER T2
+		WHERE DAILY_WORK_ID = #dailyWorkId#
+            AND T1.APPROVAL_MEMBER_ID = T2.MEMBER_ID(+)
+        UNION
+	        SELECT 
+	        0 SEQ
+				     , t3.reg_id APPROVAL_MEMBER_ID
+				      ,T2.MEMBER_NAME APPROVAL_MEMBER
+				     , T2.GRADE_NAME||' '||T2.MEMBER_NAME APPROVAL_NAME
+				     , TO_CHAR(T3.REG_DATE,'YYYY/MM/DD HH24:MI') APPROVAL_DATE
+	                 , '' APPROVAL_COMMENT
+	                 , T2.SIGNATURE_FILE 
+			  FROM  T_MEMBER T2, T_DAILY_WORK T3
+			WHERE T3.DAILY_WORK_ID = #dailyWorkId#
+	            AND T3.REG_ID = T2.MEMBER_ID
+        ORDER BY SEQ				
+	</select>
+	
+	<!-- 업무일지 삭제 -->
+	<update id="dailyWorkInfoDelete">
+		UPDATE T_DAILY_WORK
+		     SET STATE='D'
+		 WHERE  DAILY_WORK_ID = #dailyWorkId#
+	</update>
+	
+	<!-- 업무일지 기본정보 수정 -->
+	<update id="updateDailyWorkInfo" parameterClass="dailyWorkVO">
+		UPDATE T_DAILY_WORK 
+			 SET MOD_ID = #modId#
+				 , MOD_DATE = sysdate
+		 WHERE DAILY_WORK_ID = #dailyWorkId#
+	</update>
+	
+	<!-- 업무일지 결재정보 수정 -->
+	<update id="updateDailyWorkApprovalInfo" parameterClass="dailyWorkApprovalVO">
+		UPDATE T_DAILY_WORK_APPROVAL 
+		     SET APPROVAL_MEMBER_ID = #approvalMemberId#
+		 WHERE APPROVAL_ID = #approvalId#
+		     AND DAILY_WORK_ID = #dailyWorkId#
+		     AND SEQ = #seq# 
+	</update>
+	
+	<!-- 업무일지 작성권한 수정 -->
+	<update id="updateDailyWriteAuthInfo" parameterClass="dailyWorkWriteAuthVO">
+		UPDATE T_DAILY_WORK_WRITE_AUTH
+		     SET WRITE_AUTH_ID = #writeAuthId#
+		 WHERE AUTH_ID = #authId#
+		    AND DAILY_WORK_ID = #dailyWorkId#
+		    AND SEQ = #seq#
+	</update>
+	
+	<!-- 업무일지 결재정보 삭제 -->
+	<delete id="deleteDailyWorkApprovalInfo" parameterClass="dailyWorkApprovalVO">
+		DELETE FROM T_DAILY_WORK_APPROVAL 
+		         WHERE DAILY_WORK_ID = #dailyWorkId#
+	</delete>
+	
+	<!-- 업무일지 작성권한정보 삭제 -->
+	<delete id="deleteDailyWorkAuthInfo" parameterClass="dailyWorkWriteAuthVO">
+		DELETE FROM T_DAILY_WORK_WRITE_AUTH 
+		         WHERE DAILY_WORK_ID = #dailyWorkId#
+	</delete>
+	
+	<!-- 업무일지 강우현황 저장 -->
+	<insert id="insertDailyWorkRainInfo" parameterClass="dailyWorkRainVO">
+		INSERT INTO T_DAILY_WORK_RAIN 
+		(
+			 RAIN_ID
+		   , DAILY_WORK_ID
+		   , SEQ
+		   , RIVER_DIV
+		   , FACT_CODE
+		   , RAIN_FALL
+		)
+       VALUES
+       (
+	       	  #rainId#
+	       	, #dailyWorkId#
+	       	, #rainSeq#
+	       	, #riverDiv#
+	       	, #factCode#
+	       	, #rainFall#
+        )
+	</insert>
+	
+	<!-- 강우현황 SEQ -->
+	<select id="getDailyWorkRainSeq" resultClass="int">
+		SELECT NVL(MAX(SEQ)+1,1) SEQ
+		  FROM T_DAILY_WORK_RAIN
+		WHERE DAILY_WORK_ID = #dailyWorkId# 
+	</select>
+	
+	<!-- 강우현황 조회 -->
+	<select id="selectDailyWorkRainInfo" resultMap="dailyWorkRainInfo" >
+		<![CDATA[
+			SELECT RAIN_ID
+				     , DAILY_WORK_ID
+				     , SEQ
+				     , RIVER_DIV
+				     , FACT_CODE
+				     , RAIN_FALL
+			  FROM T_DAILY_WORK_RAIN
+			WHERE DAILY_WORK_ID = #dailyWorkId# 
+			ORDER BY SEQ
+		]]>				
+	</select>
+	
+	<!-- 강우현황 삭제 -->
+	<delete id="deleteDailyWorkRainInfo" parameterClass="string">
+		DELETE FROM T_DAILY_WORK_RAIN
+		WHERE DAILY_WORK_ID = #dailyWorkId# 
+	</delete>
+	
+	<!-- 업무일지 작성권한 체크-->
+	<select id="getDailyWorkWriteAuthId" resultClass="int" parameterClass="dailyWorkWriteAuthVO">
+		SELECT COUNT(*) CNT 
+		  FROM T_DAILY_WORK_WRITE_AUTH
+		WHERE DAILY_WORK_ID = #dailyWorkId# 
+		    AND WRITE_AUTH_ID = #writeAuthId#
+	</select>
+	
+	<!-- 업무일지 상태 변경 -->
+	<update id="updateDailyWorkStateInfo" parameterClass="dailyWorkVO">
+		UPDATE T_DAILY_WORK
+		     SET APPROVAL_ID = #approvalId#
+		         , APPROVAL_DATE = sysdate
+		         , STATE = #state#
+		 WHERE DAILY_WORK_ID = #dailyWorkId#
+	</update>
+	
+	<!-- 결재자 정보 조회 -->
+	<select id="getApprovalMemberId" resultClass="String" parameterClass="dailyWorkApprovalVO">
+		SELECT APPROVAL_MEMBER_ID 
+		  FROM T_DAILY_WORK_APPROVAL
+		WHERE DAILY_WORK_ID = #dailyWorkId#
+		    AND SEQ = #seq#
+	</select>
+	
+	<!-- 결재상신자 정보 조회 -->
+	<select id="getDailyWorkApprovalId" resultClass="String" parameterClass="String">
+		SELECT APPROVAL_ID 
+		  FROM T_DAILY_WORK
+		WHERE DAILY_WORK_ID = #dailyWorkId#
+	</select>
+	
+	<!-- 사용자별 결재대기 건수 -->
+	<select id="getDailyWorkApprovalCnt" resultClass="int">
+		WITH T_STD AS (
+								SELECT T2.DAILY_WORK_ID, MIN(T2.SEQ) SEQ
+								FROM T_DAILY_WORK_APPROVAL T2
+								WHERE T2.APPROVAL_STATE = 'B'
+								GROUP BY T2.DAILY_WORK_ID
+		)
+		SELECT COUNT(*) CNT
+		  FROM T_STD T1, T_DAILY_WORK_APPROVAL T2, T_DAILY_WORK T3
+		WHERE T1.DAILY_WORK_ID = T2.DAILY_WORK_ID 
+		    AND T1.SEQ = T2.SEQ
+		    AND T1.DAILY_WORK_ID = T3.DAILY_WORK_ID
+		    AND T3.STATE <![CDATA[<>]]> 'D'
+		    AND T2.APPROVAL_STATE= 'B'
+		    AND T2.APPROVAL_MEMBER_ID = #userId#
+	</select>
+	
+	<!-- 받은결재 목록 -->
+	<select id="receiveApprovalList" parameterClass="dailyWorkSearchVO" resultMap="receiveApprovalList">
+		  WITH T_STD AS
+			  (SELECT T2.DAILY_WORK_ID
+			             , MIN(T2.SEQ) SEQ
+			     FROM T_DAILY_WORK_APPROVAL T2
+			   WHERE T2.APPROVAL_STATE='B'
+			   GROUP BY T2.DAILY_WORK_ID
+			  )
+		  SELECT *  
+		    FROM (
+						SELECT DAILY_WORK_ID 
+						         , SEQ 
+						         , GUBUN 
+						         , DECODE(GUBUN,'S', '상황실근무일지', 'R', '4대강주요수계일지', 'M', '조류모니터링', 'C', '점검및사용일지') GUBUN_NAME 
+						         , WORK_DAY 
+						         , REG_ID 
+						         , B.MEMBER_NAME REG_NAME 
+						         , STATE
+						         , DECODE(STATE,'S','저장','B','결재대기','A','결재진행','R','결재반려','F','결재완료') STATE_NAME
+						         , C.MEMBER_NAME APPROVAL_REQUEST_ID
+						         , TO_CHAR(APPROVAL_REQUEST_DATE, 'YYYY/MM/DD HH24:MI') APPROVAL_REQUEST_DATE
+						         , ROW_NUMBER() OVER(ORDER BY WORK_DAY DESC, STATE ASC) RN
+						  FROM
+								  (SELECT 	 T3.DAILY_WORK_ID 
+									            , T1.SEQ 
+									            , T3.GUBUN 
+									            , T3.WORK_DAY 
+									            , T3.REG_ID 
+									            , 'B' STATE
+									            , T2.APPROVAL_REQUEST_ID
+									            , T2.APPROVAL_REQUEST_DATE
+								     FROM  T_STD T1
+								            , T_DAILY_WORK_APPROVAL T2
+								            , T_DAILY_WORK T3
+								    WHERE T1.DAILY_WORK_ID = T2.DAILY_WORK_ID
+								        AND T1.SEQ = T2.SEQ
+									    AND T1.DAILY_WORK_ID = T3.DAILY_WORK_ID
+									    <isNotEmpty property="searchGubun">
+									    AND T3.GUBUN = #searchGubun#
+									    </isNotEmpty>
+									    AND T3.STATE <![CDATA[<>]]> 'D'
+									    AND T2.APPROVAL_STATE = 'B'
+									    AND T2.APPROVAL_MEMBER_ID = #userId#
+								  UNION ALL
+								  SELECT      T3.DAILY_WORK_ID 
+								                , T2.SEQ 
+								                , T3.GUBUN 
+								                , T3.WORK_DAY 
+								                , T3.REG_ID 
+								                , T3.STATE
+								                , T2.APPROVAL_REQUEST_ID
+									            , T2.APPROVAL_REQUEST_DATE
+								    FROM T_DAILY_WORK_APPROVAL T2
+								           ,T_DAILY_WORK T3
+								  WHERE T2.DAILY_WORK_ID = T3.DAILY_WORK_ID
+								      <isNotEmpty property="searchGubun">
+									    AND T3.GUBUN = #searchGubun#
+									  </isNotEmpty>
+								      AND T3.STATE  <![CDATA[<>]]> 'D'
+								      AND T2.APPROVAL_STATE = 'A'
+								      AND T2.APPROVAL_MEMBER_ID = #userId#
+								  UNION ALL
+								  SELECT      T3.CHECK_USE_ID 
+								                , T2.SEQ 
+								                , 'C' GUBUN 
+								                , T3.WORK_DAY 
+								                , T3.REG_ID 
+								                , T3.STATE
+								                , T2.APPROVAL_REQUEST_ID
+									            , T2.APPROVAL_REQUEST_DATE
+								    FROM T_DAILY_WORK_APPROVAL T2
+								           ,T_CHECK_USE T3
+								  WHERE T2.DAILY_WORK_ID = T3.CHECK_USE_ID
+								      <!-- <isNotEmpty property="searchGubun">
+									    AND T3.GUBUN = #searchGubun#
+									  </isNotEmpty> -->
+								      AND T3.STATE  <![CDATA[<>]]> 'D'
+								      AND T2.APPROVAL_STATE IN ('A', 'B')
+								      AND T2.APPROVAL_MEMBER_ID = #userId#    
+								  ) A, T_MEMBER B, T_MEMBER C
+						  WHERE A.REG_ID  = B.MEMBER_ID(+)
+						      AND A.APPROVAL_REQUEST_ID = C.MEMBER_ID(+)
+						      <isNotEmpty property="searchState">
+							  AND STATE = #searchState#
+							  </isNotEmpty>
+						      AND WORK_DAY BETWEEN #startDate# AND #endDate#
+					  ORDER BY WORK_DAY DESC, STATE ASC 
+				 )WHERE RN BETWEEN #firstIndex# + 1 AND #firstIndex# + #recordCountPerPage#		
+	</select>
+	
+	<!-- 상황실근무일지 목록 카운트 -->
+	<select id="receiveApprovalListCnt" parameterClass="dailyWorkSearchVO" resultClass="int">
+		WITH T_STD AS
+			  (SELECT T2.DAILY_WORK_ID
+			             , MIN(T2.SEQ) SEQ
+			     FROM T_DAILY_WORK_APPROVAL T2
+			   WHERE T2.APPROVAL_STATE='B'
+			   GROUP BY T2.DAILY_WORK_ID
+			  )
+ 		SELECT COUNT(*) CNT
+		  FROM
+				  (					SELECT 	 T3.DAILY_WORK_ID 
+									            , T1.SEQ 
+									            , T3.GUBUN 
+									            , T3.WORK_DAY 
+									            , T3.REG_ID 
+									            , 'B' STATE
+									            , T2.APPROVAL_REQUEST_ID
+									            , T2.APPROVAL_REQUEST_DATE
+								     FROM  T_STD T1
+								            , T_DAILY_WORK_APPROVAL T2
+								            , T_DAILY_WORK T3
+								    WHERE T1.DAILY_WORK_ID = T2.DAILY_WORK_ID
+								        AND T1.SEQ = T2.SEQ
+									    AND T1.DAILY_WORK_ID = T3.DAILY_WORK_ID
+									    <isNotEmpty property="searchGubun">
+									    AND T3.GUBUN = #searchGubun#
+									    </isNotEmpty>
+									    AND T3.STATE <![CDATA[<>]]> 'D'
+									    AND T2.APPROVAL_STATE = 'B'
+									    AND T2.APPROVAL_MEMBER_ID = #userId#
+								  UNION ALL
+								  SELECT      T3.DAILY_WORK_ID 
+								                , T2.SEQ 
+								                , T3.GUBUN 
+								                , T3.WORK_DAY 
+								                , T3.REG_ID 
+								                , T3.STATE
+								                , T2.APPROVAL_REQUEST_ID
+									            , T2.APPROVAL_REQUEST_DATE
+								    FROM T_DAILY_WORK_APPROVAL T2
+								           ,T_DAILY_WORK T3
+								  WHERE T2.DAILY_WORK_ID = T3.DAILY_WORK_ID
+								      <isNotEmpty property="searchGubun">
+									    AND T3.GUBUN = #searchGubun#
+									  </isNotEmpty>
+								      AND T3.STATE  <![CDATA[<>]]> 'D'
+								      AND T2.APPROVAL_STATE = 'A'
+								      AND T2.APPROVAL_MEMBER_ID = #userId#
+								   UNION ALL
+								  SELECT      T3.CHECK_USE_ID 
+								                , T2.SEQ 
+								                , 'C' GUBUN 
+								                , T3.WORK_DAY 
+								                , T3.REG_ID 
+								                , T3.STATE
+								                , T2.APPROVAL_REQUEST_ID
+									            , T2.APPROVAL_REQUEST_DATE
+								    FROM T_DAILY_WORK_APPROVAL T2
+								           ,T_CHECK_USE T3
+								  WHERE T2.DAILY_WORK_ID = T3.CHECK_USE_ID
+								      <!-- <isNotEmpty property="searchGubun">
+									    AND T3.GUBUN = #searchGubun#
+									  </isNotEmpty> -->
+								      AND T3.STATE  <![CDATA[<>]]> 'D'
+								      AND T2.APPROVAL_STATE IN ('A', 'B')
+								      AND T2.APPROVAL_MEMBER_ID = #userId#
+								  ) A, T_MEMBER B, T_MEMBER C
+						  WHERE A.REG_ID  = B.MEMBER_ID(+)
+						      AND A.APPROVAL_REQUEST_ID = C.MEMBER_ID(+)
+						      <isNotEmpty property="searchState">
+							  AND STATE = #searchState#
+							  </isNotEmpty>
+						      AND WORK_DAY BETWEEN #startDate# AND #endDate#
+	</select>
+	<!-- 결재승인 -->
+	<update id="insertApproval" parameterClass="dailyWorkApprovalVO">
+            UPDATE  T_DAILY_WORK_APPROVAL
+			     SET  APPROVAL_COMMENT = #approvalComment#	
+			          , APPROVAL_DATE = sysdate
+                      , APPROVAL_STATE = #approvalState#			  
+			WHERE  DAILY_WORK_ID = #dailyWorkId#
+			  AND SEQ = #seq#
+	</update>
+	
+	<!-- 결재상태처리 -->
+	<update id="updateApprovalState" parameterClass="dailyWorkApprovalVO">
+            UPDATE  T_DAILY_WORK_APPROVAL
+			     SET  APPROVAL_STATE = #approvalState#			  
+			WHERE  DAILY_WORK_ID = #dailyWorkId#
+			  AND SEQ = #seq#
+	</update>
+	
+	<!-- 결재완료 처리 -->
+	<update id="updateDailyWorkState" parameterClass="dailyWorkVO">
+		UPDATE T_DAILY_WORK
+		     SET STATE = #state#
+		 WHERE DAILY_WORK_ID = #dailyWorkId#
+	</update>
+	
+	<!-- 결재완료 처리 -->
+	<update id="updateCheckUseState" parameterClass="dailyWorkVO">
+		UPDATE T_CHEK_USE
+		     SET STATE = #state#
+		 WHERE CHECK_USE_ID = #dailyWorkId#
+	</update>
+	
+	<!-- 작성권한 사용자 조회 -->
+	<select id="getAuthUserList" parameterClass="string" resultClass="dailyWorkWriteAuthVO" remapResults="true">
+		SELECT T1.WRITE_AUTH_ID writeAuthId, T2.MEMBER_NAME writeAuthName
+		  FROM T_DAILY_WORK_WRITE_AUTH T1, T_MEMBER T2
+		WHERE DAILY_WORK_ID = #dailyWorkId#
+		    AND T1.WRITE_AUTH_ID = T2.MEMBER_ID
+		ORDER BY T2.MEMBER_NAME
+	</select>
+	
+		<!-- 결재 승인에 대한 정보 가져오기 -->
+	<select id="getAppovalInfo" parameterClass="string" resultClass="dailyWorkVO" remapResults="true">
+		SELECT MEMBER_NAME approvalName
+			, NVL(TO_CHAR(APPROVAL_DATE,'YYYY/MM/DD HH24:MI'),'...') approvalDate
+			, DECODE(T1.APPROVAL_STATE,'S','저장','B','결재대기','A','결재진행','R','결재반려','F','결재완료') state
+		  FROM T_DAILY_WORK_APPROVAL T1, T_MEMBER T2 
+		WHERE T1.APPROVAL_MEMBER_ID = T2.MEMBER_ID(+)
+		    AND daily_work_id = #dailyWorkId#
+		ORDER BY APPROVAL_DATE DESC
+	</select>
+	
+	<!-- 수정이력정보 조회 -->
+	<select id="getDailyWorkHisInfoList" parameterClass="string" resultClass="dailyWorkVO" remapResults="true">
+		SELECT BB.MEMBER_NAME regName, TO_CHAR(AA.REG_DATE, 'YYYY/MM/DD HH24:MI') regDate 
+		  FROM T_DAILY_WORK_HIS AA, T_MEMBER BB
+		WHERE AA.DAILY_WORK_ID = #dailyWorkId#
+		    AND AA.REG_ID = BB.MEMBER_ID(+)
+		ORDER BY AA.REG_DATE DESC
+	</select>
+	
+	<!-- 결재요청 정보 등록 -->
+	<update id="updateApprovalRequestInfo" parameterClass="dailyWorkApprovalVO">
+            UPDATE  T_DAILY_WORK_APPROVAL
+			     SET  APPROVAL_REQUEST_ID = #approvalRequestId#
+			          , APPROVAL_REQUEST_DATE = sysdate
+			          , APPROVAL_STATE='B'
+			WHERE  DAILY_WORK_ID = #dailyWorkId#
+			  AND SEQ = #seq#
+	</update>
+	<update id="updateDailyWork" parameterClass="string">
+            UPDATE  T_DAILY_WORK
+			   SET  STATE = 'S',
+			     	APPROVAL_ID = NULL,
+			     	APPROVAL_DATE = NULL
+		     WHERE  DAILY_WORK_ID = #dailyWorkId#
+	</update>
+	<update id="updateCheckUse" parameterClass="string">
+            UPDATE  T_CHECK_USE
+			   SET  STATE = 'S',
+			     	APPROVAL_ID = NULL,
+			     	APPROVAL_DATE = NULL
+		     WHERE  CHECK_USE_ID = #dailyWorkId#
+	</update>
+	<update id="deleteDailyWorkApproval" parameterClass="string">
+		UPDATE T_DAILY_WORK_APPROVAL
+		   SET APPROVAL_REQUEST_ID   = '',
+		   	   APPROVAL_REQUEST_DATE = NULL,
+		   	   APPROVAL_DATE         = NULL,
+		   	   APPROVAL_COMMENT      = '',
+		   	   APPROVAL_STATE        = ''
+		 WHERE DAILY_WORK_ID = #dailyWorkId#
+	</update>
+	
+	<!-- 업무일지 저장 -->
+	<insert id="insertWorkJournalInfo" parameterClass="dailyWorkVO">
+		INSERT INTO T_WORK_JOURNAL 
+		(
+			SEQ_NO
+		  , WORK_DAY
+		  , TITLE
+		  , ATCH_FILE_ID
+		  , REG_ID
+		  , REG_DATE
+		)
+       VALUES
+       (
+	       	  SEQ_WORK_JOURNAL.NEXTVAL
+	       	, #workDay#
+	       	, #title#
+	       	, #atchFileId#
+	       	, #regId#
+	       	, sysdate
+       )
+	</insert>
+	
+	<!-- 지역본부 업무일지 목록 -->
+	<select id="workJournalList" parameterClass="dailyWorkSearchVO" resultMap="workJournalList">
+		SELECT *  FROM (
+				   SELECT     ROW_NUMBER() OVER(ORDER BY SEQ_NO) RN 
+				   			  ,SEQ_NO
+				   			  ,WORK_DAY
+					          ,SUBSTR(TITLE, 0, INSTR(TITLE, '.', -1)-1) TITLE 
+					          ,(SELECT DEPT_NAME FROM T_DEPT_INFO WHERE DEPT_CODE = (SELECT DEPT_CODE FROM T_MEMBER WHERE MEMBER_ID = REG_ID)) DEPT_NAME
+					          ,(SELECT MEMBER_NAME FROM T_MEMBER WHERE MEMBER_ID = REG_ID) REG_NAME
+					          ,REG_ID
+					          ,TO_CHAR(REG_DATE, 'YYYY/MM/DD HH24:MI') REG_DATE
+					          ,ATCH_FILE_ID
+					  FROM    T_WORK_JOURNAL
+					 WHERE    1 = 1
+					   AND    WORK_DAY <![CDATA[>=]]> #startDate#
+					   AND    WORK_DAY <![CDATA[<=]]> #endDate#
+					<isNotEqual property="roleCode" compareValue="ROLE_ADMIN">
+					   AND    REG_ID
+					    IN    (SELECT MEMBER_ID FROM T_MEMBER WHERE DEPT_CODE = (SELECT DEPT_CODE FROM T_MEMBER WHERE MEMBER_ID = #userId#))
+		 			</isNotEqual>	
+		 			<isEqual property="roleCode" compareValue="ROLE_ADMIN">
+		 			<isNotEmpty property="deptName">
+					   AND    REG_ID
+					    IN    (SELECT MEMBER_ID FROM T_MEMBER WHERE DEPT_CODE = #deptName#)
+					</isNotEmpty>
+					<isNotEmpty property="seqNo">
+					   AND    SEQ_NO = #seqNo#
+					</isNotEmpty>     
+		 			</isEqual>
+          )  WHERE RN BETWEEN #firstIndex# + 1 AND #firstIndex# + #recordCountPerPage#
+	</select>
+	
+	<!-- 지역본부 업무일지 목록 카운트 -->
+	<select id="workJournalListCnt" parameterClass="dailyWorkSearchVO" resultClass="int">
+		SELECT    COUNT(*) AS totcnt
+		  FROM    T_WORK_JOURNAL
+		 WHERE    1 = 1
+		   AND    WORK_DAY <![CDATA[>=]]> #startDate#
+		   AND    WORK_DAY <![CDATA[<=]]> #endDate#
+		<isNotEqual property="roleCode" compareValue="ROLE_ADMIN">
+		   AND    REG_ID
+		    IN    (SELECT MEMBER_ID FROM T_MEMBER WHERE DEPT_CODE = (SELECT DEPT_CODE FROM T_MEMBER WHERE MEMBER_ID = #userId#))
+		</isNotEqual>
+	</select>
+	
+	
+	<!-- 업무일지 수정 -->
+	<insert id="updateWorkJournalInfo" parameterClass="dailyWorkVO">
+		UPDATE	T_WORK_JOURNAL
+		   SET	WORK_DAY = #workDay#
+	       		, TITLE = #title#
+	       		, ATCH_FILE_ID = #atchFileId#
+	       		, MOD_ID = #modId#
+	       		, MOD_DATE = sysdate
+		 WHERE	SEQ_NO = #seqNo#
+	</insert>
+	
+	
+	<!-- 업무일지 삭제 -->
+	<insert id="deleteWorkJournalInfo" parameterClass="dailyWorkVO">
+		DELETE
+		  FROM	T_WORK_JOURNAL
+		 WHERE	SEQ_NO = #seqNo#
+	</insert>
+	
+	
+	<!-- 점검및사용일지 목록 -->
+	<select id="checkUseList" parameterClass="dailyWorkSearchVO" resultMap="checkUseList">
+		SELECT *  FROM (
+				   SELECT        ROW_NUMBER() OVER(ORDER BY T1.WORK_DAY DESC, T1.CHECK_USE_ID DESC) RN 
+				   			   , T1.CHECK_USE_ID
+					           , T1.GUBUN
+					           , T1.WORK_DAY
+					           , T1.APPROVAL_ID
+                    		   , T3.MEMBER_NAME APPROVAL_NAME
+					           , TO_CHAR(T1.APPROVAL_DATE, 'YYYY/MM/DD HH24:MI') APPROVAL_DATE
+					           , DECODE(T1.STATE,'S','저장','B','결재대기','A','결재진행','R','결재반려','F','결재완료') STATE
+					           , T1.REG_ID
+                    		   , T2.MEMBER_NAME REG_NAME
+					           , TO_CHAR(T1.REG_DATE, 'YYYY/MM/DD HH24:MI') REG_DATE
+					           , T1.MOD_ID
+					           , T6.MEMBER_NAME MOD_NAME
+					           , TO_CHAR(T1.MOD_DATE, 'YYYY/MM/DD HH24:MI') MOD_DATE
+					           <!-- , DECODE(T5.ATCH_FILE_ID,NULL,'N','Y') ATCH_FILE_YN
+					           , T5.ATCH_FILE_ID -->
+    				FROM  T_CHECK_USE T1
+    				        , T_MEMBER T2
+    				        , T_MEMBER T3
+    				        <!-- , T_CHECK_USE_DETAIL T4
+    						, T_FILEDETAIL T5 -->
+    						, T_MEMBER T6
+            	  WHERE GUBUN = #searchGubun#
+            	      AND STATE <![CDATA[<>]]> 'D'
+            	      AND WORK_DAY BETWEEN #startDate# AND #endDate#
+            	      AND T1.REG_ID = T2.MEMBER_ID(+)
+                      AND T1.APPROVAL_ID = T3.MEMBER_ID(+)
+                      <!-- AND T1.CHECK_USE_ID = T4.CHECK_USE_ID(+)
+  					  AND T4.PHOTO_ID = T5.ATCH_FILE_ID(+) -->
+  					  AND T1.MOD_ID = T6.MEMBER_ID(+)
+  					  <isNotEmpty property="deptNo">
+  					  <isNotEqual property="deptNo" compareValue="1001">
+  					  AND T1.REG_ID IN (SELECT MEMBER_ID FROM T_MEMBER WHERE DEPT_CODE = #deptNo#)
+  					  </isNotEqual>
+  					  </isNotEmpty>
+		  		  	  <isNotEmpty property="searchState">
+					  AND STATE = #searchState#
+					  </isNotEmpty>
+		 
+          )  WHERE RN BETWEEN #firstIndex# + 1 AND #firstIndex# + #recordCountPerPage#
+	</select>
+	
+	<!-- 점검및사용일지 목록 카운트 -->
+	<select id="checkUseListCnt" parameterClass="dailyWorkSearchVO" resultClass="int">
+		SELECT  COUNT(*) AS totcnt
+		  FROM T_CHECK_USE T1, T_MEMBER T2
+  	     WHERE GUBUN = #searchGubun#
+  	        AND STATE <![CDATA[<>]]> 'D'
+  	        AND WORK_DAY BETWEEN #startDate# AND #endDate#
+            AND T1.REG_ID = T2.MEMBER_ID(+)
+            AND T1.APPROVAL_ID = T2.MEMBER_ID(+)
+            AND T1.MOD_ID = T2.MEMBER_ID(+)
+            <isNotEmpty property="deptNo">
+		  <isNotEqual property="deptNo" compareValue="1001">
+		  AND T1.REG_ID IN (SELECT MEMBER_ID FROM T_MEMBER WHERE DEPT_CODE = #deptNo#)
+		  </isNotEqual>
+		  </isNotEmpty>
+		<isNotEmpty property="searchState">
+			AND STATE = #searchState#
+	   </isNotEmpty>
+	</select>
+	
+	<!-- 점검및사용일지 등록가능 카운트 -->
+	<select id="checkUseRegistCnt" parameterClass="dailyWorkSearchVO" resultClass="int">
+		SELECT  COUNT(*) AS regCnt
+		  FROM	T_CHECKEQUIP
+  	     WHERE 	REPORT_GUBUN = #searchGubun#
+  	       AND 	DEPT_CODE = #deptNo#
+  	       AND	USE_YN = 'Y'
+	</select>
+	
+	<!-- 점검및사용일지 기본정보 저장 -->
+	<insert id="insertCheckUseInfo" parameterClass="checkUseVO">
+		INSERT INTO T_CHECK_USE
+		(
+			CHECK_USE_ID
+		  , GUBUN
+		  , REPORT_GUBUN
+		  , WORK_DAY
+		  , STATE
+		  , WEATHER
+		  , EQUIP_CODE1
+		  , EQUIP_CODE2
+		  , PURPOSE
+		  , USE_PURPOSE
+		  , USE_PLACE
+		  , VOYAGE_SECTION
+		  , VOYAGE_HOUR
+		  , VOYAGE_MIN
+		  , FUEL_INJECT
+		  , ISSUE_COMMENT
+		  , PERSONS
+		  , PARTICIPANT
+		  , PHOTO1_ID
+		  , PHOTO2_ID
+		  , PHOTO3_ID
+		  , EXPR_COMMENT
+		  , REG_ID
+		  , REG_DATE
+		  , MOD_ID
+		  , MOD_DATE
+		)
+       VALUES
+       (
+	       	  #checkUseId#
+	       	, #gubun#
+	       	, #reportGubun#
+	       	, #workDay#
+	       	, 'S'
+	       	, #weather#
+	       	, #equipCode1#
+	       	, #equipCode2#
+	       	, #purpose#
+	       	, #usePurpose#
+	       	, #usePlace#
+	       	, #voyageSection#
+	       	, #voyageHour#
+	       	, #voyageMin#
+	       	, #fuelInject#
+	       	, #issueComment#
+	       	, #persons#
+	       	, #participant#
+	       	, #photo1Id#
+	       	, #photo2Id#
+	       	, #photo3Id#
+	       	, #exprComment#
+	       	, #regId#
+	       	, sysdate
+	       	, #regId#
+	       	, sysdate
+       )
+	</insert>
+	
+	<!-- 점검및사용일지 상세점검분야 저장 -->
+	<insert id="insertCheckUseDetailInfo" parameterClass="checkUseDetailVO">
+		INSERT
+		  INTO	T_CHECK_USE_DETAIL
+				(
+					DETAIL_ID
+				  , CHECK_USE_ID
+				  , GUBUN_CODE
+				  , CHECK_CODE
+				  , CHECK_RESULT
+				  , NOTE
+				  , PHOTO_ID
+				)
+        VALUES
+       			(
+			        #detailId#
+			      , #checkUseId#
+			      , #gubunCode#
+			      , #checkCode#
+			      , #checkResult#
+			      , #note#
+			      , #photoId#
+		        )
+	</insert>
+	
+	<select id="getCheckEquipList" parameterClass="HashMap" resultClass="HashMap">
+		SELECT	CHECK_GUBUN
+				,EQUIP_CODE
+				,EQUIP_NAME
+		  FROM	T_CHECKEQUIP
+		 WHERE	1 = 1
+		   AND	REPORT_GUBUN = #gubun#
+		   <isNotEmpty property="checkGubun">
+		   AND	CHECK_GUBUN = #checkGubun#
+		   </isNotEmpty>
+		   AND	DEPT_CODE = #deptCode#
+		   AND	USE_YN = 'Y'
+	</select>
+	
+	<!-- 점검일지 기본정보 조회 -->
+	<select id="selectCheckUseMasterInfo" parameterClass="String" resultClass="checkUseVO">
+		SELECT	CHECK_USE_ID as checkUseId
+				,REPORT_GUBUN as reportGubun
+				,WORK_DAY as workDay
+				,APPROVAL_ID as approvalId
+				,TO_CHAR(APPROVAL_DATE,'YYYY/MM/DD HH24:MI') approvalDate
+				,STATE as state
+				,WEATHER as weather
+				,EQUIP_CODE1 as equipCode1
+				,EQUIP_CODE2 as equipCode2
+				,PURPOSE as purpose
+				,DECODE(PURPOSE, 'P1', '점검', 'P2', '사용', 'P3', '점검·사용') as purposeName
+				,USE_PURPOSE as usePurpose
+				,DECODE(USE_PURPOSE, 'U1', '순찰', 'U2', '방제지원', 'U3', '훈련', 'U4', '지원', 'U5', '기타', '-') as usePurposeName
+				,USE_PLACE as usePlace
+				,VOYAGE_SECTION as voyageSection
+				,VOYAGE_HOUR as voyageHour
+				,VOYAGE_MIN as voyageMin
+				,FUEL_INJECT as fuelInject
+				,ISSUE_COMMENT as issueComment
+				,PERSONS as persons
+				,PARTICIPANT as participant
+				,PHOTO1_ID as photo1Id
+				,PHOTO2_ID as photo2Id
+				,PHOTO3_ID as photo3Id
+				,EXPR_COMMENT as exprComment
+				,REG_ID as regId
+				,TO_CHAR(REG_DATE,'YYYY/MM/DD HH24:MI') regDate
+				,MOD_ID as modId
+				,TO_CHAR(MOD_DATE,'YYYY/MM/DD HH24:MI') modDate
+				,MOD_ID as modId
+				,GUBUN as gubun
+			    ,(SELECT wm_concat(GRADE_NAME  ||'  '||MEMBER_NAME) FROM T_MEMBER WHERE MEMBER_ID = REG_ID) AS approvalName 
+			FROM T_CHECK_USE
+		WHERE CHECK_USE_ID = #dailyWorkId#
+	</select>
+	
+	<!-- 업무일지 결재정보 조회 -->
+	<select id="selectCheckUseApprovalList" resultMap="checkUseApprovalList" >
+		SELECT 
+				T1.SEQ
+				 ,APPROVAL_MEMBER_ID
+			     , T2.MEMBER_NAME APPROVAL_MEMBER
+			     , T2.GRADE_NAME||' '||T2.MEMBER_NAME APPROVAL_NAME
+			     , DECODE(APPROVAL_STATE,'A',TO_CHAR(APPROVAL_DATE,'YYYY/MM/DD HH24:MI'),'') APPROVAL_DATE 
+                 , APPROVAL_COMMENT
+                 , DECODE(APPROVAL_STATE,'A',T2.SIGNATURE_FILE,'') SIGNATURE_FILE 
+		  FROM T_DAILY_WORK_APPROVAL T1, T_MEMBER T2
+		WHERE DAILY_WORK_ID = #dailyWorkId#
+            AND T1.APPROVAL_MEMBER_ID = T2.MEMBER_ID(+)
+        UNION
+	        SELECT 
+	        0 SEQ
+				     , t3.reg_id APPROVAL_MEMBER_ID
+				      ,T2.MEMBER_NAME APPROVAL_MEMBER
+				     , T2.GRADE_NAME||' '||T2.MEMBER_NAME APPROVAL_NAME
+				     , TO_CHAR(T3.REG_DATE,'YYYY/MM/DD HH24:MI') APPROVAL_DATE
+	                 , '' APPROVAL_COMMENT
+	                 , T2.SIGNATURE_FILE 
+			  FROM  T_MEMBER T2, T_CHECK_USE T3
+			WHERE T3.CHECK_USE_ID = #dailyWorkId#
+	            AND T3.REG_ID = T2.MEMBER_ID
+        ORDER BY SEQ				
+	</select>
+	
+	<!-- 점검일지 상세정보 조회 -->
+	<select id="selectCheckUseDetailList" parameterClass="string" resultClass="checkUseDetailVO">
+		<![CDATA[
+		SELECT	GUBUN_CODE as gubunCode
+				,DECODE((SELECT CHECK_GUBUN FROM T_CHECKEQUIP WHERE EQUIP_CODE = GUBUN_CODE AND USE_YN = 'Y'), 
+					'A1', '선박', 'A2', '계류장', 'B1', '유회수기', 'C1', '방제참고', 
+					'C2', '방제물품<br/>트레일러', 'D1', '궤도형<br/>운반차량', 'D2', '4륜<br/>오토바이', 'D3', '전동지게차', 
+					'E1', '진공흡입기', 'E2', '멀티콥터', 'E3', '방제바지선', 'E4', '에어텐트',
+					'F1', '동력분무기', 'F2', '발전기', 'F3', '양수기', 'F4', '예초기', 'F5', '점도계', 'F6', '거리측정기', 'F7', '유속계', 
+					'F8', '일반항목<br/>측정기') as gubunName
+				,(SELECT EQUIP_NAME FROM T_CHECKEQUIP WHERE EQUIP_CODE = GUBUN_CODE AND USE_YN = 'Y') as equipName
+				,(SELECT CHECK_ITEM FROM T_CHECKITEM  WHERE REPORT_GUBUN = (SELECT CHECK_GUBUN FROM T_CHECKEQUIP WHERE EQUIP_CODE = GUBUN_CODE AND CHECK_CODE = T_CHECK_USE_DETAIL.CHECK_CODE AND USE_YN = 'Y')) as checkCode
+				,DECODE(CHECK_RESULT, 'O', '양호', 'X', '이상', '해당없음') as checkResult
+				,NOTE as note
+				,PHOTO_ID as photoId
+				,COUNT(1) OVER(PARTITION BY GUBUN_CODE) as rowspan
+		  FROM 	T_CHECK_USE_DETAIL
+		 WHERE 	CHECK_USE_ID = #dailyWorkId#
+		 ORDER	BY GUBUN_CODE, CHECK_CODE
+		 ]]>
+	</select>
+	
+	<!-- 업무일지 삭제 -->
+	<update id="checkUseInfoDelete">
+		UPDATE	T_CHECK_USE
+		   SET 	STATE='D'
+		 WHERE  CHECK_USE_ID = #dailyWorkId#
+	</update>
+	
+	<!-- 점검일지 상태 변경 -->
+	<update id="updateCheckUseStateInfo" parameterClass="dailyWorkVO">
+		UPDATE	T_CHECK_USE
+		   SET 	APPROVAL_ID = #approvalId#
+		        , APPROVAL_DATE = sysdate
+		        , STATE = #state#
+		 WHERE 	CHECK_USE_ID = #dailyWorkId#
+	</update>
+	
+	<!-- 점검일지 회수처리 -->
+	<update id="updateCheckUseApprovalInfo" parameterClass="string">
+		UPDATE  T_CHECK_USE
+		   SET  STATE = 'S',
+			    APPROVAL_ID = NULL,
+			    APPROVAL_DATE = NULL
+		 WHERE  CHECK_USE_ID = #dailyWorkId#
+	</update>
+	
+	<!-- 점검일지 시설명 조회 -->
+	<select id="selectCheckUseEquipName" parameterClass="HashMap" resultClass="string">
+		SELECT	WM_CONCAT(EQUIP_NAME) as equipName
+		  FROM	T_CHECKEQUIP
+		 WHERE	1 = 1
+		 <isNotEmpty prepend="AND" property="arrEquipCode" >
+			<iterate prepend="EQUIP_CODE IN" property="arrEquipCode" open="(" close=")" conjunction=",">
+			      #arrEquipCode[]# 
+			</iterate>
+		 </isNotEmpty>
+		   AND	USE_YN = 'Y'
+		 ORDER	BY EQUIP_CODE
+	</select>
+	
+	<!-- 점검일지 수정을 위한 상세목록 조회 -->
+	<select id="getCheckEquipModifyList" parameterClass="HashMap" resultClass="HashMap">
+		SELECT    B.EQUIP_CODE        
+		          ,B.EQUIP_NAME
+		          ,A.CHECK_CODE  
+		          ,A.GUBUN_NAME
+		          ,A.CHECK_ITEM
+		          ,C.DETAIL_ID     
+		          ,NVL(C.CHECK_RESULT,'O')     CHECK_RESULT
+		          ,C.NOTE             
+		          ,C.PHOTO_ID         
+		          ,COUNT(1) OVER(PARTITION BY B.EQUIP_CODE) AS ROWSPAN
+		  FROM    T_CHECKITEM A
+		  LEFT    OUTER JOIN T_CHECKEQUIP B
+		    ON    A.REPORT_GUBUN = B.CHECK_GUBUN
+		   AND    B.REPORT_GUBUN = #gubun#
+		   AND    B.DEPT_CODE = #deptCode#
+		   AND	  B.USE_YN = 'Y'
+		  LEFT    OUTER JOIN T_CHECK_USE_DETAIL C
+		    ON    B.EQUIP_CODE = C.GUBUN_CODE
+		   AND    A.CHECK_CODE = C.CHECK_CODE
+		   AND    C.CHECK_USE_ID = #checkUseId#  
+		 WHERE    B.EQUIP_CODE IS NOT NULL
+		 ORDER    BY B.EQUIP_CODE, A.CHECK_CODE
+	</select>
+	
+	<!-- 점검및사용일지 기본정보 수정 -->
+	<update id="updateCheckUseInfo" parameterClass="checkUseVO">
+		UPDATE  T_CHECK_USE
+		   SET  REPORT_GUBUN	  = #reportGubun#
+				, WORK_DAY        = #workDay#
+				, WEATHER         = #weather#
+				, EQUIP_CODE1     = #equipCode1#
+				, EQUIP_CODE2     = #equipCode2#
+				, PURPOSE         = #purpose#
+				, USE_PURPOSE     = #usePurpose#
+				, USE_PLACE       = #usePlace#
+				, VOYAGE_SECTION  = #voyageSection#
+				, VOYAGE_HOUR     = #voyageHour#
+				, VOYAGE_MIN      = #voyageMin#
+				, FUEL_INJECT     = #fuelInject#
+				, ISSUE_COMMENT   = #issueComment#
+				, PERSONS         = #persons#
+				, PARTICIPANT     = #participant#
+				, PHOTO1_ID       = #photo1Id#
+				, PHOTO2_ID       = #photo2Id#
+				, PHOTO3_ID       = #photo3Id#
+				, EXPR_COMMENT    = #exprComment#
+				, MOD_ID          = #modId#
+				, MOD_DATE        = sysdate
+		 WHERE 	CHECK_USE_ID = #checkUseId#
+	</update>
+	
+	<!-- 점검및사용일지 상세점검분야 수정 -->
+	<update id="updateCheckUseDetailInfo" parameterClass="checkUseDetailVO">
+		MERGE 
+		 INTO	T_CHECK_USE_DETAIL
+		USING 	DUAL
+		   ON 	(DETAIL_ID = #detailId#)
+		 WHEN 	MATCHED THEN
+				UPDATE	
+				   SET	GUBUN_CODE     = #gubunCode#
+						, CHECK_CODE   = #checkCode#
+						, CHECK_RESULT = #checkResult#
+						, NOTE         = #note#
+						, PHOTO_ID     = #photoId#	
+		 WHEN 	NOT MATCHED THEN
+				INSERT
+						(
+							DETAIL_ID
+						  , CHECK_USE_ID
+						  , GUBUN_CODE
+						  , CHECK_CODE
+						  , CHECK_RESULT
+						  , NOTE
+						  , PHOTO_ID
+						)
+		        VALUES
+		       			(
+					        #detailId#
+					      , #checkUseId#
+					      , #gubunCode#
+					      , #checkCode#
+					      , #checkResult#
+					      , #note#
+					      , #photoId#
+				        )
+	</update>
+	
+	<select id="getMonitoringList" parameterClass="HashMap" resultClass="HashMap">
+		SELECT    TO_CHAR(TO_DATE(DUM_DAYS, 'YYYYMMDD'), 'IW') REG_WEEK
+		          ,DUM_DAYS
+		          ,NVL(TOT_WEEK, 0) TOT_WEEK
+		          ,NVL(TOT_MONTH, 0) TOT_MONTH
+		          ,SUM(NVL(TOT_WEEK,0)) OVER(PARTITION BY TO_CHAR(TO_DATE(DUM_DAYS, 'YYYYMMDD'), 'IW'))  TOT_WEEK2
+				  ,SUM(NVL(TOT_MONTH,0)) OVER(PARTITION BY TO_CHAR(TO_DATE(DUM_DAYS, 'YYYYMMDD'), 'IW'))  TOT_MONTH2
+				  ,TO_CHAR(LAST_DAY(TO_DATE(#searchMonth#||'01', 'YYYYMMDD')),'DD') LASTDAY
+		  FROM    (          
+		          SELECT    DUM_DAYS
+		                    ,SUM(WEEKLY) TOT_WEEK
+		                    ,SUM(MONTHLY) TOT_MONTH
+		            FROM    (          
+		                              SELECT    TO_CHAR(REG_DATE, 'YYYYMMDD') REG_DATE
+		                                        ,T2.CHECK_USE_ID
+		                                        ,(SELECT DECODE(WM_GUBUN, 'W', 1, 0) FROM T_CHECKEQUIP WHERE EQUIP_CODE = GUBUN_CODE AND USE_YN = 'Y') WEEKLY
+		                                        ,(SELECT DECODE(WM_GUBUN, 'M', 1, 0) FROM T_CHECKEQUIP WHERE EQUIP_CODE = GUBUN_CODE AND USE_YN = 'Y') MONTHLY
+		                                FROM    T_CHECK_USE T1
+		                                        ,T_CHECK_USE_DETAIL T2
+		                               WHERE    T1.CHECK_USE_ID = T2.CHECK_USE_ID
+		                                 AND    T1.REG_ID IN (SELECT MEMBER_ID FROM T_MEMBER WHERE DEPT_CODE = #deptCode#)
+		                                 AND    T1.STATE <![CDATA[<>]]> 'D'
+		                               GROUP    BY    REG_DATE
+		                                        ,T2.CHECK_USE_ID
+		                                        ,GUBUN_CODE
+		                    ) TBL1,
+		                    (
+		                              SELECT    TO_CHAR(DUM_DAYS, 'YYYYMMDD') DUM_DAYS
+		                                FROM    (
+		                                        SELECT    TO_DATE(#startDate#, 'YYYYMMDD') -1 + ROWNUM AS DUM_DAYS
+		                                          FROM    ALL_OBJECTS
+		                                         WHERE    TO_DATE(#startDate#, 'YYYYMMDD') -1 + ROWNUM <![CDATA[<=]]> TO_DATE(#endDate#, 'YYYYMMDD')
+		                                        ) 
+		                    ) TBL2
+		           WHERE    TBL2.DUM_DAYS = TBL1.REG_DATE(+)
+		           GROUP BY DUM_DAYS
+		           )
+		 ORDER BY DUM_DAYS
+	</select>
+	
+	<select id="getMonitoringCount" parameterClass="HashMap" resultClass="int">
+		SELECT  COUNT(*) AS regCnt
+		  FROM	T_CHECKEQUIP
+  	     WHERE 	DEPT_CODE = #deptCode#
+  	       AND	WM_GUBUN = #wmGubun#
+  	       AND	USE_YN = 'Y'
+	</select>
+	
+	<!-- 점검및사용일지 목록 -->
+	<select id="getCheckUsePopupList" parameterClass="HashMap" resultClass="HashMap">
+		SELECT    WORK_DAY
+		          ,T2.CHECK_USE_ID
+		          ,REG_ID
+		          ,(SELECT MEMBER_NAME FROM T_MEMBER WHERE MEMBER_ID = REG_ID) REG_NAME
+		          ,GUBUN_CODE
+		          ,GUBUN
+		          ,(SELECT REPORT_NAME FROM T_CHECKEQUIP WHERE EQUIP_CODE = GUBUN_CODE AND USE_YN = 'Y') REPORT_NAME
+		          ,(SELECT DECODE(WM_GUBUN, 'W', '주간', 'M', '월간') FROM T_CHECKEQUIP WHERE EQUIP_CODE = GUBUN_CODE AND USE_YN = 'Y') WM_GUBUN
+		  FROM    T_CHECK_USE T1
+		          ,T_CHECK_USE_DETAIL T2
+		 WHERE    T1.CHECK_USE_ID = T2.CHECK_USE_ID
+		   AND    T1.WORK_DAY = TO_CHAR(TO_DATE(#regDate#,'YYYYMMDD'), 'YYYY/MM/DD')
+		   AND    T1.REG_ID IN (SELECT MEMBER_ID FROM T_MEMBER WHERE DEPT_CODE = #deptNo#)
+		   AND    T1.STATE <![CDATA[<>]]> 'D'
+		 GROUP    BY WORK_DAY
+		          ,T2.CHECK_USE_ID
+		          ,REG_ID
+		          ,GUBUN_CODE
+		          ,GUBUN
+		 ORDER    BY WORK_DAY DESC, T2.CHECK_USE_ID DESC
+	</select>
+</sqlMap>

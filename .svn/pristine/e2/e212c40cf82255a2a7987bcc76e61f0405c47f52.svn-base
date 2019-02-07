@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CmmnDetailCodeManageDAO">
+	
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias alias="CmmnDetailCode" type="daewooInfo.cmmn.bean.CmmnDetailCode"/>
+	<typeAlias alias="CmmnDetailCodeVO" type="daewooInfo.cmmn.bean.CmmnDetailCodeVO"/>
+	
+	<select id="selectCmmnDetailCodeList" parameterClass="CmmnDetailCodeVO" resultClass="egovMap">
+		SELECT A.COMMON_CODE_CATEGORY codeid
+			 , A.COMMON_CODE code
+			 , A.COMMON_CODE_NAME codename
+			 , A.CODE_SORT codeorder
+			 , A.USE_FLAG useflag
+		FROM T_COMMON_CODE A
+			 , T_COMMON_CODE_CATEGORY B
+		WHERE B.USE_FLAG = 'Y'
+			AND A.COMMON_CODE_CATEGORY = B.COMMON_CODE_CATEGORY
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				A.COMMON_CODE_CATEGORY = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="2">
+				A.COMMON_CODE = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="3">
+				A.COMMON_CODE_NAME LIKE '%' || #searchKeyword# || '%'
+			</isEqual>
+		ORDER BY A.COMMON_CODE_CATEGORY DESC, CODE_SORT ASC, COMMON_CODE ASC
+	</select>
+	
+	<select id="selectCmmnDetailCodeListTotCnt" parameterClass="CmmnDetailCodeVO" resultClass="int">
+		SELECT COUNT(*) totcnt 
+		FROM T_COMMON_CODE A
+			 , T_COMMON_CODE_CATEGORY B
+		WHERE B.USE_FLAG  = 'Y'
+			AND A.COMMON_CODE_CATEGORY = B.COMMON_CODE_CATEGORY
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				A.COMMON_CODE_CATEGORY = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="2">
+				A.COMMON_CODE = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="3">
+				A.COMMON_CODE_NAME LIKE '%' || #searchKeyword# || '%'
+			</isEqual>
+	</select>
+	
+	<select id="selectCmmnDetailCodeDetail" parameterClass="CmmnDetailCode" resultClass="CmmnDetailCode">
+		SELECT A.COMMON_CODE_CATEGORY codeId
+			 , B.COMMON_CODE_CATEGORY_NAME codeIdName
+			 , A.COMMON_CODE code
+			 , A.COMMON_CODE_NAME codeName
+			 , A.COMMON_CODE_DESC codeDesc
+			 , A.CODE_SORT codeOrder
+			 , A.USE_FLAG useFlag
+		FROM T_COMMON_CODE A
+			 , T_COMMON_CODE_CATEGORY B
+		WHERE B.USE_FLAG = 'Y'
+			AND A.COMMON_CODE_CATEGORY = B.COMMON_CODE_CATEGORY
+			AND A.COMMON_CODE_CATEGORY = #codeId#
+			AND A.COMMON_CODE = #code#
+	</select>
+	
+	<insert id="insertCmmnDetailCode">
+			INSERT INTO T_COMMON_CODE (
+				   COMMON_CODE_CATEGORY
+				 , COMMON_CODE
+				 , COMMON_CODE_NAME
+				 , COMMON_CODE_DESC
+				 , CODE_SORT
+				 , USE_FLAG
+				 , REG_DATE
+				 , REG_ID
+				 , MOD_DATE
+				 , MOD_ID
+				)
+			VALUES (
+				   #codeId#
+				 , #code#
+				 , #codeName#
+				 , #codeDesc#
+				 , #codeOrder#
+				 , #useFlag#
+				 , sysdate
+				 , #regId#
+				 , sysdate
+				 , #regId#
+				)
+	</insert>
+
+<!-- 	<update id="updateCmmnDetailCode"> -->
+<!-- 		<![CDATA[ -->
+<!-- 			UPDATE  T_COMMON_CODE  -->
+<!-- 				SET  COMMON_CODE_NAME	= #codeName# -->
+<!-- 				 ,  COMMON_CODE_DESC	= #codeDesc# -->
+<!-- 				 ,  CODE_SORT			= #codeOrder# -->
+<!-- 				 ,  USE_FLAG			= #useFlag# -->
+<!-- 				 ,  MOD_DATE = sysdate -->
+<!-- 				 ,  MOD_ID = #modId# -->
+<!-- 			WHERE  COMMON_CODE_CATEGORY = #codeId#  -->
+<!-- 				AND  COMMON_CODE = #code# -->
+<!-- 		]]> -->
+<!-- 	</update> -->
+
+	<delete id="deleteCmmnDetailCode">
+		UPDATE T_COMMON_CODE
+			SET USE_FLAG = 'N'
+		WHERE COMMON_CODE_CATEGORY = #codeId#
+			AND COMMON_CODE = #code#
+	</delete>
+	
+	<statement id="updateCmmnDetailCode">
+		MERGE INTO T_COMMON_CODE
+		USING DUAL
+		ON ( COMMON_CODE_CATEGORY = #codeId# 
+			AND COMMON_CODE = #code# )
+		WHEN MATCHED THEN
+			UPDATE SET
+					   COMMON_CODE_NAME = #codeName#
+					 , COMMON_CODE_DESC = #codeDesc#
+					 , CODE_SORT = #codeOrder#
+					 , USE_FLAG = #useFlag#
+					 , MOD_DATE = sysdate
+					 , MOD_ID = #modId#
+		WHEN NOT MATCHED THEN
+			INSERT (
+					   COMMON_CODE_CATEGORY
+					 , COMMON_CODE
+					 , COMMON_CODE_NAME
+					 , COMMON_CODE_DESC
+					 , CODE_SORT
+					 , USE_FLAG
+					 , REG_DATE
+					 , REG_ID
+					 , MOD_DATE
+					 , MOD_ID
+					)
+			VALUES (
+					   #codeId#
+					 , #code#
+					 , #codeName#
+					 , #codeDesc#
+					 , #codeOrder#
+					 , #useFlag#
+					 , sysdate
+					 , #regId#
+					 , sysdate
+					 , #regId#
+					)
+	</statement>
+
+	<!-- 코드 중복체크 -->
+	<statement id="dupCmnCode" resultClass="java.lang.Integer" parameterClass="CmmnDetailCode">
+		SELECT COUNT(*) AS totcnt
+		FROM T_COMMON_CODE
+		WHERE COMMON_CODE_CATEGORY = #codeId#
+			AND COMMON_CODE = #code#
+	</statement>
+
+</sqlMap>

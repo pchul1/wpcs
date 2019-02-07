@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+	<settings useStatementNamespaces="true"/>
+	
+	<sqlMap resource="sqlmap/login/Login-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/menu/Menu-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/menu/MyMenu-sqlmap.xml"/>
+	
+	<sqlMap resource="sqlmap/alert/AlertTarget-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/alert/AlertLaw-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/alert/AlertConfig-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/alert/AlertStep-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/alert/AlertMake-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/alert/AlertMng-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/alert/AlertTaksuConfig-sqlmap.xml"/>
+	
+	<sqlMap resource="sqlmap/stats/Stats-sqlmap.xml"/>
+	
+	<sqlMap resource="sqlmap/operate/Operate-sqlmap.xml"/>
+	
+	<sqlMap resource="sqlmap/mock/Mock-sqlmap.xml"/>
+	
+	<!-- 어드민 보안관련 -->
+	<sqlMap resource="sqlmap/admin/security/EgovAuthorManage-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/admin/security/EgovAuthorRoleManage-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/admin/security/EgovGroupManage-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/admin/security/EgovAuthorGroup-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/admin/security/EgovRoleManage-sqlmap.xml"/>
+	
+	<!-- 어드민 메뉴관련 -->
+	<sqlMap resource="sqlmap/admin/menu/EgovMainMenu-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/admin/menu/EgovMenuCreat-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/admin/menu/EgovMenuManage-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/admin/menu/EgovMenuSiteMap-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/admin/menu/EgovProgrmManage-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/admin/menu/EgovProgrmManageDtl-sqlmap.xml"/>
+	
+	<!-- 어드민 BBS 관련 -->
+	<sqlMap resource="sqlmap/admin/bbs/EgovBBSMaster-sqlmap.xml"/>
+	
+	<!-- 어드민 공통코드 관련 -->
+	<sqlMap resource="sqlmap/admin/cmmncode/CmmnCodeManage-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/admin/cmmncode/CmmnDetailCodeManage-sqlmap.xml"/>
+	
+	<!-- 어드민 사용자 관련 -->
+	<sqlMap resource="sqlmap/admin/member/MemberManage-sqlmap.xml"/>
+	
+	<!-- 어드민 부서 관련 -->
+	<sqlMap resource="sqlmap/admin/dept/DeptManage-sqlmap.xml"/>
+	
+	<!-- 어드민 비밀번호 키워드관리 관련(웹솔루스 추가) -->
+	<sqlMap resource="sqlmap/admin/keyword/KeywordManage-sqlmap.xml"/>
+	
+	<!-- 원터치 담당자 관련(웹솔루스 추가) -->
+	<sqlMap resource="sqlmap/admin/onetouch/EmpOnetouchSms-sqlmap.xml"/>
+	
+	<!-- 데이터 선별 담당자 관련(웹솔루스 추가) -->
+	<sqlMap resource="sqlmap/admin/mindataEmployee/mindataEmployee-sqlmap.xml"/>
+	
+	
+	<!-- BBS 관련 -->
+	<sqlMap resource="sqlmap/bbs/EgovBoard-sqlmap.xml"/>
+	
+	<!-- 공통 관련 -->
+	<sqlMap resource="sqlmap/cmmn/EgovCmmUse-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/cmmn/EgovFile-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/cmmn/TmsComUtl-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/cmmn/CmnLog-sqlmap.xml"/>
+	
+	<!-- 방제물품 관리 관련-->
+	<sqlMap resource="sqlmap/warehouse/WareHouseManage-sqlmap.xml"/>
+	
+	<!-- 교육관련 -->
+	<sqlMap resource="sqlmap/edu/EduManage-sqlmap.xml"/>
+	
+	<sqlMap resource="sqlmap/waterpolmnt/WaterInfo-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/waterpolmnt/Situationctl-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/code/CommonCode-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/weather/Weather-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/algasmng/Alga-sqlmap.xml"/>
+	<sqlMap resource="sqlmap/airmntmng/Air-sqlmap.xml"/>
+	<!-- 스케줄링 추가  -->
+	<sqlMap resource="sqlmap/alert/Alert-sch.sqlmap.xml"/>
+	<!-- 지점 관리 관련 -->
+	<sqlMap resource="sqlmap/spotmanage/SpotManage-sqlmap.xml"/>
+	<!-- 항목 관리 관련 -->
+	<sqlMap resource="sqlmap/itemmanage/ItemManage-sqlmap.xml"/>
+	<!-- SMS 관리 관련 -->
+	<sqlMap resource="sqlmap/smsmanage/SmsManage-sqlmap.xml"/>
+	<!-- 수질오염사고 관련 -->
+	<sqlMap resource="sqlmap/waterpollution/WaterPollution-sqlmap.xml"/>
+	<!--접속로그,개인정보취급 -->
+	<sqlMap resource="sqlmap/admin/access/AccessManage-sqlmap.xml"/>	
+	
+	<!-- 모바일 -->
+	<!-- 공통 관련 -->
+	<sqlMap resource="sqlmap/mobile/com/MobileCommon_SQL.xml"/>
+	<sqlMap resource="sqlmap/mobile/com/MobileCommonCode_SQL.xml"/>
+	
+	<!-- 경고조치 관련 -->
+	
+	<!-- IPUSN -->
+	<sqlMap resource="sqlmap/mobile/ipusn/IpUsn_SQL.xml"/>
+	<!-- 보도자료 관련 -->
+	<sqlMap resource="sqlmap/rss/RssManage-sqlmap.xml"/>
+	<!-- 보도자료 키워드 관련-->
+	<sqlMap resource="sqlmap/rss/RssKeywordManage-sqlmap.xml"/>
+	<!-- 알림 관련 -->
+	<sqlMap resource="sqlmap/alrim/Alrim-sqlmap.xml"/>
+	<!-- 교육 관련 -->
+	<sqlMap resource="sqlmap/seminar/Seminar-sqlmap.xml"/>
+	<!-- 업무일지 관련-->
+	<sqlMap resource="sqlmap/dailywork/DailyWork-sqlmap.xml"/>
+	<!-- 상황실 근무일지 관련-->
+	<sqlMap resource="sqlmap/dailywork/SituationRoom-sqlmap.xml"/>
+	<!-- 4대강주요수계일지-->
+	<sqlMap resource="sqlmap/dailywork/RiverMain-sqlmap.xml"/>
+	<!-- 조류모니터링일지-->
+	<sqlMap resource="sqlmap/dailywork/Monitoring-sqlmap.xml"/>
+	<!-- 데이터 연계-->
+	<sqlMap resource="sqlmap/status/Status-sqlmap.xml"/>
+	<!-- 주제도 -->
+	<sqlMap resource="sqlmap/stats/ThematicMap-sqlmap.xml"/>
+</sqlMapConfig>

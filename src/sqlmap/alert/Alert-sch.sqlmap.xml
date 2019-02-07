@@ -1,0 +1,1149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="alertSchDAO">
+	
+	
+	<typeAlias alias="alertMinVo" type="daewooInfo.alert.bean.AlertMinVO"/>
+    <typeAlias alias="alertDataMinVo" type="daewooInfo.alert.bean.AlertDataMinVo"/>
+    <typeAlias alias="alertDataLawVo" type="daewooInfo.alert.bean.AlertDataLawVo"/>
+    <typeAlias alias="alertSearchVO" type="daewooInfo.alert.bean.AlertSearchVO"/> 
+    <typeAlias alias="alertStepLastVO" type="daewooInfo.alert.bean.AlertStepLastVO"/>
+    <typeAlias alias="alertStepVO" type="daewooInfo.alert.bean.AlertStepVO"/> 
+    <typeAlias alias="alertSendDataVO" type="daewooInfo.alert.bean.AlertSendDataVO"/> 
+    <typeAlias alias="alertTestVO" type="daewooInfo.alert.bean.AlertTestVO"/> 
+    <typeAlias alias="alertAlarmVO" type="daewooInfo.alert.bean.AlertAlarmVO"/> 
+    <typeAlias alias="alertVocsVO" type="daewooInfo.alert.bean.AlertVocsVO"/> 
+    
+    <typeAlias alias="smsBranchVo" type="daewooInfo.smsmanage.bean.SmsBranchVO"/> 
+    <typeAlias alias="spotManageVO" type="daewooInfo.spotmanage.bean.SpotManageVO"/>
+    <typeAlias alias="IpUsnVO" type="daewooInfo.ipusn.bean.IpUsnVO"/>
+    
+    <!-- 탁도모니터링  측정값목록-->
+    <statement id="alertSchDAO.getMinList" resultClass="alertDataMinVo" parameterClass="HashMap">
+     SELECT 
+            FACT_CODE factCode,
+            ITEM_CODE itemCode,
+            BRANCH_NO branchNo,
+            MIN_VL   min_vl,
+            MIN_TIME minTime 
+      FROM T_MIN_DATA  
+      WHERE MIN_DCD = '1' AND FACT_CODE  IN (
+            SELECT  unique  A.FACT_CODE  
+            FROM T_WQ_STD A,T_FACT_INFO B
+            WHERE A.FACT_CODE = B.FACT_CODE 
+            AND A.USE_FLAG = 'Y' AND B.SYS_KIND = 'T'
+      )
+      <![CDATA[
+      AND MIN_TIME <= TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI')
+      AND MIN_TIME >= TO_CHAR(SYSDATE-60/24/60*3, 'YYYYMMDDHH24MI')
+      ]]>
+      ORDER BY MIN_TIME ASC
+    </statement> 
+    <statement id="alertSchDAO.threeHourMinOverCount1"  parameterClass="alertSearchVO" resultClass="alertMinVo"> 
+     SELECT 
+    	ROUND(((TO_DATE(START_TIME,'YYYYMMDDHH24MI') - TO_DATE(LAST_TIME,'YYYYMMDDHH24MI')) * 24*60),0) as timeDiff  
+    FROM(
+    SELECT  
+          MAX(MIN_TIME) KEEP(DENSE_RANK LAST ORDER BY MIN_TIME)  START_TIME,
+          MIN(MIN_TIME) KEEP(DENSE_RANK FIRST ORDER BY MIN_TIME) LAST_TIME 
+    FROM T_MIN_DATA
+    WHERE FACT_CODE =#factCode#
+    AND BRANCH_NO =  #branchNo# 
+    AND ITEM_CODE =  #itemCode# 
+    AND MIN_TIME BETWEEN TO_CHAR(TO_DATE(#minTime# ,'YYYYMMDDHH24MI') - (3/24),'YYYYMMDDHH24MI') AND #minTime# 
+    AND MIN_VL &gt;= #highValue#
+    ) 
+    </statement>
+    
+    <statement id="alertSchDAO.threeHourMinOverCount"  parameterClass="alertSearchVO" resultClass="alertMinVo"> 
+    SELECT  
+          COUNT(*)  timeDiff
+    FROM T_MIN_DATA
+    WHERE FACT_CODE =#factCode#
+    AND BRANCH_NO =  #branchNo# 
+    AND ITEM_CODE =  #itemCode# 
+    AND MIN_TIME BETWEEN TO_CHAR(TO_DATE(#minTime# ,'YYYYMMDDHH24MI') - (3/24),'YYYYMMDDHH24MI') AND #minTime# 
+    AND MIN_VL &lt; #highValue#    
+    </statement>
+    
+    
+     <statement id="alertSchDAO.threeHourMinOverInfo" resultClass="alertMinVo"  parameterClass="alertSearchVO">
+     SELECT  
+       		FACT_CODE factCode,
+      		ITEM_CODE itemCode,
+      		MIN_TIME  minTime, 
+      		MIN_VL    minVl,
+      		BRANCH_NO branchNo 
+  	FROM (
+        SELECT 
+              ROW_NUMBER () OVER (ORDER BY TO_NUMBER (MIN_TIME) DESC) AS RNO,
+              FACT_CODE,
+              ITEM_CODE,
+              MIN_TIME, 
+              MIN_VL,
+              BRANCH_NO 
+        FROM T_MIN_DATA
+        WHERE FACT_CODE =#factCode#
+        AND BRANCH_NO =  #branchNo# 
+        AND ITEM_CODE =  #itemCode# 
+        AND MIN_TIME BETWEEN TO_CHAR(TO_DATE(#minTime# ,'YYYYMMDDHH24MI') - (3/24),'YYYYMMDDHH24MI') AND #minTime# 
+        AND MIN_VL &gt;= #highValue#
+  		) WHERE RNO = 1 
+     </statement>
+     
+    <!-- 탁도모니터링  측정값목록--> 
+    <statement id="alertSchDAO.getFactLaw"  resultClass="alertDataLawVo" parameterClass="alertSearchVO"> 
+    SELECT 
+            A.FACT_CODE factCode,
+            A.BRANCH_NO branchNo,
+            A.ITEM_CODE itemCode,
+            A.STD_LVAL lawLValue,
+            A.STD_HVAL lawHValue,
+            A.FACT_NAME factName,
+            B.ARS_FLAG arsFlag,
+            B.SMS_FLAG smsFlag,
+            B.SEND_CYCLE alertTerm,
+            ( 
+                SELECT 
+                    <![CDATA[ 
+                       CASE WHEN NVL(MIN(WARNING_FLAG),0) = 0  AND MIN(WARNING_ETC_FLAG) ='START' THEN 'START' 
+                    ELSE  
+                          CASE 
+                          WHEN MIN(WARNING_FLAG) > 0 THEN 'STOP'
+                          WHEN MIN(WARNING_ETC_FLAG) ='STOP' THEN 'STOP' 
+                          ELSE 'STOP'
+                        END 
+                    END
+                    ]]> 
+                FROM T_WARNING_TSM_CONFIG WHERE FACT_CODE = #factCode# 
+            )AS taksuFlag 
+        FROM(
+            SELECT  LAW.FACT_CODE,
+                    LAW.BRANCH_NO,
+                    LAW.ITEM_CODE,
+                    LAW.STD_LVAL,
+                    LAW.STD_HVAL,
+                    INFO.FACT_NAME
+            FROM T_WQ_STD LAW,T_FACT_INFO INFO
+            WHERE LAW.FACT_CODE = INFO.FACT_CODE
+            AND LAW.FACT_CODE = #factCode# AND LAW.BRANCH_NO = #branchNo# AND LAW.ITEM_CODE = #itemCode# AND LAW.USE_FLAG = 'Y' AND ROWNUM =1 
+        )A,
+        (
+         SELECT  * FROM T_WARNING_STD WHERE FACT_CODE = #factCode# AND BRANCH_NO = #branchNo# AND ITEM_CODE = #itemCode# AND USE_FLAG ='Y' AND  SMS_FLAG  ='S' OR  ARS_FLAG  ='A' 
+        )B  
+        WHERE A.FACT_CODE = B.FACT_CODE
+         AND A.BRANCH_NO = B.BRANCH_NO
+         AND A.ITEM_CODE = B.ITEM_CODE
+    </statement>  
+    <select id="alertSchDAO.getLastAlertStep" parameterClass="alertSearchVO" resultClass="alertStepLastVO">
+        SELECT     
+            IW_NO             as asId
+            , ACCT_ACT_STEP     as alertStep
+            , MIN_OR        as minOr
+            , ACCT_CNT    as alertCount
+            , ACCT_ACT_TIME     as alertTime
+            , ROUND(((TO_DATE(#minTime#,'YYYYMMDDHH24MI') - TO_DATE(ACCT_ACT_TIME,'YYYYMMDDHH24MI')) * 24*60),0) as timeDiff 
+        FROM 
+        (
+            SELECT 
+                    ROW_NUMBER() OVER (ORDER BY TO_NUMBER(IW_NO) DESC) AS RNO
+                    , IW_NO             
+                    , ACCT_ACT_STEP
+                    , MIN_OR
+                    , ACCT_CNT
+                    , ACCT_ACT_TIME
+            FROM    T_IW_HIS 
+            WHERE    FACT_CODE = #factCode#
+            AND DEl_YN = 'N'
+            AND     BRANCH_NO = #branchNo#
+            AND     ITEM_CODE = #itemCode# 
+            AND     ACCT_KIND = 'B'
+    <![CDATA[  
+            AND    (ACCT_ACT_STEP = '1' OR ACCT_ACT_STEP ='9')   AND  ACCT_AUTO_PROC = 'Y'
+        )
+        WHERE RNO = 1
+	]]> 
+	</select>
+	
+	<statement id="alertSchDAO.updateMinState">
+	UPDATE T_MIN_DATA
+	SET MIN_DCD = '0' 
+	<isNotNull prepend="," property="minOr" >
+     MIN_OR =  #minOr#
+     </isNotNull> 
+	WHERE FACT_CODE = #factCode#
+	AND BRANCH_NO = #branchNo#	
+	AND MIN_TIME = #minTime#
+	AND ITEM_CODE = #itemCode#  
+    </statement> 
+    
+    <statement id="alertSchDAO.getMinTopData"  resultClass="alertDataMinVo"  parameterClass="alertSearchVO">
+      SELECT
+           MIN_VL,
+           MIN_TIME
+     FROM T_MIN_DATA
+     WHERE
+     <![CDATA[ 
+     	   MIN_TIME < #minTime#
+           AND FACT_CODE = #factCode#
+           AND BRANCH_NO = #branchNo#
+           AND ITEM_CODE = #itemCode#
+           AND ROWNUM = 1
+     ]]>
+     ORDER BY MIN_TIME DESC
+    </statement>
+    
+    <statement id="alertSchDAO.isLastData" resultClass="java.lang.Integer" parameterClass="alertSearchVO">
+    	SELECT
+            COUNT(*)
+        FROM 
+            T_MIN_DATA
+        WHERE
+            MIN_TIME BETWEEN #minTime# AND TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI')
+            AND FACT_CODE = #factCode#
+            AND BRANCH_NO = #branchNo#
+            AND ITEM_CODE = #itemCode#
+    </statement>
+    
+    
+    <statement id="alertSchDAO.updateStepProcess" parameterClass="alertSearchVO">
+    UPDATE T_IW_HIS
+    SET ACCT_AUTO_PROC = 'N' , ACCT_AUTO_PROC_TIME =TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI') 
+    WHERE IW_NO =
+    (
+      SELECT IW_NO
+        FROM(
+        SELECT 
+              ROW_NUMBER() OVER (ORDER BY TO_NUMBER(IW_NO) DESC) AS RNO,
+              IW_NO  
+        FROM    T_IW_HIS 
+        WHERE    FACT_CODE = #factCode#
+            AND DEl_YN = 'N'
+        AND     BRANCH_NO = #branchNo#
+        AND     ITEM_CODE = #itemCode#)
+        WHERE  RNO = 1 
+    ) 
+    </statement> 
+    
+     <statement id="alertSchDAO.updateStepAlertCount" parameterClass="alertStepVO">
+    UPDATE T_IW_HIS 
+    SET ACCT_CNT = #alertCount#
+    <isEqual property="stateKind" prepend="," compareValue="STOP">
+    ACCT_AUTO_PROC = 'N' , ACCT_AUTO_PROC_TIME =TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI'), ACCT_ACT_STEP = 9
+    </isEqual> 
+    WHERE IW_NO = #asId#
+    </statement> 
+        
+    <statement id="alertSchDAO.selectOverStep" parameterClass="alertSearchVO" resultClass="alertStepVO">
+    SELECT     
+            IW_NO             as asId
+            , ACCT_ACT_STEP     as alertStep
+            , MIN_OR        as minOr
+            , ACCT_CNT    as alertCount
+            , ACCT_ACT_TIME     as alertTime 
+        FROM 
+        (
+            SELECT 
+                    ROW_NUMBER() OVER (ORDER BY TO_NUMBER(IW_NO) DESC) AS RNO
+                    , IW_NO             
+                    , ACCT_ACT_STEP
+                    , MIN_OR
+                    , ACCT_CNT
+                    , ACCT_ACT_TIME
+            FROM    T_IW_HIS 
+            WHERE    FACT_CODE = #factCode#
+            AND DEl_YN = 'N'
+            AND     BRANCH_NO = #branchNo#
+            AND     ITEM_CODE = #itemCode# 
+            AND     ACCT_KIND = 'B'
+            AND     ACCT_ACT_STEP &lt; 4   AND  ACCT_AUTO_PROC = 'Y'
+        )
+        WHERE RNO = 1
+    </statement>
+    
+    <statement id="alertSchDAO.updateStep" parameterClass="alertStepVO">
+    UPDATE T_IW_HIS
+    SET ACCT_AUTO_PROC = 'N' , ACCT_AUTO_PROC_TIME =TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI'), ACCT_ACT_STEP = 9
+    WHERE IW_NO = #asId#
+    </statement>
+    
+    <statement id="alertSchDAO.getTargetList" parameterClass="alertSendDataVO" resultClass="alertTargetVO">
+	SELECT #factCode# factCode, 
+	       #branchNo# branchNo, 
+	       AAA.MEMBER_ID, 
+	       'Y' USE_FLAG, 
+	       'B' RECV_TYPE, 
+	       #detCode# DET_CODE, 
+	       FN_GET_DEPT_NAME(MEMBER.DEPT_CODE) AS DEPTNONAME, 
+	       (SELECT DECODE(UPPER_DEPT_CODE, 8000, 1, 0) 
+	         FROM T_DEPT_INFO 
+	        WHERE DEPT_CODE = MEMBER.DEPT_CODE
+	       ) AS atPartGubun, 
+	       (SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ' > ')), 4)) 
+	         FROM T_DEPT_INFO 
+	        WHERE DEPT_CODE = MEMBER.DEPT_CODE START 
+	       WITH UPPER_DEPT_CODE = '0' CONNECT BY PRIOR DEPT_CODE = UPPER_DEPT_CODE
+	          ) AS atPart , 
+	          MEMBER.MEMBER_NAME atName, 
+	          MEMBER.MOBILE_NO atSmsTele 
+	     FROM 
+	          (SELECT AA.MEMBER_ID 
+	            FROM 
+	                 (SELECT A.MEMBER_ID, 
+	                        NVL(A.FACT_CODE, #factCode#) FACT_CODE, 
+	                        NVL(A.BRANCH_NO, #branchNo#) BRANCH_NO, 
+	                        A.RECV_TYPE 
+	                   FROM T_SMS_TARGET A 
+	                  WHERE A.DET_CODE = #detCode# 
+	                        AND A.USE_FLAG = 'Y'
+	                 ) AA 
+	           WHERE AA.FACT_CODE = #factCode# 
+	                 AND AA.BRANCH_NO = #branchNo# 
+	              UNION 
+	          SELECT B.BRANCH_MGR MEMBER_ID 
+	            FROM T_FACT_BRANCH_INFO B 
+	           WHERE B.FACT_CODE = #factCode# 
+	                 AND B.BRANCH_NO = #branchNo#
+	          ) AAA, 
+	          T_MEMBER MEMBER 
+	    WHERE AAA.MEMBER_ID = MEMBER.MEMBER_ID
+	</statement>
+    
+    <statement id="alertSchDAO.getTargetList_old" parameterClass="alertSendDataVO" resultClass="alertTargetVO">
+    SELECT A.SMS_TARGET_NO, 
+	       A.FACT_CODE factCode, 
+	       A.BRANCH_NO branchNo, 
+	       A.MEMBER_ID, 
+	       A.USE_FLAG, 
+	       A.REG_DATE, 
+	       A.REG_ID, 
+	       A.RECV_TYPE, 
+	       A.DET_CODE, 
+	       FN_GET_DEPT_NAME(MEMBER.DEPT_CODE) AS DEPTNONAME, 
+	       (SELECT DECODE(UPPER_DEPT_CODE, 8000, 1, 0) FROM T_DEPT_INFO WHERE DEPT_CODE = MEMBER.DEPT_CODE) as atPartGubun,
+	       (SELECT TRIM (SUBSTR (MAX (SYS_CONNECT_BY_PATH (DEPT_NAME, ' > ')), 4))
+	          FROM T_DEPT_INFO 
+	          WHERE DEPT_CODE =  MEMBER.DEPT_CODE
+	          START WITH UPPER_DEPT_CODE = '0'
+	          CONNECT BY PRIOR DEPT_CODE = UPPER_DEPT_CODE) as atPart ,
+	       MEMBER.MEMBER_NAME atName, 
+	       MEMBER.MOBILE_NO atSmsTele 
+	  FROM T_SMS_TARGET A, 
+	       T_MEMBER MEMBER 
+	 WHERE MEMBER.MEMBER_ID = A.MEMBER_ID 
+	   AND A.RECV_TYPE = 'B' 
+	   AND A.DET_CODE = #detCode#
+	   AND A.FACT_CODE = #factCode#
+	   AND A.BRANCH_NO = #branchNo# 
+	</statement>
+	
+    <insert id="alertSchDAO.insertAlertSendData" parameterClass="alertSendDataVO">
+    INSERT INTO T_WARNING_SEND_DATA
+   (
+    SEQ_NO,
+    WARNING_TYPE,
+    WARNING_KIND,
+    FACT_CODE,
+    RIVER_DIV,
+    FACT_NAME,
+    BRANCH_NO,
+    ITEM_CODE,
+    MIN_TIME,
+    ITEM_NAME,
+    ITEM_UNIT,
+    WARNING_STEP,
+    WARNING_MSG,
+    WARNING_VL,
+    WARNING_STD,
+    MSG,
+    REG_DATE,
+    DEPT_INFO,
+    SNDR_NAME,
+    SNDR_TEL_NO,
+    RECV_NAME,
+    RECV_TEL_NO,
+    SEND_FLAG 
+   )
+  VALUES
+  ( 
+    SEQ_ALERT_SEND_DATA.NEXTVAL,
+    #alertType#,
+    #alertKind#, 
+    #factCode#,
+    #riverId#,
+    #factName#,
+    #branchNo#,
+    #itemCode#,
+    #minTime#,
+    #itemName#,
+    #itemUnit#,
+    #alertStep#,
+    #alertMsg#,
+    #alertValue#,
+    #alertStandard#,
+    #msg#,
+    TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI'),
+    #part#,
+    #sendName#,
+    #sendTel#,
+    #receiveName#,
+    #receiveTel#,
+    <isNotNull property="sendFlag">
+    	#sendFlag#
+    </isNotNull>
+    <isNull property="sendFlag">
+    	'N'
+    </isNull> 
+    )  
+    </insert>
+    
+    <statement id="alertSchDAO.getAlertSmsList"  resultClass="alertSendDataVO">
+SELECT 
+          SEQ_NO AS idx,
+          WARNING_TYPE AS alertType,
+          WARNING_KIND AS alertKind,
+          FACT_CODE AS factCode,
+          FACT_NAME AS factName,
+          BRANCH_NO AS branchNo,
+          ITEM_CODE AS itemCode,
+          MIN_TIME AS minTime,
+          ITEM_NAME AS itemName,
+          ITEM_UNIT AS itemUnit,
+          WARNING_STEP AS alertStep,
+          WARNING_MSG AS alertMsg,
+          WARNING_VL AS alertValue,
+          WARNING_STD AS alertStandard,
+          MSG AS msg,
+          DEPT_INFO AS part,
+          SNDR_NAME AS sendName,
+          SNDR_TEL_NO AS sendTel,
+          RECV_NAME AS receiveName,
+          RECV_TEL_NO AS receiveTel 
+    FROM T_WARNING_SEND_DATA WHERE SEND_FLAG ='N' AND WARNING_KIND = 'S'
+</statement>
+    
+     <statement id="alertSchDAO.getAlertArsList"  resultClass="alertSendDataVO"> 
+     SELECT 
+          SEQ_NO AS idx,
+          WARNING_TYPE AS alertType,
+          WARNING_KIND AS alertKind,
+          FACT_CODE AS factCode,
+          FACT_NAME AS factName,
+          BRANCH_NO AS branchNo,
+          ITEM_CODE AS itemCode,
+          MIN_TIME AS minTime,
+          ITEM_NAME AS itemName,
+          ITEM_UNIT AS itemUnit,
+          WARNING_STEP AS alertStep,
+          MSG AS alertMsg,
+          WARNING_VL AS alertValue,
+          WARNING_STD AS alertStandard,
+          MSG AS msg,
+          DEPT_INFO AS part,
+          SNDR_NAME AS sendName,
+          SNDR_TEL_NO AS sendTel,
+          RECV_NAME AS receiveName,
+          RECV_TEL_NO AS receiveTel 
+    FROM T_WARNING_SEND_DATA WHERE SEND_FLAG ='N' AND WARNING_KIND = 'A'
+    </statement>
+    
+    <statement id="alertSchDAO.updateSmsClose" parameterClass="alertSendDataVO">
+    UPDATE T_WARNING_SEND_DATA 
+    SET SEND_FLAG = 'Y'
+    WHERE SEQ_NO = #idx# 
+    </statement> 
+    
+    <statement id="alertSchDAO.getTaksuTest"  parameterClass="alertTestVO" resultClass="alertTestVO">
+    SELECT 
+        A.FACT_CODE as factcode,
+          A.ITEM_CODE as itemCode,
+          A.BRANCH_NO as branchNo,
+          A.BRANCH_NAME ||'-'|| A.BRANCH_NO  AS brancName,
+          B.FACT_NAME as factName,
+          TO_CHAR(TO_DATE(A.MIN_TIME,'YYYYMMDDHH24MI'),'YYYY-MM-DD') AS strDate, 
+        TO_CHAR(TO_DATE(A.MIN_TIME,'YYYYMMDDHH24MI'),'HH24:MI') AS strTime 
+        FROM( 
+         SELECT 
+              REAL.FACT_CODE,
+              REAL.ITEM_CODE,
+              REAL.MIN_TIME,
+              REAL.MIN_RTIME,
+              REAL.MIN_DUMP,
+              REAL.MIN_VL,
+              REAL.MIN_OR,
+              REAL.MIN_ST,
+              REAL.MIN_DCD,
+              REAL.BRANCH_NO,
+              BRANCH.BRANCH_NAME
+            FROM T_FACT_BRANCH_INFO BRANCH,T_MIN_DATA REAL
+            WHERE  BRANCH.FACT_CODE = REAL.FACT_CODE AND BRANCH.BRANCH_NO =REAL.BRANCH_NO
+            AND  BRANCH.BRANCH_USE_FLAG= 'Y'
+            AND  MIN_TIME BETWEEN #startDate#||#frTime#||'00' AND #endDate#||#toTime#||'59'
+        )A,
+        ( 
+        SELECT 
+            LAW.FACT_CODE,
+            LAW.BRANCH_NO,
+            LAW.ITEM_CODE,
+            LAW.STD_LVAL,
+            INFO.FACT_NAME 
+        FROM T_WQ_STD LAW,T_FACT_INFO INFO 
+        WHERE LAW.FACT_CODE = INFO.FACT_CODE 
+        AND   LAW.USE_FLAG  = 'Y'
+        )B
+        WHERE A.FACT_CODE = B.FACT_CODE AND A.BRANCH_NO= B.BRANCH_NO AND A.ITEM_CODE =B.ITEM_CODE
+    </statement>
+    
+    <statement id="alertSchDAO.getAlarmList" resultClass="alertAlarmVO">
+	SELECT SITE_ID AS factCode,
+	       ALARM_ID AS alarmId,
+	       MSG_TYPE AS msgType,
+	       ALARM_MSG AS alarmMsg,
+	       MAX (SEND_DATE) AS sendDate
+	  FROM ALARMMSGHIST_TB
+	 WHERE ALARM_ID IS NOT NULL 
+	GROUP BY RIVER_ID,
+	         SITE_ID,
+	         ALARM_ID,
+	         ALARM_MSG,
+	         MSG_TYPE        
+	ORDER BY RIVER_ID, SITE_ID, ALARM_ID 
+    </statement>
+    
+    
+    <update id="alertSchDAO.updateNorecvIsNotFirst" parameterClass="alertStepVO">
+    	UPDATE
+    		T_WARING_SEND_DATA
+    	SET
+    		ITEM_CODE = 'NRECV'
+    	WHERE
+    		FACT_CODE = #factCode#
+    		AND BRANCH_NO = #branchNo#
+    		AND WARNING_TYPE = 'NRECV'
+    		AND ITEM_CODE != 'RECVD'
+    </update>
+    
+    
+    <update id="alertSchDAO.updateRecv" parameterClass="alertStepVO">
+    	UPDATE
+    		T_WARNING_SEND_DATA
+    	SET
+    		ITEM_CODE = 'RECVD'
+    	WHERE
+    		FACT_CODE = #factCode#
+    		AND MIN_TIME > TO_CHAR((SYSDATE-(60/24/60*3)), 'YYYYMMDDHH24MI')
+    		AND BRANCH_NO = #branchNo#
+    		AND WARNING_TYPE = 'NRECV'
+    		AND ITEM_CODE != 'RECVD'
+    </update>
+       
+    <statement id="alertSchDAO.getIsNorecvFirst" parameterClass="alertStepVO" resultClass="java.lang.Integer">
+    	SELECT
+		    COUNT(*)
+		FROM
+		    T_WARNING_SEND_DATA SDATA
+		WHERE
+			ITEM_CODE IN ('NRECV', '30MIN')
+		    AND WARNING_TYPE='NRECV'
+		    AND MIN_TIME &gt; TO_CHAR((SYSDATE-(60/24/60 *  #alertDelayTime#)), 'YYYYMMDDHH24MI')
+		    AND FACT_CODE = #factCode#
+		    AND BRANCH_NO = #branchNo#
+    </statement>
+    
+    
+    <statement id="alertSchDAO.getIsNorecv30Min" parameterClass="alertStepVO" resultClass="java.lang.Integer">
+    	SELECT
+		    COUNT(*)
+		FROM
+		    T_WARNING_SEND_DATA SDATA
+		WHERE
+			ITEM_CODE = '30MIN'
+		    AND WARNING_TYPE='NRECV'
+		    AND MIN_TIME &gt; TO_CHAR((SYSDATE-(60/24/60 * #alertDelayTime#)), 'YYYYMMDDHH24MI')
+		    AND FACT_CODE = #factCode#
+		    AND BRANCH_NO = #branchNo#
+    </statement>
+    
+    <statement id="alertSchDAO.getVoc20MinCnt" parameterClass="alertVocsVO" resultClass="java.lang.Integer">
+    	SELECT
+    		COUNT(*)
+    	FROM
+    		T_MIN_DATA
+    	WHERE
+    		FACT_CODE = #factCode#
+    		AND BRANCH_NO = #branchNo#
+    		AND ITEM_CODE = #itemCode#
+    		AND MIN_TIME &gt; TO_CHAR((SYSDATE-(34/24/60)), 'YYYYMMDDHH24MI')
+    </statement>
+    
+    <statement id="alertSchDAO.getIsVocAlert20Min" parameterClass="alertVocsVO" resultClass="java.lang.Integer">
+   	 	SELECT
+            COUNT(*)
+        FROM
+            T_MIN_DATA SDATA
+        WHERE
+            FACT_CODE = #factCode#
+            AND BRANCH_NO = #branchNo#
+            AND ITEM_CODE = #itemCode#
+            AND MIN_TIME &gt; TO_CHAR((SYSDATE-(34/24/60)), 'YYYYMMDDHH24MI')
+            AND TO_NUMBER(MIN_VL) &lt; #lawHval#
+    </statement>
+    
+    
+    <update id="alertSchDAO.updateVocs" parameterClass="alertVocsVO">
+    	UPDATE
+    		T_WARNING_SEND_DATA
+    	SET
+    		ITEM_CODE = 'AVOCS'
+    	WHERE
+    		FACT_CODE = #factCode#
+    		AND BRANCH_NO = #branchNo#
+    		AND WARNING_TYPE = 'AVOCS'
+    		AND ITEM_CODE != 'AVOCS'
+    </update>
+    
+    
+    <statement id="alertSchDAO.getIsVocsFirst" parameterClass="alertVocsVO" resultClass="java.lang.Integer">
+    	SELECT
+		    COUNT(*)
+		FROM
+		    T_WARNING_SEND_DATA SDATA
+		WHERE
+			ITEM_CODE = 'FIRST'
+		    AND WARNING_TYPE='AVOCS'
+		    AND MIN_TIME &gt; TO_CHAR((SYSDATE-(60/24/60/60*35)), 'YYYYMMDDHH24MI')
+		    AND FACT_CODE = #factCode#
+		    AND BRANCH_NO = #branchNo#
+    </statement>
+    
+    <statement id="alertSchDAO.getNorecvFirstList" resultClass="alertStepVO">
+		<![CDATA[
+		SELECT T1.FACT_CODE factCode, 
+		       T5.FACT_NAME factName, 
+		       T1.BRANCH_NO branchNo, 
+		       T5.BRANCH_NAME branchName, 
+		       DECODE(SUBSTR(T5.RIVER_DIV, 3, 1), '1', '한강', '2', '낙동강', '3', '금강', '4', '영산강') AS riverDiv 
+		  FROM 
+		       (SELECT FACT_CODE, 
+		              BRANCH_NO 
+		         FROM T_FACT_BRANCH_INFO 
+		        WHERE FACT_CODE IN 
+		              (SELECT UNIQUE B.FACT_CODE 
+		                FROM T_WQ_STD A, 
+		                     T_FACT_INFO B 
+		               WHERE A.FACT_CODE = B.FACT_CODE 
+		                     AND A.USE_FLAG = 'Y' 
+		                     AND B.SYS_KIND = 'U' 
+		              ) 
+		              AND BRANCH_USE_FLAG = 'Y' 
+		       ) T1, 
+		       (SELECT 
+		              /*+ INDEX_DESC(T_MIN_DATA IX_MIN_DATA_04) */ 
+		              FACT_CODE, 
+		              BRANCH_NO, 
+		              MAX(MIN_TIME) MIN_TIME 
+		         FROM T_MIN_DATA 
+		        WHERE ( 
+		                  FACT_CODE, 
+		                  BRANCH_NO 
+		              ) 
+		              IN 
+		              (SELECT FACT_CODE, 
+		                     BRANCH_NO 
+		                FROM T_FACT_BRANCH_INFO 
+		               WHERE FACT_CODE IN 
+		                     (SELECT UNIQUE B.FACT_CODE 
+		                       FROM T_WQ_STD A, 
+		                            T_FACT_INFO B 
+		                      WHERE A.FACT_CODE = B.FACT_CODE 
+		                            AND A.USE_FLAG = 'Y' 
+		                            AND B.SYS_KIND = 'U' 
+		                     ) 
+		                     AND BRANCH_USE_FLAG = 'Y' 
+		              ) 
+		              AND MIN_TIME >= 
+		              (SELECT 
+		                     CASE 
+		                         WHEN SUBSTR(TO_CHAR(SYSDATE - 60/24/60/60 * 30, 'YYYYMMDDHH24MI'), 12, 1) < 5 
+		                         THEN SUBSTR(TO_CHAR(SYSDATE - 60/24/60/60 * 30, 'YYYYMMDDHH24MI'), 1, 11) || '0' 
+		                         ELSE SUBSTR(TO_CHAR(SYSDATE - 60/24/60/60 * 30, 'YYYYMMDDHH24MI'), 1, 11) || '5' 
+		                     END NOW 
+		                FROM DUAL
+		              ) 
+		        GROUP BY FACT_CODE, 
+		              BRANCH_NO 
+		       ) T2, 
+		       (SELECT T3.FACT_CODE, 
+		              T4.BRANCH_NO, 
+		              AREA.REG_NAME AS FACT_NAME, 
+		              T4.BRANCH_NAME||'-'||T4.BRANCH_NO BRANCH_NAME, 
+		              T3.RIVER_DIV 
+		         FROM T_FACT_INFO T3, 
+		              T_FACT_BRANCH_INFO T4, 
+		              T_WEATHER_AREA AREA 
+		        WHERE T3.FACT_CODE = T4.FACT_CODE 
+		              AND T3.FACT_CODE = AREA.FACT_CODE 
+		              AND T4.BRANCH_NO = AREA.BRANCH_NO 
+		              AND 
+		              ( 
+		                  T3.FACT_CODE, 
+		                  T4.BRANCH_NO 
+		              ) 
+		              IN 
+		              (SELECT FACT_CODE, 
+		                     BRANCH_NO 
+		                FROM T_FACT_BRANCH_INFO 
+		               WHERE FACT_CODE IN 
+		                     (SELECT UNIQUE B.FACT_CODE 
+		                       FROM T_WQ_STD A, 
+		                            T_FACT_INFO B 
+		                      WHERE A.FACT_CODE = B.FACT_CODE 
+		                            AND A.USE_FLAG = 'Y' 
+		                            AND B.SYS_KIND = 'U' 
+		                     ) 
+		                     AND BRANCH_USE_FLAG = 'Y' 
+		              ) 
+		       ) T5 
+		 WHERE T1.FACT_CODE = T2.FACT_CODE(+) 
+		       AND T1.BRANCH_NO = T2.BRANCH_NO(+) 
+		       AND T1.FACT_CODE = T5.FACT_CODE 
+		       AND T1.BRANCH_NO = T5.BRANCH_NO 
+		       AND T2.MIN_TIME IS NULL 
+		ORDER BY T5.FACT_NAME, 
+		       T1.BRANCH_NO
+		]]>
+    </statement>
+
+    <statement id="alertSchDAO.getNorecvFirstList_old" resultClass="alertStepVO">
+    	SELECT 
+						FACT_CODE_REAL factCode,
+                        FACT_NAME factName,
+                        BRANCH_NO branchNo,
+                        BRANCH_NAME branchName,
+                        MIN_TIME minTime,
+                        RIVER_NAME riverDiv
+          FROM ( /* 1시간 동안 수신된게 없는 놈들의 마지막 수신시간... */
+                SELECT FACT_CODE,
+                       MIN_TIME
+                FROM
+                 (SELECT A.FACT_CODE,
+                         (SELECT /*+ INDEX_DESC(B  IX_MIN_DATA_02) */ MIN_TIME
+                          FROM T_MIN_DATA B
+                          WHERE B.FACT_CODE = A.FACT_CODE
+                            AND ROWNUM = 1 ) MIN_TIME
+                  FROM T_FACT_INFO A)
+                  WHERE 
+                  <![CDATA[ MIN_TIME < TO_CHAR(SYSDATE -60/24/60/60 * 19, 'YYYYMMDDHH24MI')) N1, ]]>
+               ( /* 1 시간 동안 수신된게 없는... */
+                SELECT F1.FACT_CODE FACT_CODE_REAL,
+                        D1.FACT_CODE,
+                        AREA.REG_NAME AS FACT_NAME,
+                        D2.BRANCH_NO,
+                        D2.BRANCH_NAME || '-' || D2.BRANCH_NO BRANCH_NAME,
+                        F1.FACT_MGR,
+                        F1.FACT_TEL_NO,
+                        F1.FACT_ADDR,
+                        F1.RIVER_DIV,
+                        DECODE(SUBSTR(F1.RIVER_DIV, 3, 1),
+                               '1',
+                               '한강',
+                               '2',
+                               '낙동강',
+                               '3',
+                               '금강',
+                               '4',
+                               '영산강') AS RIVER_NAME,
+                        F1.SYS_KIND
+                  FROM T_FACT_INFO F1,
+                        T_FACT_BRANCH_INFO D2,
+                        (
+                          SELECT FACT_CODE, BRANCH_NO, ITEM_CODE, MIN_TIME
+                          FROM
+                             (
+                             <![CDATA[
+                             SELECT A.FACT_CODE,
+                                     A.BRANCH_NO,
+                                     A.ITEM_CODE,
+                                     (SELECT /*+ INDEX_DESC(B  IX_MIN_DATA_03 ) */
+                                             MIN_TIME
+                                      FROM T_MIN_DATA B
+                                      WHERE B.ITEM_CODE = A.ITEM_CODE
+                                        AND B.FACT_CODE = A.FACT_CODE
+                                        AND B.BRANCH_NO = A.BRANCH_NO
+                                        AND MIN_TIME >=
+                                            (SELECT CASE
+                                                      WHEN SUBSTR(TO_CHAR(SYSDATE - 60/24/60/60 * 19,
+                                                                          'YYYYMMDDHH24MI'),
+                                                                  12,
+                                                                  1) < 5 THEN
+                                                       SUBSTR(TO_CHAR(SYSDATE - 60/24/60/60 * 19,
+                                                                      'YYYYMMDDHH24MI'),
+                                                              1,
+                                                              11) || '0'
+                                                      ELSE
+                                                       SUBSTR(TO_CHAR(SYSDATE - 60/24/60/60 * 19,
+                                                                      'YYYYMMDDHH24MI'),
+                                                              1,
+                                                              11) || '5'
+                                                    END NOW
+                                               FROM DUAL)
+                                          AND ROWNUM = 1) MIN_TIME
+                              FROM  T_FACT_MEASU_ITEM A
+                              WHERE ITEM_USE_FLAG = 'Y'
+                             ]]>
+                              )
+                          WHERE MIN_TIME IS NOT NULL
+                        ) D1,
+                        T_WEATHER_AREA AREA
+                 WHERE D2.FACT_CODE = D1.FACT_CODE(+)
+                   AND D2.BRANCH_NO = D1.BRANCH_NO(+)
+                   AND D2.FACT_CODE = AREA.FACT_CODE(+)
+                   AND D2.BRANCH_NO = AREA.BRANCH_NO(+)
+                   AND F1.FACT_CODE = D2.FACT_CODE
+                   AND D2.BRANCH_USE_FLAG = 'Y'
+                   AND F1.FACT_USE_FLAG = 'Y'
+                   AND F1.SYS_KIND = 'U') A1
+         WHERE A1.FACT_CODE IS NULL
+           AND A1.FACT_CODE_REAL = N1.FACT_CODE(+)
+         ORDER BY FACT_NAME, BRANCH_NO
+    </statement>
+    
+    <statement id="alertSchDAO.getNorecvList" resultClass="alertStepVO">
+		SELECT A.FACT_CODE factCode, 
+		       A.BRANCH_NAME factName,
+		       A.BRANCH_NO branchNo, 
+		       A.BRANCH_NAME || '-' || A.BRANCH_NO branchName,
+		       TO_CHAR(TO_DATE(A.MIN_TIME,'YYYYMMDDHH24MISS'),'YYYY/MM/DD HH24:MI') minTime,
+		       (SELECT E.COMMON_CODE_NAME FROM T_COMMON_CODE E WHERE E.COMMON_CODE_CATEGORY = '01' AND E.COMMON_CODE = A.RIVER_DIV) riverDiv
+		  FROM 
+		       (SELECT A.FACT_CODE, 
+		              B.BRANCH_NO,
+		              B.BRANCH_NAME,
+		              A.RIVER_DIV, 
+		              (SELECT 
+		                     /*+ INDEX_DESC(C  IX_MIN_DATA_04) */ 
+		                     MIN_TIME 
+		                FROM T_MIN_DATA C
+		               WHERE C.FACT_CODE = A.FACT_CODE 
+		               AND C.BRANCH_NO = B.BRANCH_NO
+		                     AND ROWNUM = 1 
+		              ) MIN_TIME 
+		         FROM T_FACT_INFO A, 
+		              T_FACT_BRANCH_INFO B 
+		        WHERE A.FACT_USE_FLAG = 'Y' 
+		              AND A.FACT_CODE = B.FACT_CODE 
+		              AND B.BRANCH_USE_FLAG = 'Y' 
+		              AND A.SYS_KIND = 'U' 
+		       ) A
+		 WHERE A.MIN_TIME &lt;= TO_CHAR(SYSDATE -60/24/60/60 * 30, 'YYYYMMDDHH24MI');
+	</statement>
+	
+	<!-- Select Minute Data -->
+    <statement id="alertSchDAO.getRecvList" resultClass="alertStepVO">
+       SELECT 
+	        factCode       as factCode
+	        , branchNo        as branchNo
+	     FROM
+	     (
+	        SELECT 
+	            FACT_CODE factCode
+	            , BRANCH_NO branchNo
+	            , MIN_TIME minTime
+	            , ITEM_CODE itemCode
+	            , MIN_VL minVl
+	        FROM T_MIN_DATA 
+	        WHERE 
+	            FACT_CODE  IN (
+	                    SELECT  unique  B.FACT_CODE 
+	                       FROM T_WQ_STD A,T_FACT_INFO B
+	                    WHERE A.FACT_CODE = B.FACT_CODE
+	                    AND A.USE_FLAG = 'Y' AND B.SYS_KIND = 'U'
+	            )
+	            and 
+	            MIN_TIME &gt;= TO_CHAR((SYSDATE - 60/24/60/60 * 30), 'YYYYMMDDHH24MI')
+	       )
+	        GROUP BY factCode, branchNo
+    </statement>
+    
+    <statement id="alertSchDAO.getVocsData" resultClass="alertVocsVO">
+		SELECT 
+	        FACT_CODE        as factCode
+	        , BRANCH_NO        as branchNo
+	        , MIN_TIME        as minTime
+	         , FACT_NAME AS factName
+	        , SUM(CASE ITEM_CODE WHEN 'VOC01' THEN MIN_VL ELSE 0 END) as voc1
+	        , SUM(CASE ITEM_CODE WHEN 'VOC02' THEN MIN_VL ELSE 0 END) as voc2
+	        , SUM(CASE ITEM_CODE WHEN 'VOC03' THEN MIN_VL ELSE 0 END) as voc3
+	        , SUM(CASE ITEM_CODE WHEN 'VOC04' THEN MIN_VL ELSE 0 END) as voc4
+	        , SUM(CASE ITEM_CODE WHEN 'VOC05' THEN MIN_VL ELSE 0 END) as voc5
+	        , SUM(CASE ITEM_CODE WHEN 'VOC06' THEN MIN_VL ELSE 0 END) as voc6
+	        , SUM(CASE ITEM_CODE WHEN 'VOC07' THEN MIN_VL ELSE 0 END) as voc7
+	        , SUM(CASE ITEM_CODE WHEN 'VOC08' THEN MIN_VL ELSE 0 END) as voc8
+	        , SUM(CASE ITEM_CODE WHEN 'VOC09' THEN MIN_VL ELSE 0 END) as voc9
+	        , SUM(CASE ITEM_CODE WHEN 'VOC10' THEN MIN_VL ELSE 0 END) as voc10
+	        , SUM(CASE ITEM_CODE WHEN 'VOC11' THEN MIN_VL ELSE 0 END) as voc11
+	        , SUM(CASE ITEM_CODE WHEN 'VOC12' THEN MIN_VL ELSE 0 END) as voc12
+	        , SUM(CASE ITEM_CODE WHEN 'VOC13' THEN MIN_VL ELSE 0 END) as voc13
+	        , SUM(CASE ITEM_CODE WHEN 'VOC14' THEN MIN_VL ELSE 0 END) as voc14
+	        , SUM(CASE ITEM_CODE WHEN 'VOC15' THEN MIN_VL ELSE 0 END) as voc15
+	        , SUM(CASE ITEM_CODE WHEN 'VOC16' THEN MIN_VL ELSE 0 END) as voc16
+	    FROM 
+	        (
+	        SELECT 
+	            D.FACT_CODE 
+	            , D.BRANCH_NO
+	            , D.MIN_TIME
+	            , D.ITEM_CODE
+	            , D.MIN_VL
+	            , F.FACT_NAME
+	        FROM T_MIN_DATA D,
+	                 T_FACT_INFO F
+	        WHERE
+	            MIN_TIME &gt;= TO_CHAR((SYSDATE - 60/24/60/60 * 14), 'YYYYMMDDHH24MI')
+	            AND D.FACT_CODE = F.FACT_CODE
+	            AND F.SYS_KIND = 'A' 
+	            AND D.MIN_ST = '00'
+	        )
+	    GROUP BY FACT_NAME, FACT_CODE, BRANCH_NO, MIN_TIME
+	    ORDER BY FACT_CODE, BRANCH_NO, MIN_TIME
+    </statement>
+    
+    <statement id="alertSchDAO.getVocsECDLaw" parameterClass="alertVocsVO" resultClass="alertVocsVO">
+   		SELECT  
+            FACT_CODE,
+            BRANCH_NO,
+            NVL(SUM(DECODE(ECD_ITEM_CODE, 'VOC11' , STD_HVAL)),0) AS voc11Hval,
+            SUM(DECODE(ECD_ITEM_CODE, 'VOC12' , STD_HVAL)) AS voc12Hval,
+            SUM(DECODE(ECD_ITEM_CODE, 'VOC13' , STD_HVAL)) AS voc13Hval,
+            SUM(DECODE(ECD_ITEM_CODE, 'VOC14' , STD_HVAL)) AS voc14Hval,
+            SUM(DECODE(ECD_ITEM_CODE, 'VOC15' , STD_HVAL)) AS voc15Hval,
+            MAX(DECODE(ECD_ITEM_CODE,'VOC11', USE_FLAG)) AS voc11Flag,
+            MAX(DECODE(ECD_ITEM_CODE,'VOC12', USE_FLAG)) AS voc12Flag,
+            MAX(DECODE(ECD_ITEM_CODE,'VOC13', USE_FLAG)) AS voc13Flag,
+            MAX(DECODE(ECD_ITEM_CODE,'VOC14', USE_FLAG)) AS voc14Flag,
+            MAX(DECODE(ECD_ITEM_CODE,'VOC15', USE_FLAG)) AS voc15Flag
+        FROM
+        (
+            SELECT 
+                FI.FACT_CODE        
+                , FI.BRANCH_NO     
+                , FI.ECD_ITEM_CODE      
+                , NVL(FI.STD_HVAL,0)  AS STD_HVAL
+                , FI.USE_FLAG    
+            FROM 
+                T_WQ_STD_SUB FI
+            WHERE 
+            FI.FACT_CODE = #factCode#
+            AND FI.BRANCH_NO = #branchNo#
+            AND FI.FID_ITEM_CODE = #fidItemCode#
+         )
+         GROUP BY 
+            FACT_CODE, BRANCH_NO
+    </statement>
+    
+    
+    <statement id="alertSchDAO.getVocsLaw" parameterClass="alertVocsVO" resultClass="alertVocsVO">
+    	 SELECT  
+            FACT_CODE,
+            BRANCH_NO,
+            NVL(SUM(DECODE(ITEM_CODE, 'VOC01' , STD_HVAL)),0) AS voc1Hval,
+            SUM(DECODE(ITEM_CODE,'VOC01' , STD_LVAL)) AS voc1Lval,
+            SUM(DECODE(ITEM_CODE, 'VOC02' , STD_HVAL)) AS voc2Hval,
+            SUM(DECODE(ITEM_CODE,'VOC02' , STD_LVAL)) AS voc2Lval,
+            SUM(DECODE(ITEM_CODE, 'VOC03' , STD_HVAL)) AS voc3Hval,
+            SUM(DECODE(ITEM_CODE,'VOC03' , STD_LVAL)) AS voc3Lval,
+            SUM(DECODE(ITEM_CODE, 'VOC04' , STD_HVAL)) AS voc4Hval,
+            SUM(DECODE(ITEM_CODE,'VOC04' , STD_LVAL)) AS voc4Lval,
+            SUM(DECODE(ITEM_CODE, 'VOC05' , STD_HVAL)) AS voc5Hval,
+            SUM(DECODE(ITEM_CODE,'VOC05' , STD_LVAL)) AS voc5Lval,
+            SUM(DECODE(ITEM_CODE, 'VOC06' , STD_HVAL)) AS voc6Hval,
+            SUM(DECODE(ITEM_CODE,'VOC06' , STD_LVAL)) AS voc6Lval,
+            SUM(DECODE(ITEM_CODE, 'VOC07' , STD_HVAL)) AS voc7Hval,
+            SUM(DECODE(ITEM_CODE,'VOC07' , STD_LVAL)) AS voc7Lval,
+            SUM(DECODE(ITEM_CODE, 'VOC08' , STD_HVAL)) AS voc8Hval,
+            SUM(DECODE(ITEM_CODE,'VOC08' , STD_LVAL)) AS voc8Lval,
+            SUM(DECODE(ITEM_CODE, 'VOC09' , STD_HVAL)) AS voc9Hval,
+            SUM(DECODE(ITEM_CODE,'VOC09' , STD_LVAL)) AS voc9Lval,
+            SUM(DECODE(ITEM_CODE, 'VOC10' , STD_HVAL)) AS voc10Hval,
+            SUM(DECODE(ITEM_CODE,'VOC16' , STD_HVAL)) AS voc16Hval,
+            MAX(DECODE(ITEM_CODE,'VOC01', USE_FLAG)) AS voc1Flag,
+            MAX(DECODE(ITEM_CODE,'VOC02', USE_FLAG)) AS voc2Flag,
+            MAX(DECODE(ITEM_CODE,'VOC03', USE_FLAG)) AS voc3Flag,
+            MAX(DECODE(ITEM_CODE,'VOC04', USE_FLAG)) AS voc4Flag,
+            MAX(DECODE(ITEM_CODE,'VOC05', USE_FLAG)) AS voc5Flag,
+            MAX(DECODE(ITEM_CODE,'VOC06', USE_FLAG)) AS voc6Flag,
+            MAX(DECODE(ITEM_CODE,'VOC07', USE_FLAG)) AS voc7Flag,
+            MAX(DECODE(ITEM_CODE,'VOC08', USE_FLAG)) AS voc8Flag,
+            MAX(DECODE(ITEM_CODE,'VOC09', USE_FLAG)) AS voc9Flag,
+            MAX(DECODE(ITEM_CODE,'VOC10', USE_FLAG)) AS voc10Flag,
+            MAX(DECODE(ITEM_CODE,'VOC16', USE_FLAG)) AS voc16Flag
+        FROM
+        (
+            SELECT 
+                FI.FACT_CODE        
+                , FI.BRANCH_NO     
+                , FI.ITEM_CODE      
+                , NVL(FL.STD_HVAL,0)  AS STD_HVAL
+                , NVL(FL.STD_LVAL, 0)  AS STD_LVAL
+                , FL.USE_FLAG    
+            FROM 
+                T_WQ_STD FL, 
+                T_FACT_MEASU_ITEM FI
+            WHERE FL.FACT_CODE(+) = FI.FACT_CODE
+            AND FL.BRANCH_NO(+) = FI.BRANCH_NO
+            AND FL.ITEM_CODE(+) = FI.ITEM_CODE        
+            AND FI.FACT_CODE = #factCode#
+            AND FI.BRANCH_NO = #branchNo#
+            AND FI.ITEM_CODE IN ('VOC01','VOC02','VOC03','VOC04','VOC05','VOC06','VOC07','VOC08','VOC09','VOC10', 'VOC16')
+         )
+         GROUP BY 
+            FACT_CODE, BRANCH_NO
+    </statement>
+     
+   
+
+	<!--  데이터미수신 목록 카운트 -->
+     <statement id="alertSchDAO.getIsNorecvFirstUsn_bak" parameterClass="alertStepVO" resultClass="java.lang.Integer">
+    	SELECT
+		    COUNT(*)
+		FROM
+		    T_WARNING_SEND_DATA SDATA
+		WHERE
+			ITEM_CODE IN ('NRECV', '30MIN')
+		    AND WARNING_TYPE='NRECV'
+		    AND MIN_TIME &gt; TO_CHAR((SYSDATE-(60/24/60/60 *  #alertDelayTime#)), 'YYYYMMDDHH24MI')
+		    AND FACT_CODE = #factCode#
+		    AND BRANCH_NO = #branchNo#
+    </statement>
+
+	<!--  데이터미수신 목록 카운트 -->
+     <statement id="alertSchDAO.getIsNorecvFirstUsn" parameterClass="alertStepVO" resultClass="java.lang.Integer">
+    	SELECT
+		    COUNT(*)
+		FROM
+		    T_MIN_DATA
+		WHERE
+		    FACT_CODE = #factCode#
+		    AND BRANCH_NO = #branchNo#
+		    AND MIN_TIME &gt; TO_CHAR((SYSDATE-(60/24/60/60 *  #alertDelayTime#)), 'YYYYMMDDHH24MI')
+    </statement>    
+    
+    
+    
+    <!-- 사용중인 IPUSN 목록 --> 
+    <statement id="alertSchDAO.getIpUsnList"  parameterClass="IpUsnVO" resultClass="IpUsnVO">
+	SELECT *
+	FROM
+	(SELECT ROW_NUMBER() OVER(ORDER BY NVL(C.STATUS_FLAG, 'A') DESC, A.FACT_CODE,
+	B.BRANCH_NO ASC) RN ,
+	A.RIVER_DIV,
+	A.FACT_NAME,
+ 	B.BRANCH_NAME || '-' || B.BRANCH_NO BRANCH_NAME, 
+	A.FACT_CODE,
+	B.BRANCH_NO,
+	(SELECT TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI') FROM DUAL) MIN_TIME,
+	B.GPS_DIST,
+	
+	NVL(B.LATITUDE, '0') LATITUDE1 ,
+	NVL(B.LONGITUDE, '0') LONGITUDE1 ,
+	NVL(B.DEVICE_ST, '0') DEVICE_ST ,
+	NVL(C.LATITUDE, '0') LATITUDE2 ,
+	NVL(C.LONGITUDE, '0') LONGITUDE2,
+	
+	C.INPUT_TIME
+	
+	FROM T_FACT_INFO A
+	JOIN T_FACT_BRANCH_INFO B
+	ON A.FACT_CODE = B.FACT_CODE
+	AND A.FACT_CODE LIKE '99%'
+	AND B.BRANCH_USE_FLAG = 'Y'
+	LEFT JOIN
+	(SELECT *
+	FROM
+	(SELECT FACT_CODE,
+	BRANCH_NO,
+	LATITUDE,
+	LONGITUDE,
+	INPUT_TIME,
+	STATUS_FLAG ,
+	ROW_NUMBER() OVER (PARTITION BY FACT_CODE, BRANCH_NO ORDER BY INPUT_TIME DESC) RN
+	FROM T_IPUSN_GPS
+	WHERE INPUT_TIME BETWEEN TO_CHAR(SYSDATE, 'YYYYMMDD')||'0000' AND
+	TO_CHAR(SYSDATE+1, 'YYYYMMDD')||'0000'
+	)
+	WHERE RN = 1
+	) C
+	ON B.FACT_CODE = C.FACT_CODE
+	AND B.BRANCH_NO = C.BRANCH_NO
+	AND A.FACT_USE_FLAG = 'Y'
+	) 
+ORDER BY fact_code ,branch_no
+	</statement>
+	
+    <statement id="alertSchDAO.getSmsUsnSettingCnt" parameterClass="smsBranchVo" resultClass="java.lang.Integer">
+			SELECT 
+				count(*)
+			FROM 
+				T_SMS_BRANCH
+			WHERE 
+				SYS_KIND = #sys_kind#
+				AND FACT_CODE = #fact_code#
+				AND BRANCH_NO = #branch_no#
+				AND DET_CODE = #det_code#
+				
+				
+	</statement>
+	
+	
+	
+	 <statement id="alertSchDAO.getSmsUsnSetting" parameterClass="smsBranchVo"	resultClass="smsBranchVO">
+			SELECT 
+				sys_kind,
+				det_code,
+				fact_code,
+				branch_no,
+				not_send_from,
+				not_send_to,
+				chk_delay,
+				chk_time,
+				chk_loc,
+				not_rcv,
+				same_val,
+				send_use_flag,
+				delay_use_flag,
+				not_rcv_use_flag,
+				loc_use_flag,
+				time_use_flag,
+				send_detail_explan,
+				delay_detail_explan,
+				not_rcv_detail_explan,
+				loc_detail_explan,
+				time_detail_explan, 
+				'B' gubun
+			FROM 
+				T_SMS_BRANCH
+			WHERE 
+				SYS_KIND = #sys_kind#
+				AND FACT_CODE = #fact_code#
+				AND BRANCH_NO = #branch_no#
+				AND DET_CODE = #det_code#
+	</statement>
+	
+	<!--  최근 마지막 수신 자료 과거 1년전 데이터까지 조회 -->
+	<statement id="alertSchDAO.getLastRecvMinTime" parameterClass="alertStepVO" resultClass="String">
+	    <![CDATA[
+		SELECT
+		      /*+ INDEX_DESC(T_MIN_DATA IX_MIN_DATA_04) */
+		      MAX(MIN_TIME) MIN_TIME
+		 FROM T_MIN_DATA
+		WHERE FACT_CODE = #factCode#
+		      AND BRANCH_NO = #branchNo#
+		      AND MIN_TIME > TO_CHAR(SYSDATE-365,'YYYYMMDDHH24MI')
+		GROUP BY FACT_CODE,
+		      BRANCH_NO
+		]]>
+	</statement>
+      
+</sqlMap>

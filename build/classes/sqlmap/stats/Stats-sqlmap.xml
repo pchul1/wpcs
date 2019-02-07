@@ -1,0 +1,3650 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="statsDAO">
+
+	<typeAlias alias="statsSearchVO"	type="daewooInfo.stats.bean.StatsSearchVO"/>
+	<typeAlias alias="statsVO"			type="daewooInfo.stats.bean.StatsVO"/>
+	<typeAlias alias="statsAnalysisVO"	type="daewooInfo.stats.bean.StatsAnalysisVO"/>
+	<typeAlias alias="statsPreventVO"	type="daewooInfo.stats.bean.StatsPreventVO"/>
+	<typeAlias alias="adActSearchVO"	type="daewooInfo.stats.bean.AdActSearchVO"/>
+	
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+
+	<statement id="getSectionStatsList" parameterClass="statsSearchVO" resultClass="statsVO">
+	<![CDATA[
+		SELECT DECODE ( (SELECT SUBSTR(A.RIVER_DIV,2,2)
+						 FROM T_FACT_INFO A
+						 WHERE A.FACT_CODE = M_DATA.FACT_CODE),
+						'01', '한강',
+						'02', '낙동강',
+						'03', '금강',
+						'04', '영산강',
+						'한강')
+				  AS riverName,
+				M_DATA.FACT_CODE AS factCode,
+				(SELECT FACT_NAME
+				  FROM T_FACT_INFO
+				 WHERE FACT_CODE = M_DATA.FACT_CODE)
+				  AS factName,
+				M_DATA.BRANCH_NO AS branchNo,
+				M_DATA.ITEM_CODE AS itemCode,
+				(SELECT ITEM_NAME
+				  FROM T_ITEM_INFO
+				 WHERE ITEM_CODE = M_DATA.ITEM_CODE)
+				  AS itemName,
+				M_DATA.ITEM_CODE AS itemCode,
+				(SELECT ITEM_SEQ
+				  FROM T_ITEM_INFO
+				 WHERE ITEM_CODE = M_DATA.ITEM_CODE)
+				  AS itemOrder,				  
+				DECODE (
+				  $gubun$,
+				  1,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2),
+				  2,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2),
+				  3,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+				  || ' '
+				  || SUBSTR (M_DATA.MIN_TIME, 9, 2))
+				  AS timeFrm,
+				DECODE (
+				  $gubun$,
+				  1,
+				  SUBSTR (M_DATA.MIN_TIME, 5, 2),
+				  2,
+					 SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2),
+				  3,
+					 SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+				  || ':'
+				  || SUBSTR (M_DATA.MIN_TIME, 9, 2))
+				  AS time,
+				MIN_VL_AVG AS vlAvg,
+				TRIM (TO_CHAR (MIN_VL_AVG, '999,999,999,990.99')) AS vlStrAvg,
+				MIN_VL_MAX AS vlMax,
+				TRIM (TO_CHAR (MIN_VL_MAX, '999,999,999,990.99')) AS vlStrMax,
+				MIN_VL_MIN AS vlMin,
+				TRIM (TO_CHAR (MIN_VL_MIN, '999,999,999,990.99')) AS vlStrMin
+		  FROM (  SELECT FACT_CODE,
+						 BRANCH_NO,
+						 ITEM_CODE,
+						 SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 6, 2, 8, 3, 10))
+							AS MIN_TIME,
+						 NVL( ROUND (AVG (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_AVG,
+						 NVL( ROUND (MAX (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_MAX,
+						 NVL( ROUND (MIN (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_MIN
+					FROM T_MIN_DATA A
+					WHERE	 FACT_CODE = #factCode#
+	]]>					
+	<iterate prepend="AND ITEM_CODE IN" property="itemArr" open="(" close=")" conjunction=",">
+		#itemArr[]#
+	</iterate>
+	<![CDATA[
+						 AND BRANCH_NO = #branchNo#
+						 AND MIN_TIME LIKE #startDate# || '%'
+				GROUP BY FACT_CODE,
+						 BRANCH_NO,
+						 ITEM_CODE,
+						 SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 6, 2, 8, 3, 10))) M_DATA
+		ORDER BY factCode desc, branchNo, itemOrder, timeFrm
+	]]>
+	</statement>
+	
+	<statement id="getSectionStatsTmsList" parameterClass="statsSearchVO" resultClass="statsVO">
+	<![CDATA[
+		SELECT DECODE ( (SELECT SUBSTR(A.RIVER_DIV,2,2)
+						 FROM T_FACT_INFO A
+						 WHERE A.FACT_CODE = M_DATA.FACT_CODE),
+						'01', '한강',
+						'02', '낙동강',
+						'03', '금강',
+						'04', '영산강',
+						'한강')
+				  AS riverName,
+				M_DATA.FACT_CODE AS factCode,
+				(SELECT FACT_NAME
+				  FROM T_FACT_INFO
+				 WHERE FACT_CODE = M_DATA.FACT_CODE)
+				  AS factName,
+				M_DATA.WAST_NO AS branchNo,
+				M_DATA.ITEM_CODE AS itemCode,
+				(SELECT ITEM_NAME
+				  FROM T_ITEM_INFO
+				 WHERE ITEM_CODE = M_DATA.ITEM_CODE)
+				  AS itemName,
+				M_DATA.ITEM_CODE AS itemCode,
+				(SELECT ITEM_SEQ
+				  FROM T_ITEM_INFO
+				 WHERE ITEM_CODE = M_DATA.ITEM_CODE)
+				  AS itemOrder,				  
+				DECODE (
+				  $gubun$,
+				  1,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2),
+				  2,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2),
+				  3,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+				  || ' '
+				  || SUBSTR (M_DATA.MIN_TIME, 9, 2))
+				  AS timeFrm,
+				DECODE (
+				  $gubun$,
+				  1,
+				  SUBSTR (M_DATA.MIN_TIME, 5, 2),
+				  2,
+					 SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2),
+				  3,
+					 SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+				  || ':'
+				  || SUBSTR (M_DATA.MIN_TIME, 9, 2))
+				  AS time,
+				MIN_VL_AVG AS vlAvg,
+				TRIM (TO_CHAR (MIN_VL_AVG, '999,999,999,990.99')) AS vlStrAvg,
+				MIN_VL_MAX AS vlMax,
+				TRIM (TO_CHAR (MIN_VL_MAX, '999,999,999,990.99')) AS vlStrMax,
+				MIN_VL_MIN AS vlMin,
+				TRIM (TO_CHAR (MIN_VL_MIN, '999,999,999,990.99')) AS vlStrMin
+		  FROM (  SELECT FACT_CODE,
+						 WAST_NO,
+						 ITEM_CODE,
+						 SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 6, 2, 8, 3, 10))
+							AS MIN_TIME,
+						 NVL( ROUND (AVG (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_AVG,
+						 NVL( ROUND (MAX (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_MAX,
+						 NVL( ROUND (MIN (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_MIN
+					FROM WTMSC_MIN_REAL@TMS A
+					WHERE	 FACT_CODE = #factCode#
+	]]>					
+	<iterate prepend="AND ITEM_CODE IN" property="itemArr" open="(" close=")" conjunction=",">
+		#itemArr[]#
+	</iterate>
+	<![CDATA[
+						 AND WAST_NO = #branchNo#
+						 AND MIN_TIME LIKE #startDate# || '%'
+				GROUP BY FACT_CODE,
+						 WAST_NO,
+						 ITEM_CODE,
+						 SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 6, 2, 8, 3, 10))) M_DATA
+		ORDER BY factCode, branchNo, itemOrder, timeFrm
+	]]>
+	</statement>
+		
+	<statement id="getSectionStatsAutoList" parameterClass="statsSearchVO" resultClass="statsVO">
+	<![CDATA[
+		SELECT DECODE ( (SELECT SUBSTR(A.RIVER_DIV,2,2)
+						 FROM T_FACT_INFO A
+						 WHERE A.FACT_CODE = M_DATA.FACT_CODE),
+						'01', '한강',
+						'02', '낙동강',
+						'03', '금강',
+						'04', '영산강',
+						'한강')
+				  AS riverName,
+				M_DATA.FACT_CODE AS factCode,
+				(SELECT FACT_NAME
+				  FROM T_FACT_INFO
+				 WHERE FACT_CODE = M_DATA.FACT_CODE)
+				  AS factName,
+				M_DATA.BRANCH_NO AS branchNo,
+				M_DATA.ITEM_CODE AS itemCode,
+				(SELECT ITEM_NAME
+				  FROM T_ITEM
+				 WHERE ITEM_CODE = M_DATA.ITEM_CODE)
+				  AS itemName,
+				M_DATA.ITEM_CODE AS itemCode,
+				(SELECT ITEM_ORDER
+				  FROM T_ITEM
+				 WHERE ITEM_CODE = M_DATA.ITEM_CODE)
+				  AS itemOrder,
+				DECODE (
+				  $gubun$,
+				  1,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2),
+				  2,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2),
+				  3,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+				  || ' '
+				  || SUBSTR (M_DATA.MIN_TIME, 9, 2))
+				  AS timeFrm,
+				DECODE (
+				  $gubun$,
+				  1,
+				  SUBSTR (M_DATA.MIN_TIME, 5, 2),
+				  2,
+					 SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2),
+				  3,
+					 SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+				  || ':'
+				  || SUBSTR (M_DATA.MIN_TIME, 9, 2))
+				  AS time,
+				MIN_VL_AVG AS vlAvg,
+				TRIM (TO_CHAR (MIN_VL_AVG, '999,999,999,990.99')) AS vlStrAvg,
+				MIN_VL_MAX AS vlMax,
+				TRIM (TO_CHAR (MIN_VL_MAX, '999,999,999,990.99')) AS vlStrMax,
+				MIN_VL_MIN AS vlMin,
+				TRIM (TO_CHAR (MIN_VL_MIN, '999,999,999,990.99')) AS vlStrMin
+		  FROM (  SELECT FACT_CODE,
+						 BRANCH_NO,
+						 ITEM_CODE,
+						 SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 6, 2, 8, 3, 10))
+							AS MIN_TIME,
+						 NVL( ROUND (AVG (MIN_VL), 0), 0)
+							AS MIN_VL_AVG,
+						 NVL( ROUND (MAX (MIN_VL), 0), 0)
+							AS MIN_VL_MAX,
+						 NVL( ROUND (MIN (MIN_VL), 0), 0)
+							AS MIN_VL_MIN
+					FROM ( 
+						SELECT MSR_DATE AS MIN_TIME,
+								SITE_ID AS FACT_CODE,
+								1 AS BRANCH_NO,					
+								DECODE (LV, 1, 'M0100', 2, 'M0200', 3, 'M0300', 4, 'M0400', 5, 'M0500',
+									6, 'M0600', 7, 'M0700', 8, 'M0800', 9, 'M0900', 10, 'M1000',
+									11, 'M1100', 12, 'M1200', 13, 'M1300', 14, 'M1400', 15, 'M1500',
+									16, 'M1600', 17, 'M1700', 18, 'M1800', 19, 'M1900', 20, 'M2000',
+									21, 'M2100', 22, 'M2200', 23, 'M2300', 24, 'M2400', 25, 'M2500',
+									26, 'M2600', 27, 'M2700', 28, 'M2800', 29, 'M2900', 30, 'M3000',
+									31, 'M3100', 32, 'M3200', 33, 'M3300', 34, 'M3400', 35, 'M3500',
+									36, 'M3600', 37, 'M3700', 38, 'M3800', 39, 'M3900', 40, 'M4000',
+									41, 'M4100', 42, 'M4200', 43, 'M4300', 44, 'M4400', 45, 'M4500',
+									46, 'M4600', 47, 'M4700', 48, 'M4800', 49, 'M4900', 50, 'M5000',
+									51, 'M5100', 52, 'M5200', 53, 'M5300', 54, 'M5400', 55, 'M5500',
+									56, 'M5600', 57, 'M5700', 58, 'M5800', 59, 'M5900', 60, 'M6000',
+									61, 'M6100', 62, 'M6200', 63, 'M6300', 64, 'M6400', 65, 'M6500',
+									66, 'M6600', 67, 'M6700', 68, 'M6800', 69, 'M6900', 70, 'M7000'
+								) AS ITEM_CODE,
+								NVL(DECODE (LV, 1, M01, 2, M02, 3, M03, 4, M04, 5, M05,
+									6, M06, 7, M07, 8, M08, 9, M09, 10, M10,
+									11, M11, 12, M12, 13, M13, 14, M14, 15, M15,
+									16, M16, 17, M17, 18, M18, 19, M19, 20, M20,
+									21, M21, 22, M22, 23, M23, 24, M24, 25, M25,
+									26, M26, 27, M27, 28, M28, 29, M29, 30, M30,
+									31, M31, 32, M32, 33, M33, 34, M34, 35, M35,
+									36, M36, 37, M37, 38, M38, 39, M39, 40, M40,
+									41, M41, 42, M42, 43, M43, 44, M44, 45, M45,
+									46, M46, 47, M47, 48, M48, 49, M49, 50, M50,
+									51, M51, 52, M52, 53, M53, 54, M54, 55, M55,
+									56, M56, 57, M57, 58, M58, 59, M59, 60, M60,
+									61, M61, 62, M62, 63, M63, 64, M64, 65, M65,
+									66, M66, 67, M67, 68, M68, 69, M69, 70, M70
+								),0) AS MIN_VL
+						  FROM (	SELECT LEVEL LV
+									  FROM DUAL
+								CONNECT BY LEVEL <= 70), SCOTT.MSRDATA_TM
+						WHERE SITE_ID = #factCode#
+						AND MSR_DATE LIKE #startDate# || '%'
+					)A
+					WHERE	 FACT_CODE = #factCode#
+	]]>					
+	<iterate prepend="AND ITEM_CODE IN" property="itemArr" open="(" close=")" conjunction=",">
+		TRIM(#itemArr[]#)
+	</iterate>		 
+	<![CDATA[					
+						 AND BRANCH_NO = #branchNo#
+						 AND MIN_TIME LIKE #startDate# || '%'
+				GROUP BY FACT_CODE,
+						 BRANCH_NO,
+						 ITEM_CODE,
+						 SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 6, 2, 8, 3, 10))) M_DATA
+		ORDER BY factCode, branchNo, itemOrder, timeFrm
+	]]>					
+	</statement>		
+	
+	<statement id="getItemStatsList" parameterClass="statsSearchVO" resultClass="statsVO">
+	<![CDATA[
+		SELECT DECODE (SUBSTR(#riverId#,2,2),
+						'01', '한강',
+						'02', '낙동강',
+						'03', '금강',
+						'04', '영산강',
+						'한강')
+				  AS riverName,
+				M_DATA.FACT_CODE AS factCode,
+				(SELECT FACT_NAME
+				  FROM T_FACT_INFO
+				 WHERE FACT_CODE = M_DATA.FACT_CODE)
+				  AS factName,
+				M_DATA.BRANCH_NO AS branchNo,
+				M_DATA.ITEM_CODE AS itemCode,
+				(SELECT ITEM_NAME
+				  FROM T_ITEM_INFO
+				 WHERE ITEM_CODE = M_DATA.ITEM_CODE)
+				  AS itemName,
+				M_DATA.ITEM_CODE AS itemCode,
+				(SELECT ITEM_SEQ
+				  FROM T_ITEM_INFO
+				 WHERE ITEM_CODE = M_DATA.ITEM_CODE)
+				  AS itemOrder,
+				DECODE (
+				  $gubun$,
+				  1,
+				  SUBSTR (M_DATA.MIN_TIME, 1, 4),
+				  2,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2),
+				  3,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2))
+				  AS timeFrm,
+				DECODE (
+				  $gubun$,
+				  1,
+				  SUBSTR (M_DATA.MIN_TIME, 1, 4),
+				  2,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2),
+				  3,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || ':'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2))
+				  AS time,
+				MIN_VL_AVG AS vlAvg,
+				TRIM (TO_CHAR (MIN_VL_AVG, '999,999,999,990.99')) AS vlStrAvg,
+				MIN_VL_MAX AS vlMax,
+				TRIM (TO_CHAR (MIN_VL_MAX, '999,999,999,990.99')) AS vlStrMax,
+				MIN_VL_MIN AS vlMin,
+				TRIM (TO_CHAR (MIN_VL_MIN, '999,999,999,990.99')) AS vlStrMin
+		  FROM (  SELECT FACT_CODE,
+						 BRANCH_NO,
+						 ITEM_CODE,
+						 SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 4, 2, 6, 3, 8)) AS MIN_TIME,
+						 NVL( ROUND (AVG (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_AVG,
+						 NVL( ROUND (MAX (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_MAX,
+						 NVL( ROUND (MIN (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_MIN
+					FROM T_MIN_DATA A
+					WHERE FACT_CODE IN
+								(SELECT A.FACT_CODE
+								  FROM T_FACT_INFO A
+								 WHERE A.RIVER_DIV = #riverId#
+								 AND	A.SYS_KIND = #system# )
+						 AND ITEM_CODE = #itemCode#
+						 AND MIN_TIME LIKE #startDate# || '%'
+				GROUP BY FACT_CODE,
+						 BRANCH_NO,
+						 ITEM_CODE,
+						 SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 4, 2, 6, 3, 8))) M_DATA
+		ORDER BY factCode desc, branchNo, itemOrder, timeFrm
+	]]>					
+	</statement>	
+	
+	<statement id="getItemStatsTmsList" parameterClass="statsSearchVO" resultClass="statsVO">
+	<![CDATA[
+		SELECT DECODE (SUBSTR(#riverId#,2,2),
+						'01', '한강',
+						'02', '낙동강',
+						'03', '금강',
+						'04', '영산강',
+						'한강')
+				  AS riverName,
+				M_DATA.FACT_CODE AS factCode,
+				(SELECT FACT_NAME
+				  FROM T_FACT_INFO
+				 WHERE FACT_CODE = M_DATA.FACT_CODE)
+				  AS factName,
+				M_DATA.WAST_NO AS branchNo,
+				M_DATA.ITEM_CODE AS itemCode,
+				(SELECT ITEM_NAME
+				  FROM T_ITEM_INFO
+				 WHERE ITEM_CODE = M_DATA.ITEM_CODE)
+				  AS itemName,
+				M_DATA.ITEM_CODE AS itemCode,
+				(SELECT ITEM_SEQ
+				  FROM T_ITEM_INFO
+				 WHERE ITEM_CODE = M_DATA.ITEM_CODE)
+				  AS itemOrder,
+				DECODE (
+				  $gubun$,
+				  1,
+				  SUBSTR (M_DATA.MIN_TIME, 1, 4),
+				  2,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2),
+				  3,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2))
+				  AS timeFrm,
+				DECODE (
+				  $gubun$,
+				  1,
+				  SUBSTR (M_DATA.MIN_TIME, 1, 4),
+				  2,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2),
+				  3,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || ':'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2))
+				  AS time,
+				MIN_VL_AVG AS vlAvg,
+				TRIM (TO_CHAR (MIN_VL_AVG, '999,999,999,990.99')) AS vlStrAvg,
+				MIN_VL_MAX AS vlMax,
+				TRIM (TO_CHAR (MIN_VL_MAX, '999,999,999,990.99')) AS vlStrMax,
+				MIN_VL_MIN AS vlMin,
+				TRIM (TO_CHAR (MIN_VL_MIN, '999,999,999,990.99')) AS vlStrMin
+		  FROM (  SELECT FACT_CODE,
+						 WAST_NO,
+						 ITEM_CODE,
+						 SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 4, 2, 6, 3, 8)) AS MIN_TIME,
+						 NVL( ROUND (AVG (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_AVG,
+						 NVL( ROUND (MAX (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_MAX,
+						 NVL( ROUND (MIN (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_MIN
+					FROM WTMSC_MIN_REAL@TMS A
+					WHERE FACT_CODE IN
+								(SELECT A.FACT_CODE
+								  FROM T_FACT_INFO A
+								 WHERE A.RIVER_DIV = #riverId#)
+						 AND ITEM_CODE = #itemCode#
+						 AND MIN_TIME LIKE #startDate# || '%'
+				GROUP BY FACT_CODE,
+						 WAST_NO,
+						 ITEM_CODE,
+						 SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 4, 2, 6, 3, 8))) M_DATA
+		ORDER BY factCode, branchNo, itemOrder, timeFrm
+	]]>					
+	</statement>		
+	
+	<statement id="getItemStatsAutoList" parameterClass="statsSearchVO" resultClass="statsVO">
+	<![CDATA[
+		SELECT DECODE (SUBSTR(#riverId#,2,2),
+						'01', '한강',
+						'02', '낙동강',
+						'03', '금강',
+						'04', '영산강',
+						'한강')
+				  AS riverName,
+				M_DATA.FACT_CODE AS factCode,
+				(SELECT FACT_NAME
+				  FROM T_FACT_INFO
+				 WHERE FACT_CODE = M_DATA.FACT_CODE)
+				  AS factName,
+				M_DATA.BRANCH_NO AS branchNo,
+				M_DATA.ITEM_CODE AS itemCode,
+				(SELECT ITEM_NAME
+				  FROM T_ITEM
+				 WHERE ITEM_CODE = M_DATA.ITEM_CODE)
+				  AS itemName,
+				M_DATA.ITEM_CODE AS itemCode,
+				(SELECT ITEM_ORDER
+				  FROM T_ITEM
+				 WHERE ITEM_CODE = M_DATA.ITEM_CODE)
+				  AS itemOrder,
+				DECODE (
+				  $gubun$,
+				  1,
+				  SUBSTR (M_DATA.MIN_TIME, 1, 4),
+				  2,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2),
+				  3,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2))
+				  AS timeFrm,
+				DECODE (
+				  $gubun$,
+				  1,
+				  SUBSTR (M_DATA.MIN_TIME, 1, 4),
+				  2,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2),
+				  3,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || ':'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2))
+				  AS time,
+				MIN_VL_AVG AS vlAvg,
+				TRIM (TO_CHAR (MIN_VL_AVG, '999,999,999,990.99')) AS vlStrAvg,
+				MIN_VL_MAX AS vlMax,
+				TRIM (TO_CHAR (MIN_VL_MAX, '999,999,999,990.99')) AS vlStrMax,
+				MIN_VL_MIN AS vlMin,
+				TRIM (TO_CHAR (MIN_VL_MIN, '999,999,999,990.99')) AS vlStrMin
+		  FROM (  SELECT FACT_CODE,
+						 BRANCH_NO,
+						 ITEM_CODE,
+						 SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 4, 2, 6, 3, 8)) AS MIN_TIME,
+						 NVL( ROUND (AVG (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_AVG,
+						 NVL( ROUND (MAX (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_MAX,
+						 NVL( ROUND (MIN (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_MIN
+					FROM (
+						SELECT MSR_DATE AS MIN_TIME,
+								SITE_ID AS FACT_CODE,
+								1 AS BRANCH_NO,					
+								DECODE (LV, 1, 'M0100', 2, 'M0200', 3, 'M0300', 4, 'M0400', 5, 'M0500',
+									6, 'M0600', 7, 'M0700', 8, 'M0800', 9, 'M0900', 10, 'M1000',
+									11, 'M1100', 12, 'M1200', 13, 'M1300', 14, 'M1400', 15, 'M1500',
+									16, 'M1600', 17, 'M1700', 18, 'M1800', 19, 'M1900', 20, 'M2000',
+									21, 'M2100', 22, 'M2200', 23, 'M2300', 24, 'M2400', 25, 'M2500',
+									26, 'M2600', 27, 'M2700', 28, 'M2800', 29, 'M2900', 30, 'M3000',
+									31, 'M3100', 32, 'M3200', 33, 'M3300', 34, 'M3400', 35, 'M3500',
+									36, 'M3600', 37, 'M3700', 38, 'M3800', 39, 'M3900', 40, 'M4000',
+									41, 'M4100', 42, 'M4200', 43, 'M4300', 44, 'M4400', 45, 'M4500',
+									46, 'M4600', 47, 'M4700', 48, 'M4800', 49, 'M4900', 50, 'M5000',
+									51, 'M5100', 52, 'M5200', 53, 'M5300', 54, 'M5400', 55, 'M5500',
+									56, 'M5600', 57, 'M5700', 58, 'M5800', 59, 'M5900', 60, 'M6000',
+									61, 'M6100', 62, 'M6200', 63, 'M6300', 64, 'M6400', 65, 'M6500',
+									66, 'M6600', 67, 'M6700', 68, 'M6800', 69, 'M6900', 70, 'M7000'
+								) AS ITEM_CODE,
+								NVL(DECODE (LV, 1, M01, 2, M02, 3, M03, 4, M04, 5, M05,
+									6, M06, 7, M07, 8, M08, 9, M09, 10, M10,
+									11, M11, 12, M12, 13, M13, 14, M14, 15, M15,
+									16, M16, 17, M17, 18, M18, 19, M19, 20, M20,
+									21, M21, 22, M22, 23, M23, 24, M24, 25, M25,
+									26, M26, 27, M27, 28, M28, 29, M29, 30, M30,
+									31, M31, 32, M32, 33, M33, 34, M34, 35, M35,
+									36, M36, 37, M37, 38, M38, 39, M39, 40, M40,
+									41, M41, 42, M42, 43, M43, 44, M44, 45, M45,
+									46, M46, 47, M47, 48, M48, 49, M49, 50, M50,
+									51, M51, 52, M52, 53, M53, 54, M54, 55, M55,
+									56, M56, 57, M57, 58, M58, 59, M59, 60, M60,
+									61, M61, 62, M62, 63, M63, 64, M64, 65, M65,
+									66, M66, 67, M67, 68, M68, 69, M69, 70, M70
+								),0) AS MIN_VL
+						  FROM (	SELECT LEVEL LV
+									  FROM DUAL
+								CONNECT BY LEVEL <= 70), SCOTT.MSRDATA_TM
+						WHERE A.RIVER_DIV = #riverId#
+						AND MSR_DATE LIKE #startDate# || '%'
+					) A
+					WHERE FACT_CODE IN
+								(SELECT A.FACT_CODE
+								  FROM T_FACT_INFO A
+								 WHERE A.RIVER_DIV = #riverId#
+								 AND	A.SYS_KIND = #system# )
+						 AND ITEM_CODE = TRIM(#itemCode#)
+						 AND MIN_TIME LIKE #startDate# || '%'
+				GROUP BY FACT_CODE,
+						 BRANCH_NO,
+						 ITEM_CODE,
+						 SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 4, 2, 6, 3, 8))) M_DATA
+		ORDER BY factCode, branchNo, itemOrder, timeFrm
+	]]>					
+	</statement>	
+	
+	<statement id="getItemStatsAllList" parameterClass="statsSearchVO" resultClass="statsVO">
+	<![CDATA[
+		SELECT DECODE (SUBSTR(#riverId#,2,2),
+						'01', '한강',
+						'02', '낙동강',
+						'03', '금강',
+						'04', '영산강',
+						'한강')
+				  AS riverName,
+				M_DATA.FACT_CODE AS factCode,
+				(SELECT FACT_NAME
+				  FROM T_FACT_INFO
+				 WHERE FACT_CODE = M_DATA.FACT_CODE)
+				  AS factName,
+				M_DATA.BRANCH_NO AS branchNo,
+				M_DATA.ITEM_CODE AS itemCode,
+				(SELECT ITEM_NAME
+				  FROM T_ITEM_INFO
+				 WHERE ITEM_CODE = M_DATA.ITEM_CODE)
+				  AS itemName,
+				M_DATA.ITEM_CODE AS itemCode,
+				(SELECT ITEM_SEQ
+				  FROM T_ITEM_INFO
+				 WHERE ITEM_CODE = M_DATA.ITEM_CODE)
+				  AS itemOrder,
+				DECODE (
+				  $gubun$,
+				  1,
+				  SUBSTR (M_DATA.MIN_TIME, 1, 4),
+				  2,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2),
+				  3,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2))
+				  AS timeFrm,
+				DECODE (
+				  $gubun$,
+				  1,
+				  SUBSTR (M_DATA.MIN_TIME, 1, 4),
+				  2,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2),
+				  3,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || ':'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2))
+				  AS time,
+				MIN_VL_AVG AS vlAvg,
+				TRIM (TO_CHAR (MIN_VL_AVG, '999,999,999,990.99')) AS vlStrAvg,
+				MIN_VL_MAX AS vlMax,
+				TRIM (TO_CHAR (MIN_VL_MAX, '999,999,999,990.99')) AS vlStrMax,
+				MIN_VL_MIN AS vlMin,
+				TRIM (TO_CHAR (MIN_VL_MIN, '999,999,999,990.99')) AS vlStrMin
+		  FROM (  SELECT FACT_CODE,
+						 BRANCH_NO,
+						 ITEM_CODE,
+						 SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 4, 2, 6, 3, 8)) AS MIN_TIME,
+						 NVL( ROUND (AVG (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_AVG,
+						 NVL( ROUND (MAX (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_MAX,
+						 NVL( ROUND (MIN (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_MIN
+					FROM T_MIN_DATA A
+					WHERE FACT_CODE IN
+								(SELECT A.FACT_CODE
+								  FROM T_FACT_INFO A
+								 WHERE A.RIVER_DIV = #riverId#)
+						 AND ITEM_CODE = #itemCode#
+						 AND MIN_TIME LIKE #startDate# || '%'
+				GROUP BY FACT_CODE,
+						 BRANCH_NO,
+						 ITEM_CODE,
+						 SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 4, 2, 6, 3, 8))
+				  
+				  UNION ALL
+						 
+				  SELECT FACT_CODE,
+						 WAST_NO,
+						 ITEM_CODE,
+						 SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 4, 2, 6, 3, 8)) AS MIN_TIME,
+						 NVL( ROUND (AVG (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_AVG,
+						 NVL( ROUND (MAX (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_MAX,
+						 NVL( ROUND (MIN (MIN_VL), (SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = A.ITEM_CODE)), 0)
+							AS MIN_VL_MIN
+					FROM WTMSC_MIN_REAL@TMS A
+					WHERE FACT_CODE IN
+								(SELECT A.FACT_CODE
+								  FROM T_FACT_INFO A
+								 WHERE A.RIVER_DIV = #riverId#)
+						 AND ITEM_CODE = #itemCode#
+						 AND MIN_TIME LIKE #startDate# || '%'
+				GROUP BY FACT_CODE,
+						 WAST_NO,
+						 ITEM_CODE,
+						 SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 4, 2, 6, 3, 8))
+						 
+						 ) M_DATA
+		ORDER BY factCode, branchNo, itemOrder, timeFrm
+	]]>					
+	</statement>		
+	
+	<statement id="getAccidentStatsList" parameterClass="statsSearchVO" resultClass="statsVO">
+	<![CDATA[
+		SELECT DECODE (M_DATA.RIVER_DIV,
+						'R01', '한강',
+						'R02', '낙동강',
+						'R03', '금강',
+						'R04', '영산강',
+						'한강')
+				  AS riverName,
+				M_DATA.FACT_CODE AS factCode,
+				(SELECT FACT_NAME
+				  FROM T_FACT_INFO
+				 WHERE FACT_CODE = M_DATA.FACT_CODE)
+				  AS factName,
+				M_DATA.BRANCH_NO AS branchNo,
+				M_DATA.ITEM_CODE AS itemCode,
+				(SELECT ITEM_NAME
+				  FROM T_ITEM_INFO
+				 WHERE ITEM_CODE = M_DATA.ITEM_CODE)
+				  AS itemName,
+				M_DATA.ITEM_CODE AS itemCode,
+				(SELECT ITEM_SEQ
+				  FROM T_ITEM_INFO
+				 WHERE ITEM_CODE = M_DATA.ITEM_CODE)
+				  AS itemOrder,				  
+				DECODE (
+				  $gubun$,
+				  1,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2),
+				  2,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2),
+				  3,
+					 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+				  || ' '
+				  || SUBSTR (M_DATA.MIN_TIME, 9, 2))
+				  AS timeFrm,
+				DECODE (
+				  $gubun$,
+				  1,
+				  SUBSTR (M_DATA.MIN_TIME, 5, 2),
+				  2,
+					 SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2),
+				  3,
+					 SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+				  || ':'
+				  || SUBSTR (M_DATA.MIN_TIME, 9, 2))
+				  AS time,
+				M_DATA.VAL1 AS val1,
+				M_DATA.VAL2 AS val2,
+				M_DATA.VAL3 AS val3,
+				M_DATA.VAL1 AS vlStrMax,
+				M_DATA.VAL2 AS vlStrMin,
+				M_DATA.VAL3 AS vlStrAvg
+		  FROM (
+				SELECT RIVER_DIV,
+						FACT_CODE,
+						BRANCH_NO,
+						ITEM_CODE,
+						SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 6, 2, 8, 3, 10)) AS MIN_TIME,
+						NVL(SUM (DECODE (MIN_OR, '1', 1)),0) AS VAL1,
+						NVL(SUM (DECODE (MIN_OR, '2', 1)),0) AS VAL2,
+						NVL(SUM (DECODE (MIN_OR, '3', 1)),0) AS VAL3
+				  FROM T_IW_HIS
+				 WHERE	 RIVER_DIV = #riverId#
+				 		AND DEl_YN = 'N'
+						AND FACT_CODE = #factCode#
+						AND BRANCH_NO = #branchNo#
+						AND ITEM_CODE = #itemCode#
+						AND MIN_TIME LIKE #startDate# || '%'
+				GROUP BY RIVER_DIV, FACT_CODE, BRANCH_NO, ITEM_CODE, SUBSTR (MIN_TIME, 0, DECODE ($gubun$, 1, 6, 2, 8, 3, 10))) M_DATA
+		ORDER BY factCode, branchNo, itemOrder, timeFrm
+	]]>					
+	</statement>		
+	
+	<statement id="getPreventStatsList" parameterClass="statsSearchVO" resultClass="statsPreventVO">
+	<![CDATA[
+		SELECT B.SYSNAME AS sysKind,
+				NVL (A.TOTAL, 0) AS total,
+				NVL (A.VAL1, 0) AS val1,
+				NVL (A.VAL2, 0) AS val2,
+				NVL (A.VAL3, 0) AS val3,
+				NVL (A.VAL4, 0) AS val4,
+				NVL (A.VAL5, 0) AS val5,
+				NVL (A.VAL6, 0) AS val6,
+				NVL (A.VAL7, 0) AS val7,
+				NVL (A.VAL8, 0) AS val8,
+				NVL (A.VAL5+a.VAL6+a.VAL7+a.VAL8,0) AS total2
+		  FROM (  SELECT NVL(B.SYS_KIND, 'ALL') AS SYS_KIND,
+						 NVL (SUM (DECODE (A.MIN_OR, '0', 0, 1)), 0) AS total,
+						 NVL (SUM (DECODE (A.MIN_OR, '1', 1)), 0) AS val1,
+						 NVL (SUM (DECODE (A.MIN_OR, '2', 1)), 0) AS val2,
+						 NVL (SUM (DECODE (A.MIN_OR, '3', 1)), 0) AS val3,
+						 NVL (SUM (DECODE (A.MIN_OR, '4', 1)), 0) AS val4,
+						 NVL (SUM (DECODE (A.ACCT_ACT_STEP, '7', 1)), 0) AS val5,
+						 NVL (SUM (DECODE (A.ACCT_ACT_STEP, '6', 1)), 0) AS val6,
+						 NVL (SUM (DECODE (A.ACCT_ACT_STEP, '10', 1)), 0) AS val7,
+						 NVL (SUM (DECODE (A.ACCT_ACT_STEP, '8', 1)), 0) AS val8
+					FROM T_IW_HIS A, T_FACT_INFO B
+					WHERE A.FACT_CODE = B.FACT_CODE
+		]]>	  
+		<isNull property="startDate">
+				  AND	A.MIN_TIME BETWEEN to_char(sysdate,'YYYYMM')||'010000' AND to_char(sysdate,'YYYYMM')||'319999'
+		</isNull>
+		<isNotNull property="startDate">
+				  AND	A.MIN_TIME BETWEEN #startDate# || '0000' AND #endDate# || '9999'
+		</isNotNull>	 
+		<![CDATA[
+					AND	A.ACCT_ACT_TEST = '0'
+					AND	A.DEL_YN = 'N'
+					AND	B.SYS_KIND != 'T'
+				GROUP BY ROLLUP (B.SYS_KIND)) A,
+				(SELECT 'ALL' AS sysKind, '총계' AS sysName, 1 AS S_ORDER FROM DUAL
+				UNION ALL
+				SELECT 'A' AS sysKind,
+						'국가수질자동측정망' AS sysName,
+						2 AS S_ORDER
+				  FROM DUAL				
+				UNION ALL
+				SELECT 'U' AS sysKind, '이동형측정기기' AS sysName, 3 AS S_ORDER FROM DUAL) B
+		WHERE A.SYS_KIND(+) = B.sysKind
+	]]>
+	<isNotEqual property="system" compareValue="ALL">
+		 AND	A.SYS_KIND = #system#
+	</isNotEqual>		
+	<![CDATA[			
+		ORDER BY B.S_ORDER
+	]]>
+	</statement>
+	
+	<statement id="getItemAnalysisStatsList" parameterClass="statsSearchVO" resultClass="statsAnalysisVO">
+		SELECT 
+				TO_CHAR(TO_DATE(M_DATA.MIN_TIME,'YYYYMMDDHH24MI'), 'YYYY/MM/DD HH24:MI') time2,	 
+				 SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+				  || ' '
+				  || SUBSTR (M_DATA.MIN_TIME, 9, 2)
+				  AS timeFrm,
+					 SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+				  || ':'
+				  || SUBSTR (M_DATA.MIN_TIME, 9, 2)
+				  AS time,
+				ITEMX_VL AS itemXVl,
+				TRIM (TO_CHAR (ITEMX_VL, '999,999,999,990.99')) AS itemXVlStr,
+				ITEMY_VL AS itemYVl,
+				TRIM (TO_CHAR (ITEMY_VL, '999,999,999,990.99')) AS itemYVlStr
+		  FROM (  SELECT MIN_TIME, 
+						 SUM(ITEMX_VL) AS ITEMX_VL, 
+						 SUM(ITEMY_VL) AS ITEMY_VL
+					FROM ( 
+							SELECT						
+									SUBSTR (MIN_TIME, 0, 12) AS MIN_TIME,
+									<isEqual property="system" compareValue="U">	
+									NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(BRANCH_NO, #branchNoX#, DECODE(ITEM_CODE,#itemCodeX#, AVG (MIN_VL)))),
+												(SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = #itemCodeX#)),0) AS ITEMX_VL,
+									</isEqual>
+									<isNotEqual property="system" compareValue="U">	
+									NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(ITEM_CODE,#itemCodeX#, AVG (MIN_VL))),
+												(SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = #itemCodeX#)),0) AS ITEMX_VL,
+									</isNotEqual>
+									<isNotEqual property="itemCodeY" compareValue="FLW00">
+										<isNotEqual property="itemCodeY" compareValue="WLV00">
+											<isEqual property="system" compareValue="U">	
+												NVL (ROUND (DECODE (FACT_CODE, #factCodeY#,DECODE(BRANCH_NO, #branchNoY# ,DECODE(ITEM_CODE,#itemCodeY#, AVG (MIN_VL)))),
+															(SELECT TO_NUMBER (ITEM_DP2)
+															 FROM T_ITEM_INFO
+															WHERE ITEM_CODE = #itemCodeY#)),0) AS ITEMY_VL
+											</isEqual>
+											<isNotEqual property="system" compareValue="U">	
+												NVL (ROUND (DECODE (FACT_CODE, #factCodeY#,DECODE(ITEM_CODE,#itemCodeY#, AVG (MIN_VL))),
+															(SELECT TO_NUMBER (ITEM_DP2)
+															 FROM T_ITEM_INFO
+															WHERE ITEM_CODE = #itemCodeY#)),0) AS ITEMY_VL
+											</isNotEqual>
+										 </isNotEqual>
+									</isNotEqual>
+									<isEqual property="itemCodeY" compareValue="FLW00">
+									NVL (ROUND (DECODE(ITEM_CODE,'FLW00', AVG (MIN_VL)),2),0) AS ITEMY_VL
+									</isEqual>
+									<isEqual property="itemCodeY" compareValue="WLV00">
+									 NVL (ROUND (DECODE(ITEM_CODE,'WLV00', AVG (MIN_VL)),2),0) AS ITEMY_VL
+									</isEqual>
+								FROM (
+								<isNotEqual property="itemCodeY" compareValue="FLW00">
+									<isNotEqual property="itemCodeY" compareValue="WLV00">
+											SELECT
+												R_FACT_CODE FACT_CODE,
+												MIN_TIME,
+												DECODE(FACT_CODE, #factCodeX#||'X', #itemCodeX#, DECODE(FACT_CODE, #factCodeY#||'Y', #itemCodeY#)) AS ITEM_CODE,
+												BRANCH_NO,
+												(
+													SELECT MIN_VL FROM T_MIN_DATA WHERE FACT_CODE=F.R_FACT_CODE AND BRANCH_NO = F.BRANCH_NO AND MIN_TIME = F.MIN_TIME AND ITEM_CODE = F.ITEM_CODE
+												) MIN_VL
+											FROM
+											(
+													SELECT 
+														FACT_CODE||'X' AS FACT_CODE,
+														FACT_CODE AS R_FACT_CODE,
+														BRANCH_NO,
+														MIN_TIME,
+														MAX(ITEM_CODE) ITEM_CODE
+													 FROM T_MIN_DATA 
+													WHERE FACT_CODE = #factCodeX#
+													AND BRANCH_NO = #branchNoX#
+													 AND ITEM_CODE IN 
+																	(#itemCodeX#,
+																		( 
+																			CASE
+																				WHEN #itemCodeX# = 'PHY00'
+																				THEN 'PHY01'
+																				WHEN #itemCodeX# = 'CON00'
+																				THEN 'CON01'
+																				WHEN #itemCodeX# = 'DOW00'
+																				THEN 'DOW01'
+																				WHEN #itemCodeX# = 'TMP00'
+																				THEN 'TMP01'
+																				ELSE
+																				'XXX'
+																			END
+																		)
+																	)			
+													AND MIN_TIME BETWEEN #startDate# || '00' AND #endDate# || '99'
+													GROUP BY
+														 MIN_TIME, FACT_CODE, BRANCH_NO
+													UNION
+													SELECT 
+														FACT_CODE||'Y' AS FACT_CODE,
+														FACT_CODE AS R_FACT_CODE,
+														BRANCH_NO,
+														MIN_TIME,
+														MAX(ITEM_CODE) ITEM_CODE
+													FROM T_MIN_DATA 
+													WHERE FACT_CODE = #factCodeY#
+													AND BRANCH_NO = #branchNoY#
+													 AND ITEM_CODE IN 
+																(#itemCodeY#,
+																	( 
+																		CASE
+																			WHEN #itemCodeY# = 'PHY00'
+																			THEN 'PHY01'
+																			WHEN  #itemCodeY# = 'CON00'
+																			THEN 'CON01'
+																			WHEN  #itemCodeY# = 'DOW00'
+																			THEN 'DOW01'
+																			WHEN  #itemCodeY# = 'TMP00'
+																			THEN 'TMP01'
+																			ELSE
+																			'XXX'
+																		END
+																	)
+																)			
+													AND MIN_TIME BETWEEN #startDate# || '00' AND #endDate# || '99'
+													 GROUP BY
+														 MIN_TIME, FACT_CODE, BRANCH_NO
+														 ) F
+									</isNotEqual>
+								</isNotEqual>
+								<isEqual property="itemCodeY" compareValue="FLW00">
+										SELECT
+												R_FACT_CODE FACT_CODE,
+												MIN_TIME,
+												DECODE(FACT_CODE, #factCodeX#||'X', #itemCodeX#) AS ITEM_CODE,
+												BRANCH_NO,
+												(
+													SELECT MIN_VL FROM T_MIN_DATA WHERE FACT_CODE=F.R_FACT_CODE AND BRANCH_NO = F.BRANCH_NO AND MIN_TIME = F.MIN_TIME AND ITEM_CODE = F.ITEM_CODE
+												) MIN_VL
+											FROM
+											(
+													SELECT 
+														FACT_CODE||'X' AS FACT_CODE,
+														FACT_CODE AS R_FACT_CODE,
+														BRANCH_NO,
+														MIN_TIME,
+														MAX(ITEM_CODE) ITEM_CODE
+													 FROM T_MIN_DATA 
+													WHERE FACT_CODE = #factCodeX#
+													AND BRANCH_NO = #branchNoX#
+													 AND ITEM_CODE IN 
+																	(#itemCodeX#,
+																		( 
+																			CASE
+																				WHEN #itemCodeX# = 'PHY00'
+																				THEN 'PHY01'
+																				WHEN #itemCodeX# = 'CON00'
+																				THEN 'CON01'
+																				WHEN #itemCodeX# = 'DOW00'
+																				THEN 'DOW01'
+																				WHEN #itemCodeX# = 'TMP00'
+																				THEN 'TMP01'
+																				ELSE
+																				'XXX'
+																			END
+																		)
+																	)			
+													AND MIN_TIME BETWEEN #startDate# || '00' AND #endDate# || '99'
+													GROUP BY
+														 MIN_TIME, FACT_CODE, BRANCH_NO
+											) F
+									UNION
+									SELECT 
+										FWOBSCD AS FACT_CODE, 
+										YMDH||'00' AS MIN_TIME, 
+										ITEM_CODE, 
+										TO_NUMBER(#branchNoX#) AS BRANCH_NO, 
+										FW AS MIN_VL 
+									FROM 
+										T_FWHR 
+									WHERE FWOBSCD =#factCodeY#
+									AND ITEM_CODE = #itemCodeY#
+									AND YMDH BETWEEN #startDate# || '00' AND #endDate# || '99'
+								</isEqual>
+								<isEqual property="itemCodeY" compareValue="WLV00">
+									SELECT
+												R_FACT_CODE FACT_CODE,
+												MIN_TIME,
+												DECODE(FACT_CODE, #factCodeX#||'X', #itemCodeX#) AS ITEM_CODE,
+												BRANCH_NO,
+												(
+													SELECT MIN_VL FROM T_MIN_DATA WHERE FACT_CODE=F.R_FACT_CODE AND BRANCH_NO = F.BRANCH_NO AND MIN_TIME = F.MIN_TIME AND ITEM_CODE = F.ITEM_CODE
+												) MIN_VL
+											FROM
+											(
+													SELECT 
+														FACT_CODE||'X' AS FACT_CODE,
+														FACT_CODE AS R_FACT_CODE,
+														BRANCH_NO,
+														MIN_TIME,
+														MAX(ITEM_CODE) ITEM_CODE
+													 FROM T_MIN_DATA 
+													WHERE FACT_CODE = #factCodeX#
+													AND BRANCH_NO = #branchNoX#
+													 AND ITEM_CODE IN 
+																	(#itemCodeX#,
+																		( 
+																			CASE
+																				WHEN #itemCodeX# = 'PHY00'
+																				THEN 'PHY01'
+																				WHEN #itemCodeX# = 'CON00'
+																				THEN 'CON01'
+																				WHEN #itemCodeX# = 'DOW00'
+																				THEN 'DOW01'
+																				WHEN #itemCodeX# = 'TMP00'
+																				THEN 'TMP01'
+																				ELSE
+																				'XXX'
+																			END
+																		)
+																	)			
+													AND MIN_TIME BETWEEN #startDate# || '00' AND #endDate# || '99'
+													GROUP BY
+														 MIN_TIME, FACT_CODE, BRANCH_NO
+											) F
+									UNION
+									SELECT 
+										FW.FWOBSCD AS FACT_CODE, 
+										YMDH||'00' AS MIN_TIME, 
+										ITEM_CODE, 
+										TO_NUMBER('1') AS BRANCH_NO, 
+										WL AS MIN_VL
+									FROM 
+										T_WLHR W, T_FWOBSIF FW, T_WLOBSIF WL
+									WHERE FW.FWOBSCD =#factCodeY#
+									AND FW.ADM_CD = WL.ADM_CD
+									AND W.WLOBSCD = WL.WLOBSCD
+									AND W.ITEM_CODE = #itemCodeY#
+									AND YMDH BETWEEN #startDate# || '00' AND #endDate# || '99'
+								</isEqual>
+								 ) A
+							GROUP BY FACT_CODE, BRANCH_NO, ITEM_CODE, SUBSTR (MIN_TIME, 0, 12)
+						 )
+				  GROUP BY MIN_TIME 
+				) M_DATA
+	<isEqual property="sort" compareValue="chart">
+		ORDER BY itemXVl	
+	</isEqual>
+	<isEqual property="sort" compareValue="list">
+		ORDER BY time2	
+	</isEqual>
+	</statement>	
+	
+	
+	<statement id="getRelateFlowAnalysis" parameterClass="statsVO" resultClass="statsVO">
+		SELECT		
+					TO_CHAR(TO_DATE(M_DATA.MIN_TIME,'YYYYMMDDHH24MI'), 'YYYY/MM/DD HH24:MI') time2,
+					SUBSTR (M_DATA.MIN_TIME, 1, 4)
+					  || '-'
+					  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+					  || '-'
+					  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+					  || ' '
+					  || SUBSTR (M_DATA.MIN_TIME, 9, 2)
+					  AS timeFrm,
+						 SUBSTR (M_DATA.MIN_TIME, 5, 2)
+					  || '/'
+					  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+					  || ':'
+					  || SUBSTR (M_DATA.MIN_TIME, 9, 2)
+					  AS time,
+					TRIM (TO_CHAR (turXVl, '999,999,999,990.99')) AS turXVl,
+					TRIM (TO_CHAR (tmpXVl, '999,999,999,990.99')) AS tmpXVl,
+					TRIM (TO_CHAR (phyXVl, '999,999,999,990.99')) AS phyXVl,
+					TRIM (TO_CHAR (dowXVl, '999,999,999,990.99')) AS dowXVl,
+					TRIM (TO_CHAR (conXVl, '999,999,999,990.999')) AS conXVl,
+					<isEqual property="system" compareValue="U">	
+						TRIM (TO_CHAR (tofXVl, '999,999,999,990.99')) AS tofXVl,
+					</isEqual>
+					TRIM (TO_CHAR (wlvYVl, '999,999,999,990.99')) AS wlvYVl,
+					TRIM (TO_CHAR (flwYVl, '999,999,999,990.99')) AS flwYVl
+			  FROM (  SELECT MIN_TIME, 
+								SUM(turXVl) AS turXVl, 
+								SUM(tmpXVl) AS tmpXVl, 
+								SUM(phyXVl) AS phyXVl,
+								SUM(dowXVl) AS dowXVl, 
+								SUM(conXVl) AS conXVl, 
+								<isEqual property="system" compareValue="U">	
+								SUM(tofXVl) as tofXVl,
+								</isEqual>
+								SUM(wlvYVl) AS wlvYVl, 
+								SUM(flwYVl) AS flwYVl 
+						  FROM ( 
+								SELECT
+											SUBSTR (MIN_TIME, 0, 12) AS MIN_TIME,
+											NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(ITEM_CODE,'TUR00', AVG (MIN_VL))),
+														(SELECT TO_NUMBER (ITEM_DP2)
+														 FROM T_ITEM_INFO
+														WHERE ITEM_CODE = 'TUR00')),0) AS turXVl,
+											NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(ITEM_CODE,'TMP00', AVG (MIN_VL))),
+														(SELECT TO_NUMBER (ITEM_DP2)
+														 FROM T_ITEM_INFO
+														WHERE ITEM_CODE = 'TMP00')),0) AS tmpXVl,
+											NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(ITEM_CODE,'PHY00', AVG (MIN_VL))),
+														(SELECT TO_NUMBER (ITEM_DP2)
+														 FROM T_ITEM_INFO
+														WHERE ITEM_CODE = 'PHY00')),0) AS phyXVl,
+											NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(ITEM_CODE,'DOW00', AVG (MIN_VL))),
+														(SELECT TO_NUMBER (ITEM_DP2)
+														 FROM T_ITEM_INFO
+														WHERE ITEM_CODE = 'DOW00')),0) AS dowXVl,  
+											NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(ITEM_CODE,'CON00', AVG (MIN_VL))),
+														(SELECT TO_NUMBER (ITEM_DP2)
+														 FROM T_ITEM_INFO
+														WHERE ITEM_CODE = 'CON00')),0) AS conXVl,	  
+										  <isEqual property="system" compareValue="U">	
+											NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(ITEM_CODE,'TOF00', AVG (MIN_VL))),
+														(SELECT TO_NUMBER (ITEM_DP2)
+														 FROM T_ITEM_INFO
+														WHERE ITEM_CODE = 'TOF00')),0) AS tofXVl,	
+											</isEqual>							 
+											NVL (ROUND (DECODE (FACT_CODE, #factCodeY#,DECODE(ITEM_CODE,'WLV00', AVG (MIN_VL))),2),0) AS wlvYVl,
+											NVL (ROUND (DECODE (FACT_CODE, #factCodeY#,DECODE(ITEM_CODE,'FLW00', AVG (MIN_VL))),2),0) AS flwYVl
+									FROM (
+										  SELECT FACT_CODE, MIN_TIME, BRANCH_NO, MIN_VL, ITEM_CODE FROM T_MIN_DATA 
+										WHERE FACT_CODE = #factCodeX#
+										AND BRANCH_NO = #branchNoX#
+										 AND MIN_TIME BETWEEN #startDate#||'00' AND #endDate#||'99'
+										UNION
+										SELECT FWOBSCD AS FACT_CODE, YMDH||'00' AS MIN_TIME, TO_NUMBER('1') AS BRANCH_NO, FW AS MIN_VL, ITEM_CODE FROM T_FWHR 
+										WHERE FWOBSCD =#factCodeY#
+										AND ITEM_CODE = 'FLW00'
+										 AND YMDH BETWEEN #startDate#||'00' AND #endDate#||'99'
+										UNION
+										SELECT FW.FWOBSCD AS FACT_CODE, YMDH||'00' AS MIN_TIME, TO_NUMBER('1') AS BRANCH_NO, WL AS MIN_VL, ITEM_CODE FROM T_WLHR W, T_FWOBSIF FW, T_WLOBSIF WL
+										WHERE FW.FWOBSCD =#factCodeY#
+										AND FW.ADM_CD = WL.ADM_CD
+										AND W.WLOBSCD = WL.WLOBSCD
+										AND W.ITEM_CODE = 'WLV00'
+										AND W.YMDH BETWEEN  #startDate#||'00' AND #endDate#||'99'
+									 ) A
+								GROUP BY FACT_CODE, BRANCH_NO, ITEM_CODE, SUBSTR (MIN_TIME, 0, 12)
+							 )
+					  GROUP BY MIN_TIME 
+					) M_DATA
+			ORDER BY time2	
+	</statement>
+	
+	
+	<statement id="getRelateFlowGraph" parameterClass="statsVO" resultClass="statsVO">
+			SELECT
+					TO_CHAR(TO_DATE(MIN_TIME, 'YYYYMMDDHH24MI'), 'YYYY/MM/DD HH24:MI') AS time,
+					SUM(NVL(xVl,0)) valueX,
+					SUM(NVL(yVl,0)) valueY
+			FROM
+			(
+				SELECT
+					MIN_TIME,
+					DECODE(FACT_CODE, #factCodeX# || 'X', MIN_VL) AS xVl,
+					DECODE(FACT_CODE, #factCodeY#, DECODE(ITEM_CODE, #itemCodeY#, MIN_VL)) AS yVl
+				FROM
+				(
+					 SELECT
+						FACT_CODE,
+						MIN_TIME,
+						ITEM_CODE,
+						(
+						CASE
+							WHEN F.ITEM_CODE = 'FLW00' OR F.ITEM_CODE = 'WLV00'
+							THEN F.MIN_VL
+							ELSE
+							(
+								SELECT MIN_VL FROM T_MIN_DATA WHERE FACT_CODE=F.R_FACT_CODE AND BRANCH_NO = F.BRANCH_NO AND MIN_TIME = F.MIN_TIME AND ITEM_CODE = F.ITEM_CODE
+							)
+						END
+					) MIN_VL
+					FROM
+					(
+									SELECT 
+										A.FACT_CODE||'X' as FACT_CODE,
+										A.FACT_CODE AS R_FACT_CODE,
+										A.BRANCH_NO,
+										A.MIN_TIME,
+										MAX(A.ITEM_CODE) ITEM_CODE,
+										MAX(A.MIN_VL) as MIN_VL
+									FROM 
+										T_MIN_DATA A, 
+										T_FACT_MEASU_ITEM I 
+									WHERE A.ITEM_CODE = I.ITEM_CODE
+									AND A.FACT_CODE = I.FACT_CODE
+									AND A.BRANCH_NO = I.BRANCH_NO 
+									AND A.FACT_CODE = #factCodeX#
+									AND A.BRANCH_NO = #branchNoX#
+									 AND A.ITEM_CODE IN 
+															(#itemCodeX#,
+																( 
+																	CASE
+																		WHEN #itemCodeX# = 'PHY00'
+																		THEN 'PHY01'
+																		WHEN #itemCodeX# = 'CON00'
+																		THEN 'CON01'
+																		WHEN #itemCodeX# = 'DOW00'
+																		THEN 'DOW01'
+																		WHEN #itemCodeX#= 'TMP00'
+																		THEN 'TMP01'
+																		ELSE
+																		'XXX'
+																	END
+																)
+															)			
+									AND MIN_TIME BETWEEN #startDate# || '00' AND #endDate# || '99'
+									GROUP BY
+									A.MIN_TIME, A.FACT_CODE, A.BRANCH_NO
+						 UNION
+							SELECT 
+								FWOBSCD AS R_FACT_CODE,
+								FWOBSCD AS FACT_CODE,
+								TO_NUMBER('1') AS BRANCH_NO,  
+								YMDH||'00' AS MIN_TIME, 
+								ITEM_CODE, 
+								FW AS MIN_VL
+							FROM T_FWHR 
+							WHERE 
+								FWOBSCD =#factCodeY#
+								AND ITEM_CODE = 'FLW00'
+								AND YMDH BETWEEN #startDate# || '00' AND #endDate# || '99'
+					 UNION
+							SELECT
+								FW.FWOBSCD AS R_FACT_CODE, 
+								FW.FWOBSCD AS FACT_CODE, 
+								TO_NUMBER('1') AS BRANCH_NO, 
+								YMDH||'00' AS MIN_TIME,
+								ITEM_CODE, 
+								WL AS MIN_VL
+							FROM T_WLHR W, T_FWOBSIF FW, T_WLOBSIF WL
+							WHERE FW.FWOBSCD =#factCodeY#
+								AND FW.ADM_CD = WL.ADM_CD
+								AND W.WLOBSCD = WL.WLOBSCD
+								AND W.ITEM_CODE = 'WLV00'
+								AND W.YMDH BETWEEN #startDate# || '00' AND #endDate# || '99'
+				  ) F
+				)
+				group by min_time, fact_code, min_vl, item_code
+			)
+			group by min_time
+			order by min_time
+	</statement>
+	
+	<statement id="getRelateItemGraph" parameterClass="statsVO" resultClass="statsVO">
+		SELECT
+					TO_CHAR(TO_DATE(MIN_TIME, 'YYYYMMDDHH24MI'), 'YYYY/MM/DD HH24:MI') time,
+					max(itemCodeX) itemCodeX,
+					max(itemCodeY) itemCodeY,
+					SUM(NVL(xVl,0)) valueX,
+					SUM(NVL(yVl,0)) valueY,
+					(
+					SELECT ITEM_NAME 
+						FROM T_ITEM_INFO
+					 WHERE ITEM_CODE = #itemCodeX#
+					) itemNameX,
+					(
+					SELECT ITEM_NAME 
+						FROM T_ITEM_INFO
+					 WHERE ITEM_CODE = #itemCodeY#
+					) itemNameY 
+			FROM
+			(
+				SELECT
+					MIN_TIME,
+					DECODE(FACT_CODE, #factCodeX# || 'X', #itemCodeX#) itemCodeX,
+					DECODE(FACT_CODE, #factCodeY# || 'Y', #itemCodeY#) itemCodeY,
+					DECODE(FACT_CODE, #factCodeX# || 'X', MIN_VL) AS xVl,
+					DECODE(FACT_CODE, #factCodeY# || 'Y', MIN_VL) AS yVl
+				FROM
+				(
+					 SELECT
+						FACT_CODE,
+						MIN_TIME,
+						ITEM_CODE,
+						(
+							SELECT MIN_VL FROM T_MIN_DATA WHERE FACT_CODE=F.R_FACT_CODE AND BRANCH_NO = F.BRANCH_NO AND MIN_TIME = F.MIN_TIME AND ITEM_CODE = F.ITEM_CODE
+						) MIN_VL
+					FROM
+					(
+									SELECT 
+										A.FACT_CODE||'X' as FACT_CODE,
+										A.FACT_CODE AS R_FACT_CODE,
+										A.BRANCH_NO,
+										A.MIN_TIME,
+										MAX(A.ITEM_CODE) ITEM_CODE
+									FROM 
+										T_MIN_DATA A, 
+										T_FACT_MEASU_ITEM I 
+									WHERE A.ITEM_CODE = I.ITEM_CODE
+									AND A.FACT_CODE = I.FACT_CODE
+									AND A.BRANCH_NO = I.BRANCH_NO 
+									AND A.FACT_CODE = #factCodeX#
+									AND A.BRANCH_NO = #branchNoX#
+									AND A.ITEM_CODE IN 
+															(#itemCodeX#,
+																( 
+																	CASE
+																		WHEN #itemCodeX# = 'PHY00'
+																		THEN 'PHY01'
+																		WHEN #itemCodeX# = 'CON00'
+																		THEN 'CON01'
+																		WHEN #itemCodeX# = 'DOW00'
+																		THEN 'DOW01'
+																		WHEN #itemCodeX# = 'TMP00'
+																		THEN 'TMP01'
+																		ELSE
+																		'XXX'
+																	END
+																)
+															)			
+									AND MIN_TIME BETWEEN #startDate# || '00' AND #endDate# || '99'
+									GROUP BY
+									A.MIN_TIME, A.FACT_CODE, A.BRANCH_NO
+					 UNION
+								 SELECT 
+									A.FACT_CODE||'Y' as FACT_CODE,
+									A.FACT_CODE AS R_FACT_CODE,
+									A.BRANCH_NO,
+									A.MIN_TIME,
+									MAX(A.ITEM_CODE) ITEM_CODE
+								FROM 
+									T_MIN_DATA A, 
+									T_FACT_MEASU_ITEM I 
+								WHERE A.ITEM_CODE = I.ITEM_CODE
+								AND A.FACT_CODE = I.FACT_CODE
+								AND A.BRANCH_NO = I.BRANCH_NO 
+								AND A.FACT_CODE = #factCodeY#
+								AND A.BRANCH_NO = #branchNoY#
+								 AND A.ITEM_CODE IN 
+														(#itemCodeY#,
+															( 
+																CASE
+																	WHEN #itemCodeY# = 'PHY00'
+																	THEN 'PHY01'
+																	WHEN  #itemCodeY# = 'CON00'
+																	THEN 'CON01'
+																	WHEN  #itemCodeY# = 'DOW00'
+																	THEN 'DOW01'
+																	WHEN  #itemCodeY# = 'TMP00'
+																	THEN 'TMP01'
+																	ELSE
+																	'XXX'
+																END
+															)
+														)			
+								AND MIN_TIME BETWEEN #startDate# || '00' AND #endDate# || '99'
+								GROUP BY
+								A.MIN_TIME, A.FACT_CODE, A.BRANCH_NO
+				  ) F
+				)
+				group by min_time, fact_code, min_vl
+			)
+			group by min_time
+	</statement>
+	
+	<statement id="getRelateFlowAnalysisData" parameterClass="statsVO" resultClass="statsVO">
+		SELECT
+				MIN_TIME,
+				SUM(NVL(xVl,0)) AS valueX,
+				SUM(NVL(yVl,0)) AS valueY
+			FROM
+			(
+			SELECT
+				MIN_TIME,
+				DECODE(FACT_CODE, #factCodeX# || 'X', SUM(NVL(MIN_VL, 0))) AS xVl,
+				DECODE(FACT_CODE, #factCodeY#, DECODE(ITEM_CODE, #itemCodeY#, SUM(NVL(MIN_VL, 0)))) AS yVl
+			FROM
+			(
+				SELECT
+					FACT_CODE,
+					MIN_TIME,
+					ITEM_CODE,
+					(
+						CASE
+							WHEN F.ITEM_CODE = 'FLW00' OR F.ITEM_CODE = 'WLV00'
+							THEN F.MIN_VL
+							ELSE
+							(
+								SELECT MIN_VL FROM T_MIN_DATA WHERE FACT_CODE=F.R_FACT_CODE AND BRANCH_NO = F.BRANCH_NO AND MIN_TIME = F.MIN_TIME AND ITEM_CODE = F.ITEM_CODE
+							)
+						END
+					) MIN_VL
+				FROM
+				(
+								SELECT 
+									A.FACT_CODE || 'X' AS FACT_CODE,
+									A.FACT_CODE as R_FACT_CODE,
+									A.BRANCH_NO,
+									A.MIN_TIME,
+									MAX(A.ITEM_CODE) ITEM_CODE,
+									SUM(A.MIN_VL) MIN_VL
+								FROM 
+									T_MIN_DATA A, 
+									T_FACT_MEASU_ITEM I 
+								WHERE A.ITEM_CODE = I.ITEM_CODE
+								AND A.FACT_CODE = I.FACT_CODE
+								AND A.BRANCH_NO = I.BRANCH_NO 
+								AND A.FACT_CODE = #factCodeX#
+								AND A.BRANCH_NO = #branchNoX#
+								 AND A.ITEM_CODE IN 
+														(#itemCodeX#,
+															( 
+																CASE
+																	WHEN #itemCodeX# = 'PHY00'
+																	THEN 'PHY01'
+																	WHEN #itemCodeX# = 'CON00'
+																	THEN 'CON01'
+																	WHEN #itemCodeX# = 'DOW00'
+																	THEN 'DOW01'
+																	WHEN #itemCodeX# = 'TMP00'
+																	THEN 'TMP01'
+																	ELSE
+																	'XXX'
+																END
+															)
+														)			
+								AND MIN_TIME BETWEEN #startDate#||'00' AND #endDate#||'99'
+								GROUP BY
+								A.MIN_TIME, A.FACT_CODE, A.BRANCH_NO
+				 UNION
+						SELECT 
+							FWOBSCD AS R_FACT_CODE,
+							FWOBSCD AS FACT_CODE,
+							TO_NUMBER('1') AS BRANCH_NO,  
+							YMDH||'00' AS MIN_TIME, 
+							ITEM_CODE, 
+							FW AS MIN_VL
+						FROM T_FWHR 
+						WHERE 
+							FWOBSCD =#factCodeY#
+							AND ITEM_CODE = 'FLW00'
+							AND YMDH BETWEEN #startDate#||'00' AND #endDate#||'99'
+				 UNION
+						SELECT
+							FW.FWOBSCD AS R_FACT_CODE, 
+							FW.FWOBSCD AS FACT_CODE, 
+							TO_NUMBER('1') AS BRANCH_NO, 
+							YMDH||'00' AS MIN_TIME,
+							ITEM_CODE, 
+							WL AS MIN_VL
+						FROM T_WLHR W, T_FWOBSIF FW, T_WLOBSIF WL
+						WHERE FW.FWOBSCD =#factCodeY#
+							AND FW.ADM_CD = WL.ADM_CD
+							AND W.WLOBSCD = WL.WLOBSCD
+							AND W.ITEM_CODE = 'WLV00'
+							AND W.YMDH BETWEEN #startDate#||'00' AND #endDate#||'99'
+			  ) F
+		 )
+		 GROUP BY
+			MIN_TIME, ITEM_CODE, fact_code
+		)
+		GROUP BY 
+			MIN_TIME
+		ORDER BY
+			MIN_TIME
+	</statement>
+	
+	<statement id="getRelateItemAlanysisData" parameterClass="statsVO" resultClass="statsVO">
+		SELECT
+				MIN_TIME,
+				SUM(NVL(xVl,0)) AS valueX,
+				SUM(NVL(yVl,0)) AS valueY
+			FROM
+			(
+			SELECT
+				MIN_TIME,
+				DECODE(FACT_CODE, #factCodeX# || 'X', SUM(NVL(MIN_VL, 0))) AS xVl,
+				DECODE(FACT_CODE, #factCodeY# || 'Y', SUM(NVL(MIN_VL, 0))) AS yVl
+			FROM
+			(
+				SELECT
+					FACT_CODE,
+					MIN_TIME,
+					ITEM_CODE,
+					(
+						SELECT MIN_VL FROM T_MIN_DATA WHERE FACT_CODE=F.R_FACT_CODE AND BRANCH_NO = F.BRANCH_NO AND MIN_TIME = F.MIN_TIME AND ITEM_CODE = F.ITEM_CODE
+					) MIN_VL
+				FROM
+				(
+								SELECT 
+									A.FACT_CODE || 'X' AS FACT_CODE,
+									A.FACT_CODE as R_FACT_CODE,
+									A.BRANCH_NO,
+									A.MIN_TIME,
+									MAX(A.ITEM_CODE) ITEM_CODE
+								FROM 
+									T_MIN_DATA A, 
+									T_FACT_MEASU_ITEM I 
+								WHERE A.ITEM_CODE = I.ITEM_CODE
+								AND A.FACT_CODE = I.FACT_CODE
+								AND A.BRANCH_NO = I.BRANCH_NO 
+								AND A.FACT_CODE = #factCodeX#
+								AND A.BRANCH_NO = #branchNoX#
+								 AND A.ITEM_CODE IN 
+														(#itemCodeX#,
+															( 
+																CASE
+																	WHEN #itemCodeX# = 'PHY00'
+																	THEN 'PHY01'
+																	WHEN #itemCodeX# = 'CON00'
+																	THEN 'CON01'
+																	WHEN #itemCodeX# = 'DOW00'
+																	THEN 'DOW01'
+																	WHEN #itemCodeX# = 'TMP00'
+																	THEN 'TMP01'
+																	ELSE
+																	'XXX'
+																END
+															)
+														)			
+								AND MIN_TIME BETWEEN #startDate# || '00' AND #endDate# || '99'
+								GROUP BY
+								A.MIN_TIME, A.FACT_CODE, A.BRANCH_NO
+				 UNION
+							 SELECT 
+								A.FACT_CODE || 'Y' AS FACT_CODE,
+								A.FACT_CODE as R_FACT_CODE,
+								A.BRANCH_NO,
+								A.MIN_TIME,
+								MAX(A.ITEM_CODE) ITEM_CODE
+							FROM 
+								T_MIN_DATA A, 
+								T_FACT_MEASU_ITEM I 
+							WHERE A.ITEM_CODE = I.ITEM_CODE
+							AND A.FACT_CODE = I.FACT_CODE
+							AND A.BRANCH_NO = I.BRANCH_NO 
+							AND A.FACT_CODE = #factCodeY#
+							AND A.BRANCH_NO = #branchNoY#
+							 AND A.ITEM_CODE IN 
+													(#itemCodeY#,
+														( 
+															CASE
+																WHEN #itemCodeY# = 'PHY00'
+																THEN 'PHY01'
+																WHEN #itemCodeY# = 'CON00'
+																THEN 'CON01'
+																WHEN #itemCodeY# = 'DOW00'
+																THEN 'DOW01'
+																WHEN #itemCodeY# = 'TMP00'
+																THEN 'TMP01'
+																ELSE
+																'XXX'
+															END
+														)
+													)			
+							AND MIN_TIME BETWEEN #startDate# || '00' AND #endDate# || '99'
+							GROUP BY
+							A.MIN_TIME, A.FACT_CODE, A.BRANCH_NO
+			  ) F
+		 )
+		 GROUP BY
+			MIN_TIME, ITEM_CODE, fact_code
+		)
+		GROUP BY 
+			MIN_TIME
+		ORDER BY
+			MIN_TIME 
+	</statement>
+	
+	<statement id="getRelateItemAnalysis" parameterClass="statsVO" resultClass="statsVO">
+			SELECT
+				TO_CHAR(TO_DATE(M_DATA.MIN_TIME,'YYYYMMDDHH24MI'), 'YYYY/MM/DD HH24:MI') time2,
+				SUBSTR (M_DATA.MIN_TIME, 1, 4)
+							  || '-'
+							  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+							  || '-'
+							  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+							  || ' '
+							  || SUBSTR (M_DATA.MIN_TIME, 9, 2)
+							  AS timeFrm,
+								 SUBSTR (M_DATA.MIN_TIME, 5, 2)
+							  || '/'
+							  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+							  || ':'
+							  || SUBSTR (M_DATA.MIN_TIME, 9, 2)
+							  AS time,
+							  
+							  
+							  
+							<isEqual property="system" compareValue="A">
+							TRIM (TO_CHAR (turXVl, '999,999,999,990.99')) AS turXVl,
+							TRIM (TO_CHAR (turYVl, '999,999,999,990.99')) AS turYVl,
+							TRIM (TO_CHAR (tmpXVl, '999,999,999,990.99')) AS tmpXVl,
+							TRIM (TO_CHAR (tmpYVl, '999,999,999,990.99')) AS tmpYVl,
+							TRIM (TO_CHAR (phyXVl, '999,999,999,990.99')) AS phyXVl,
+							TRIM (TO_CHAR (phyYVl, '999,999,999,990.99')) AS phyYVl,
+							TRIM (TO_CHAR (dowXVl, '999,999,999,990.99')) AS dowXVl,
+							TRIM (TO_CHAR (dowYVl, '999,999,999,990.99')) AS dowYVl,
+							TRIM (TO_CHAR (conXVl, '999,999,999,990.999')) AS conXVl,
+							TRIM (TO_CHAR (conYVl, '999,999,999,990.999')) AS conYVl
+							</isEqual>
+							
+							<isEqual property="system" compareValue="U">
+							TRIM (TO_CHAR (turXVl, RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TUR00'), '0'))) AS turXVl,
+							TRIM (TO_CHAR (turYVl, RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TUR00'), '0')) AS turYVl,
+							TRIM (TO_CHAR (tmpXVl, RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TMP00'), '0'))) AS tmpXVl,
+							TRIM (TO_CHAR (tmpYVl, RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TMP00'), '0'))) AS tmpYVl,
+							TRIM (TO_CHAR (phyXVl, RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'PHY00'), '0'))) AS phyXVl,
+							TRIM (TO_CHAR (phyYVl, RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'PHY00'), '0'))) AS phyYVl,
+							TRIM (TO_CHAR (dowXVl, RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'DOW00'), '0'))) AS dowXVl,
+							TRIM (TO_CHAR (dowYVl, RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'DOW00'), '0'))) AS dowYVl,
+							TRIM (TO_CHAR (conXVl, RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'CON00'), '0'))) AS conXVl,
+							TRIM (TO_CHAR (conYVl, RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'CON00'), '0'))) AS conYVl,
+							TRIM (TO_CHAR (tofXVl, RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TOF00'), '0'))) AS tofXVl,
+							TRIM (TO_CHAR (tofYVl, RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TOF00'), '0'))) AS tofYVl
+							</isEqual>
+							
+							
+							
+							
+					  FROM (  SELECT MIN_TIME, 
+										SUM(turXVl) AS turXVl, 
+										SUM(turYVl) AS turYVl,
+										SUM(tmpXVl) AS tmpXVl, 
+										SUM(tmpYVl) AS tmpYVl,
+										SUM(phyXVl) AS phyXVl, 
+										SUM(phyYVl) AS phyYVl,
+										SUM(dowXVl) AS dowXVl, 
+										SUM(dowYVl) AS dowYVl,
+										SUM(conXVl) AS conXVl, 
+										SUM(conYVl) AS conYVl
+										<isEqual property="system" compareValue="U">
+										,SUM(tofXVl) AS tofXVl, 
+										SUM(tofYVl) AS tofYVl
+										</isEqual>
+								  FROM ( 
+										SELECT						
+												SUBSTR (MIN_TIME, 0, 12) AS MIN_TIME,
+													<isEqual property="system" compareValue="U">
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(BRANCH_NO, #branchNoX#, DECODE(ITEM_CODE,'TUR00', AVG (MIN_VL)))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE = 'TUR00')),0) AS turXVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeY#,DECODE(BRANCH_NO, #branchNoY#, DECODE(ITEM_CODE,'TUR00', AVG (MIN_VL)))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE ='TUR00')),0) AS turYVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(BRANCH_NO, #branchNoX#, DECODE(ITEM_CODE,'TMP00', AVG (MIN_VL)))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE = 'TMP00')),0) AS tmpXVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeY#,DECODE(BRANCH_NO, #branchNoY#, DECODE(ITEM_CODE,'TMP00', AVG (MIN_VL)))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE ='TMP00')),0) AS tmpYVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(BRANCH_NO, #branchNoX#, DECODE(ITEM_CODE,'PHY00', AVG (MIN_VL)))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE = 'PHY00')),0) AS phyXVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeY#, DECODE(BRANCH_NO, #branchNoY#, DECODE(ITEM_CODE,'PHY00', AVG (MIN_VL)))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE ='PHY00')),0) AS phyYVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeX#, DECODE(BRANCH_NO, #branchNoX#, DECODE(ITEM_CODE,'DOW00', AVG (MIN_VL)))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE = 'DOW00')),0) AS dowXVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeY#, DECODE(BRANCH_NO, #branchNoY#, DECODE(ITEM_CODE,'DOW00', AVG (MIN_VL)))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE ='DOW00')),0) AS dowYVl,	  
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeX#, DECODE(BRANCH_NO, #branchNoX#, DECODE(ITEM_CODE,'CON00', AVG (MIN_VL)))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE = 'CON00')),0) AS conXVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeY#, DECODE(BRANCH_NO, #branchNoY#, DECODE(ITEM_CODE,'CON00', AVG (MIN_VL)))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE ='CON00')),0) AS conYVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeX#, DECODE(BRANCH_NO, #branchNoX#, DECODE(ITEM_CODE,'TOF00', AVG (MIN_VL)))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE = 'TOF00')),0) AS tofXVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeY#, DECODE(BRANCH_NO, #branchNoY#, DECODE(ITEM_CODE,'CON00', AVG (MIN_VL)))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE ='TOF00')),0) AS tofYVl
+													</isEqual>
+													<isNotEqual property="system" compareValue="U">
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(ITEM_CODE,'TUR00', AVG (MIN_VL))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE = 'TUR00')),0) AS turXVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeY#,DECODE(ITEM_CODE,'TUR00', AVG (MIN_VL))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE ='TUR00')),0) AS turYVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(ITEM_CODE,'TMP00', AVG (MIN_VL))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE = 'TMP00')),0) AS tmpXVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeY#,DECODE(ITEM_CODE,'TMP00', AVG (MIN_VL))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE ='TMP00')),0) AS tmpYVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(ITEM_CODE,'PHY00', AVG (MIN_VL))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE = 'PHY00')),0) AS phyXVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeY#,DECODE(ITEM_CODE,'PHY00', AVG (MIN_VL))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE ='PHY00')),0) AS phyYVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(ITEM_CODE,'DOW00', AVG (MIN_VL))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE = 'DOW00')),0) AS dowXVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeY#,DECODE(ITEM_CODE,'DOW00', AVG (MIN_VL))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE ='DOW00')),0) AS dowYVl,	  
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(ITEM_CODE,'CON00', AVG (MIN_VL))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE = 'CON00')),0) AS conXVl,
+													NVL (ROUND (DECODE (FACT_CODE, #factCodeY#,DECODE(ITEM_CODE,'CON00', AVG (MIN_VL))),
+																(SELECT TO_NUMBER (ITEM_DP2)
+																 FROM T_ITEM_INFO
+																WHERE ITEM_CODE ='CON00')),0) AS conYVl
+													</isNotEqual>	 
+											FROM (
+													SELECT A.* FROM T_MIN_DATA A, T_FACT_MEASU_ITEM I
+													WHERE A.ITEM_CODE = I.ITEM_CODE 
+													AND A.FACT_CODE = I.FACT_CODE
+													AND A.BRANCH_NO = I.BRANCH_NO 
+													AND A.FACT_CODE = #factCodeX#
+													AND A.BRANCH_NO = #branchNoX#
+													AND MIN_TIME BETWEEN #startDate# || '00' AND #endDate# || '99'
+													UNION
+													SELECT A.* FROM T_MIN_DATA A, T_FACT_MEASU_ITEM I 
+													WHERE A.ITEM_CODE = I.ITEM_CODE
+													AND A.FACT_CODE = I.FACT_CODE
+													AND A.BRANCH_NO = I.BRANCH_NO 
+													AND A.FACT_CODE = #factCodeY#
+													AND A.BRANCH_NO = #branchNoY#
+													AND MIN_TIME BETWEEN #startDate# || '00' AND #endDate# || '99'
+											 ) A
+										GROUP BY FACT_CODE, BRANCH_NO, ITEM_CODE, SUBSTR (MIN_TIME, 0, 12)
+									 )
+							  GROUP BY MIN_TIME 
+							) M_DATA
+			ORDER BY time2
+	</statement>
+	
+	<statement id="getItemAnalysisStatsAutoList" parameterClass="statsSearchVO" resultClass="statsAnalysisVO">
+	<![CDATA[
+		SELECT		SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+				  || ' '
+				  || SUBSTR (M_DATA.MIN_TIME, 9, 2)
+				  AS timeFrm,
+					 SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+				  || ':'
+				  || SUBSTR (M_DATA.MIN_TIME, 9, 2)
+				  AS time,
+				ITEMX_VL AS itemXVl,
+				TRIM (TO_CHAR (ITEMX_VL, '999,999,999,990.99')) AS itemXVlStr,
+				ITEMY_VL AS itemYVl,
+				TRIM (TO_CHAR (ITEMY_VL, '999,999,999,990.99')) AS itemYVlStr
+		  FROM (  SELECT MIN_TIME,
+						 MAX(ITEMX_VL) AS ITEMX_VL,
+						 MAX(ITEMY_VL) AS ITEMY_VL
+					FROM ( 
+							SELECT						
+									SUBSTR (MIN_TIME, 0, 10) AS MIN_TIME,
+									NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(ITEM_CODE,#itemCodeX#, AVG (MIN_VL))),
+												(SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM
+												WHERE ITEM_CODE = #itemCodeX#)),0) AS ITEMX_VL,
+									NVL (ROUND (DECODE (FACT_CODE, #factCodeY#,DECODE(ITEM_CODE,#itemCodeY#, AVG (MIN_VL))),
+												(SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM
+												WHERE ITEM_CODE = #itemCodeY#)),0) AS ITEMY_VL
+								FROM (
+									SELECT MIN_ITME,
+											FACT_CODE,
+											BRANCH_NO,
+											ITEM_CODE,
+											MIN_VL
+									FROM (								
+											SELECT MSR_DATE AS MIN_TIME,
+													SITE_ID AS FACT_CODE,
+													1 AS BRANCH_NO,					
+													DECODE (LV, 1, 'M0100', 2, 'M0200', 3, 'M0300', 4, 'M0400', 5, 'M0500',
+														6, 'M0600', 7, 'M0700', 8, 'M0800', 9, 'M0900', 10, 'M1000',
+														11, 'M1100', 12, 'M1200', 13, 'M1300', 14, 'M1400', 15, 'M1500',
+														16, 'M1600', 17, 'M1700', 18, 'M1800', 19, 'M1900', 20, 'M2000',
+														21, 'M2100', 22, 'M2200', 23, 'M2300', 24, 'M2400', 25, 'M2500',
+														26, 'M2600', 27, 'M2700', 28, 'M2800', 29, 'M2900', 30, 'M3000',
+														31, 'M3100', 32, 'M3200', 33, 'M3300', 34, 'M3400', 35, 'M3500',
+														36, 'M3600', 37, 'M3700', 38, 'M3800', 39, 'M3900', 40, 'M4000',
+														41, 'M4100', 42, 'M4200', 43, 'M4300', 44, 'M4400', 45, 'M4500',
+														46, 'M4600', 47, 'M4700', 48, 'M4800', 49, 'M4900', 50, 'M5000',
+														51, 'M5100', 52, 'M5200', 53, 'M5300', 54, 'M5400', 55, 'M5500',
+														56, 'M5600', 57, 'M5700', 58, 'M5800', 59, 'M5900', 60, 'M6000',
+														61, 'M6100', 62, 'M6200', 63, 'M6300', 64, 'M6400', 65, 'M6500',
+														66, 'M6600', 67, 'M6700', 68, 'M6800', 69, 'M6900', 70, 'M7000'
+													) AS ITEM_CODE,
+													NVL(DECODE (LV, 1, M01, 2, M02, 3, M03, 4, M04, 5, M05,
+														6, M06, 7, M07, 8, M08, 9, M09, 10, M10,
+														11, M11, 12, M12, 13, M13, 14, M14, 15, M15,
+														16, M16, 17, M17, 18, M18, 19, M19, 20, M20,
+														21, M21, 22, M22, 23, M23, 24, M24, 25, M25,
+														26, M26, 27, M27, 28, M28, 29, M29, 30, M30,
+														31, M31, 32, M32, 33, M33, 34, M34, 35, M35,
+														36, M36, 37, M37, 38, M38, 39, M39, 40, M40,
+														41, M41, 42, M42, 43, M43, 44, M44, 45, M45,
+														46, M46, 47, M47, 48, M48, 49, M49, 50, M50,
+														51, M51, 52, M52, 53, M53, 54, M54, 55, M55,
+														56, M56, 57, M57, 58, M58, 59, M59, 60, M60,
+														61, M61, 62, M62, 63, M63, 64, M64, 65, M65,
+														66, M66, 67, M67, 68, M68, 69, M69, 70, M70
+													),0) AS MIN_VL
+											  FROM (	SELECT LEVEL LV
+														  FROM DUAL
+													CONNECT BY LEVEL <= 70), SCOTT.MSRDATA_TM
+											WHERE SITE_ID IN (#factCodeX#, #factCodeY#)
+											AND MSR_DATE BETWEEN #startDate# || '00' AND #endDate# || '99'
+									)
+									WHERE ITEM_CODE IN ( TRIM(#itemCodeX#), TRIM(#itemCodeY#))
+								) A
+							GROUP BY FACT_CODE,
+									 BRANCH_NO,
+									 ITEM_CODE,
+									 SUBSTR (MIN_TIME, 0, 10)
+						 )
+				  GROUP BY MIN_TIME 
+				) M_DATA
+	]]>
+	<isEqual property="sort" compareValue="chart">
+		ORDER BY itemXVl
+	</isEqual>
+	<isEqual property="sort" compareValue="list">
+		ORDER BY timeFrm
+	</isEqual>
+	</statement>
+	
+	<statement id="getItemAnalysisStatsTmsList" parameterClass="statsSearchVO" resultClass="statsAnalysisVO">
+	<![CDATA[	
+		SELECT		SUBSTR (M_DATA.MIN_TIME, 1, 4)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '-'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+				  || ' '
+				  || SUBSTR (M_DATA.MIN_TIME, 9, 2)
+				  AS timeFrm,
+					 SUBSTR (M_DATA.MIN_TIME, 5, 2)
+				  || '/'
+				  || SUBSTR (M_DATA.MIN_TIME, 7, 2)
+				  || ':'
+				  || SUBSTR (M_DATA.MIN_TIME, 9, 2)
+				  AS time,
+				ITEMX_VL AS itemXVl,
+				TRIM (TO_CHAR (ITEMX_VL, '999,999,999,990.99')) AS itemXVlStr,
+				ITEMY_VL AS itemYVl,
+				TRIM (TO_CHAR (ITEMY_VL, '999,999,999,990.99')) AS itemYVlStr
+		  FROM (  SELECT MIN_TIME, 
+						 SUM(ITEMX_VL) AS ITEMX_VL, 
+						 SUM(ITEMY_VL) AS ITEMY_VL
+					FROM ( 
+							SELECT						
+									SUBSTR (MIN_TIME, 0, 10) AS MIN_TIME,
+									NVL (ROUND (DECODE (FACT_CODE, #factCodeX#,DECODE(ITEM_CODE,#itemCodeX#, AVG (MIN_VL))),
+												(SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = #itemCodeX#)),0) AS ITEMX_VL,
+									NVL (ROUND (DECODE (FACT_CODE, #factCodeY#,DECODE(ITEM_CODE,#itemCodeY#, AVG (MIN_VL))),
+												(SELECT TO_NUMBER (ITEM_DP2)
+												 FROM T_ITEM_INFO
+												WHERE ITEM_CODE = #itemCodeY#)),0) AS ITEMY_VL
+								FROM (
+									SELECT * FROM WTMSC_MIN_REAL@TMS 
+									WHERE FACT_CODE = #factCodeX#
+									AND WAST_NO = #branchNoX#
+									AND ITEM_CODE = #itemCodeX#
+									AND MIN_TIME BETWEEN #startDate# || '00' AND #endDate# || '99'
+									UNION
+									SELECT * FROM WTMSC_MIN_REAL@TMS 
+									WHERE FACT_CODE = #factCodeY#
+									AND WAST_NO = #branchNoY#
+									AND ITEM_CODE = #itemCodeY#
+									AND MIN_TIME BETWEEN #startDate# || '00' AND #endDate# || '99') A
+							GROUP BY FACT_CODE, WAST_NO, ITEM_CODE, SUBSTR (MIN_TIME, 0, 10)
+						 )
+				  GROUP BY MIN_TIME 
+				) M_DATA
+	]]>
+	<isEqual property="sort" compareValue="chart">
+		ORDER BY factCode, branchNo, itemXVl
+	</isEqual>
+	<isEqual property="sort" compareValue="list">
+		ORDER BY factCode, branchNo, timeFrm
+	</isEqual>
+	</statement>	
+	
+	<statement id="getFactBranchList" parameterClass="hashMap" resultClass="hashMap">
+	<![CDATA[	
+		SELECT A.FACT_CODE as factCode,
+				A.FACT_NAME as factName, 
+				B.BRANCH_NO as branchNo, 
+				B.BRANCH_NAME as branchName
+		  FROM T_FACT_INFO A, T_FACT_BRANCH_INFO B
+		 WHERE	 SYS_KIND = #sysKind#
+				AND A.FACT_CODE = B.FACT_CODE
+				AND A.FACT_USE_FLAG = 'Y'
+				AND B.BRANCH_USE_FLAG = 'Y'
+				AND ROWNUM < 11
+	]]>
+	</statement>
+	
+	<statement id="getStatsBasin" parameterClass="statsVO" resultClass="statsVO">
+	SELECT
+		NVL(FACT.FACT_NO, '-') AS factNo,
+		<isEqual property="sysKind" compareValue="T">
+<!-- 		AREA.REG_NAME || '(' || NVL(FACT.FACT_NO,'-') || ')' AS regName, -->
+		</isEqual>
+		<isNotEqual property="sysKind" compareValue="T">
+<!-- 		NVL(AREA.REG_NAME, '-') AS regName, -->
+		</isNotEqual>
+		STATS.SYS_KIND AS sysKind,
+		SUBSTR(STATS_DATE, 1,4) as year,
+		SUBSTR(STATS_DATE, 5,2) as startMonth,
+		SUBSTR(STATS_DIV, 2,1) || '분기' as quarter,
+		DECODE(STATS_DIV, 'D', TO_CHAR(TO_DATE(STATS_DATE, 'YYYYMMDD'), 'YYYY/MM/DD')) day,
+		DECODE(STATS.SYS_KIND, 'T', '탁수모니터링', 'U', '이동형측정기기', 'A', '국가수질자동측정망') AS sysName,
+		STATS.FACT_CODE AS factCode,
+		STATS.BRANCH_NO AS branchNo,
+		BRANCH.BRANCH_NAME || '-' || BRANCH.BRANCH_NO AS branchName,
+		TO_CHAR(MAX(TO_NUMBER(STATS.RECVRT)), 'FM999,999,999,990.00') || '%' AS recvRt,	
+		<isEqual property="sysKind" compareValue="A">
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON00', MAX_VL)), 'FM999,999,999,990.000') conMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON00', MIN_VL)), 'FM999,999,999,990.000') conMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'CON00', AVG_VL)),'FM999,999,999,990.000') conAvg,
+
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW00', MAX_VL)), 'FM999,999,999,990.00') dowMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW00', MIN_VL)), 'FM999,999,999,990.00') dowMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'DOW00', AVG_VL)),'FM999,999,999,990.00') dowAvg,
+
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP00', MAX_VL)), 'FM999,999,999,990.00') tmpMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP00', MIN_VL)), 'FM999,999,999,990.00') tmpMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TMP00', AVG_VL)),'FM999,999,999,990.00') tmpAvg,
+
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY00', MAX_VL)), 'FM999,999,999,990.00') phyMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY00', MIN_VL)), 'FM999,999,999,990.00') phyMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHY00', AVG_VL)),'FM999,999,999,990.00') phyAvg,
+
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TUR00', MAX_VL)), 'FM999,999,990.00') turMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TUR00', MIN_VL)), 'FM999,999,990.00') turMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TUR00', AVG_VL)),'FM999,999,990.00') turAvg,
+
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOF00', MAX_VL)), 'FM999,999,990.00') tofMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOF00', MIN_VL)), 'FM999,999,990.00') tofMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TOF00', AVG_VL)),'FM999,999,990.00') tofAvg,
+		</isEqual>
+		<isEqual property="sysKind" compareValue="U">
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'CON00'), '0')) conMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'CON00'), '0')) conMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'CON00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'CON00'), '0')) conAvg,
+
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'DOW00'), '0')) dowMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'DOW00'), '0')) dowMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'DOW00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'DOW00'), '0')) dowAvg,
+
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TMP00'), '0')) tmpMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TMP00'), '0')) tmpMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TMP00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TMP00'), '0')) tmpAvg, 
+
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'PHY00'), '0')) phyMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'PHY00'), '0')) phyMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHY00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'PHY00'), '0')) phyAvg, 
+
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TUR00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TUR00'), '0')) turMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TUR00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TUR00'), '0')) turMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TUR00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TUR00'), '0')) turAvg, 
+
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOF00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TOF00'), '0')) tofMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOF00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TOF00'), '0')) tofMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TOF00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TOF00'), '0')) tofAvg, 
+		</isEqual>
+		
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP01', MAX_VL)), 'FM999,999,999,990.00') tmp1Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP01', MIN_VL)), 'FM999,999,999,990.00') tmp1Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TMP01', AVG_VL)),'FM999,999,999,990.00') tmp1Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP02', MAX_VL)), 'FM999,999,999,990.00') tmp2Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP02', MIN_VL)), 'FM999,999,999,990.00') tmp2Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TMP02', AVG_VL)),'FM999,999,999,990.00') tmp2Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY01', MAX_VL)), 'FM999,999,999,990.00') phy1Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY01', MIN_VL)), 'FM999,999,999,990.00') phy1Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHY01', AVG_VL)),'FM999,999,999,990.00') phy1Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY02', MAX_VL)), 'FM999,999,999,990.00') phy2Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY02', MIN_VL)), 'FM999,999,999,990.00') phy2Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHY02', AVG_VL)),'FM999,999,999,990.00') phy2Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW01', MAX_VL)), 'FM999,999,999,990.00') dow1Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW01', MIN_VL)), 'FM999,999,999,990.00') dow1Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'DOW01', AVG_VL)),'FM999,999,999,990.00') dow1Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW02', MAX_VL)), 'FM999,999,999,990.00') dow2Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW02', MIN_VL)), 'FM999,999,999,990.00') dow2Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'DOW02', AVG_VL)),'FM999,999,999,990.00') dow2Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON01', MAX_VL)), 'FM999,999,999,990.000') con1Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON01', MIN_VL)), 'FM999,999,990.000') con1Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'CON01', AVG_VL)),'FM999,999,990.000') con1Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON02', MAX_VL)), 'FM999,999,990.000') con2Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON02', MIN_VL)), 'FM999,999,990.000') con2Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'CON02', AVG_VL)),'FM999,999,990.000') con2Avg,
+		
+		
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'IMP00', MAX_VL)), 'FM999,999,990.00') impMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'IMP00', MIN_VL)), 'FM999,999,990.00') impMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'IMP00', AVG_VL)),'FM999,999,990.00') impAvg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'LIM00', MAX_VL)), 'FM999,999,990.00') limMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'LIM00', MIN_VL)), 'FM999,999,990.00') limMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'LIM00', AVG_VL)),'FM999,999,990.00') limAvg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RIM00', MAX_VL)), 'FM999,999,990.00') rimMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RIM00', MIN_VL)), 'FM999,999,990.00') rimMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'RIM00', AVG_VL)),'FM999,999,990.00') rimAvg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'LTX00', MAX_VL)), 'FM999,999,990.00') ltxMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'LTX00', MIN_VL)), 'FM999,999,990.00') ltxMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'LTX00', AVG_VL)),'FM999,999,990.00') ltxAvg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RTX00', MAX_VL)), 'FM999,999,990.00') rtxMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RTX00', MIN_VL)), 'FM999,999,990.00') rtxMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'RTX00', AVG_VL)),'FM999,999,990.00') rtxAvg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOX00', MAX_VL)), 'FM999,999,990.00') toxMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOX00', MIN_VL)), 'FM999,999,990.00') toxMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TOX00', AVG_VL)),'FM999,999,990.00') toxAvg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'EVN00', MAX_VL)), 'FM999,999,990.00') evnMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'EVN00', MIN_VL)), 'FM999,999,990.00') evnMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'EVN00', AVG_VL)),'FM999,999,990.00') evnAvg,
+		
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC01', MAX_VL)), 'FM999,999,990.00') voc1Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC01', MIN_VL)), 'FM999,999,990.00') voc1Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC01', AVG_VL)),'FM999,999,990.00') voc1Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC02', MAX_VL)), 'FM999,999,990.00') voc2Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC02', MIN_VL)), 'FM999,999,990.00') voc2Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC02', AVG_VL)),'FM999,999,990.00') voc2Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC03', MAX_VL)), 'FM999,999,990.00') voc3Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC03', MIN_VL)), 'FM999,999,990.00') voc3Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC03', AVG_VL)),'FM999,999,990.00') voc3Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC04', MAX_VL)), 'FM999,999,990.00') voc4Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC04', MIN_VL)), 'FM999,999,990.00') voc4Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC04', AVG_VL)),'FM999,999,990.00') voc4Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC05', MAX_VL)), 'FM999,999,990.00') voc5Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC05', MIN_VL)), 'FM999,999,990.00') voc5Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC05', AVG_VL)),'FM999,999,990.00') voc5Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC06', MAX_VL)), 'FM999,999,990.00') voc6Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC06', MIN_VL)), 'FM999,999,990.00') voc6Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC06', AVG_VL)),'FM999,999,990.00') voc6Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC07', MAX_VL)), 'FM999,999,990.00') voc7Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC07', MIN_VL)), 'FM999,999,990.00') voc7Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC07', AVG_VL)),'FM999,999,990.00') voc7Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC08', MAX_VL)), 'FM999,999,990.00') voc8Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC08', MIN_VL)), 'FM999,999,990.00') voc8Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC08', AVG_VL)),'FM999,999,990.00') voc8Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC09', MAX_VL)), 'FM999,999,990.00') voc9Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC09', MIN_VL)), 'FM999,999,990.00') voc9Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC09', AVG_VL)),'FM999,999,990.00') voc9Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC10', MAX_VL)), 'FM999,999,990.00') voc10Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC10', MIN_VL)), 'FM999,999,990.00') voc10Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC10', AVG_VL)),'FM999,999,990.00') voc10Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC11', MAX_VL)), 'FM999,999,990.00') voc11Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC11', MIN_VL)), 'FM999,999,990.00') voc11Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC11', AVG_VL)),'FM999,999,990.00') voc11Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC12', MAX_VL)), 'FM999,999,990.00') voc12Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC12', MIN_VL)), 'FM999,999,990.00') voc12Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC12', AVG_VL)),'FM999,999,990.00') voc12Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC13', MAX_VL)), 'FM999,999,990.00') voc13Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC13', MIN_VL)), 'FM999,999,990.00') voc13Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC13', AVG_VL)),'FM999,999,990.00') voc13Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC14', MAX_VL)), 'FM999,999,990.00') voc14Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC14', MIN_VL)), 'FM999,999,990.00') voc14Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC14', AVG_VL)),'FM999,999,990.00') voc14Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC15', MAX_VL)), 'FM999,999,990.00') voc15Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC15', MIN_VL)), 'FM999,999,990.00') voc15Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC15', AVG_VL)),'FM999,999,990.00') voc15Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'COP00', MAX_VL)), 'FM999,999,990.00') copMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'COP00', MIN_VL)), 'FM999,999,990.00') copMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'COP00', AVG_VL)),'FM999,999,990.00') copAvg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PLU00', MAX_VL)), 'FM999,999,990.00') pluMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PLU00', MIN_VL)), 'FM999,999,990.00') pluMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PLU00', AVG_VL)),'FM999,999,990.00') pluAvg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'ZIN00', MAX_VL)), 'FM999,999,990.00') zinMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'ZIN00', MIN_VL)), 'FM999,999,990.00') zinMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'ZIN00', AVG_VL)),'FM999,999,990.00') zinAvg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CAD00', MAX_VL)), 'FM999,999,990.00') cadMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CAD00', MIN_VL)), 'FM999,999,990.00') cadMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'CAD00', AVG_VL)),'FM999,999,990.00') cadAvg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHE00', MAX_VL)), 'FM999,999,990.00') pheMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHE00', MIN_VL)), 'FM999,999,990.00') pheMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHE00', AVG_VL)),'FM999,999,990.00') pheAvg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHL00', MAX_VL)), 'FM999,999,990.00') phlMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHL00', MIN_VL)), 'FM999,999,990.00') phlMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHL00', AVG_VL)),'FM999,999,990.00') phlAvg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOC00', MAX_VL)), 'FM999,999,990.00') tocMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOC00', MIN_VL)), 'FM999,999,990.00') tocMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TOC00', AVG_VL)),'FM999,999,990.00') tocAvg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TON00', MAX_VL)), 'FM999,999,990.00') tonMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TON00', MIN_VL)), 'FM999,999,990.00') tonMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TON00', AVG_VL)),'FM999,999,990.00') tonAvg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOP00', MAX_VL)), 'FM999,999,990.00') topMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOP00', MIN_VL)), 'FM999,999,990.00') topMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TOP00', AVG_VL)),'FM999,999,990.00') topAvg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'NH400', MAX_VL)), 'FM999,999,990.00') nh4Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'NH400', MIN_VL)), 'FM999,999,990.00') nh4Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'NH400', AVG_VL)),'FM999,999,990.00') nh4Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'NO300', MAX_VL)), 'FM999,999,990.00') no3Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'NO300', MIN_VL)), 'FM999,999,990.00') no3Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'NO300', AVG_VL)),'FM999,999,990.00') no3Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PO400', MAX_VL)), 'FM999,999,990.00') po4Max,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PO400', MIN_VL)), 'FM999,999,990.00') po4Min,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PO400', AVG_VL)),'FM999,999,990.00') po4Avg,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RIN00', MAX_VL)), 'FM999,999,990.00') rinMax,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RIN00', MIN_VL)), 'FM999,999,990.00') rinMin,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'RIN00', AVG_VL)),'FM999,999,990.00') rinAvg
+	FROM
+		T_BASIN_STATS STATS,
+		T_FACT_BRANCH_INFO BRANCH,
+		T_FACT_INFO FACT
+<!-- 		T_WEATHER_AREA AREA -->
+		<isNotEqual property="roleCode" compareValue="ROLE_ADMIN">
+		, T_MEMBER_AUTHORINFO AUTH
+		</isNotEqual>
+	WHERE BRANCH_USE_FLAG = 'Y'
+		AND STATS.FACT_CODE = BRANCH.FACT_CODE
+		AND STATS.BRANCH_NO = BRANCH.BRANCH_NO
+<!-- 		AND STATS.FACT_CODE = AREA.FACT_CODE -->
+		AND STATS.FACT_CODE = FACT.FACT_CODE
+		<isEqual property="sysKind" compareValue="U">
+<!-- 		AND STATS.BRANCH_NO = AREA.BRANCH_NO -->
+		</isEqual>
+		<isEqual property="month" compareValue="all">
+		AND STATS_DATE LIKE #startDate# || '%'
+		</isEqual>
+		<isEqual property="quarter" compareValue="all">
+		AND STATS_DATE LIKE #startDate# || '%'
+		</isEqual>
+		<isEqual property="day" compareValue="all">
+		AND STATS_DATE LIKE #startDate# || '%'
+		</isEqual>
+		<isNotEqual property="month" compareValue="all">
+			<isNotEqual property="quarter" compareValue="all">
+				<isNotEqual property="day" compareValue="all">
+		AND STATS_DATE = #startDate#
+				</isNotEqual>
+			</isNotEqual>
+		</isNotEqual>
+		AND STATS_DIV like #statsDiv# || '%'
+		<isNotEqual property="factCode" compareValue="all">
+		AND STATS.FACT_CODE = #factCode#
+		</isNotEqual>
+		AND STATS.RIVER_DIV = #riverDiv#
+		AND STATS.SYS_KIND = #sysKind#
+		<isNotEqual property="roleCode" compareValue="ROLE_ADMIN">
+			AND AUTH.MEMBER_ID = #userId#
+			AND FACT.RIVER_DIV = AUTH.RIVER_DIV
+			AND FACT.FACT_CODE = AUTH.FACT_CODE
+			AND BRANCH.BRANCH_NO = AUTH.BRANCH_NO
+		</isNotEqual>
+	GROUP BY 
+<!-- 		AREA.REG_NAME, -->
+		STATS.SYS_KIND,
+		STATS.FACT_CODE,
+		STATS.BRANCH_NO,
+		STATS.STATS_DATE,
+		STATS.STATS_DIV,
+		BRANCH.BRANCH_NAME,
+		BRANCH.BRANCH_NO,
+		FACT.FACT_NO
+	ORDER BY
+		YEAR DESC, STARTMONTH DESC, QUARTER DESC, DAY DESC, TO_NUMBER(FACT_NO) ASC, BRANCH.BRANCH_NO ASC
+	</statement>
+	
+	
+	<statement id="getStats" parameterClass="statsVO" resultClass="statsVO">
+	SELECT * FROM 
+	(
+		SELECT
+			FACT.RIVER_DIV as riverDiv,
+			DECODE(FACT.RIVER_DIV, 'R01', '한강', 'R02', '낙동강', 'R03', '금강', 'R04', '영산강') AS riverName,
+			NVL(MAX(branch.BRANCH_NAME || '-'|| BRANCH.branch_no), '-') AS factNo,
+			<isEqual property="sysKind" compareValue="T">
+<!-- 				AREA.REG_NAME || '(' || NVL(FACT.FACT_NO,'-') || ')' AS regName, -->
+			</isEqual>
+			<isNotEqual property="sysKind" compareValue="T">
+<!-- 				NVL(AREA.REG_NAME, '-') AS regName, -->
+			</isNotEqual>
+			STATS.SYS_KIND AS sysKind,
+			#startDate# statsDate,
+			#statsDiv# statsDiv,
+			SUBSTR(#startDate#, 1,4) as year,
+			SUBSTR(#startDate#, 5,2) as startMonth,
+			SUBSTR(#statsDiv#, 2,1) || '분기' as quarter,
+			DECODE(#statsDiv#, 'D', TO_CHAR(TO_DATE(#startDate#, 'YYYYMMDD'), 'YYYY/MM/DD')) day,
+			DECODE(STATS.SYS_KIND, 'T', '탁수모니터링', 'U', '이동형측정기기', 'A', '국가수질자동측정망') AS sysName,
+			STATS.FACT_CODE AS factCode,
+			STATS.BRANCH_NO AS branchNo,
+			BRANCH.BRANCH_NAME || '-' || BRANCH.BRANCH_NO AS branchName,
+			TO_CHAR(NVL(MAX(TO_NUMBER(STATS.RECVRT)),0), 'FM999,999,999,990.00') || '%' AS recvRt,	 
+			
+			<isEqual property="sysKind" compareValue="A">
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON00', MAX_VL)), 'FM999,999,999,990.000') conMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON00', MIN_VL)), 'FM999,999,999,990.000') conMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'CON00', AVG_VL)),'FM999,999,999,990.000') conAvg,
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW00', MAX_VL)), 'FM999,999,999,990.00') dowMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW00', MIN_VL)), 'FM999,999,999,990.00') dowMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'DOW00', AVG_VL)),'FM999,999,999,990.00') dowAvg,
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP00', MAX_VL)), 'FM999,999,999,990.00') tmpMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP00', MIN_VL)), 'FM999,999,999,990.00') tmpMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TMP00', AVG_VL)),'FM999,999,999,990.00') tmpAvg,
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY00', MAX_VL)), 'FM999,999,999,990.00') phyMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY00', MIN_VL)), 'FM999,999,999,990.00') phyMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHY00', AVG_VL)),'FM999,999,999,990.00') phyAvg,
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TUR00', MAX_VL)), 'FM999,999,990.00') turMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TUR00', MIN_VL)), 'FM999,999,990.00') turMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TUR00', AVG_VL)),'FM999,999,990.00') turAvg,
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOF00', MAX_VL)), 'FM999,999,990.00') tofMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOF00', MIN_VL)), 'FM999,999,990.00') tofMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TOF00', AVG_VL)),'FM999,999,990.00') tofAvg,
+			</isEqual>
+			<isEqual property="sysKind" compareValue="U">
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'CON00'), '0')) conMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'CON00'), '0')) conMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'CON00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'CON00'), '0')) conAvg,
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'DOW00'), '0')) dowMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'DOW00'), '0')) dowMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'DOW00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'DOW00'), '0')) dowAvg,
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TMP00'), '0')) tmpMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TMP00'), '0')) tmpMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TMP00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TMP00'), '0')) tmpAvg, 
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'PHY00'), '0')) phyMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'PHY00'), '0')) phyMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHY00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'PHY00'), '0')) phyAvg, 
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TUR00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TUR00'), '0')) turMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TUR00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TUR00'), '0')) turMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TUR00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TUR00'), '0')) turAvg, 
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOF00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TOF00'), '0')) tofMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOF00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TOF00'), '0')) tofMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TOF00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TOF00'), '0')) tofAvg, 
+			</isEqual>
+			
+			
+			
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP01', MAX_VL)), 'FM999,999,990.00') tmp1Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP01', MIN_VL)), 'FM999,999,990.00') tmp1Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TMP01', AVG_VL)),'FM999,999,990.00') tmp1Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP02', MAX_VL)), 'FM999,999,990.00') tmp2Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP02', MIN_VL)), 'FM999,999,990.00') tmp2Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TMP02', AVG_VL)),'FM999,999,990.00') tmp2Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY01', MAX_VL)), 'FM999,999,990.00') phy1Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY01', MIN_VL)), 'FM999,999,990.00') phy1Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHY01', AVG_VL)),'FM999,999,990.00') phy1Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY02', MAX_VL)), 'FM999,999,990.00') phy2Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY02', MIN_VL)), 'FM999,999,990.00') phy2Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHY02', AVG_VL)),'FM999,999,990.00') phy2Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW01', MAX_VL)), 'FM999,999,990.00') dow1Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW01', MIN_VL)), 'FM999,999,990.00') dow1Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'DOW01', AVG_VL)),'FM999,999,990.00') dow1Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW02', MAX_VL)), 'FM999,999,990.00') dow2Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW02', MIN_VL)), 'FM999,999,990.00') dow2Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'DOW02', AVG_VL)),'FM999,999,990.00') dow2Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON01', MAX_VL)), 'FM999,999,990.000') con1Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON01', MIN_VL)), 'FM999,999,990.000') con1Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'CON01', AVG_VL)),'FM999,999,990.000') con1Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON02', MAX_VL)), 'FM999,999,990.000') con2Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON02', MIN_VL)), 'FM999,999,990.000') con2Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'CON02', AVG_VL)),'FM999,999,990.000') con2Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'IMP00', MAX_VL)), 'FM999,999,990.00') impMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'IMP00', MIN_VL)), 'FM999,999,990.00') impMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'IMP00', AVG_VL)),'FM999,999,990.00') impAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'LIM00', MAX_VL)), 'FM999,999,990.00') limMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'LIM00', MIN_VL)), 'FM999,999,990.00') limMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'LIM00', AVG_VL)),'FM999,999,990.00') limAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RIM00', MAX_VL)), 'FM999,999,990.00') rimMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RIM00', MIN_VL)), 'FM999,999,990.00') rimMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'RIM00', AVG_VL)),'FM999,999,990.00') rimAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'LTX00', MAX_VL)), 'FM999,999,990.00') ltxMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'LTX00', MIN_VL)), 'FM999,999,990.00') ltxMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'LTX00', AVG_VL)),'FM999,999,990.00') ltxAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RTX00', MAX_VL)), 'FM999,999,990.00') rtxMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RTX00', MIN_VL)), 'FM999,999,990.00') rtxMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'RTX00', AVG_VL)),'FM999,999,990.00') rtxAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOX00', MAX_VL)), 'FM999,999,990.00') toxMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOX00', MIN_VL)), 'FM999,999,990.00') toxMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TOX00', AVG_VL)),'FM999,999,990.00') toxAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'EVN00', MAX_VL)), 'FM999,999,990.00') evnMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'EVN00', MIN_VL)), 'FM999,999,990.00') evnMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'EVN00', AVG_VL)),'FM999,999,990.00') evnAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC01', MAX_VL)), 'FM999,999,990.00') voc1Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC01', MIN_VL)), 'FM999,999,990.00') voc1Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC01', AVG_VL)),'FM999,999,990.00') voc1Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC02', MAX_VL)), 'FM999,999,990.00') voc2Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC02', MIN_VL)), 'FM999,999,990.00') voc2Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC02', AVG_VL)),'FM999,999,990.00') voc2Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC03', MAX_VL)), 'FM999,999,990.00') voc3Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC03', MIN_VL)), 'FM999,999,990.00') voc3Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC03', AVG_VL)),'FM999,999,990.00') voc3Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC04', MAX_VL)), 'FM999,999,990.00') voc4Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC04', MIN_VL)), 'FM999,999,990.00') voc4Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC04', AVG_VL)),'FM999,999,990.00') voc4Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC05', MAX_VL)), 'FM999,999,990.00') voc5Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC05', MIN_VL)), 'FM999,999,990.00') voc5Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC05', AVG_VL)),'FM999,999,990.00') voc5Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC06', MAX_VL)), 'FM999,999,990.00') voc6Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC06', MIN_VL)), 'FM999,999,990.00') voc6Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC06', AVG_VL)),'FM999,999,990.00') voc6Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC07', MAX_VL)), 'FM999,999,990.00') voc7Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC07', MIN_VL)), 'FM999,999,990.00') voc7Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC07', AVG_VL)),'FM999,999,990.00') voc7Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC08', MAX_VL)), 'FM999,999,990.00') voc8Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC08', MIN_VL)), 'FM999,999,990.00') voc8Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC08', AVG_VL)),'FM999,999,990.00') voc8Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC09', MAX_VL)), 'FM999,999,990.00') voc9Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC09', MIN_VL)), 'FM999,999,990.00') voc9Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC09', AVG_VL)),'FM999,999,990.00') voc9Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC10', MAX_VL)), 'FM999,999,990.00') voc10Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC10', MIN_VL)), 'FM999,999,990.00') voc10Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC10', AVG_VL)),'FM999,999,990.00') voc10Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC11', MAX_VL)), 'FM999,999,990.00') voc11Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC11', MIN_VL)), 'FM999,999,990.00') voc11Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC11', AVG_VL)),'FM999,999,990.00') voc11Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC12', MAX_VL)), 'FM999,999,990.00') voc12Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC12', MIN_VL)), 'FM999,999,990.00') voc12Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC12', AVG_VL)),'FM999,999,990.00') voc12Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC13', MAX_VL)), 'FM999,999,990.00') voc13Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC13', MIN_VL)), 'FM999,999,990.00') voc13Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC13', AVG_VL)),'FM999,999,990.00') voc13Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC14', MAX_VL)), 'FM999,999,990.00') voc14Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC14', MIN_VL)), 'FM999,999,990.00') voc14Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC14', AVG_VL)),'FM999,999,990.00') voc14Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC15', MAX_VL)), 'FM999,999,990.00') voc15Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC15', MIN_VL)), 'FM999,999,990.00') voc15Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC15', AVG_VL)),'FM999,999,990.00') voc15Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'COP00', MAX_VL)), 'FM999,999,990.00') copMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'COP00', MIN_VL)), 'FM999,999,990.00') copMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'COP00', AVG_VL)),'FM999,999,990.00') copAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PLU00', MAX_VL)), 'FM999,999,990.00') pluMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PLU00', MIN_VL)), 'FM999,999,990.00') pluMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PLU00', AVG_VL)),'FM999,999,990.00') pluAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'ZIN00', MAX_VL)), 'FM999,999,990.00') zinMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'ZIN00', MIN_VL)), 'FM999,999,990.00') zinMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'ZIN00', AVG_VL)),'FM999,999,990.00') zinAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CAD00', MAX_VL)), 'FM999,999,990.00') cadMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CAD00', MIN_VL)), 'FM999,999,990.00') cadMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'CAD00', AVG_VL)),'FM999,999,990.00') cadAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHE00', MAX_VL)), 'FM999,999,990.00') pheMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHE00', MIN_VL)), 'FM999,999,990.00') pheMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHE00', AVG_VL)),'FM999,999,990.00') pheAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHL00', MAX_VL)), 'FM999,999,990.00') phlMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHL00', MIN_VL)), 'FM999,999,990.00') phlMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHL00', AVG_VL)),'FM999,999,990.00') phlAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOC00', MAX_VL)), 'FM999,999,990.00') tocMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOC00', MIN_VL)), 'FM999,999,990.00') tocMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TOC00', AVG_VL)),'FM999,999,990.00') tocAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TON00', MAX_VL)), 'FM999,999,990.00') tonMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TON00', MIN_VL)), 'FM999,999,990.00') tonMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TON00', AVG_VL)),'FM999,999,990.00') tonAvg,
+			 TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOP00', MAX_VL)), 'FM999,999,990.00') topMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOP00', MIN_VL)), 'FM999,999,990.00') topMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TOP00', AVG_VL)),'FM999,999,990.00') topAvg,
+			 TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'NH400', MAX_VL)), 'FM999,999,990.00') nh4Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'NH400', MIN_VL)), 'FM999,999,990.00') nh4Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'NH400', AVG_VL)),'FM999,999,990.00') nh4Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'NO300', MAX_VL)), 'FM999,999,990.00') no3Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'NO300', MIN_VL)), 'FM999,999,990.00') no3Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'NO300', AVG_VL)),'FM999,999,990.00') no3Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PO400', MAX_VL)), 'FM999,999,990.00') po4Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PO400', MIN_VL)), 'FM999,999,990.00') po4Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PO400', AVG_VL)),'FM999,999,990.00') po4Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RIN00', MAX_VL)), 'FM999,999,990.00') rinMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RIN00', MIN_VL)), 'FM999,999,990.00') rinMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'RIN00', AVG_VL)),'FM999,999,990.00') rinAvg,
+			'N' as isCRow,
+			'1' as sq
+		FROM
+			T_BASIN_STATS STATS,
+			T_FACT_BRANCH_INFO BRANCH,
+			T_FACT_INFO FACT
+		WHERE
+			STATS.FACT_CODE(+) = BRANCH.FACT_CODE
+			AND STATS.BRANCH_NO(+) = BRANCH.BRANCH_NO
+			AND BRANCH.FACT_CODE = FACT.FACT_CODE
+			<isEqual property="month" compareValue="all">
+			AND STATS_DATE(+) LIKE #startDate# || '%'
+			</isEqual>
+			<isEqual property="quarter" compareValue="all">
+			AND STATS_DATE(+) LIKE #startDate# || '%'
+			</isEqual>
+			<isEqual property="day" compareValue="all">
+			AND STATS_DATE(+) LIKE #startDate# || '%'
+			</isEqual>
+			<isNotEqual property="month" compareValue="all">
+				<isNotEqual property="quarter" compareValue="all">
+					<isNotEqual property="day" compareValue="all">
+			AND STATS_DATE(+) = #startDate#
+					</isNotEqual>
+				</isNotEqual>
+			</isNotEqual>
+			AND STATS.STATS_DIV(+) like #statsDiv# || '%'
+			AND BRANCH.FACT_CODE = #factCode#
+			AND BRANCH.BRANCH_NO = #branchNo#
+		GROUP BY 
+<!-- 			AREA.REG_NAME, -->
+			STATS.SYS_KIND,
+			STATS.FACT_CODE,
+			STATS.STATS_DATE,
+			STATS.BRANCH_NO,
+			STATS.STATS_DIV,
+			BRANCH.BRANCH_NAME,
+			BRANCH.BRANCH_NO,
+			FACT.FACT_NO,
+			FACT.RIVER_DIV
+<isEqual property="isCompare" compareValue="Y">
+	UNION
+	SELECT
+			FACT.RIVER_DIV as riverDiv,
+			DECODE(FACT.RIVER_DIV, 'R01', '한강', 'R02', '낙동강', 'R03', '금강', 'R04', '영산강') AS riverName,
+			NVL(MAX(branch.BRANCH_NAME || '-'|| BRANCH.branch_no), '-') AS factNo,
+			STATS.SYS_KIND AS sysKind,
+			#startDate# statsDate,
+			#statsDiv# statsDiv,
+			SUBSTR(#startDate#, 1,4) as year,
+			SUBSTR(#startDate#, 5,2) as startMonth,
+			SUBSTR(#statsDiv#, 2,1) || '분기' as quarter,
+			DECODE(#statsDiv#, 'D', TO_CHAR(TO_DATE(#startDate#, 'YYYYMMDD'), 'YYYY/MM/DD')) day,
+			DECODE(STATS.SYS_KIND, 'T', '탁수모니터링', 'U', '이동형측정기기', 'A', '국가수질자동측정망') AS sysName,
+			STATS.FACT_CODE AS factCode,
+			STATS.BRANCH_NO AS branchNo,
+			BRANCH.BRANCH_NAME || '-' || BRANCH.BRANCH_NO AS branchName,
+			TO_CHAR(NVL(MAX(TO_NUMBER(STATS.RECVRT)),0), 'FM999,999,999,990.00') || '%' AS recvRt,	
+			
+			<isEqual property="sysKind" compareValue="A">
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON00', MAX_VL)), 'FM999,999,999,990.000') conMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON00', MIN_VL)), 'FM999,999,999,990.000') conMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'CON00', AVG_VL)),'FM999,999,999,990.000') conAvg,
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW00', MAX_VL)), 'FM999,999,999,990.00') dowMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW00', MIN_VL)), 'FM999,999,999,990.00') dowMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'DOW00', AVG_VL)),'FM999,999,999,990.00') dowAvg,
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP00', MAX_VL)), 'FM999,999,999,990.00') tmpMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP00', MIN_VL)), 'FM999,999,999,990.00') tmpMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TMP00', AVG_VL)),'FM999,999,999,990.00') tmpAvg,
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY00', MAX_VL)), 'FM999,999,999,990.00') phyMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY00', MIN_VL)), 'FM999,999,999,990.00') phyMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHY00', AVG_VL)),'FM999,999,999,990.00') phyAvg,
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TUR00', MAX_VL)), 'FM999,999,990.00') turMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TUR00', MIN_VL)), 'FM999,999,990.00') turMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TUR00', AVG_VL)),'FM999,999,990.00') turAvg,
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOF00', MAX_VL)), 'FM999,999,990.00') tofMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOF00', MIN_VL)), 'FM999,999,990.00') tofMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TOF00', AVG_VL)),'FM999,999,990.00') tofAvg,
+			</isEqual>
+			<isEqual property="sysKind" compareValue="U">
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'CON00'), '0')) conMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'CON00'), '0')) conMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'CON00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'CON00'), '0')) conAvg,
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'DOW00'), '0')) dowMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'DOW00'), '0')) dowMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'DOW00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'DOW00'), '0')) dowAvg,
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TMP00'), '0')) tmpMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TMP00'), '0')) tmpMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TMP00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TMP00'), '0')) tmpAvg, 
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'PHY00'), '0')) phyMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'PHY00'), '0')) phyMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHY00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'PHY00'), '0')) phyAvg, 
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TUR00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TUR00'), '0')) turMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TUR00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TUR00'), '0')) turMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TUR00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TUR00'), '0')) turAvg, 
+	
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOF00', MAX_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TOF00'), '0')) tofMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOF00', MIN_VL)), RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TOF00'), '0')) tofMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TOF00', AVG_VL)),RPAD('FM999,990.', 10+(SELECT VALUE_FORMAT FROM T_ITEM_INFO_ADD WHERE ITEM_CODE = 'TOF00'), '0')) tofAvg, 
+			</isEqual>
+			
+			
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP01', MAX_VL)), 'FM999,999,990.00') tmp1Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP01', MIN_VL)), 'FM999,999,990.00') tmp1Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TMP01', AVG_VL)),'FM999,999,990.00') tmp1Avg,
+			 TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP02', MAX_VL)), 'FM999,999,990.00') tmp2Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TMP02', MIN_VL)), 'FM999,999,990.00') tmp2Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TMP02', AVG_VL)),'FM999,999,990.00') tmp2Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY01', MAX_VL)), 'FM999,999,990.00') phy1Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY01', MIN_VL)), 'FM999,999,990.00') phy1Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHY01', AVG_VL)),'FM999,999,990.00') phy1Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY02', MAX_VL)), 'FM999,999,990.00') phy2Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHY02', MIN_VL)), 'FM999,999,990.00') phy2Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHY02', AVG_VL)),'FM999,999,990.00') phy2Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW01', MAX_VL)), 'FM999,999,990.00') dow1Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW01', MIN_VL)), 'FM999,999,990.00') dow1Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'DOW01', AVG_VL)),'FM999,999,990.00') dow1Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW02', MAX_VL)), 'FM999,999,990.00') dow2Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'DOW02', MIN_VL)), 'FM999,999,990.00') dow2Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'DOW02', AVG_VL)),'FM999,999,990.00') dow2Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON01', MAX_VL)), 'FM999,999,990.000') con1Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON01', MIN_VL)), 'FM999,999,990.000') con1Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'CON01', AVG_VL)),'FM999,999,990.000') con1Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON02', MAX_VL)), 'FM999,999,990.000') con2Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CON02', MIN_VL)), 'FM999,999,990.000') con2Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'CON02', AVG_VL)),'FM999,999,990.000') con2Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'IMP00', MAX_VL)), 'FM999,999,990.00') impMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'IMP00', MIN_VL)), 'FM999,999,990.00') impMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'IMP00', AVG_VL)),'FM999,999,990.00') impAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'LIM00', MAX_VL)), 'FM999,999,990.00') limMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'LIM00', MIN_VL)), 'FM999,999,990.00') limMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'LIM00', AVG_VL)),'FM999,999,990.00') limAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RIM00', MAX_VL)), 'FM999,999,990.00') rimMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RIM00', MIN_VL)), 'FM999,999,990.00') rimMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'RIM00', AVG_VL)),'FM999,999,990.00') rimAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'LTX00', MAX_VL)), 'FM999,999,990.00') ltxMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'LTX00', MIN_VL)), 'FM999,999,990.00') ltxMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'LTX00', AVG_VL)),'FM999,999,990.00') ltxAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RTX00', MAX_VL)), 'FM999,999,990.00') rtxMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RTX00', MIN_VL)), 'FM999,999,990.00') rtxMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'RTX00', AVG_VL)),'FM999,999,990.00') rtxAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOX00', MAX_VL)), 'FM999,999,990.00') toxMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOX00', MIN_VL)), 'FM999,999,990.00') toxMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TOX00', AVG_VL)),'FM999,999,990.00') toxAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'EVN00', MAX_VL)), 'FM999,999,990.00') evnMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'EVN00', MIN_VL)), 'FM999,999,990.00') evnMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'EVN00', AVG_VL)),'FM999,999,990.00') evnAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC01', MAX_VL)), 'FM999,999,990.00') voc1Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC01', MIN_VL)), 'FM999,999,990.00') voc1Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC01', AVG_VL)),'FM999,999,990.00') voc1Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC02', MAX_VL)), 'FM999,999,990.00') voc2Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC02', MIN_VL)), 'FM999,999,990.00') voc2Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC02', AVG_VL)),'FM999,999,990.00') voc2Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC03', MAX_VL)), 'FM999,999,990.00') voc3Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC03', MIN_VL)), 'FM999,999,990.00') voc3Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC03', AVG_VL)),'FM999,999,990.00') voc3Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC04', MAX_VL)), 'FM999,999,990.00') voc4Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC04', MIN_VL)), 'FM999,999,990.00') voc4Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC04', AVG_VL)),'FM999,999,990.00') voc4Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC05', MAX_VL)), 'FM999,999,990.00') voc5Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC05', MIN_VL)), 'FM999,999,990.00') voc5Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC05', AVG_VL)),'FM999,999,990.00') voc5Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC06', MAX_VL)), 'FM999,999,990.00') voc6Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC06', MIN_VL)), 'FM999,999,990.00') voc6Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC06', AVG_VL)),'FM999,999,990.00') voc6Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC07', MAX_VL)), 'FM999,999,990.00') voc7Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC07', MIN_VL)), 'FM999,999,990.00') voc7Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC07', AVG_VL)),'FM999,999,990.00') voc7Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC08', MAX_VL)), 'FM999,999,990.00') voc8Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC08', MIN_VL)), 'FM999,999,990.00') voc8Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC08', AVG_VL)),'FM999,999,990.00') voc8Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC09', MAX_VL)), 'FM999,999,990.00') voc9Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC09', MIN_VL)), 'FM999,999,990.00') voc9Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC09', AVG_VL)),'FM999,999,990.00') voc9Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC10', MAX_VL)), 'FM999,999,990.00') voc10Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC10', MIN_VL)), 'FM999,999,990.00') voc10Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC10', AVG_VL)),'FM999,999,990.00') voc10Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC11', MAX_VL)), 'FM999,999,990.00') voc11Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC11', MIN_VL)), 'FM999,999,990.00') voc11Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC11', AVG_VL)),'FM999,999,990.00') voc11Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC12', MAX_VL)), 'FM999,999,990.00') voc12Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC12', MIN_VL)), 'FM999,999,990.00') voc12Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC12', AVG_VL)),'FM999,999,990.00') voc12Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC13', MAX_VL)), 'FM999,999,990.00') voc13Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC13', MIN_VL)), 'FM999,999,990.00') voc13Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC13', AVG_VL)),'FM999,999,990.00') voc13Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC14', MAX_VL)), 'FM999,999,990.00') voc14Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC14', MIN_VL)), 'FM999,999,990.00') voc14Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC14', AVG_VL)),'FM999,999,990.00') voc14Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC15', MAX_VL)), 'FM999,999,990.00') voc15Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'VOC15', MIN_VL)), 'FM999,999,990.00') voc15Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'VOC15', AVG_VL)),'FM999,999,990.00') voc15Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'COP00', MAX_VL)), 'FM999,999,990.00') copMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'COP00', MIN_VL)), 'FM999,999,990.00') copMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'COP00', AVG_VL)),'FM999,999,990.00') copAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PLU00', MAX_VL)), 'FM999,999,990.00') pluMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PLU00', MIN_VL)), 'FM999,999,990.00') pluMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PLU00', AVG_VL)),'FM999,999,990.00') pluAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'ZIN00', MAX_VL)), 'FM999,999,990.00') zinMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'ZIN00', MIN_VL)), 'FM999,999,990.00') zinMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'ZIN00', AVG_VL)),'FM999,999,990.00') zinAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CAD00', MAX_VL)), 'FM999,999,990.00') cadMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'CAD00', MIN_VL)), 'FM999,999,990.00') cadMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'CAD00', AVG_VL)),'FM999,999,990.00') cadAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHE00', MAX_VL)), 'FM999,999,990.00') pheMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHE00', MIN_VL)), 'FM999,999,990.00') pheMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHE00', AVG_VL)),'FM999,999,990.00') pheAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHL00', MAX_VL)), 'FM999,999,990.00') phlMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PHL00', MIN_VL)), 'FM999,999,990.00') phlMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PHL00', AVG_VL)),'FM999,999,990.00') phlAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOC00', MAX_VL)), 'FM999,999,990.00') tocMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOC00', MIN_VL)), 'FM999,999,990.00') tocMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TOC00', AVG_VL)),'FM999,999,990.00') tocAvg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TON00', MAX_VL)), 'FM999,999,990.00') tonMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TON00', MIN_VL)), 'FM999,999,990.00') tonMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TON00', AVG_VL)),'FM999,999,990.00') tonAvg,
+			 TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOP00', MAX_VL)), 'FM999,999,990.00') topMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'TOP00', MIN_VL)), 'FM999,999,990.00') topMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'TOP00', AVG_VL)),'FM999,999,990.00') topAvg,
+			 TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'NH400', MAX_VL)), 'FM999,999,990.00') nh4Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'NH400', MIN_VL)), 'FM999,999,990.00') nh4Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'NH400', AVG_VL)),'FM999,999,990.00') nh4Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'NO300', MAX_VL)), 'FM999,999,990.00') no3Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'NO300', MIN_VL)), 'FM999,999,990.00') no3Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'NO300', AVG_VL)),'FM999,999,990.00') no3Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PO400', MAX_VL)), 'FM999,999,990.00') po4Max,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'PO400', MIN_VL)), 'FM999,999,990.00') po4Min,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'PO400', AVG_VL)),'FM999,999,990.00') po4Avg,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RIN00', MAX_VL)), 'FM999,999,990.00') rinMax,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, 'RIN00', MIN_VL)), 'FM999,999,990.00') rinMin,
+			TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  'RIN00', AVG_VL)),'FM999,999,990.00') rinAvg,
+			'Y' as isCRow,
+			'2' as sq
+		FROM
+			T_BASIN_STATS STATS,
+			T_FACT_BRANCH_INFO BRANCH,
+			T_FACT_INFO FACT
+		WHERE
+			STATS.FACT_CODE(+) = BRANCH.FACT_CODE
+			AND STATS.BRANCH_NO(+) = BRANCH.BRANCH_NO
+			AND BRANCH.FACT_CODE = FACT.FACT_CODE
+			<isEqual property="month" compareValue="all">
+			AND STATS_DATE(+) LIKE #startDate# || '%'
+			</isEqual>
+			<isEqual property="quarter" compareValue="all">
+			AND STATS_DATE(+) LIKE #startDate# || '%'
+			</isEqual>
+			<isEqual property="day" compareValue="all">
+			AND STATS_DATE(+) LIKE #startDate# || '%'
+			</isEqual>
+			<isNotEqual property="month" compareValue="all">
+				<isNotEqual property="quarter" compareValue="all">
+					<isNotEqual property="day" compareValue="all">
+			AND STATS_DATE(+) = #startDate#
+					</isNotEqual>
+				</isNotEqual>
+			</isNotEqual>
+			AND STATS.STATS_DIV(+) like #statsDiv# || '%'
+			AND BRANCH.FACT_CODE = #factCode2#
+			AND BRANCH.BRANCH_NO = #branchNo2#
+		GROUP BY 
+<!-- 			AREA.REG_NAME, -->
+			STATS.SYS_KIND,
+			STATS.FACT_CODE,
+			STATS.BRANCH_NO,
+			STATS.STATS_DATE,
+			STATS.STATS_DIV,
+			BRANCH.BRANCH_NAME,
+			BRANCH.BRANCH_NO,
+			FACT.FACT_NO,
+			FACT.RIVER_DIV
+</isEqual>
+	)
+	ORDER BY
+		statsDate DESC, statsdiv desc, sq ASC, statsDiv DESC, factCode DESC, branchNo asc
+	</statement>
+	
+	<statement id="getStatsGraph" parameterClass="statsVO" resultClass="statsVO">
+		SELECT
+		NVL(FACT.FACT_NO, '-') AS factNo,
+<!-- 		NVL(AREA.REG_NAME, '-') AS regName, -->
+		STATS.SYS_KIND AS sysKind,
+		SUBSTR(STATS_DATE, 1,4) as year,
+		SUBSTR(STATS_DATE, 5,2) as startMonth,
+		SUBSTR(STATS_DIV, 2,1) || '분기' as quarter,
+		DECODE(STATS_DIV, 'D', TO_CHAR(TO_DATE(STATS_DATE, 'YYYYMMDD'), 'YYYY/MM/DD')) day,
+		DECODE(STATS.SYS_KIND, 'T', '탁수모니터링', 'U', '이동형측정기기', 'A', '국가수질자동측정망') AS sysName,
+		STATS.FACT_CODE AS factCode,
+		STATS.BRANCH_NO AS branchNo,
+		BRANCH.BRANCH_NAME || '-' || BRANCH.BRANCH_NO AS branchName,
+		TO_CHAR(MAX(TO_NUMBER(STATS.RECVRT)), 'FM999,999,999,990.00') || '%' AS recvRt,	
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, #itemCode#, MAX_VL)), 'FM999,999,999,990.00') maxVl,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE, #itemCode#, MIN_VL)), 'FM999,999,999,990.00') minVl,
+		TO_CHAR(SUM(DECODE(STATS.ITEM_CODE,  #itemCode#, AVG_VL)),'FM999,999,999,990.00') avgVl
+	FROM
+		T_BASIN_STATS STATS,
+		T_FACT_BRANCH_INFO BRANCH,
+		T_FACT_INFO FACT
+<!-- 		T_WEATHER_AREA AREA -->
+	WHERE
+		STATS.FACT_CODE = BRANCH.FACT_CODE
+		AND STATS.BRANCH_NO = BRANCH.BRANCH_NO
+<!-- 		AND STATS.FACT_CODE = AREA.FACT_CODE -->
+		<isEqual property="sysKind" compareValue="U">
+<!-- 		AND STATS.BRANCH_NO = AREA.BRANCH_NO -->
+		</isEqual>
+		AND STATS.FACT_CODE = FACT.FACT_CODE
+		<isEqual property="month" compareValue="all">
+		AND STATS_DATE LIKE #startDate# || '%'
+			</isEqual>
+			<isEqual property="quarter" compareValue="all">
+		AND STATS_DATE LIKE #startDate# || '%'
+			</isEqual>
+			<isEqual property="day" compareValue="all">
+		AND STATS_DATE LIKE #startDate#|| '%'
+			</isEqual>
+			<isNotEqual property="month" compareValue="all">
+				<isNotEqual property="quarter" compareValue="all">
+					<isNotEqual property="day" compareValue="all">
+		AND STATS_DATE = #startDate#
+					</isNotEqual>
+				</isNotEqual>
+			</isNotEqual>
+		AND STATS_DIV like #statsDiv# || '%'
+		AND STATS.FACT_CODE = #factCode#
+		AND STATS.BRANCH_NO = #branchNo#
+	GROUP BY 
+<!-- 		AREA.REG_NAME, -->
+		STATS.SYS_KIND,
+		STATS.FACT_CODE,
+		STATS.BRANCH_NO,
+		STATS.STATS_DATE,
+		STATS.STATS_DIV,
+		BRANCH.BRANCH_NAME,
+		BRANCH.BRANCH_NO,
+		FACT.FACT_NO
+	ORDER BY
+		BRANCH.BRANCH_NO ASC, STATS_DATE ASC
+	</statement>
+	
+	<statement id="getAdAct" parameterClass="statsVO" resultClass="statsVO">
+		SELECT STATS_DATE statsDate,
+				STATS_DIV statsDiv,
+				SUBSTR(STATS_DATE, 1,4) as year,
+				SUBSTR(STATS_DATE, 5,2) as startMonth,
+				SUBSTR(STATS_DIV, 2,1) || '분기' as quarter,
+				DECODE(STATS_DIV, 'D', TO_CHAR(TO_DATE(STATS_DATE, 'YYYYMMDD'), 'YYYY/MM/DD')) day,
+				NVL(SUM(DECODE(AD_ACT_KIND, 'W', AD_ACT_CNT)),0) actWeather,
+				NVL(SUM(DECODE(AD_ACT_KIND, 'T', AD_ACT_CNT)),0) actTraning,
+				NVL(SUM(DECODE(AD_ACT_KIND, 'E', AD_ACT_CNT)),0) actEmc,
+				NVL(SUM(DECODE(AD_ACT_KIND, 'C', AD_ACT_CNT)),0) actChk,
+				NVL(SUM(DECODE(AD_ACT_KIND, 'A', AD_ACT_CNT)),0) actOther
+		FROM T_AD_ACT_STATS
+		WHERE STATS_DIV like #statsDiv# || '%'
+			<!-- 년 검색 -->
+			<isEqual property="gubun" compareValue="1">
+			AND STATS_DATE = #searchDate#
+			</isEqual>
+			<!-- 분기 검색 -->
+			<isEqual property="gubun" compareValue="2">
+			AND STATS_DATE = #searchDate#
+			</isEqual>
+			<!-- 월 검색 -->
+			<isEqual property="gubun" compareValue="3">
+				<isEqual property="month" compareValue="all">
+					AND STATS_DATE LIKE #searchDate# || '%'
+				</isEqual>
+				<isNotEqual property="month" compareValue="all">
+					AND STATS_DATE = #searchDate#
+				</isNotEqual>
+			</isEqual>
+			<!-- 일별 검색 -->
+			<isEqual property="gubun" compareValue="4">
+			AND STATS_DATE BETWEEN #startDate# AND #endDate# 
+			</isEqual>	
+		GROUP BY STATS_DATE, STATS_DIV
+		<isNotEqual property="sort" compareValue="chart">
+		ORDER BY STATS_DATE DESC , STATS_DIV DESC
+		</isNotEqual>
+		<isEqual property="sort" compareValue="chart">
+		ORDER BY STATS_DATE ASC , STATS_DIV DESC
+		</isEqual>
+	</statement>
+	
+	<statement id="getSituSpread" parameterClass="statsVO" resultClass="statsVO">
+		SELECT 
+			FACT.RIVER_DIV as riverDiv,
+			DECODE(FACT.RIVER_DIV, 'R01', '한강', 'R02', '낙동강', 'R03', '금강', 'R04', '영산강') AS riverName,
+			NVL(FACT.FACT_NO, '-') AS factNo,
+			<isEqual property="sysKind" compareValue="T">
+				/* AREA.REG_NAME || '(' || NVL(FACT.FACT_NO,'-') || ')' AS regName,*/
+			</isEqual>
+			<isNotEqual property="sysKind" compareValue="T">
+				/* NVL(AREA.REG_NAME, '-') AS regName, */
+			</isNotEqual>
+			STATS.FACT_CODE AS factCode,
+			STATS.BRANCH_NO AS branchNo,
+			BRANCH.BRANCH_NAME || '-' || BRANCH.BRANCH_NO AS branchName,
+			STATS.SYS_KIND AS sysKind,
+			STATS.STATS_DATE statsDate,
+			STATS.STATS_DIV statsDiv,
+			SUBSTR(STATS.STATS_DATE, 1,4) as year,
+			SUBSTR(STATS.STATS_DATE, 5,2) as startMonth,
+			SUBSTR(STATS.STATS_DIV, 2,1) || '분기' as quarter,
+			DECODE(STATS.STATS_DIV, 'D', TO_CHAR(TO_DATE(STATS.STATS_DATE, 'YYYYMMDD'), 'YYYY/MM/DD')) day,
+			NVL(STATS.ACS_CNT, 0) acsCnt,
+			NVL(STATS.SMS_CNT,0) smsCnt
+		FROM
+			T_SITU_SPREAD_STATS STATS,
+			T_FACT_INFO FACT,
+			T_FACT_BRANCH_INFO BRANCH
+<!-- 			T_WEATHER_AREA AREA -->
+		WHERE
+			STATS.FACT_CODE = BRANCH.FACT_CODE
+			AND STATS.BRANCH_NO = BRANCH.BRANCH_NO
+<!-- 			AND STATS.FACT_CODE = AREA.FACT_CODE -->
+			AND STATS.FACT_CODE = FACT.FACT_CODE
+			<!-- 시스템 -->
+			<isEqual property="sysKind" compareValue="U">
+<!-- 			AND STATS.BRANCH_NO = AREA.BRANCH_NO -->
+			</isEqual>
+			<!-- 시스템 -->
+			<isNotEqual property="sysKind" compareValue="all">
+			AND STATS.SYS_KIND = #sysKind#
+			</isNotEqual>
+			<!-- 수계 -->
+			 <isNotEqual property="riverDiv" compareValue="all">
+			AND STATS.RIVER_DIV = #riverDiv#
+			</isNotEqual>
+			<!-- 측정소 -->
+			<isNotEqual property="factCode" compareValue="all">
+			AND STATS.FACT_CODE = #factCode#
+			</isNotEqual>
+			
+			<isNotEqual property="branchNo" compareValue="all">
+			AND STATS.BRANCH_NO = #branchNo#
+			</isNotEqual>
+			
+			<!-- 년/분기/월/일 FLAG -->
+			AND STATS_DIV like #statsDiv# || '%'
+			
+			<!-- 년 검색 -->
+			<isEqual property="gubun" compareValue="1">
+			AND STATS_DATE = #searchDate#
+			</isEqual>
+			<!-- 분기 검색 -->
+			<isEqual property="gubun" compareValue="2">
+			AND STATS_DATE = #searchDate#
+			</isEqual>
+			<!-- 월 검색 -->
+			<isEqual property="gubun" compareValue="3">
+				<isEqual property="month" compareValue="all">
+					AND STATS_DATE LIKE #searchDate# || '%'
+				</isEqual>
+				<isNotEqual property="month" compareValue="all">
+					AND STATS_DATE = #searchDate#
+				</isNotEqual>
+			</isEqual>
+			<!-- 일별 검색 -->
+			<isEqual property="gubun" compareValue="4">
+			AND STATS_DATE BETWEEN #startDate# AND #endDate# 
+			</isEqual>
+		<isNotEqual property="sort" compareValue="chart">
+		ORDER BY
+			STATS_DATE DESC, FACT.FACT_NO, FACT.FACT_CODE DESC, BRANCH.BRANCH_NO ASC, STATSDIV DESC
+		</isNotEqual>
+		<isEqual property="sort" compareValue="chart">
+		ORDER BY
+			STATS_DATE ASC
+		</isEqual>
+	</statement>
+	
+	<statement id="getSituOC" parameterClass="statsVO" resultClass="statsVO">
+		SELECT 
+			FACT.RIVER_DIV as riverDiv,
+			DECODE(FACT.RIVER_DIV, 'R01', '한강', 'R02', '낙동강', 'R03', '금강', 'R04', '영산강') AS riverName,
+			NVL(FACT.FACT_NO, '-') AS factNo,
+			<isEqual property="sysKind" compareValue="T">
+<!-- 				AREA.REG_NAME || '(' || NVL(FACT.FACT_NO,'-') || ')' AS regName, -->
+			</isEqual>
+			<isNotEqual property="sysKind" compareValue="T">
+<!-- 				NVL(AREA.REG_NAME, '-') AS regName, -->
+			</isNotEqual>
+			STATS.FACT_CODE AS factCode,
+			STATS.BRANCH_NO AS branchNo,
+			BRANCH.BRANCH_NAME || '-' || BRANCH.BRANCH_NO AS branchName,
+			STATS.SYS_KIND AS sysKind,
+			STATS.STATS_DATE statsDate,
+			STATS.STATS_DIV statsDiv,
+			SUBSTR(STATS.STATS_DATE, 1,4) as year,
+			SUBSTR(STATS.STATS_DATE, 5,2) as startMonth,
+			SUBSTR(STATS.STATS_DIV, 2,1) || '분기' as quarter,
+			DECODE(STATS.STATS_DIV, 'D', TO_CHAR(TO_DATE(STATS.STATS_DATE, 'YYYYMMDD'), 'YYYY/MM/DD')) day,
+			NVL(STATS.FIRST_CNT, 0) firstCnt,
+			NVL(STATS.TIME3_CNT, 0) time3Cnt,
+			NVL(STATS.TIME6_CNT, 0) time6Cnt,
+			NVL(STATS.TIME12_CNT, 0) time12Cnt
+		FROM
+			T_SITU_OC_STATS STATS,
+			T_FACT_INFO FACT,
+			T_FACT_BRANCH_INFO BRANCH
+<!-- 			T_WEATHER_AREA AREA -->
+		WHERE
+			STATS.FACT_CODE = BRANCH.FACT_CODE
+			AND STATS.BRANCH_NO = BRANCH.BRANCH_NO
+<!-- 			AND STATS.FACT_CODE = AREA.FACT_CODE -->
+			<isEqual property="sysKind" compareValue="U">
+<!-- 			AND STATS.BRANCH_NO = AREA.BRANCH_NO -->
+			</isEqual>
+			AND STATS.FACT_CODE = FACT.FACT_CODE
+			AND STATS.FACT_CODE = #factCode#
+			<isNotEqual property="branchNo" compareValue="all">
+			AND STATS.BRANCH_NO = #branchNo#
+			</isNotEqual>
+			<!-- 년/분기/월/일 FLAG -->
+			AND STATS_DIV like #statsDiv# || '%
+			<!-- 년 검색 -->
+			<isEqual property="gubun" compareValue="1">
+			AND STATS_DATE = #searchDate#
+			</isEqual>
+			<!-- 분기 검색 -->
+			<isEqual property="gubun" compareValue="2">
+			AND STATS_DATE = #searchDate#
+			</isEqual>
+			<!-- 월 검색 -->
+			<isEqual property="gubun" compareValue="3">
+				<isEqual property="month" compareValue="all">
+					AND STATS_DATE LIKE #searchDate# || '%'
+				</isEqual>
+				<isNotEqual property="month" compareValue="all">
+					AND STATS_DATE = #searchDate#
+				</isNotEqual>
+			</isEqual>
+			<!-- 일별 검색 -->
+			<isEqual property="gubun" compareValue="4">
+			AND STATS_DATE BETWEEN #startDate# AND #endDate# 
+			</isEqual>
+			
+		<isNotEqual property="sort" compareValue="chart">
+		ORDER BY
+			STATS_DATE DESC, STATS_DIV DESC
+		</isNotEqual>
+		<isEqual property="sort" compareValue="chart">	
+		ORDER BY
+			STATS_DATE ASC, STATS_DIV DESC
+		</isEqual>
+	</statement>
+	
+	<statement id="getSituOCWarning" parameterClass="statsVO" resultClass="statsVO">
+		SELECT 
+				FACT.RIVER_DIV as riverDiv,
+				DECODE(FACT.RIVER_DIV, 'R01', '한강', 'R02', '낙동강', 'R03', '금강', 'R04', '영산강') AS riverName,
+				NVL(FACT.FACT_NO, '-') AS factNo,
+				<isEqual property="sysKind" compareValue="T">
+<!-- 					AREA.REG_NAME || '(' || NVL(FACT.FACT_NO,'-') || ')' AS regName, -->
+				</isEqual>
+				<isNotEqual property="sysKind" compareValue="T">
+<!-- 					NVL(AREA.REG_NAME, '-') AS regName, -->
+				</isNotEqual>
+				STATS.FACT_CODE AS factCode,
+				STATS.BRANCH_NO AS branchNo,
+				BRANCH.BRANCH_NAME || '-' || BRANCH.BRANCH_NO AS branchName,
+				STATS.SYS_KIND AS sysKind,
+				STATS.STATS_DATE statsDate,
+				STATS.STATS_DIV statsDiv,
+				SUBSTR(STATS.STATS_DATE, 1,4) as year,
+				SUBSTR(STATS.STATS_DATE, 5,2) as startMonth,
+				SUBSTR(STATS.STATS_DIV, 2,1) || '분기' as quarter,
+				DECODE(STATS.STATS_DIV, 'D', TO_CHAR(TO_DATE(STATS.STATS_DATE, 'YYYYMMDD'), 'YYYY/MM/DD')) day,
+				NVL(STATS.ATN_CNT, 0) atnCnt,
+				NVL(STATS.CAT_CNT, 0) catCnt,
+				NVL(STATS.ALERT_CNT, 0) alertCnt,
+				NVL(STATS.SRS_CNT, 0) srsCnt
+			FROM
+				T_SITU_OC_WARNING_STATS STATS,
+				T_FACT_INFO FACT,
+				T_FACT_BRANCH_INFO BRANCH
+<!-- 				T_WEATHER_AREA AREA -->
+			WHERE
+				STATS.FACT_CODE = BRANCH.FACT_CODE
+				AND STATS.BRANCH_NO = BRANCH.BRANCH_NO
+<!-- 				AND STATS.FACT_CODE = AREA.FACT_CODE -->
+				<isEqual property="sysKind" compareValue="U">
+<!-- 					AND STATS.BRANCH_NO = AREA.BRANCH_NO -->
+				</isEqual>
+				AND STATS.FACT_CODE = FACT.FACT_CODE
+				AND STATS.FACT_CODE = #factCode#
+				
+				<isNotEqual property="branchNo" compareValue="all">
+				AND STATS.BRANCH_NO = #branchNo#
+				</isNotEqual>
+				
+				<!-- 년/분기/월/일 FLAG -->
+				AND STATS_DIV like #statsDiv# || '%'
+				<!-- 년 검색 -->
+				<isEqual property="gubun" compareValue="1">
+				AND STATS_DATE = #searchDate#
+				</isEqual>
+				<!-- 분기 검색 -->
+				<isEqual property="gubun" compareValue="2">
+				AND STATS_DATE = #searchDate#
+				</isEqual>
+				<!-- 월 검색 -->
+				<isEqual property="gubun" compareValue="3">
+					<isEqual property="month" compareValue="all">
+						AND STATS_DATE LIKE #searchDate# || '%'
+					</isEqual>
+					<isNotEqual property="month" compareValue="all">
+						AND STATS_DATE = #searchDate#
+					</isNotEqual>
+				</isEqual>
+				<!-- 일별 검색 -->
+				<isEqual property="gubun" compareValue="4">
+				AND STATS_DATE BETWEEN #startDate# AND #endDate# 
+				</isEqual>
+		<isNotEqual property="sort" compareValue="chart">
+		ORDER BY
+			STATS_DATE DESC, STATS_DIV DESC
+		</isNotEqual>
+		<isEqual property="sort" compareValue="chart">	
+		ORDER BY
+			STATS_DATE ASC, STATS_DIV DESC
+		</isEqual>
+	</statement>
+	
+	<statement id="getSituOCAcct" parameterClass="statsVO" resultClass="statsVO" remapResults="true">
+		SELECT 
+			STATS.RIVER_DIV as riverDiv,
+			DECODE(STATS.RIVER_DIV, 'R01', '한강', 'R02', '낙동강', 'R03', '금강', 'R04', '영산강') AS riverName,
+			<isNotEqual property="ocPointDiv" compareValue="T">
+			NVL(FACT.FACT_NO, '-') AS factNo,
+				<isEqual property="sysKind" compareValue="T">
+<!-- 					AREA.REG_NAME || '(' || NVL(FACT.FACT_NO,'-') || ')' AS regName, -->
+				</isEqual>
+				<isNotEqual property="sysKind" compareValue="T">
+<!-- 					NVL(AREA.REG_NAME, '-') AS regName, -->
+				</isNotEqual>
+			BRANCH.BRANCH_NAME || '-' || BRANCH.BRANCH_NO AS branchName,
+			</isNotEqual>
+			NVL(STATS.STATS_AREA, '-') AS statsArea,
+			STATS.FACT_CODE AS factCode,
+			STATS.BRANCH_NO AS branchNo,
+			STATS.SYS_KIND AS sysKind,
+			STATS.STATS_DATE statsDate,
+			STATS.STATS_DIV statsDiv,
+			SUBSTR(STATS.STATS_DATE, 1,4) as year,
+			SUBSTR(STATS.STATS_DATE, 5,2) as startMonth,
+			SUBSTR(STATS.STATS_DIV, 2,1) || '분기' as quarter,
+			DECODE(STATS.STATS_DIV, 'D', TO_CHAR(TO_DATE(STATS.STATS_DATE, 'YYYYMMDD'), 'YYYY/MM/DD')) day,
+			NVL(STATS.DMWTR_CNT, 0) dmwtrCnt,
+			NVL(STATS.EQU_ROLL_CNT, 0) equRollCnt,
+			NVL(STATS.SHIP_CNT, 0) shipCnt,
+			NVL(STATS.SHIP_PNT_CNT, 0) shipPntCnt,
+			NVL(STATS.FLDSSN_CNT, 0) fldssnCnt,
+			NVL(STATS.TANKTR_CNT, 0) tanktrCnt,
+			NVL(STATS.EQU_ELTN_CNT, 0) equEltnCnt,
+			NVL(STATS.IFPLNT_CNT, 0) ifplntCnt,
+			NVL(STATS.OIL_CNT, 0) oilCnt,
+			NVL(STATS.PHENOL_CNT, 0) phenolCnt,
+			NVL(STATS.TOXIC_CNT, 0) toxicCnt,
+			NVL(STATS.FSHDIE_CNT, 0) fshdieCnt,
+			NVL(STATS.ETC_CNT, 0) etcCnt
+		FROM
+			T_SITU_OC_ACCT_STATS STATS
+			<isNotEqual prepend="," property="ocPointDiv" compareValue="T">
+			T_FACT_INFO FACT,
+			T_FACT_BRANCH_INFO BRANCH
+<!-- 			T_WEATHER_AREA AREA -->
+			</isNotEqual>
+		WHERE STATS.LOC_DIV = #ocPointDiv#
+			<isNotEqual property="ocPointDiv" compareValue="T">
+				AND STATS.FACT_CODE = BRANCH.FACT_CODE
+				AND STATS.BRANCH_NO = BRANCH.BRANCH_NO
+<!-- 				AND STATS.FACT_CODE = AREA.FACT_CODE -->
+				<isEqual property="sysKind" compareValue="U">
+<!-- 				AND STATS.BRANCH_NO = AREA.BRANCH_NO -->
+				</isEqual>
+				AND STATS.FACT_CODE = FACT.FACT_CODE
+				AND STATS.FACT_CODE = #factCode#
+				<isNotEqual property="branchNo" compareValue="all">
+				AND STATS.BRANCH_NO = #branchNo#
+				</isNotEqual>
+			</isNotEqual>
+			<!-- 년/분기/월/일 FLAG -->
+			AND STATS_DIV like #statsDiv# || '%'
+			<!-- 년 검색 -->
+			<isEqual property="gubun" compareValue="1">
+			AND STATS_DATE = #searchDate#
+			</isEqual>
+			<!-- 분기 검색 -->
+			<isEqual property="gubun" compareValue="2">
+			AND STATS_DATE = #searchDate#
+			</isEqual>
+			<!-- 월 검색 -->
+			<isEqual property="gubun" compareValue="3">
+				<isEqual property="month" compareValue="all">
+					AND STATS_DATE LIKE #searchDate# || '%'
+				</isEqual>
+				<isNotEqual property="month" compareValue="all">
+					AND STATS_DATE = #searchDate#
+				</isNotEqual>
+			</isEqual>
+			<!-- 일별 검색 -->
+			<isEqual property="gubun" compareValue="4">
+			AND STATS_DATE BETWEEN #startDate# AND #endDate# 
+			</isEqual>
+		<isNotEqual property="sort" compareValue="chart">
+		ORDER BY
+			STATS_DATE DESC , STATS_DIV DESC
+		</isNotEqual>
+		<isEqual property="sort" compareValue="chart">	
+		ORDER BY
+			STATS_DATE ASC , STATS_DIV DESC
+		</isEqual>
+	</statement>
+	
+	<statement id="getPrevStep" parameterClass="statsVO" resultClass="statsVO" remapResults="true">
+		SELECT 
+			STATS.RIVER_DIV as riverDiv,
+			DECODE(STATS.RIVER_DIV, 'R01', '한강', 'R02', '낙동강', 'R03', '금강', 'R04', '영산강') AS riverName,
+			DECODE(STATS.SYS_KIND, 'T', '탁수모니터링', 'U', '이동형측정기기', 'A', '국가수질자동측정망') AS sysName,
+			NVL(FACT.FACT_NO, '-') AS factNo,
+			<isEqual property="sysKind" compareValue="T">
+<!-- 				AREA.REG_NAME || '(' || NVL(FACT.FACT_NO,'-') || ')' AS regName, -->
+			</isEqual>
+			<isNotEqual property="sysKind" compareValue="T">
+<!-- 				NVL(AREA.REG_NAME, '-') AS regName, -->
+			</isNotEqual>
+			NVL(STATS.STATS_AREA, '-') AS statsArea,
+			STATS.FACT_CODE AS factCode,
+			STATS.BRANCH_NO AS branchNo,
+			BRANCH.BRANCH_NAME || '-' || BRANCH.BRANCH_NO AS branchName,
+			STATS.SYS_KIND AS sysKind,
+			STATS.STATS_DATE statsDate,
+			STATS.STATS_DIV statsDiv,
+			SUBSTR(STATS.STATS_DATE, 1,4) as year,
+			SUBSTR(STATS.STATS_DATE, 5,2) as startMonth,
+			SUBSTR(STATS.STATS_DIV, 2,1) || '분기' as quarter,
+			DECODE(STATS.STATS_DIV, 'D', TO_CHAR(TO_DATE(STATS.STATS_DATE, 'YYYYMMDD'), 'YYYY/MM/DD')) day,
+			NVL(STATS.WARNING_CNT, 0) warningCnt,
+			NVL(STATS.FLD_CNT, 0) fldCnt,
+			NVL(STATS.SMPL_CNT, 0) smplCnt,
+			NVL(STATS.ISS_CNT, 0) issCnt,
+			NVL(STATS.SPREAD_CNT, 0) spreadCnt,
+			NVL(STATS.END_CNT, 0) endCnt
+		FROM
+			T_PREV_STEP_STATS STATS,
+			T_FACT_INFO FACT,
+			T_FACT_BRANCH_INFO BRANCH
+<!-- 			T_WEATHER_AREA AREA -->
+		WHERE
+			STATS.PREV_TYPE = #prevType#
+			AND STATS.FACT_CODE = BRANCH.FACT_CODE
+			AND STATS.BRANCH_NO = BRANCH.BRANCH_NO
+<!-- 			AND STATS.FACT_CODE = AREA.FACT_CODE -->
+			<isEqual property="sysKind" compareValue="U">
+<!-- 			AND STATS.BRANCH_NO = AREA.BRANCH_NO -->
+			</isEqual>
+			AND STATS.FACT_CODE = FACT.FACT_CODE
+			AND STATS.FACT_CODE = #factCode#
+			AND STATS.BRANCH_NO = #branchNo#
+			
+			<!-- 년/분기/월/일 FLAG -->
+			AND STATS_DIV like #statsDiv# || '%'
+			<!-- 년 검색 -->
+			<isEqual property="gubun" compareValue="1">
+			AND STATS_DATE = #searchDate#
+			</isEqual>
+			<!-- 분기 검색 -->
+			<isEqual property="gubun" compareValue="2">
+			AND STATS_DATE = #searchDate#
+			</isEqual>
+			<!-- 월 검색 -->
+			<isEqual property="gubun" compareValue="3">
+				<isEqual property="month" compareValue="all">
+					AND STATS_DATE LIKE #searchDate# || '%'
+				</isEqual>
+				<isNotEqual property="month" compareValue="all">
+					AND STATS_DATE = #searchDate#
+				</isNotEqual>
+			</isEqual>
+			<!-- 일별 검색 -->
+			<isEqual property="gubun" compareValue="4">
+			AND STATS_DATE BETWEEN #startDate# AND #endDate# 
+			</isEqual>
+			
+		<isNotEqual property="sort" compareValue="chart">
+		ORDER BY
+			STATS_DATE DESC, STATS_DIV DESC
+		</isNotEqual>
+		<isEqual property="sort" compareValue="chart">
+		ORDER BY
+			STATS_DATE ASC, STATS_DIV DESC
+		</isEqual>
+	</statement>
+	
+	<statement id="getPrevStep2" parameterClass="statsVO" resultClass="statsVO">
+	SELECT 
+		STATS.RIVER_DIV as riverDiv,
+		DECODE(STATS.RIVER_DIV, 'R01', '한강', 'R02', '낙동강', 'R03', '금강', 'R04', '영산강') AS riverName,
+		NVL(STATS.STATS_AREA, '-') AS statsArea,
+<!-- 		DECODE( -->
+<!-- 			STATS.SYS_KIND, 'U',  -->
+<!-- 			( -->
+<!-- 				SELECT REG_NAME FROM T_WEATHER_AREA WHERE FACT_CODE = STATS.FACT_CODE AND BRANCH_NO = STATS.BRANCH_NO  -->
+<!-- 			),  -->
+<!-- 			DECODE( -->
+<!-- 							STATS.SYS_KIND, 'A',  -->
+<!-- 							NVL(AREA.REG_NAME, '-'),  -->
+<!-- 							NVL(AREA.REG_NAME, '-') || '(' || NVL(FACT.FACT_NO,'-') || ')' -->
+<!-- 						) -->
+<!-- 		) AS regName, -->
+		STATS.FACT_CODE AS factCode,
+		STATS.BRANCH_NO AS branchNo,
+		STATS.STATS_DATE statsDate,
+		STATS.STATS_DIV statsDiv,
+		STATS.SYS_KIND sysKind,
+		SUBSTR(STATS.STATS_DATE, 1,4) as year,
+		SUBSTR(STATS.STATS_DATE, 5,2) as startMonth,
+		SUBSTR(STATS.STATS_DIV, 2,1) || '분기' as quarter,
+		DECODE(STATS.STATS_DIV, 'D', TO_CHAR(TO_DATE(STATS.STATS_DATE, 'YYYYMMDD'), 'YYYY/MM/DD')) day,
+		NVL(SUM(STATS.WARNING_CNT), 0) warningCnt,
+		NVL(SUM(STATS.FLD_CNT), 0) fldCnt,
+		NVL(SUM(STATS.SMPL_CNT), 0) smplCnt,
+		NVL(SUM(STATS.ISS_CNT), 0) issCnt,
+		NVL(SUM(STATS.SPREAD_CNT), 0) spreadCnt,
+		NVL(SUM(STATS.END_CNT), 0) endCnt
+	FROM
+		T_PREV_STEP_STATS STATS,
+		T_FACT_INFO FACT,
+		T_FACT_BRANCH_INFO BRANCH
+<!-- 		T_WEATHER_AREA AREA -->
+	WHERE
+		STATS.FACT_CODE = FACT.FACT_CODE(+)
+		AND STATS.FACT_CODE = BRANCH.FACT_CODE(+)
+		AND STATS.BRANCH_NO = BRANCH.BRANCH_NO(+)
+<!-- 		AND STATS.FACT_CODE = AREA.FACT_CODE(+) -->
+		AND STATS.PREV_TYPE = 'REGI'
+		AND STATS.RIVER_DIV = #riverDiv#
+		<!-- 년/분기/월/일 FLAG -->
+		AND STATS_DIV like #statsDiv# || '%'
+		<!-- 년 검색 -->
+		<isEqual property="gubun" compareValue="1">
+		AND STATS_DATE = #searchDate#
+		</isEqual>
+		<!-- 분기 검색 -->
+		<isEqual property="gubun" compareValue="2">
+		AND STATS_DATE = #searchDate#
+		</isEqual>
+		<!-- 월 검색 -->
+		<isEqual property="gubun" compareValue="3">
+			<isEqual property="month" compareValue="all">
+				AND STATS_DATE LIKE #searchDate# || '%'
+			</isEqual>
+			<isNotEqual property="month" compareValue="all">
+				AND STATS_DATE = #searchDate#
+			</isNotEqual>
+		</isEqual>
+		<!-- 일별 검색 -->
+		<isEqual property="gubun" compareValue="4">
+		AND STATS_DATE BETWEEN #startDate# AND #endDate# 
+		</isEqual>
+	GROUP BY
+		STATS.STATS_DATE,
+		STATS.STATS_DIV,
+		STATS.STATS_AREA,
+		STATS.BRANCH_NO,
+		STATS.FACT_CODE,
+		STATS.RIVER_DIV,
+		STATS.SYS_KIND,
+		FACT.FACT_NO
+<!-- 		AREA.REG_NAME -->
+	<isNotEqual property="sort" compareValue="chart">
+		ORDER BY
+			STATS_DATE DESC , STATS_DIV DESC
+		</isNotEqual>
+		<isEqual property="sort" compareValue="chart">
+		ORDER BY
+			STATS_DATE ASC , STATS_DIV DESC
+		</isEqual>
+	</statement>
+	
+	<statement id="getRiverOutletCnt" parameterClass="statsVO" resultClass="java.lang.Integer">
+	SELECT 
+				COUNT(*)
+				FROM
+				(
+						SELECT
+							RIVER.NAME as riverName,
+							OUTLET.RIVER_CODE as riverCode,
+							OUTLET.BASE_TIME as baseTime,
+							TO_CHAR(TO_DATE(OUTLET.BASE_TIME, 'YYYYMMDD'), 'YYYY/MM/DD') as time,
+							SUM(DECODE(OUTLET.ITEM_CODE, 'BOD00', OUTLET.AMOUNT_VALUE)) as bodValue,
+							SUM(DECODE(OUTLET.ITEM_CODE, 'BOD00', OUTLET.AMOUNT_FLOW)) as bodFlow,
+							SUM(DECODE(OUTLET.ITEM_CODE, 'BOD00', OUTLET.AMOUNT_VL_AVG)) as bodAvg,
+							SUM(DECODE(OUTLET.ITEM_CODE, 'SUS00', OUTLET.AMOUNT_VALUE)) as susValue,
+							SUM(DECODE(OUTLET.ITEM_CODE, 'SUS00', OUTLET.AMOUNT_FLOW)) as susFlow,
+							SUM(DECODE(OUTLET.ITEM_CODE, 'SUS00', OUTLET.AMOUNT_VL_AVG)) as susAvg,
+							SUM(DECODE(OUTLET.ITEM_CODE, 'COD00', OUTLET.AMOUNT_VALUE)) as codValue,
+							SUM(DECODE(OUTLET.ITEM_CODE, 'COD00', OUTLET.AMOUNT_FLOW)) as codFlow,
+							SUM(DECODE(OUTLET.ITEM_CODE, 'COD00', OUTLET.AMOUNT_VL_AVG)) as codAvg,
+							SUM(DECODE(OUTLET.ITEM_CODE, 'TON00', OUTLET.AMOUNT_VALUE)) as tonValue,
+							SUM(DECODE(OUTLET.ITEM_CODE, 'TON00', OUTLET.AMOUNT_FLOW)) as tonFlow,
+							SUM(DECODE(OUTLET.ITEM_CODE, 'TON00', OUTLET.AMOUNT_VL_AVG)) as tonAvg,
+							SUM(DECODE(OUTLET.ITEM_CODE, 'TOP00', OUTLET.AMOUNT_VALUE)) as topValue,
+							SUM(DECODE(OUTLET.ITEM_CODE, 'TOP00', OUTLET.AMOUNT_FLOW)) as topFlow, 
+							SUM(DECODE(OUTLET.ITEM_CODE, 'TOP00', OUTLET.AMOUNT_VL_AVG)) as topAvg
+						FROM
+							WTMSC_RIVER_OUTLET@tms OUTLET,
+							WTMSC_RIVER@tms RIVER
+						WHERE
+							RIVER.CODE = OUTLET.RIVER_CODE
+							AND RIVER.CAT_CD = #riverDiv#
+							<isNotEqual property="riverCode" compareValue="all">
+								AND OUTLET.RIVER_CODE = #riverCode#
+							</isNotEqual>
+							AND OUTLET.BASE_TIME BETWEEN #frDate# AND #toDate#
+						GROUP BY
+							RIVER.NAME,
+							OUTLET.RIVER_CODE,
+							OUTLET.BASE_TIME
+				)
+	</statement>
+	
+	<statement id="getRiverOutlet" parameterClass="statsVO" resultClass="statsVO">
+	SELECT 
+			* 
+			FROM ( 
+				SELECT 
+					ROWNUM RNUM, T.*
+					FROM
+					(
+						SELECT
+							RIVER.NAME||'('||replace(RIVER.S_SIDO,chr(10),' ')||' '||replace(RIVER.S_GUGUN,chr(10),' ')||')' riverName,
+							OUTLET.RIVER_CODE as riverCode,
+							OUTLET.BASE_TIME as baseTime,
+							TO_CHAR(TO_DATE(OUTLET.BASE_TIME, 'YYYYMMDD'), 'YYYY/MM/DD') as time,
+							TO_CHAR(SUM(DECODE(OUTLET.ITEM_CODE, 'BOD00', OUTLET.AMOUNT_VALUE)), 'FM999,999,999,990.00') as bodValue,
+							TO_CHAR(SUM(DECODE(OUTLET.ITEM_CODE, 'BOD00', OUTLET.AMOUNT_FLOW)), 'FM999,999,999,990.00') as bodFlow,
+							TO_CHAR(SUM(DECODE(OUTLET.ITEM_CODE, 'BOD00', OUTLET.AMOUNT_VL_AVG)), 'FM999,999,999,990.00') as bodAvg,
+							TO_CHAR(SUM(DECODE(OUTLET.ITEM_CODE, 'SUS00', OUTLET.AMOUNT_VALUE)), 'FM999,999,999,990.00') as susValue,
+							TO_CHAR(SUM(DECODE(OUTLET.ITEM_CODE, 'SUS00', OUTLET.AMOUNT_FLOW)), 'FM999,999,999,990.00') as susFlow,
+							TO_CHAR(SUM(DECODE(OUTLET.ITEM_CODE, 'SUS00', OUTLET.AMOUNT_VL_AVG)), 'FM999,999,999,990.00') as susAvg,
+							TO_CHAR(SUM(DECODE(OUTLET.ITEM_CODE, 'COD00', OUTLET.AMOUNT_VALUE)), 'FM999,999,999,990.00') as codValue,
+							TO_CHAR(SUM(DECODE(OUTLET.ITEM_CODE, 'COD00', OUTLET.AMOUNT_FLOW)), 'FM999,999,999,990.00') as codFlow,
+							TO_CHAR(SUM(DECODE(OUTLET.ITEM_CODE, 'COD00', OUTLET.AMOUNT_VL_AVG)), 'FM999,999,999,990.00') as codAvg,
+							TO_CHAR(SUM(DECODE(OUTLET.ITEM_CODE, 'TON00', OUTLET.AMOUNT_VALUE)), 'FM999,999,999,990.00') as tonValue,
+							TO_CHAR(SUM(DECODE(OUTLET.ITEM_CODE, 'TON00', OUTLET.AMOUNT_FLOW)), 'FM999,999,999,990.00') as tonFlow,
+							TO_CHAR(SUM(DECODE(OUTLET.ITEM_CODE, 'TON00', OUTLET.AMOUNT_VL_AVG)), 'FM999,999,999,990.00') as tonAvg,
+							TO_CHAR(SUM(DECODE(OUTLET.ITEM_CODE, 'TOP00', OUTLET.AMOUNT_VALUE)), 'FM999,999,999,990.00') as topValue,
+							TO_CHAR(SUM(DECODE(OUTLET.ITEM_CODE, 'TOP00', OUTLET.AMOUNT_FLOW)), 'FM999,999,999,990.00') as topFlow, 
+							TO_CHAR(SUM(DECODE(OUTLET.ITEM_CODE, 'TOP00', OUTLET.AMOUNT_VL_AVG)), 'FM999,999,999,990.00') as topAvg
+						FROM
+							WTMSC_RIVER_OUTLET@tms OUTLET,
+							WTMSC_RIVER@tms RIVER
+						WHERE
+							RIVER.CODE = OUTLET.RIVER_CODE
+							AND RIVER.CAT_CD = #riverDiv#
+							<isNotEqual property="riverCode" compareValue="all">
+								AND OUTLET.RIVER_CODE = #riverCode#
+							</isNotEqual>
+							AND OUTLET.BASE_TIME BETWEEN #frDate# AND #toDate#
+						GROUP BY
+							RIVER.NAME,
+							OUTLET.RIVER_CODE,
+							OUTLET.BASE_TIME,
+							RIVER.S_SIDO,
+							RIVER.S_GUGUN
+							<isNotNull property="orderBy">
+								<isEqual property="orderBy" compareValue="asc">
+									ORDER BY BASE_TIME ASC, RIVER.NAME ASC
+								</isEqual>
+								<isEqual property="orderBy" compareValue="desc">
+									ORDER BY BASE_TIME DESC, RIVER.NAME ASC
+								</isEqual>
+							</isNotNull>
+							<isNull property="orderBy">
+									ORDER BY BASE_TIME DESC, RIVER.NAME ASC
+							</isNull>
+				) T
+		)
+		WHERE
+		<![CDATA[  
+			RNUM  > #firstIndex#
+			AND  RNUM <= #firstIndex# + #recordCountPerPage#
+		]]>				
+	</statement>
+	
+	<statement id="getStatsAdActDetail" parameterClass="adActSearchVO" resultClass="adActSearchVO">
+	SELECT * 
+		FROM (SELECT ROWNUM RNUM,
+						rownum num,
+						ALL_LIST.* 
+				FROM (SELECT A.SMS_CONTENT								AS smsContent,
+								A.REG_ID								AS regId,
+								(SELECT MEMBER_NAME
+								  FROM T_MEMBER
+								 WHERE MEMBER_ID = A.REG_ID)			AS regName,
+								SUBSTR(A.AD_ACT_DATE,0,4) || '-' || 
+								SUBSTR(A.AD_ACT_DATE,5,2) || '-' ||
+								SUBSTR(A.AD_ACT_DATE,7,2) || ' ' ||
+								SUBSTR(A.AD_ACT_DATE,9,2) || ':' ||
+								SUBSTR(A.AD_ACT_DATE,11,2)				AS adActDate,
+								A.FACT_CODE								AS factCode,
+								A.BRANCH_NO								AS branchNo,
+								B.BRANCH_NAME							AS branchName,
+								CASE WHEN A.RIVER_DIV = 'R01'
+									  THEN '한강' 
+									WHEN A.RIVER_DIV = 'R02'
+									  THEN '낙동강'
+									WHEN A.RIVER_DIV = 'R03'
+									  THEN '금강'
+									WHEN A.RIVER_DIV = 'R04'
+									  THEN '영산강'
+									ELSE '미지정'
+								END										AS riverDiv,
+								CASE WHEN A.AD_ACT_KIND = 'W'
+									  THEN '기상'
+									WHEN A.AD_ACT_KIND = 'T'
+									  THEN '훈련'
+									WHEN A.AD_ACT_KIND = 'E'
+									  THEN '긴급'
+									WHEN A.AD_ACT_KIND = 'C'
+									  THEN '점검'
+									WHEN A.AD_ACT_KIND = 'A'
+									  THEN '기타'
+								END											AS adActKind,
+								TO_CHAR(A.REG_DATE,'YYYY-MM-DD HH24:MI')	AS regDate,
+								CASE WHEN A.SYS_KIND = 'T'
+									  THEN '탁수모니터링'
+									WHEN A.SYS_KIND = 'U'
+									  THEN '이동형측정기기'
+									WHEN A.SYS_KIND = 'V'
+									  THEN '국가수질자동측정망'
+									ELSE '미지정'
+								END											AS sysKind
+						FROM T_WARNING_SMS_CONTENT A, T_FACT_BRANCH_INFO B
+						WHERE A.FACT_CODE = B.FACT_CODE(+)
+							AND A.BRANCH_NO = B.BRANCH_NO(+)
+							AND AD_ACT_KIND = #kind#
+							<isEqual property="statsDiv" compareValue="Y">
+							AND AD_ACT_DATE LIKE #statsDate# || '%'
+							</isEqual>
+							<isEqual property="statsDiv" compareValue="Q1">
+							AND AD_ACT_DATE BETWEEN #statsDate#||'01010001' AND #statsDate#||'03312359' 
+							</isEqual>
+							<isEqual property="statsDiv" compareValue="Q2">
+							AND AD_ACT_DATE BETWEEN #statsDate#||'04010001' AND #statsDate#||'06302359'
+							</isEqual>
+							<isEqual property="statsDiv" compareValue="Q3">
+							AND AD_ACT_DATE BETWEEN #statsDate#||'07010001' AND #statsDate#||'09302359'
+							</isEqual>
+							<isEqual property="statsDiv" compareValue="Q4">
+							AND AD_ACT_DATE BETWEEN #statsDate#||'10010001' AND #statsDate#||'12312359'
+							</isEqual>
+							<isEqual property="statsDiv" compareValue="M">
+							AND AD_ACT_DATE LIKE #statsDate# || '%'
+							</isEqual>
+							<isEqual property="statsDiv" compareValue="D">
+							AND AD_ACT_DATE LIKE #statsDate# || '%'
+							</isEqual>
+						) ALL_LIST
+				)
+		 <![CDATA[
+		 WHERE  RNUM > #firstIndex#
+			AND  RNUM <= #firstIndex# + #recordCountPerPage#
+		 ]]>
+	</statement>
+	
+	<statement id="getStatsAdActDetailCnt" parameterClass="adActSearchVO" resultClass="java.lang.Integer">
+	SELECT COUNT(*)
+	FROM T_WARNING_SMS_CONTENT A, T_FACT_BRANCH_INFO B
+	WHERE A.FACT_CODE = B.FACT_CODE(+)
+		AND A.BRANCH_NO = B.BRANCH_NO(+)
+		AND AD_ACT_KIND = #kind#
+		<isEqual property="statsDiv" compareValue="Y">
+		AND AD_ACT_DATE LIKE #statsDate# || '%'
+		</isEqual>
+		<isEqual property="statsDiv" compareValue="Q1">
+		AND AD_ACT_DATE BETWEEN #statsDate#||'01010001' AND #statsDate#||'03312359' 
+		</isEqual>
+		<isEqual property="statsDiv" compareValue="Q2">
+		AND AD_ACT_DATE BETWEEN #statsDate#||'04010001' AND #statsDate#||'06302359'
+		</isEqual>
+		<isEqual property="statsDiv" compareValue="Q3">
+		AND AD_ACT_DATE BETWEEN #statsDate#||'07010001' AND #statsDate#||'09302359'
+		</isEqual>
+		<isEqual property="statsDiv" compareValue="Q4">
+		AND AD_ACT_DATE BETWEEN #statsDate#||'10010001' AND #statsDate#||'12312359'
+		</isEqual>
+		<isEqual property="statsDiv" compareValue="M">
+		AND AD_ACT_DATE LIKE #statsDate# || '%'
+		</isEqual>
+		<isEqual property="statsDiv" compareValue="D">
+		AND AD_ACT_DATE LIKE #statsDate# || '%'
+		</isEqual>
+	</statement>
+	
+	<select id="getStartBaseTime" resultClass="java.lang.String">
+	SELECT TO_CHAR(ADD_MONTHS(TO_DATE(MAX(base_time),'YYYYMMDD'),-1),'YYYY/MM/DD')
+	FROM WTMSC_RIVER_OUTLET@tms OUTLET
+	</select>
+	<select id="getEndBaseTime" resultClass="java.lang.String">
+	SELECT TO_CHAR(TO_DATE(MAX(base_time),'YYYYMMDD'),'YYYY/MM/DD')
+	FROM WTMSC_RIVER_OUTLET@tms OUTLET
+	</select>
+</sqlMap>

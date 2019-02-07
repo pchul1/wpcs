@@ -1,0 +1,650 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ItemManageCounterDAO">
+	<typeAlias alias="itemGroupVO" type="daewooInfo.itemmanage.bean.ItemGroupVO"/>
+	<typeAlias alias="groupItemVO" type="daewooInfo.itemmanage.bean.GroupItemVO"/>
+	<typeAlias alias="itemBean" type="daewooInfo.itemmanage.bean.ItemVO"/>
+	<typeAlias alias="unitVO" type="daewooInfo.itemmanage.bean.UnitVO"/>
+	<typeAlias alias="systemManageVO" type="daewooInfo.itemmanage.bean.SystemManageVO"/>
+	<typeAlias alias="groupManageVOItem" type="daewooInfo.itemmanage.bean.GroupManageVO"/>
+	<typeAlias alias="ItemManageVOItem" type="daewooInfo.itemmanage.bean.ItemManageVO"/>
+	<typeAlias alias="sysKindVO" type="daewooInfo.itemmanage.bean.SysKindVO"/>
+	<typeAlias alias="itemInfoVO" type="daewooInfo.itemmanage.bean.ItemInfoVO"/>
+	<!-- 항목그룹 리스트 -->
+	<statement id="getGroupList" parameterClass="itemGroupVO" resultClass="itemGroupVO" remapResults="true">
+	SELECT
+       	C.GROUP_CODE AS groupCode,
+        C.GROUP_NAME AS groupName,
+        COUNT(A.ITEM_CODE) AS itemCnt,
+       	NVL(substr(xmlagg(xmlelement(a,',' || B.ITEM_FNAME) ORDER BY B.ITEM_FNAME).extract('//text()'), 2),'') AS itemList
+        ,C.DP_YN AS dpYn
+        ,C.MEMO
+    FROM T_FACT_MEASU_ITEM_GROUP C
+    LEFT OUTER JOIN T_FACT_MEASU_GROUP_ITEM A ON
+      	A.GROUP_CODE = C.GROUP_CODE
+    LEFT OUTER JOIN T_ITEM_INFO B ON
+   		A.ITEM_CODE = B.ITEM_CODE
+    GROUP BY C.GROUP_CODE,C.GROUP_NAME,C.DP_YN,C.MEMO
+	</statement>
+	<insert id="groupInsert" parameterClass="itemGroupVO">
+	INSERT INTO 
+		T_FACT_MEASU_ITEM_GROUP
+		(
+			GROUP_CODE
+		   ,GROUP_NAME
+		   ,MEMO
+		   ,DP_YN
+		)
+	VALUES
+		(
+			'IG'||SEQ_GROUP_ITEM.NEXTVAL
+		   ,#groupName#
+		   ,#memo#
+		   ,#dpYn#
+		)	
+	</insert>
+	
+	<update id="groupUpdate" parameterClass="itemGroupVO">
+		UPDATE 
+			T_FACT_MEASU_ITEM_GROUP
+		SET GROUP_NAME = #groupName#
+		    , MEMO = #memo#
+		    , DP_YN = #dpYn#
+		WHERE GROUP_CODE = #groupCode#
+	</update>
+	
+	<delete id="goGroupDel" parameterClass="itemGroupVO">
+	DELETE FROM
+		T_FACT_MEASU_ITEM_GROUP
+	WHERE
+		GROUP_CODE = #groupCode#
+	</delete>
+	<delete id="goGroupItemDel" parameterClass="itemGroupVO">
+	DELETE FROM 
+		T_FACT_MEASU_GROUP_ITEM
+	WHERE
+		GROUP_CODE = #groupCode#
+	</delete>
+	<update id="setSaveGroup" parameterClass="itemGroupVO">
+	UPDATE 
+		T_FACT_MEASU_ITEM_GROUP
+	SET
+		DP_YN = #dpYn#	
+	WHERE
+		GROUP_CODE = #groupCode#
+	</update>
+	<statement id="getGroupItemList" parameterClass="groupItemVO" resultClass="groupItemVO" remapResults="true">
+	SELECT
+		GROUP_CODE AS groupCode
+		,ITEM_CODE as itemCode
+	FROM
+		T_FACT_MEASU_GROUP_ITEM
+	WHERE
+		GROUP_CODE = #groupCode#
+	</statement>
+	<statement id="getItemList" parameterClass="groupItemVO" resultClass="groupItemVO" remapResults="true">
+	SELECT
+		TRIM(ITEM_CODE) AS itemCode
+		,ITEM_NAME AS itemName
+		,ITEM_FNAME AS itemFname
+	FROM
+		T_ITEM_INFO
+	WHERE
+		ITEM_USE_FLAG = 'Y'
+	</statement>
+	<delete id="deleteItem" parameterClass="groupItemVO">
+	DELETE FROM 
+		T_FACT_MEASU_GROUP_ITEM
+	WHERE
+		GROUP_CODE = #groupCode#
+	</delete>
+	<insert id="saveItem" parameterClass="groupItemVO">
+	INSERT INTO
+		T_FACT_MEASU_GROUP_ITEM
+		(
+			GROUP_CODE
+		   ,ITEM_CODE
+		)
+	VALUES
+		(	
+			#groupCode#
+		   ,#itemCode#
+		)
+		
+	</insert>
+	<select id="goItemView" parameterClass="itemBean" resultClass="itemBean">
+	SELECT DISTINCT
+		A.ITEM_CODE AS itemCode ,
+		A.ITEM_NAME AS itemName ,
+		A.ITEM_FNAME AS itemFname ,
+		A.ITEM_UNIT AS itemUnit ,
+		B.VALUE_FORMAT AS valueFormat ,
+		B.TIME_DUR_VAL AS timedurVal ,
+		B.SAME_VAL_DUR_TIME AS sameValDurTime ,
+		TRIM(TO_CHAR(B.ITEM_VALUE_HI,'999,999,999,990.99')) AS itemValueHi ,
+		TRIM(TO_CHAR(B.ITEM_VALUE_LO,'999,999,999,990.99')) AS itemValueLo ,
+		B.LEG_YN AS legYn ,
+		B.STAND_YN AS standYn ,
+		B.SAME_YN AS sameYn 
+	FROM 
+		T_ITEM_INFO A 
+	LEFT OUTER JOIN
+			<isEqual property="groupCode" compareValue="IG1084">
+			T_ITEM_INFO_ADD B 
+			</isEqual>
+			<isNotEqual property="groupCode" compareValue="IG1084">
+			T_ITEM_INFO_ADD_A B 
+			</isNotEqual>
+		ON A.ITEM_CODE = B.ITEM_CODE 
+	LEFT OUTER JOIN T_ITEM_CODE C 
+		ON A.ITEM_UNIT = C.ITEM_CODE_DET 
+	WHERE 
+		A.ITEM_CODE = #itemCode#
+		<isNotEmpty property="itemCodeNum">
+		AND C.ITEM_CODE_NUM = #itemCodeNum#
+		</isNotEmpty>
+	</select>
+	<select id="goItemView_OLD" parameterClass="itemBean" resultClass="itemBean">
+	SELECT DISTINCT
+		A.ITEM_CODE AS itemCode ,
+		A.ITEM_NAME AS itemName ,
+		A.ITEM_FNAME AS itemFname ,
+		A.ITEM_UNIT AS itemUnit ,
+		B.VALUE_FORMAT AS valueFormat ,
+		B.TIME_DUR_VAL AS timedurVal ,
+		B.SAME_VAL_DUR_TIME AS sameValDurTime ,
+		B.STAND_YN AS standYn ,
+		B.SAME_YN AS sameYn 
+	FROM 
+		T_ITEM_INFO A 
+	LEFT OUTER JOIN T_ITEM_INFO_ADD B 
+		ON A.ITEM_CODE = B.ITEM_CODE 
+	LEFT OUTER JOIN T_ITEM_CODE C 
+		ON A.ITEM_UNIT = C.ITEM_CODE_DET 
+	WHERE 
+		A.ITEM_CODE = #itemCode#
+	</select>
+	<insert id="goItemInsert" parameterClass="itemBean">
+	INSERT ALL 
+	INTO 
+		T_ITEM_INFO
+		(
+			ITEM_CODE
+			,ITEM_NAME
+			,ITEM_FNAME
+			,ITEM_UNIT 	
+		)
+	VALUES
+		(
+			#itemCode#
+			,#itemName#   
+			,#itemFname#
+			,#itemUnit#  
+		)
+	INTO
+		T_ITEM_INFO_ADD
+		(
+			ITEM_CODE
+			,ITEM_VALUE_HI
+			,ITEM_VALUE_LO
+			,VALUE_FORMAT
+			,TIME_DUR_VAL
+			,SAME_VAL_DUR_TIME
+			,LEG_YN
+			,STAND_YN
+			,SAME_YN
+		)
+	VALUES
+		(
+			#itemCode#
+			,#itemValueHi#
+			,#itemValueLo#
+			,#valueFormat#            
+			,#timedurVal#             
+			,#sameValDurTime#    
+			,#legYn#                        
+			,#standYn#                    
+			,#sameYn#                      
+		)
+		SELECT * FROM dual
+	</insert>
+	<insert id="goItemInsert_OLD" parameterClass="itemBean">
+	INSERT ALL 
+	INTO 
+		T_ITEM_INFO
+		(
+			ITEM_CODE
+			,ITEM_NAME
+			,ITEM_FNAME
+			,ITEM_UNIT 	
+		)
+	VALUES
+		(
+			#itemCode#
+			,#itemName#   
+			,#itemFname#
+			,#itemUnit#  
+		)
+	INTO
+		T_ITEM_INFO_ADD
+		(
+			ITEM_CODE
+			,VALUE_FORMAT
+			,TIME_DUR_VAL
+			,SAME_VAL_DUR_TIME
+			,STAND_YN
+			,SAME_YN
+		)
+	VALUES
+		(
+			#itemCode#                 
+			,#valueFormat#            
+			,#timedurVal#             
+			,#sameValDurTime#    
+			,#standYn#                    
+			,#sameYn#                      
+		)
+		SELECT * FROM dual
+	</insert>
+	<update id="goItemUpdateInfo" parameterClass="itemBean">
+	UPDATE 
+		T_ITEM_INFO 
+	SET
+		ITEM_NAME = #itemName#     
+		,ITEM_FNAME = #itemFname#    
+		,ITEM_UNIT = #itemUnit#     
+ 	WHERE 
+ 		ITEM_CODE = #itemCode#
+	</update>
+	<update id="goItemUpdateAdd" parameterClass="itemBean">
+	UPDATE 
+ 		T_ITEM_INFO_ADD 
+ 	SET
+		ITEM_VALUE_HI = #itemValueHi#
+		,ITEM_VALUE_LO = #itemValueLo#
+		,VALUE_FORMAT = #valueFormat# 
+		,TIME_DUR_VAL = #timedurVal# 
+		,SAME_VAL_DUR_TIME = #sameValDurTime# 
+		,LEG_YN = #legYn# 
+		,STAND_YN = #standYn# 
+		,SAME_YN = #sameYn# 
+	WHERE 
+		ITEM_CODE = #itemCode# 
+	</update>
+	<update id="goItemUpdateAdd_OLD" parameterClass="itemBean">
+	UPDATE 
+ 		T_ITEM_INFO_ADD 
+ 	SET
+		VALUE_FORMAT = #valueFormat# 
+		,TIME_DUR_VAL = #timedurVal# 
+		,SAME_VAL_DUR_TIME = #sameValDurTime# 
+		,STAND_YN = #standYn# 
+		,SAME_YN = #sameYn# 
+	WHERE 
+		ITEM_CODE = #itemCode# 
+	</update>
+	<statement id="getUnitList" resultClass="unitVO" remapResults="true">
+	SELECT
+		UNIT_SEQ AS unitSeq
+		,UNIT_NAME AS unitName
+		,UNIT AS unit
+	FROM
+		T_UNIT
+	</statement>
+	<!-- 시스템 리스트 가져오기 -->
+	<select id="getSystemListItem" resultClass="systemManageVO" parameterClass="systemManageVO">
+		SELECT SYS_CODE
+			,SYS_NAME
+			,SYS_TYPE
+			,SYS_MEMO
+			,UPPER(SYS_YN) AS SYS_YN
+			,SYS_REG
+			,SYS_MOD
+			,SYS_FLAG
+		FROM T_SYSTEM
+		WHERE SYS_TYPE NOT IN ('T')	<!-- 수질자동측정망 제외 -->
+		ORDER BY SYS_CODE
+	</select>
+	
+	<!-- 시스템 구분자 가져오기 -->
+	<select id="getSystemListGubun" resultClass="sysKindVO"  remapResults="true">
+		SELECT SYS_KIND AS sysKind
+		FROM T_SYS_KIND
+		WHERE SYS_KIND NOT IN ('T')	<!-- 수질자동측정망 제외 -->
+	</select>
+	
+	<!-- 그룹 리스트 가져오기 -->	
+	<select id="getGroupListItem" resultClass="groupManageVOItem" parameterClass="groupManageVOItem">
+		SELECT S.SYS_CODE
+			,G.GROUP_CODE
+			,G.GROUP_NAME  
+		FROM T_SYSTEM_GROUP S
+		LEFT OUTER JOIN T_FACT_MEASU_ITEM_GROUP G
+		ON S.GROUP_CODE=G.GROUP_CODE
+		WHERE SYS_CODE = #sys_code#
+		AND UPPER(DP_YN) = 'Y'
+		ORDER BY G.GROUP_CODE
+	</select>
+	
+	<!-- 아이템 리스트 가져오기 -->
+	<select id="getItemListItem" resultClass="ItemManageVOItem" parameterClass="ItemManageVOItem">
+		SELECT  #sys_code# AS SYS_CODE
+		        ,T2.GROUP_CODE
+		        ,T2.ITEM_CODE
+		        ,T2.ITEM_NAME
+		        ,NVL(T1.DP_YN, 'Y') DP_YN
+		  FROM  (
+		            SELECT  GROUP_CODE
+		                    ,ITEM_CODE
+		                    ,DP_YN
+		              FROM  T_SYSTEM_ITEM_GROUP_INFO
+		             WHERE  SYS_CODE = #sys_code#
+		        ) T1,
+		        (
+		            SELECT  G.GROUP_CODE
+		                    ,G.ITEM_CODE
+		                    ,I.ITEM_NAME
+		              FROM  T_FACT_MEASU_GROUP_ITEM G
+		                    ,T_ITEM_INFO I
+		             WHERE  G.ITEM_CODE  = I.ITEM_CODE
+		               AND  G.GROUP_CODE = #group_code#
+		        ) T2                       
+		 WHERE  T1.GROUP_CODE(+) = T2.GROUP_CODE
+		   AND  T1.ITEM_CODE(+)  = T2.ITEM_CODE
+		 ORDER  BY T2.ITEM_CODE
+	</select>
+	
+	<!-- 시스템 사용여부,구분자 저장하기 -->	
+	<update id="systemSaveItem" parameterClass="systemManageVO">
+		UPDATE T_SYSTEM 
+		SET SYS_YN = #sys_yn# 
+			,SYS_TYPE = #sys_type#
+	    WHERE SYS_CODE = #sys_code#
+	</update>
+	
+	<!-- 시스템 삽입하기 -->	
+	<insert id="systemInsertItem" parameterClass="systemManageVO">
+		INSERT INTO T_SYSTEM ( SYS_CODE,SYS_NAME,SYS_TYPE,SYS_MEMO,SYS_YN,SYS_REG) 
+		VALUES ('SG'||SEQ_T_SYSTEM.NEXTVAL,#sys_name#,#sys_type#,#sys_memo#,#sys_yn#,sysdate)
+	</insert>
+	
+	<!-- 시스템 수정하기 -->	
+	<update id="systemUpdateItem" parameterClass="systemManageVO">
+		UPDATE T_SYSTEM
+		     SET SYS_NAME = #sys_name#
+		         , SYS_TYPE = #sys_type#
+		         , SYS_MEMO = #sys_memo#
+		         , SYS_YN = #sys_yn#
+		WHERE SYS_CODE = #sys_code#
+	</update>
+	
+	<!-- 시스템 삭제하기 -->	
+	<delete id="systemDeleteItem" parameterClass="systemManageVO">
+		DELETE FROM T_SYSTEM  
+	    WHERE SYS_CODE = #sys_code#
+	</delete>
+	
+	<!-- 시스템 삭제 후 그룹 삭제 -->	
+	<delete id="systemGroupDeleteItem" parameterClass="systemManageVO">
+		DELETE FROM T_SYSTEM_GROUP
+		WHERE SYS_CODE = #sys_code#
+	</delete>
+	
+	<!-- 그룹 삽입하기 -->	
+	<insert id="groupInsertItem" parameterClass="groupManageVOItem">
+		INSERT INTO T_SYSTEM_GROUP(SYS_CODE, GROUP_CODE)
+		VALUES (#sys_code#,#group_code#)
+	</insert>
+	
+	<!-- 그룹 삭제하기 -->	
+	<delete id="groupDeleteItem" parameterClass="groupManageVOItem">
+		DELETE FROM T_SYSTEM_GROUP
+		WHERE SYS_CODE = #sys_code#
+		AND GROUP_CODE = #group_code#
+	</delete>
+	
+	<!-- 그룹 추가 가능한 리스트 가져오기 -->	
+	<select id="getGroupAddListItem" resultClass="groupManageVOItem" parameterClass="groupManageVOItem">
+		SELECT GROUP_CODE
+			,GROUP_NAME
+		FROM T_FACT_MEASU_ITEM_GROUP
+		WHERE GROUP_CODE NOT IN (SELECT GROUP_CODE FROM T_SYSTEM_GROUP WHERE SYS_CODE = #sys_code#)
+		AND UPPER(DP_YN) = 'Y'
+		GROUP BY GROUP_CODE, GROUP_NAME
+	</select>
+	
+	<!-- 아이템 수정하기 -->	
+	<update id="itemUpdateItem" parameterClass="ItemManageVOItem">
+		MERGE INTO T_SYSTEM_ITEM_GROUP_INFO A 
+        USING ( SELECT #sys_code# AS SYS_CODE, #group_code# AS GROUP_CODE, #item_code# AS ITEM_CODE
+                FROM DUAL) B
+        ON (A.SYS_CODE = B.SYS_CODE AND A.GROUP_CODE = B.GROUP_CODE AND A.ITEM_CODE = B.ITEM_CODE)
+        WHEN MATCHED THEN 
+            UPDATE SET 
+                A.DP_YN = #dp_yn#
+        WHEN NOT MATCHED THEN
+            INSERT (A.SYS_CODE, A.GROUP_CODE, A.ITEM_CODE)
+            VALUES (#sys_code#, #group_code#, #item_code#)
+	</update>
+	<!-- 아이템 삭제 처림 업데이트 -->	
+	<update id="goItemDelete" parameterClass="itemBean">
+		UPDATE 
+			T_ITEM_INFO 
+		SET
+			ITEM_USE_FLAG = 'N'
+		WHERE 
+			ITEM_CODE = #itemCode#
+	</update>
+	<!-- 그룹설명가져오기 -->
+	<select id="groupMemo" parameterClass="groupItemVO" resultClass="itemGroupVO">
+	SELECT
+		MEMO
+	FROM 
+		T_FACT_MEASU_ITEM_GROUP
+	WHERE
+		GROUP_CODE = #groupCode#
+	</select>
+	<!-- 그룹정보가져오기 -->
+	<select id="getItemInfo" parameterClass="groupItemVO" resultClass="itemGroupVO">
+	SELECT
+		GROUP_NAME AS groupName,
+	    MEMO,
+	    DP_YN AS dpYn
+	FROM 
+		T_FACT_MEASU_ITEM_GROUP
+	WHERE
+		GROUP_CODE = #groupCode#
+	</select>
+	
+	<!-- 그룹정보가져오기 -->
+	<select id="getSystemItemInfo" parameterClass="systemManageVO" resultClass="systemManageVO">
+		SELECT SYS_CODE
+				  ,SYS_NAME
+				  ,SYS_TYPE
+				  ,SYS_MEMO
+				  ,UPPER(SYS_YN) AS SYS_YN
+				  ,SYS_REG
+				  ,SYS_MOD
+				  ,SYS_FLAG
+		FROM 
+			T_SYSTEM
+		WHERE
+			SYS_CODE = #mod_sys_code#
+	</select>
+	
+	
+	
+	<update id="goItemAllUpdate" parameterClass="itemBean">
+	UPDATE 
+ 		T_FACT_BRANCH_ITEM_INFO
+ 	SET
+		ITEM_VALUE_HI = #itemValueHi#
+		,ITEM_VALUE_LO = #itemValueLo#
+		,LEG_YN = #legYn# 
+        ,TIME_DUR_VAL = #timedurVal# 
+		,STAND_YN = #standYn#
+	WHERE 
+		ITEM_CODE = #itemCode# 	
+	</update>
+	<select id="getItemInfoA" parameterClass="itemInfoVO" resultClass="itemInfoVO">
+	SELECT *
+	FROM(	
+		  SELECT ROWNUM RNUM, 
+                 N.ITEM_CODE itemCode,
+                 N.ITEM_NAME itemName,
+                 N.ITEM_USE_FLAG itemUseFlag,
+                 N.VALUE_FORMAT valueFormat,
+                 O.ITEM_CODE itemCode1,
+                 O.ITEM_NAME itemName1,
+                 O.ITEM_USE_FLAG itemUseFlag1,
+                 O.VALUE_FORMAT valueFormat1
+         FROM 
+               (SELECT T.ITEM_CODE,
+                       T.ITEM_NAME,
+                       T.ITEM_USE_FLAG,
+                       A.VALUE_FORMAT  
+                FROM T_ITEM_INFO_TEMP T, 
+                     T_ITEM_INFO_ADD_TEMP A
+                WHERE T.ITEM_CODE = A.ITEM_CODE
+
+                MINUS
+
+                SELECT T.ITEM_CODE,
+                       T.ITEM_NAME,
+                       T.ITEM_USE_FLAG,
+                       A.VALUE_FORMAT  
+                FROM T_ITEM_INFO T, 
+                     T_ITEM_INFO_ADD_A A
+                WHERE T.ITEM_CODE = A.ITEM_CODE
+              ) N, 
+              ( SELECT T.ITEM_CODE,
+                       T.ITEM_NAME,
+                       T.ITEM_USE_FLAG,
+                       A.VALUE_FORMAT  
+                FROM T_ITEM_INFO T, 
+                     T_ITEM_INFO_ADD_A A
+                WHERE T.ITEM_CODE = A.ITEM_CODE
+                
+                MINUS
+                
+              	SELECT T.ITEM_CODE,
+                       T.ITEM_NAME,
+                       T.ITEM_USE_FLAG,
+                       A.VALUE_FORMAT  
+                FROM T_ITEM_INFO_TEMP T, 
+                     T_ITEM_INFO_ADD_TEMP A
+                WHERE T.ITEM_CODE = A.ITEM_CODE
+              ) O 
+        WHERE N.ITEM_CODE = O.ITEM_CODE(+) 
+       ) 
+	 WHERE 1=1
+	 <![CDATA[
+	   AND	RNUM > #firstIndex#
+	   AND RNUM <= #firstIndex# + #recordCountPerPage# 
+	 ]]>
+	</select>
+	<select id="getItemInfoACnt" parameterClass="itemInfoVO" resultClass="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM
+		(
+		SELECT 
+                 N.ITEM_CODE itemCode,
+                 N.ITEM_NAME itemName,
+                 N.ITEM_USE_FLAG itemUseFlag,
+                 N.VALUE_FORMAT valueFormat,
+                 O.ITEM_CODE itemCode1,
+                 O.ITEM_NAME itemName1,
+                 O.ITEM_USE_FLAG itemUseFlag1,
+                 O.VALUE_FORMAT valueFormat1
+         FROM 
+               (SELECT T.ITEM_CODE,
+                       T.ITEM_NAME,
+                       T.ITEM_USE_FLAG,
+                       A.VALUE_FORMAT  
+                FROM T_ITEM_INFO_TEMP T, 
+                     T_ITEM_INFO_ADD_TEMP A
+                WHERE T.ITEM_CODE = A.ITEM_CODE
+
+                MINUS
+
+                SELECT T.ITEM_CODE,
+                       T.ITEM_NAME,
+                       T.ITEM_USE_FLAG,
+                       A.VALUE_FORMAT  
+                FROM T_ITEM_INFO T, 
+                     T_ITEM_INFO_ADD_A A
+                WHERE T.ITEM_CODE = A.ITEM_CODE
+              ) N, 
+              ( SELECT T.ITEM_CODE,
+                       T.ITEM_NAME,
+                       T.ITEM_USE_FLAG,
+                       A.VALUE_FORMAT  
+                FROM T_ITEM_INFO T, 
+                     T_ITEM_INFO_ADD_A A
+                WHERE T.ITEM_CODE = A.ITEM_CODE
+                
+                MINUS
+                
+              	SELECT T.ITEM_CODE,
+                       T.ITEM_NAME,
+                       T.ITEM_USE_FLAG,
+                       A.VALUE_FORMAT  
+                FROM T_ITEM_INFO_TEMP T, 
+                     T_ITEM_INFO_ADD_TEMP A
+                WHERE T.ITEM_CODE = A.ITEM_CODE
+              ) O 
+        WHERE N.ITEM_CODE = O.ITEM_CODE(+) 
+		)
+	</select>
+	<statement id="updateItemInfoA" parameterClass="itemInfoVO">
+		MERGE INTO T_ITEM_INFO A
+		USING (
+				SELECT ITEM_CODE,
+					   ITEM_NAME,
+					   ITEM_FNAME,
+					   ITEM_USE_FLAG
+				FROM   T_ITEM_INFO_TEMP
+				WHERE ITEM_CODE = #itemCode#
+		) B 
+		ON ( A.ITEM_CODE  = B.ITEM_CODE )
+		WHEN MATCHED THEN
+			UPDATE SET A.ITEM_NAME  = B.ITEM_NAME,
+                       A.ITEM_FNAME = B.ITEM_FNAME,
+                       A.ITEM_USE_FLAG  = B.ITEM_USE_FLAG
+		WHEN NOT MATCHED THEN
+			INSERT (
+					  A.ITEM_CODE, 
+                      A.ITEM_NAME, 
+                      A.ITEM_FNAME,
+                      A.ITEM_USE_FLAG
+					)
+			VALUES (
+					  B.ITEM_CODE, 
+                      B.ITEM_NAME, 
+                      B.ITEM_FNAME,
+                      B.ITEM_USE_FLAG
+					)
+	</statement>
+	<statement id="updateItemInfoAdd" parameterClass="itemInfoVO">
+		MERGE INTO T_ITEM_INFO_ADD_A A
+		USING (
+				SELECT ITEM_CODE,
+					   VALUE_FORMAT
+				FROM   T_ITEM_INFO_ADD_TEMP
+				WHERE ITEM_CODE = #itemCode#
+		) B 
+		ON ( A.ITEM_CODE  = B.ITEM_CODE )
+		WHEN MATCHED THEN
+			UPDATE SET A.VALUE_FORMAT  = B.VALUE_FORMAT
+		WHEN NOT MATCHED THEN
+			INSERT (
+					  A.ITEM_CODE, 
+                      A.VALUE_FORMAT
+					)
+			VALUES (
+					  B.ITEM_CODE, 
+                      B.VALUE_FORMAT
+					)
+	</statement>
+</sqlMap>

@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<CHARTFX>
+	<COLUMNS>
+		<COLUMN NAME="Symbol" TYPE="String"/>
+		<COLUMN NAME="Strength" TYPE="Double"/>
+		<COLUMN NAME="Rank" TYPE="Integer"/>
+		<COLUMN NAME="PE" TYPE="Integer"/>
+	</COLUMNS>
+	<ROW Symbol="DODC" Strength="0.97" Rank="85" PE="39"></ROW>
+	<ROW Symbol="HPLA" Strength="0.75" Rank="74" PE="54"></ROW>
+	<ROW Symbol="FSTW" Strength="0.73" Rank="74" PE="23"></ROW>
+	<ROW Symbol="HYSL" Strength="0.83" Rank="72" PE="55"></ROW>
+	<ROW Symbol="COOG" Strength="0.82" Rank="68" PE="52"></ROW>
+	<ROW Symbol="JDEC" Strength="0.64" Rank="68" PE="37"></ROW>
+	<ROW Symbol="OTEX" Strength="0.65" Rank="65" PE="22"></ROW>
+	<ROW Symbol="NTIQ" Strength="0.52" Rank="60" PE="24"></ROW>
+	<ROW Symbol="OOGN" Strength="0.59" Rank="58" PE="39"></ROW>
+	<ROW Symbol="ORCL" Strength="0.54" Rank="58" PE="65"></ROW>
+	<ROW Symbol="SY" Strength="0.71" Rank="58" PE="7"></ROW>
+	<ROW Symbol="PRGS" Strength="0.69" Rank="57" PE="19"></ROW>
+	<ROW Symbol="TALX" Strength="0.34" Rank="54" PE="16"></ROW>
+	<ROW Symbol="TTS" Strength="0.38" Rank="54" PE="4"></ROW>
+	<ROW Symbol="PRSE" Strength="0.44" Rank="50" PE="6"></ROW>
+	<ROW Symbol="BCBJ" Strength="0.37" Rank="48" PE="0"></ROW>
+	<ROW Symbol="DCTM" Strength="0.53" Rank="46" PE="67"></ROW>
+	<ROW Symbol="ULCM" Strength="0.31" Rank="44" PE="71"></ROW>
+	<ROW Symbol="MERQ" Strength="0.56" Rank="43" PE="38"></ROW>
+	<ROW Symbol="ATRS" Strength="0.78" Rank="42" PE="0"></ROW>
+	<ROW Symbol="JDAS" Strength="0.34" Rank="41" PE="32"></ROW>
+	<ROW Symbol="SAP" Strength="0.48" Rank="40" PE="11"></ROW>
+	<ROW Symbol="VRTY" Strength="0.49" Rank="39" PE="80"></ROW>
+	<ROW Symbol="PSFT" Strength="0.38" Rank="38" PE="42"></ROW>
+	<ROW Symbol="SRNA" Strength="0.35" Rank="36" PE="39"></ROW>
+	<ROW Symbol="SPSS" Strength="0.58" Rank="36" PE="18"></ROW>
+	<ROW Symbol="QSFT" Strength="0.32" Rank="35" PE="68"></ROW>
+	<ROW Symbol="PTEC" Strength="0.51" Rank="34" PE="10"></ROW>
+	<ROW Symbol="BMC" Strength="0.58" Rank="32" PE="37"></ROW>
+	<ROW Symbol="CTXS" Strength="0.16" Rank="32" PE="9"></ROW>
+	<ROW Symbol="PDFS" Strength="0.22" Rank="31" PE="18"></ROW>
+	<ROW Symbol="MRCL" Strength="0.30" Rank="30" PE="22"></ROW>
+	<ROW Symbol="CA" Strength="0.24" Rank="30" PE="33"></ROW>
+	<ROW Symbol="VRTS" Strength="0.36" Rank="29" PE="12"></ROW>
+	<ROW Symbol="TIBX" Strength="0.31" Rank="28" PE="6"></ROW>
+	<ROW Symbol="LTBG" Strength="0.47" Rank="23" PE="18"></ROW>
+	<ROW Symbol="RATL" Strength="0.26" Rank="23" PE="23"></ROW>
+	<ROW Symbol="SEBL" Strength="0.23" Rank="19" PE="15"></ROW>
+	<ROW Symbol="LWSN" Strength="0.27" Rank="16" PE="13"></ROW>
+</CHARTFX>

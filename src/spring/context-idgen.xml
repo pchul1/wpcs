@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+	
+	<bean name="egovIdGnrService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="mixPrefixSample" />
+		<property name="blockSize"	value="10"/>
+		<property name="table"		value="IDS"/>
+		<property name="tableName"	value="SAMPLE"/>
+	</bean>
+	
+	<bean name="mixPrefixSample"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="SAMPLE-" />
+		<property name="cipers"		value="5" />
+		<property name="fillChar"	value="0" />
+	</bean>
+	
+	<!--  그룹 -->
+	<bean name="egovGroupIdGnrService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="groupIdStrategy" />
+		<property name="blockSize"	value="1"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="GROUP_ID"/>
+	</bean>
+
+	<bean name="groupIdStrategy"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="GROUP_" />
+		<property name="cipers"		value="14" />
+		<property name="fillChar"	value="0" />
+	</bean> 
+	<!-- 그룹 -->
+	
+	<!--  롤 ID -->
+	<bean name="egovRoleIdGnrService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="roleIdStrategy" />
+		<property name="blockSize"	value="1"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="ROLE_ID"/>
+	</bean>
+
+	<bean name="roleIdStrategy"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="" />
+		<property name="cipers"		value="6" />
+		<property name="fillChar"	value="0" />
+	</bean> 
+	<!-- 롤 ID -->
+	
+	<!-- BBS -->
+	<bean name="egovBBSMstrIdGnrService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="bbsMstrStrategy" />
+		<property name="blockSize"	value="10"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="BBS_ID"/>
+	</bean>
+	<bean name="bbsMstrStrategy"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="BBSMSTR_" />
+		<property name="cipers"		value="12" />
+		<property name="fillChar"	value="0" />
+	</bean>
+	<!-- BBS -->
+	
+	<!-- 파일관련 -->
+	<bean name="egovFileIdGnrService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="fileStrategy" />
+		<property name="blockSize"	value="10"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="FILE_ID"/>
+	</bean>
+	<bean name="fileStrategy"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="FILE_" />
+		<property name="cipers"		value="15" />
+		<property name="fillChar"	value="0" />
+	</bean>
+	<!-- 파일관련 -->
+	
+	<!-- 유저 uniq_id 관련 -->
+	<bean name="memberIdGnrService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="memberStrategy" />
+		<property name="blockSize"	value="10"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="UNIQ_ID"/>
+	</bean>
+	<bean name="memberStrategy"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="USRCNFRM_" />
+		<property name="cipers"		value="11" />
+		<property name="fillChar"	value="0" />
+	</bean>
+	<!-- 유저 uniq_id 관련 -->
+	
+	<!--  알림 ID -->
+	<bean name="alrimIdGnrService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="alrimIdStrategy" />
+		<property name="blockSize"	value="1"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="ALRIM_ID"/>
+	</bean>
+	<bean name="alrimIdStrategy"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="ALRIM" />
+		<property name="cipers"		value="5" />
+		<property name="fillChar"	value="0" />
+	</bean> 
+	
+	<!--  업무일지 ID -->
+	<bean name="dailyWorkIdGnrService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="dailyWorkIdStrategy" />
+		<property name="blockSize"	value="1"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="DAILY_WORK_ID"/>
+	</bean>
+	<bean name="dailyWorkIdStrategy"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="WORK_" />
+		<property name="cipers"		value="15" />
+		<property name="fillChar"	value="0" />
+	</bean> 
+	
+	<!--  업무일지 결재정보 ID -->
+	<bean name="dailyApprovalIdGnrService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="dailyApprovalIdStrategy" />
+		<property name="blockSize"	value="1"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="DAILY_APPROVAL_ID"/>
+	</bean>
+	<bean name="dailyApprovalIdStrategy"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="APPROVAL_" />
+		<property name="cipers"		value="11" />
+		<property name="fillChar"	value="0" />
+	</bean> 
+	
+	<!--  업무일지 작성권한 ID -->
+	<bean name="dailyAuthIdGnrService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="dailyAuthIdStrategy" />
+		<property name="blockSize"	value="1"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="DAILY_AUTH_ID"/>
+	</bean>
+	<bean name="dailyAuthIdStrategy"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="AUTH_" />
+		<property name="cipers"		value="15" />
+		<property name="fillChar"	value="0" />
+	</bean> 
+	
+	<!--  상황실근무일지 ID -->
+	<bean name="situationRoomIdService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="situationRoomIdStrategy" />
+		<property name="blockSize"	value="1"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="SITUATION_ROOM_ID"/>
+	</bean>
+	<bean name="situationRoomIdStrategy"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="S_" />
+		<property name="cipers"		value="18" />
+		<property name="fillChar"	value="0" />
+	</bean> 
+	
+	<!--  상황실근무일지_상황전파현황 ID -->
+	<bean name="situationSpreadIdService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="situationSpreadIdStrategy" />
+		<property name="blockSize"	value="1"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="SPREAD_ID"/>
+	</bean>
+	<bean name="situationSpreadIdStrategy"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="SPREAD_" />
+		<property name="cipers"		value="13" />
+		<property name="fillChar"	value="0" />
+	</bean> 
+	
+	<!--  상황실근무일지_강우현황 ID -->
+	<bean name="dailyWorkRainIdService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="dailyWorkRainIdStrategy" />
+		<property name="blockSize"	value="1"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="RAIN_ID"/>
+	</bean>
+	<bean name="dailyWorkRainIdStrategy"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="RAIN_" />
+		<property name="cipers"		value="15" />
+		<property name="fillChar"	value="0" />
+	</bean> 
+	
+	<!--  4대강주요수계일지 ID -->
+	<bean name="riverMainIdService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="riverMainIdStrategy" />
+		<property name="blockSize"	value="1"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="RIVER_MAIN_ID"/>
+	</bean>
+	<bean name="riverMainIdStrategy"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="R_" />
+		<property name="cipers"		value="18" />
+		<property name="fillChar"	value="0" />
+	</bean> 
+	
+	<!--  조류모니터링 ID -->
+	<bean name="monitoringIdService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="monitoringIdStrategy" />
+		<property name="blockSize"	value="1"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="MONITORING_ID"/>
+	</bean>
+	<bean name="monitoringIdStrategy"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="M_" />
+		<property name="cipers"		value="18" />
+		<property name="fillChar"	value="0" />
+	</bean> 
+	
+	<!--  조류모니터링 수질예측정보 ID -->
+	<bean name="foreCastIdService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="foreCastIdStrategy" />
+		<property name="blockSize"	value="1"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="FORECAST_ID"/>
+	</bean>
+	<bean name="foreCastIdStrategy"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="F_" />
+		<property name="cipers"		value="18" />
+		<property name="fillChar"	value="0" />
+	</bean> 
+	
+	<!--  주제도 ID -->
+	<bean name="tmBermIdService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="tmBermIdStrategy" />
+		<property name="blockSize"	value="1"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="BERM_ID"/>
+	</bean>
+	<bean name="tmBermIdStrategy"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="B_" />
+		<property name="cipers"		value="18" />
+		<property name="fillChar"	value="0" />
+	</bean> 
+	<!--  교육 ID -->
+	<bean name="seminarIdGnrService"  class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService" destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="seminarIdStrategy" />
+		<property name="blockSize"		value="1"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="SEMINAR_ID"/>
+	</bean>
+	<bean name="seminarIdStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="SEMINAR_" />
+		<property name="cipers"		value="7" />
+		<property name="fillChar" 	value="0" />
+	</bean>
+	<!-- 교육 ID -->
+	<!--  교육 신청 ID -->
+	<bean name="seminarEntryIdGnrService"  class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService" destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="seminarEntryIdStrategy" />
+		<property name="blockSize"		value="1"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="SEMINAR_ENTRY_ID"/>
+	</bean>
+	<bean name="seminarEntryIdStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="S_ENTRY_" />
+		<property name="cipers"		value="7" />
+		<property name="fillChar" 	value="0" />
+	</bean>
+	<!-- 교육 ID -->
+	
+	<!--  점검및사용일지 ID -->
+	<bean name="checkUseIdGnrService"
+		class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrService"
+		destroy-method="destroy">
+		<property name="dataSource"	ref="wpcs" />
+		<property name="strategy"	ref="checkUseIdStrategy" />
+		<property name="blockSize"	value="1"/>
+		<property name="table"		value="T_COPSEQ"/>
+		<property name="tableName"	value="CHECK_USE_ID"/>
+	</bean>
+	<bean name="checkUseIdStrategy"
+		class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"		value="C_" />
+		<property name="cipers"		value="18" />
+		<property name="fillChar"	value="0" />
+	</bean>
+</beans>

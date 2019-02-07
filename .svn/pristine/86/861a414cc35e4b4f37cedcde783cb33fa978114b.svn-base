@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<airportsInfo>
+	<airportInfo>
+		<name>Seattle</name>
+		<shortName>SEA</shortName>
+		<description> Seattle - Tacoma Internartional Airport (SEA) 
+    Seattle, Washington</description>
+		<point x="70" y="145" />
+		<middlePoint x="340" y="230" />	
+	</airportInfo>	
+	<airportInfo>
+		<name>Chicago</name>
+		<shortName>MDW</shortName>
+		<description> Chicago Midway Airport (MDW) 
+    Chicago Illinois</description>
+		<point x="325" y="225" />
+		<middlePoint x="408" y="297" />	
+	</airportInfo>	
+	<airportInfo>
+		<name>Los Angeles</name>
+		<shortName>LAX</shortName>
+		<description> Los Angeles international Airport (LAX) 
+    Los Angeles California</description>
+		<point x="65" y="285" />
+		<middlePoint x="282" y="410" />	
+	</airportInfo>	
+	<airportInfo>
+		<name>New York</name>
+		<shortName>JFK</shortName>
+		<description> John F Kennedy International (JFK) 
+    New York, New York</description>
+		<point x="444" y="216" />
+		<middlePoint x="460" y="310" />	
+	</airportInfo>	
+	<airportInfo>
+		<name>Houston</name>
+		<shortName>IAH</shortName>
+		<description> George Bush 
+    International/Houston Airport (IAH) 
+    Houston, Texas</description>
+		<point x="265" y="350" />
+		<middlePoint x="363" y="348" />	
+	</airportInfo>	
+	<airportInfo>
+		<name>Atlanta</name>
+		<shortName>ATL</shortName>
+		<description> The William B Hartsfield international (ATL) 
+    Atlanta, Georgia</description>
+		<point x="365" y="305" />
+		<middlePoint x="410" y="345" />	
+	</airportInfo>	
+	<airportInfo>
+		<name>Miami</name>
+		<shortName>MIA</shortName>
+		<description> Miami International Airport (MIA) 
+    Miami, Florida</description>
+		<point x="415" y="385" />
+		<middlePoint x="415" y="385" />	
+	</airportInfo>
+</airportsInfo>

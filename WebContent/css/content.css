@@ -1,0 +1,1409 @@
+@chartset "utf-8";
+
+/* YBH(2010~) */
+
+@import url("reset.css");
+
+/* default */
+a {color:#333; text-decoration:none;}
+
+ul {list-style:none;}
+
+td {height:17px; padding:5px 0 4px; line-height:1.4;}
+
+
+
+select {margin:0; height:22px;}
+html>/**/body select {font-size:12px; font-family:'굴림'; line-height:130%;}
+
+/* layout */
+body {_background:url('/images/renewal/top_menu_bg.gif') repeat-x/* 0 55px; */}
+/* #wrap {width:1230px; margin:0 auto; padding:10px; font-size:75%; font-family:'굴림';} */
+#wrap {width:1230px; margin:0 auto; padding:10px; font-size:75%; font-family:NanumGothic,'나눔고딕','Nanum Gothic','돋움',dotum,sans-serif;}
+#header {height:115px;}
+#container {clear:both;}
+#container:after {display:block; clear:both; height:0; content:"."; visibility:hidden;}
+#container .snb {float:left; width:175px;}
+#container #content {float:left; width:1025px; padding:0 0 20px 30px;}
+#container #content:after {display:block; clear:both; height:0; content:"."; visibility:hidden;}
+#footer {clear:both; padding-top:15px;}
+*html #container #content {height:1%;}
+*:first-child+html #container #content {height:1%;}
+
+
+
+/* s : 추가_1108 수질 오염 감시 > 수질 상황 감시 > 측정소별 감시 */
+#wrap2 {width:1411px; margin:0 auto; padding:10px; font-size:75%; font-family:'굴림';}
+#container #content2 {float:left; width:1206px; padding:0 0 20px 30px;}
+#container #content2:after {display:block; clear:both; height:0; content:"."; visibility:hidden;}
+*html #container #content2 {height:1%;}
+*:first-child+html #container #content2 {height:1%;}
+
+.search_all_wrap2 {clear:both; width:1133px; padding:6px 35px; border:1px solid #cfcfcf;}
+.search_all_wrap2 dl {_width:900px; overflow:hidden; padding:5px 0;}
+.search_all_wrap2 dt {float:left; height:24px; padding:4px 6px 0 9px; background:url('/images/content/bg_search_wrap.gif') no-repeat 0 0;}
+.search_all_wrap2 dt img {vertical-align:top;}
+.search_all_wrap2 dd {float:left; height:25px; margin-right:10px; padding:3px 12px 0 0; vertical-align:top; background:url('/images/content/bg_search_wrap.gif') no-repeat right 0;}
+
+.search_all_wrap2 dd input {vertical-align:top;}
+.search_all_wrap2 dd select {vertical-align:top;}
+.search_all_wrap2 dd img {display:inline-block; padding-top:3px; vertical-align:top;}
+.search_all_wrap2 dd span {display:inline-block; padding:6px 4px 0; color:#cfcfcf;}
+
+.search_all_wrap2 dd ul.checkList,
+.search_all_wrap2 dd ul.checkList li {float:left; padding:0;}
+.search_all_wrap2 dd ul.checkList {padding:6px 0 0 0px;}
+.search_all_wrap2 dd ul.checkList li input.inputCheck,
+.search_all_wrap2 dd ul.checkList li label {margin:0; padding:0; vertical-align:middle;}
+.search_all_wrap2 dd ul.checkList li label {padding:0 15px 0 5px; }
+
+.search_all_wrap2 dd ul.checkList2,
+.search_all_wrap2 dd ul.checkList2 li {float:left; padding:0;}
+.search_all_wrap2 dd ul.checkList2 {padding:6px 10px 0 3px;}
+.search_all_wrap2 dd ul.checkList2 li input.inputCheck,
+.search_all_wrap2 dd ul.checkList2 li label {margin:0; padding:0; vertical-align:middle;}
+.search_all_wrap2 dd ul.checkList2 li label {padding:0 15px 0 5px; }
+
+.search_all_wrap2 .btn_search {float:right; padding-top:6px;}
+.search_all_wrap2 .btn_search2 {float:right; padding-top:6px;}
+
+.search_all_wrap2 .btnInBox {overflow:hidden;}
+.search_all_wrap2 .btnInBox dl {float:left;}
+
+.search_all_wrap2 dd.time input {width:70px;}
+.search_all_wrap2 dd .fixWidth7 {width:70px;} 
+.search_all_wrap2 dd .fixWidth8 {width:80px;} 
+.search_all_wrap2 dd .fixWidth9 {width:90px;} 
+.search_all_wrap2 dd .fixWidth10 {width:100px;} 
+.search_all_wrap2 dd .fixWidth11 {width:110px;} 
+.search_all_wrap2 dd .fixWidth12 {width:120px;} 
+.search_all_wrap2 dd .fixWidth13 {width:130px;} 
+.search_all_wrap2 dd .fixWidth14 {width:140px;} 
+.search_all_wrap2 dd .fixWidth15 {width:150px;}
+.search_all_wrap2 dd .fixWidth16 {width:160px;}
+.search_all_wrap2 dd .fixWidth17 {width:170px;}
+.search_all_wrap2 dd .fixWidth18 {width:180px;}
+.search_all_wrap2 dd .fixWidth19 {width:190px;}
+.search_all_wrap2 dd .fixWidth20 {width:200px;}
+/* e : 추가_1108 수질 오염 감시 > 수질 상황 감시 > 측정소별 감시 */
+
+
+/* common */
+.hidden,
+.hidden_phrase {overflow:hidden; position:absolute; left:-10000px; width:0; height:0; visibility:hidden;}
+
+.pad_b {padding-bottom:10px;}
+.pad_t {padding-top:10px;}
+
+.roundBox {}
+.roundBox .top_l,
+.roundBox .top_r,
+.roundBox .top,
+.roundBox .bot_l,
+.roundBox .bot_r,
+.roundBox .bot {font-size:0; line-height:0; background-repeat:no-repeat;}
+.roundBox .top_l {padding-left:3px; background-position:left top;}
+.roundBox .top_r {padding-right:3px; background-position:right top;}
+.roundBox .bot_l {padding-left:3px; background-position:left bottom;}
+.roundBox .bot_r {padding-right:3px; background-position:right bottom;}
+.roundBox .top,
+.roundBox .bot {height:3px; background-repeat:repeat-x;}
+
+.roundBox1 .top_l,
+.roundBox1 .top_r,
+.roundBox1 .top,
+.roundBox1 .bot_l,
+.roundBox1 .bot_r,
+.roundBox1 .bot {background-image:url(/images/common/box_roundGray.gif);}
+.roundBox1 .top {background-position:0 -8px;}
+.roundBox1 .bot_l {background-position:0 -3px;}
+.roundBox1 .bot_r {background-position:right -3px;}
+.roundBox1 .bot {background-position:left bottom;}
+.roundBox1 .con {background:url(/images/common/box_roundGray_l.gif) repeat-y 0 0;}
+.roundBox1 .con_r {padding:0 15px; background:url(/images/common/box_roundGray_r.gif) repeat-y right top;}
+
+.roundBox2 .top_l,
+.roundBox2 .top_r,
+.roundBox2 .bot_l,
+.roundBox2 .bot_r {background-image:url(/images/common/box_roundGray2.gif);}
+.roundBox2 .top,
+.roundBox2 .bot {height:2px; border:1px solid #ccc; background-color:#fff;}
+.roundBox2 .top {border-width:1px 0 0;}
+.roundBox2 .bot {border-width:0 0 1px;}
+.roundBox2 .con {border:1px solid #ccc; border-width:0 1px; background-color:#fff;}
+
+.roundBox3 .top_l,
+.roundBox3 .top_r,
+.roundBox3 .top,
+.roundBox3 .bot_l,
+.roundBox3 .bot_r,
+.roundBox3 .bot {background-image:url(/images/common/box_roundGray3.gif);}
+.roundBox3 .bot_l {background-position:0 -3px;}
+.roundBox3 .bot_r {background-position:right -3px;}
+.roundBox3 .top,
+.roundBox3 .bot,
+.roundBox3 .con {background-color:#ececec;}
+
+.roundBox4 .top_l,
+.roundBox4 .top_r,
+.roundBox4 .bot_l,
+.roundBox4 .bot_r {background-image:url(/images/common/box_roundGray4.gif);}
+.roundBox4 .top,
+.roundBox4 .bot {height:2px; border:1px solid #ccc; background-color:#fff;}
+.roundBox4 .top {border-width:1px 0 0;}
+.roundBox4 .bot {border-width:0 0 1px;}
+.roundBox4 .con {border:1px solid #ccc; border-width:0 1px; background-color:#fff;}
+
+.roundBlue .top_l,
+.roundBlue .top_r,
+.roundBlue .bot_l,
+.roundBlue .bot_r {background-image:url(/images/common/box_roundBlue.gif);}
+.roundBlue .top,
+.roundBlue .bot {height:2px; border:1px solid #008fbf; background-color:#fff;}
+.roundBlue .top {border-width:1px 0 0;}
+.roundBlue .bot {border-width:0 0 1px;}
+.roundBlue .con {border:1px solid #008fbf; border-width:0 1px; background-color:#fff;}
+
+
+.overBox {overflow:auto; padding-bottom:1px;}
+.overBoxY {overflow-y:scroll;}
+
+/* =table */
+.dataTable_broad {width:5200px; border-collapse:collapse; table-layout:fixed;}
+.dataTable_broad th,
+.dataTable_broad td {padding:6px 0 5px; border:1px solid #ccc; text-align:center; vertical-align:middle;}
+.dataTable_broad th {color:#000000; font-weight:bold; background-color:#eaf1f6;}
+.dataTable_broad tr.add td {background-color:#f2f2f2;}
+.dataTable_broad td {padding:5px 0 4px; line-height:1.4;}
+
+.dataTable_broad .bgStyle {background-color:#e7e7e7;}
+
+.dataTable_broad td.num {text-align:right;}
+.dataTable_broad td.num span {padding-right:10px;}
+.dataTable_broad td.step {text-align:left;}
+.dataTable_broad td.step span {padding-left:15px;}
+.dataTable_broad td.txtP {text-align:left;}
+.dataTable_broad td.txtP span {padding-left:30px;}
+
+.dataTable_broad tr.noLine th,
+.dataTable_broad tr.noLine td {border-top:none;}
+
+
+
+.dataTable {width:100%; border-collapse:collapse; table-layout:fixed;}
+.dataTable th,
+.dataTable td { border:1px solid #ccc; text-align:center; vertical-align:middle;}
+.dataTable th {height:17px; padding:4px 0 2px; color:#000000; font-weight:bold; background-color:#e9e9e9; line-height:130%;}
+.dataTable tr.add td {background-color:#f2f2f2;}
+
+
+.dataTable .bgStyle {background-color:#e7e7e7;}
+
+
+.dataTable td.num {text-align:right;}
+.dataTable td.num span {padding-right:10px;}
+.dataTable td.step {text-align:left;}
+.dataTable td.step span {padding-left:15px;}
+.dataTable td.txtP {text-align:left;}
+.dataTable td.txtP2 {text-align:left; vertical-align:top;}
+.dataTable td.txtP span {padding-left:30px;}
+
+.dataTable tr.noLine th,
+.dataTable tr.noLine td {border-top:none;}
+
+
+/* 추가_1102 */
+td .fixWidth7 {width:70px;} 
+td .fixWidth8 {width:80px;} 
+td .fixWidth9 {width:90px;} 
+td .fixWidth10 {width:100px;} 
+td .fixWidth11 {width:110px;} 
+td .fixWidth12 {width:120px;} 
+td .fixWidth13 {width:130px;} 
+td .fixWidth14 {width:140px;} 
+td .fixWidth15 {width:150px;}
+td .fixWidth16 {width:160px;}
+td .fixWidth17 {width:170px;}
+td .fixWidth18 {width:180px;}
+td .fixWidth19 {width:190px;}
+td .fixWidth20 {width:200px;}
+td .fixWidth21 {width:300px;}
+td .fixWidth22 {width:400px;}
+td .fixWidth23 {width:530px;}
+
+
+
+
+.basicTable {width:100%; border-collapse:collapse;}
+.basicTable th,
+.basicTable td {padding:9px 0 8px; border:1px solid #ccc; text-align:center; vertical-align:middle;}
+.basicTable th {font-weight:bold; background-color:#dfe9fe;}
+.basicTable td {background-color:#fff;}
+
+/* =form */
+.inputText {height:16px; font-size:12px; font-family:'굴림'; line-height:16px;}
+.inputCheck {width:13px; height:13px; margin:0; padding:0; vertical-align:top;}
+.inputRadio {width:13px; height:13px; margin:0; padding:0; vertical-align:top;}
+.textArea {font-size:12px; font-family:'굴림'; line-height:1.4;}
+
+/* =paginate */
+.paginate {padding-top:15px; text-align:center;}
+.paginate li {display:inline; padding:0 3px;}
+.paginate li a {display:inline-block; padding:2px;}
+.paginate li a:focus,
+.paginate li a:hover,
+.paginate li a:active {color:#007db6;}
+.paginate li em {display:inline-block; padding:2px; font-style:normal; font-weight:bold;}
+
+/* header */
+#header h1 {float:left; height:41px; margin:24px 29px 0 0;}
+
+#header .lnb {float:right;}
+#header .lnb p,
+#header .lnb ul,
+#header .lnb li {float:left;}
+#header .lnb p {height:22px; padding:24px 0 0 17px; font-size:11px;}
+#header .lnb ul{height:22px; padding:24px 15px 0 0; font-size:11px;}
+#header .lnb ul.link,
+#header .lnb ul.allView {padding-left:1px;}
+
+
+/*
+#header .gnb {overflow:hidden; float:left; position:relative; width:924px; height:58px; padding-left:205px;}
+#header .gnb li {float:left; width:137px; font-weight:bold; font-size:14px; font-family:"굴림"; line-height:1; vertical-align:top;}
+#header .gnb li a {float:left; width:137px; height:31px;}
+#header .gnb li ul {position:absolute; top:31px;}
+*html #header .gnb li ul {width:800px;}
+#header .gnb li li {width:auto; padding-left:36px;}
+#header .gnb li li a {width:auto; height:20px; padding:6px 12px 0; background:url('/images/common/bg_gnbMenu.gif') no-repeat 0 50%;}
+
+#header .gnb ul.sublist1 {left:200px;}
+#header .gnb ul.sublist2 {left:215px;}
+#header .gnb ul.sublist3 {left:300px;}
+#header .gnb ul.sublist4 {left:550px;}
+#header .gnb ul.sublist5 {left:430px;}
+*/
+/* s: gnb 20101022 */
+#header .gnb {overflow:hidden; float:left; position:relative; width:101%; height:58px; padding-left:0px;}
+#header .gnb li {display:block; float:left;width:137px;height:31px; font-weight:bold; font-size:14px; font-family:"굴림"; line-height:1; vertical-align:top;}
+#header .gnb li a {float:left; width:137px; height:31px;}
+#header .gnb li ul {position:absolute; top:31px;}
+*html #header .gnb li ul {width:800px;}
+#header .gnb li li {width:auto; padding-left:20px;}
+#header .gnb li li a {width:auto; height:20px; padding:6px 12px 0; background:url('/images/common/bg_gnbMenu.gif') no-repeat 0 50%;}
+
+#header .gnb ul.sublist1 {left:0px;}
+#header .gnb ul.sublist2 {left:150px;}
+#header .gnb ul.sublist3 {left:285px;}
+#header .gnb ul.sublist4 {left:412px;}
+#header .gnb ul.sublist5 {left:548px;}
+#header .gnb ul.sublist6 {left:702px;}
+#header .gnb ul.sublist7 {left:750px;}
+#header .gnb ul.sublist8 {left:675px;}
+#header .gnb ul.sublist9 {right:50px;}
+/* e: gnb 20101022 */
+
+/* footer */
+#footer {background-image:url(/images/mene_renewal/warp_bg.gif);}
+
+#footer h1 {float:left;}
+#footer div.link {float:right;}
+#footer div.vcard {font-size:11px;}
+#footer div.vcard.address {float:left;}
+#footer div.vcard.copyright {float:right;}
+
+/* loginAfter_main */
+.loginAfter_main #container #content {float:none; width:auto; padding:0 0 20px 0;}
+
+.mainSection {}
+.mainSection h2 {padding:0 0 9px 13px; color:#117bca; vertical-align:top; background:url(/images/common/bu_square.gif) no-repeat 0 2px;}
+
+.mainSection .alertBox {float:left; width:220px;}
+.mainSection .alertBox .roundBox {margin-bottom:20px;}
+.mainSection .alertBox .con {height:96px; padding-top:6px;}
+.mainSection .alertBox .con .tab {float:right;}
+.mainSection .alertBox .con .tab li {float:left; padding-right:10px;}
+.mainSection .alertBox .con .tab li .on {border-bottom:2px solid #ccc;}
+.mainSection .alertBox .con h2 {height:20px; padding:8px 0 0 26px; background:none;}
+.mainSection .alertBox .alertImg {float:left; width:84px; padding:8px 0 0 0; text-align:center;}
+.mainSection .alertBox .alertCon {float:left;}
+.mainSection .alertBox .alertCon p {padding:4px 0 3px 10px; background:url(/images/common/bu_arrowGray_r.gif) no-repeat 0 50%;}
+.mainSection .alertBox .info {}
+.mainSection .alertBox .info h2 {}
+.mainSection .alertBox .info p {}
+.mainSection .alertBox .mainSelect {padding: 10px 0;}
+.mainSection .alertBox .overBox {overflow:auto; width:220px; height:444px; border:1px solid #ccc; border-width:1px 0;}
+.mainSection .alertBox .overBox .selectTh select {width:110px;}
+
+.mainSection .mapArea {float:left; width:757px; margin:0 5px 0; padding:2px 10px 10px; border:1px solid #ccc;}
+.mainSection .mapArea .roundBox {margin-bottom:8px;}
+.mainSection .mapArea .con ul {width:440px; height:30px; margin:0 auto; padding:8px 0 0 17px;}
+.mainSection .mapArea .con li {float:left; padding:0 10px;}
+.mainSection .mapArea .con li.first {padding-top:6px;}
+.mainSection .mapArea .con li select {width:120px;}
+.mainSection .mapArea .map {height:626px; margin-top:10px;}
+
+.mainSection .todaySta_board {float:left; width:220px;}
+.mainSection .todaySta_board .todaySta {margin-bottom:40px; padding:10px 4px 5px; border:1px solid #ccc;}
+.mainSection .todaySta_board .todaySta h2 {padding-left:0; background:none;}
+.mainSection .todaySta_board dl {height:75px; padding:4px 0 0 4px; border:1px solid #ccc;}
+.mainSection .todaySta_board dt {float:left; width:105px; height:20px; padding:5px 4px 0 0; color:#fff; text-align:center; background:url(/images/content/bg_popupMain_tit.gif) no-repeat 0 0;}
+.mainSection .todaySta_board dd {float:left; width:79px; height:20px; padding:5px 0 0 13px; background:url(/images/content/bg_popupMain_con.gif) no-repeat 0 0;}
+.mainSection .todaySta_board .list {overflow:hidden; clear:both; position:relative; height:100px; margin-bottom:35px;}
+.mainSection .todaySta_board .list li {float:left; padding:6px 0 5px 25px; background:url(/images/common/bu_arrowOrange_r.gif) no-repeat 10px 10px;}
+.mainSection .todaySta_board .list li a {
+	float:left; width:175px; vertical-align:top;
+	overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.mainSection .todaySta_board .listGallery {clear:both; position:relative;}
+.mainSection .todaySta_board .listGallery li {display:inline;}
+.mainSection .todaySta_board .listGallery li img {width:68px !important; height:59px !important; border:1px solid #ccc;}
+.mainSection .todaySta_board .list .btn,
+.mainSection .todaySta_board .listGallery .btn {position:absolute; top:0; right:0;}
+.mainSection .todaySta_board .list .btn a,
+.mainSection .todaySta_board .listGallery .btn a {float:left; padding:3px 0;}
+.mainSection .todaySta_board .firstGallery {margin-bottom:50px;}
+
+/* content */
+#container #calCForm  img, input{vertical-align:middle;}
+#container #calCTotalListForm  img, input{vertical-align:middle;}
+#container .snb {width:174px; padding-bottom:75px; background:#cfcfcf url('/images/menu/snb_bg.gif') no-repeat 0 bottom; }
+#container .snb li {vertical-align:top;}
+#container .snb li a {display:block;}
+#container .snb li img {vertical-align:top;}
+#container .snb li ul {width:162px; margin:1px 0 0 6px; padding-bottom:15px; background:#fff url('/images/menu/snb_bg_ul.gif') no-repeat 0 bottom;}
+#container .snb li li.first {padding-top:15px; background:#fff url('/images/menu/snb_bg_ul.gif') no-repeat 0 top;}
+#container .snb li li a {display:block; padding:4px 10px 4px 18px; color:#666; font-size:12px; background:url('/images/common/bu_dot_blue.gif') no-repeat 10px 8px;}
+#container .snb li li a.on,
+#container .snb li li a:focus,
+#container .snb li li a:hover,
+#container .snb li li a:active {color:#f60; background-image:url('/images/common/bu_dot_orange.gif');}
+#container h3 {padding-bottom:10px;}
+#container h4 {padding:20px 0 12px;}
+#container h5 {padding:20px 0 12px;}
+
+
+h3.PointTit {float:left; padding:0 15px; color:#117bca; font-size:13px; vertical-align:top; background:url('/images/common/bu_pointTit.gif') no-repeat 0 2px}
+
+
+p.locationSta {float:right; padding:7px 0 0 12px; color:#666; font-size:11px; background:url(/images/common/bu_arrowGray_r.gif) no-repeat 0 11px;}
+
+.formSearch dl {padding:9px 5px;border-bottom:1px solid #ccc;}
+.formSearch dl:after {display:block; overflow:hidden; clear:both;  height:0; visibility:hidden; content:".";}
+* html .formSearch dl {height:1%;}
+*:first-child+html .formSearch dl {height:1%;}
+.formSearch dt,
+.formSearch dd {float:left;}
+.formSearch dt {padding:5px 10px 0; background:url(/images/common/bu_arrowGray_r.gif) no-repeat 0 8px;}
+.formSearch dd {padding:0 25px 0 0;}
+.formSearch dd select {width:120px; height:22px;}
+.formSearch dd input.inputText {width:150px;}
+.formSearch dd select,
+.formSearch dd input,
+.formSearch dd img {vertical-align:middle;}
+.formSearch dd ul.checkList,
+.formSearch dd ul.checkList li {float:left; padding:0;}
+.formSearch dd ul.checkList {padding:3px 0 0 10px;}
+.formSearch dd ul.first {padding-left:0;}
+.formSearch dd ul.checkList li input.inputCheck,
+.formSearch dd ul.checkList li label {margin:0; padding:0; vertical-align:middle;}
+.formSearch dd ul.checkList li label {padding:0 20px 0 5px;}
+.formSearch dd span.space {padding:0 10px;}
+.formSearch .lastList {padding:9px 5px;}
+.formSearch .lastList:after {display:block; overflow:hidden; clear:both;  height:0; visibility:hidden; content:".";}
+* html .formSearch .lastList {height:1%;}
+*:first-child+html .formSearch .lastList {height:1%;}
+.formSearch .lastList dl {float:left; padding:0; border-bottom:none;}
+.formSearch .lastList .btn {float:right;}
+
+.showData .dataBtn {float:right; padding:20px 0 10px;}
+.showData .dataBtn li {float:left; padding-left:5px;}
+.showData .data_wrap {clear:both;}
+.showData .data_wrap .overBox {height:340px; border:1px solid #ccc; _width:1025px; _overflow-x:auto; }
+/* 추가_1102 */
+.showData .data_wrap .overBox2 {border:1px solid #ccc;}
+
+/* 추가_1216 */
+.inner__dischargewater .data_wrap .overBox {height:340px; border:1px solid #ccc; _width:1025px; _overflow-x:auto; }
+
+.data_list_title,
+.data_list_con {clear:both;}
+.data_list_title:after,
+.data_list_con:after {display:block; overflow:hidden; clear:both;  height:0; visibility:hidden; content:".";}
+* html .data_list_title,
+* html .data_list_con {height:1%;}
+*:first-child+html .data_list_title,
+*:first-child+html .data_list_con {overflow:hidden;}
+.data_list_title li,
+.data_list_con li {float:left; padding:8px 0 7px; border:1px solid #ccc; text-align:center;}
+.data_list_title li {border-width:1px 1px 1px 0; color:#2f8bc0; font-weight:bold; background-color:#eaf1f6;}
+.data_list_con li {padding:6px 0 5px; border-width:0 1px 1px 0; line-height:1.4;}
+.data_list_title li.first {border-width:1px;}
+.data_list_con li.first {border-width:0 1px 1px 1px;}
+.data_list_con_add li {background-color:#eee;}
+.data_list_con li.nodata {float:none; border-width:0 1px 1px 1px;}
+
+.con_titArea {_zoom:1; overflow:hidden; padding-bottom:4px;}
+
+.con_tit_wrap {height:27px; padding-top:8px;}
+.con_tit_wrap h3 {float:left !important; padding:0 !important;}
+.con_tit_wrap p {float:right; padding:7px 0 0 12px; color:#666; font:11px '굴림', sans-serif; background:url(/images/common/bu_arrowGray_r.gif) no-repeat 0 11px;}
+
+/* content > 굴림 굴림 굴림 */
+.sub_waterpolmnt {}
+
+.sub_waterpolmnt h3 {float:left;}
+.sub_waterpolmnt p.location {float:right; padding:7px 0 0 12px; color:#666; font-size:11px; background:url(/images/common/bu_arrowGray_r.gif) no-repeat 0 11px;}
+
+.sub_waterpolmnt .formBox {clear:both;}
+
+
+.sub_waterpolmnt .roundBox .top_l,
+.sub_waterpolmnt .roundBox .top_r,
+.sub_waterpolmnt .roundBox .top,
+.sub_waterpolmnt .roundBox .bot_l,
+.sub_waterpolmnt .roundBox .bot_r,
+.sub_waterpolmnt .roundBox .bot {background-image:url(/images/common/box_roundGray.gif);}
+.sub_waterpolmnt .roundBox .top {background-position:0 -8px;}
+.sub_waterpolmnt .roundBox .bot_l {background-position:0 -3px;}
+.sub_waterpolmnt .roundBox .bot_r {background-position:right -3px;}
+.sub_waterpolmnt .roundBox .bot {background-position:left bottom;}
+.sub_waterpolmnt .roundBox .con {background:url(/images/common/box_roundGray_l.gif) repeat-y 0 0;}
+.sub_waterpolmnt .roundBox .con_r {padding:0 15px; background:url(/images/common/box_roundGray_r.gif) repeat-y right top;}
+
+/* s : 추가_1104 */
+.sub_waterpolmnt ul.checkList3,
+.sub_waterpolmnt ul.checkList3 li {float:left;}
+.sub_waterpolmnt ul.checkList3 {padding:6px 6px 6px 15px;}
+.sub_waterpolmnt ul.checkList3 li input.inputCheck,
+.sub_waterpolmnt ul.checkList3 li label {margin:0; padding:0; vertical-align:middle;}
+.sub_waterpolmnt ul.checkList3 li label {display:inline-block; width:70px; padding:0 5px 2px 5px; text-align:left; }
+
+.sub_waterpolmnt ul.checkList4,
+.sub_waterpolmnt ul.checkList4 li {float:left; padding-bottom:5px;}
+.sub_waterpolmnt ul.checkList4 {padding:6px 6px 6px 15px;}
+.sub_waterpolmnt ul.checkList4 li input.inputCheck,
+.sub_waterpolmnt ul.checkList4 li label {margin:0; padding:0; vertical-align:middle;}
+.sub_waterpolmnt ul.checkList4 li label {display:inline-block; width:70px; padding:0 5px 2px 5px; text-align:left; }
+
+.sub_waterpolmnt textArea.checkList3{width:520px; height:50px; text-align:left; font-size:12px; line-height:130%; font-family:'굴림';padding:6px 6px 4px 6px;}
+.sub_waterpolmnt textArea.checkList4{width:780px; height:80px; text-align:left; font-size:12px; line-height:130%; font-family:'굴림';padding:6px 6px 4px 6px;}
+.sub_waterpolmnt textArea.checkList5{width:892px; height:60px; text-align:left; font-size:12px; line-height:130%; font-family:'굴림';padding:6px 6px 4px 6px;}
+.sub_waterpolmnt textArea.checkList6{width:967px; height:100px; text-align:left; font-size:12px; line-height:130%; font-family:'굴림';padding:6px 6px 4px 6px;}
+
+.sub_waterpolmnt .inputText1 {width:35px; height:16px; font-size:12px; font-family:'굴림'; line-height:16px;}
+
+.sub_waterpolmnt ul.btnMenu,
+.sub_waterpolmnt ul.btnMenu li {float:left;padding:0 0px 0px 5px; }
+
+/* e : 추가_1104 */
+
+.search_all_wrap {clear:both; width:952px; padding:6px 35px; border:1px solid #cfcfcf;}
+.search_all_wrap dl {_width:900px; overflow:hidden; padding:5px 0;}
+/* .search_all_wrap dt {_display:inline; float:left; height:24px; padding:4px 6px 0 9px; background:url('/images/content/bg_search_wrap.gif') no-repeat 0 0;} */
+.search_all_wrap dt {_display:inline; float:left; height:24px; padding:4px 6px 0 0px;}
+.search_all_wrap dt img {vertical-align:top;}
+/* .search_all_wrap dd {_display:inline; float:left; height:25px; margin-right:10px; padding:3px 12px 0 0; vertical-align:top; background:url('/images/content/bg_search_wrap.gif') no-repeat right 0;} */
+ .search_all_wrap dd {_display:inline; float:left; height:25px; margin-right:10px; padding:3px 12px 0 0; vertical-align:top;}
+
+.search_all_wrap dd input {vertical-align:top;}
+.search_all_wrap dd select {vertical-align:top;}
+.search_all_wrap dd img {display:inline-block; padding-top:3px; vertical-align:top;}
+.search_all_wrap dd span {display:inline-block; padding:6px 4px 0; color:#cfcfcf;}
+
+.search_all_wrap dd ul.checkList,
+.search_all_wrap dd ul.checkList li {float:left; padding:0;}
+.search_all_wrap dd ul.checkList {padding:6px 0 0 0px;}
+.search_all_wrap dd ul.checkList li input.inputCheck,
+.search_all_wrap dd ul.checkList li label {margin:0; padding:0; vertical-align:middle;}
+.search_all_wrap dd ul.checkList li label {padding:0 15px 0 5px; }
+
+/* 1031_추가 */
+.search_all_wrap dd ul.checkList2,
+.search_all_wrap dd ul.checkList2 li {float:left; padding:0;}
+.search_all_wrap dd ul.checkList2 {padding:6px 10px 0 3px;}
+.search_all_wrap dd ul.checkList2 li input.inputCheck,
+.search_all_wrap dd ul.checkList2 li label {margin:0; padding:0; vertical-align:middle;}
+.search_all_wrap dd ul.checkList2 li label {padding:0 15px 0 5px; }
+
+
+/* 조회조건추가: 측정항목 갯수가 1줄일때 class값을 rows1로 준다. */
+.rows1 dl {overflow:hidden; padding:5px 0;}
+.rows1 dt {float:left; height:24px; padding:4px 6px 0 9px; background:url('/images/content/bg_search_wrap.gif') no-repeat 0 0;}
+.rows1 dd {float:left; height:25px; margin-right:10px; padding:3px 12px 0 0; vertical-align:top; background:url('/images/content/bg_search_wrap.gif') no-repeat right 0;}
+.rows1 dd ul li{float:left; padding:6px 0 0 0px;}
+.rows1 dd ul li label {padding:0 15px 0 5px; }
+
+/* 조회조건추가: 측정항목 갯수가 2줄일때 class값을 rows2로 준다. */
+.rows2 {width:855px; height:40px; margin-top:5px; margin-bottom:5px; display:block;position:relative; background:url('/images/content/bg_search_wrap2.gif') no-repeat 0 0;}
+.rows2 dt{display:block;position:absolute;top:2px;left:0;background-image:none;}
+.rows2 dd{display:block;position:absolute;top:5px;left:100px;padding-top:5px;background-image:none;}
+.rows2 dd ul li{float:left;margin-bottom:8px;margin-right:15px; } 
+.rows2 dd ul li input {margin-right:5px;} 
+
+/* 조회조건추가: 측정항목 갯수가 3줄일때 많은 class값을 rows3로 준다. */
+.rows3 {width:855px; height:65px; margin-top:5px; margin-bottom:5px; display:block;position:relative; background:url('/images/content/bg_search_wrap3.gif') no-repeat 0 0;}
+.rows3 dt{display:block;position:absolute;top:2px;left:0;background-image:none;}
+.rows3 dd{display:block;position:absolute;top:5px;left:100px;padding-top:5px;background-image:none;}
+.rows3 dd ul li{float:left;margin-bottom:8px;margin-right:15px; } 
+.rows3 dd ul li input {margin-right:5px;} 
+
+/* 조회조건추가: 측정항목 갯수가 4줄일때 많은 class값을 rows4로 준다. */
+.rows4 {width:855px; height:90px; margin-top:5px; margin-bottom:5px; display:block;position:relative; background:url('/images/content/bg_search_wrap4.gif') no-repeat 0 0;}
+.rows4 dt{display:block;position:absolute;top:2px;left:0;background-image:none;}
+.rows4 dd{display:block;position:absolute;top:5px;left:100px;padding-top:5px;background-image:none;}
+.rows4 dd ul li{float:left;margin-bottom:8px;margin-right:15px; } 
+.rows4 dd ul li input {margin-right:5px;} 
+
+/* 조회조건추가: 측정항목 갯수가 5줄일때 많은 class값을 rows5로 준다. */
+.rows5 {width:855px; height:105px; margin-top:5px; margin-bottom:5px; display:block;position:relative; background:url('/images/content/bg_search_wrap5.gif') no-repeat 0 0;}
+.rows5 dt{display:block;position:absolute;top:2px;left:0;background-image:none;}
+.rows5 dd{display:block;position:absolute;top:5px;left:100px;padding-top:5px;background-image:none;}
+.rows5 dd ul li{float:left;margin-bottom:8px;margin-right:15px; } 
+.rows5 dd ul li input {margin-right:5px;} 
+
+
+.p_total_cnt2 {clear:both; position:relative; top:30px; margin-bottom:-8px;}
+.search_all_wrap .btn_search {float:right; padding-top:6px;}
+.search_all_wrap .btnInBox {overflow:hidden;}
+.search_all_wrap .btnInBox dl {float:left;}
+.search_all_wrap .btnInBox .chekBoxSpan{display:block;padding-top:5px;}
+.search_all_wrap dd .time input {width:70px;}
+.search_all_wrap dd .fixWidth7 {width:70px;} 
+.search_all_wrap dd .fixWidth8 {width:80px;} 
+.search_all_wrap dd .fixWidth9 {width:90px;} 
+.search_all_wrap dd .fixWidth10 {width:100px;} 
+.search_all_wrap dd .fixWidth11 {width:110px;} 
+.search_all_wrap dd .fixWidth12 {width:120px;} 
+.search_all_wrap dd .fixWidth13 {width:130px;} 
+.search_all_wrap dd .fixWidth14 {width:140px;} 
+.search_all_wrap dd .fixWidth15 {width:150px;}
+.search_all_wrap dd .fixWidth16 {width:160px;}
+.search_all_wrap dd .fixWidth17 {width:170px;}
+.search_all_wrap dd .fixWidth18 {width:180px;}
+.search_all_wrap dd .fixWidth19 {width:190px;}
+.search_all_wrap dd .fixWidth20 {width:200px;}
+
+/* 조회버튼 추가_1102 */
+.search_all_wrap .btn_search2 {float:right; padding-top:6px;}
+
+.sub_waterpolmnt .roundBox dl {padding:9px 5px;border-bottom:1px solid #ccc;}
+.sub_waterpolmnt .roundBox dl:after {display:block; overflow:hidden; clear:both;  height:0; visibility:hidden; content:".";}
+* html .sub_waterpolmnt .roundBox dl {height:1%;}
+*:first-child+html .sub_waterpolmnt .roundBox dl {height:1%;}
+.sub_waterpolmnt .roundBox dt,
+.sub_waterpolmnt .roundBox dd {float:left;}
+.sub_waterpolmnt .roundBox dt {padding:5px 10px 0; background:url(/images/common/bu_arrowGray_r.gif) no-repeat 0 8px;}
+.sub_waterpolmnt .roundBox dd {padding:0 25px 0 0;}
+.sub_waterpolmnt .roundBox dd select {width:120px; height:22px;}
+.sub_waterpolmnt .roundBox dd input.inputText {width:150px;}
+.sub_waterpolmnt .roundBox dd select,
+.sub_waterpolmnt .roundBox dd input,
+.sub_waterpolmnt .roundBox dd img {vertical-align:middle;}
+.sub_waterpolmnt .roundBox dd ul.checkList,
+.sub_waterpolmnt .roundBox dd ul.checkList li {float:left; padding:0;}
+.sub_waterpolmnt .roundBox dd ul.checkList {padding:3px 0 0 10px;}
+.sub_waterpolmnt .roundBox dd ul.checkList li input.inputCheck,
+.sub_waterpolmnt .roundBox dd ul.checkList li label {margin:0; padding:0; vertical-align:middle;}
+.sub_waterpolmnt .roundBox dd ul.checkList li label {padding:0 20px 0 5px;}
+.sub_waterpolmnt .roundBox .lastList {padding:9px 5px;}
+.sub_waterpolmnt .roundBox .lastList:after {display:block; overflow:hidden; clear:both;  height:0; visibility:hidden; content:".";}
+* html .sub_waterpolmnt .roundBox .lastList {height:1%;}
+*:first-child+html .sub_waterpolmnt .roundBox .lastList {height:1%;}
+.sub_waterpolmnt .roundBox .lastList dl {float:left; padding:0; border-bottom:none;}
+.sub_waterpolmnt .roundBox .lastList .btn {float:right;}
+
+.sub_waterpolmnt h2 {padding:0 0 9px 15px; background:url(/images/common/bu_square.gif) no-repeat 0 3px;}
+.sub_waterpolmnt h4 {float:left;}
+.sub_waterpolmnt h5 {float:left;}
+.sub_waterpolmnt h6 {float:left;padding:25px 0 10px 15px; background:url(/images/common/box_roundBlue.gif) no-repeat 5px 27px; color:#666;}
+.sub_waterpolmnt .dataBtn {float:right; padding:20px 0 8px 0;}
+.sub_waterpolmnt .dataBtn li {float:left; padding-left:5px;}
+.sub_waterpolmnt .p_total_cnt {clear:both; position:relative; top:-20px; margin-bottom:-8px;}
+.sub_waterpolmnt .data_wrap {clear:both;}
+.sub_waterpolmnt .data_wrap .overBox table {border:2px solid #ccc;}
+/*.sub_waterpolmnt .data_wrap .overBox {width:px; height:340px; padding:0 1px 0 0; border:1px solid #ccc;}*/
+/*.sub_waterpolmnt .data_wrap .overBox {*overflow-x:hidden; width:1024px; height:340px; padding:0 1px 0 0; border:1px solid #ccc;}*/
+
+
+.sub_waterpolmnt dl.tit_h4 {overflow:hidden; width:952px;}
+.sub_waterpolmnt dl.tit_h4 dt {float:left;vertical-align:middle;padding-top:5px;}
+.sub_waterpolmnt dl.tit_h4 dt img {vertical-align:top;}
+.sub_waterpolmnt dl.tit_h4 dd {float:left; margin-left:5px; vertical-align:middle;}
+.sub_waterpolmnt dl.tit_h4 dd input {vertical-align:middle;}
+.sub_waterpolmnt dl.tit_h4 dd select {vertical-align:middle;}
+.sub_waterpolmnt dl.tit_h4 dd img {padding-top:3px; vertical-align:middle;}
+
+.sub_waterpolmnt .right {margin-left:40px;}
+.sub_waterpolmnt .time2 {padding:10px 15px 10px 15px;}
+.sub_waterpolmnt .worker {padding:0px 15px 15px 15px;vertical-align:middle;}
+.sub_waterpolmnt .worker select {vertical-align:middle;}
+.sub_waterpolmnt .sp1 {padding:10px 25px 10px 15px; font-weight:bold; color:#2f8bc0;}
+.sub_waterpolmnt .sp2 {padding:0 0 0 15px;}
+.sub_waterpolmnt .sp3 {padding:25px 5px 10px 15px;}
+.sub_waterpolmnt .sp4 {padding:0 0 0 5px;}
+.sub_waterpolmnt .sp5 {padding:0 5px 0 0;}
+
+.sub_waterpolmnt dl.tit_h5 {overflow:hidden;}
+.sub_waterpolmnt dl.tit_h5 dt {float:left;vertical-align:middle;padding:5 0 0 0px;}
+.sub_waterpolmnt dl.tit_h5 dd {float:left; margin-left:5px; vertical-align:middle;}
+.sub_waterpolmnt dl.tit_h5 dd input, select, textArea {vertical-align:middle;}
+
+.sub_waterpolmnt dl.tit_h6 {overflow:hidden;}
+.sub_waterpolmnt dl.tit_h6 dt {float:left;vertical-align:middle;padding:5 0 0 0px;}
+.sub_waterpolmnt dl.tit_h6 dd {float:left; margin-left:5px; vertical-align:middle;}
+.sub_waterpolmnt dl.tit_h6 dd input, select, textArea {vertical-align:middle;}
+
+/* 추가_1108 */
+.rp_tit {width:1025px; font-size:32px; text-align:center; margin-bottom:20px;}
+
+
+
+
+/* content > 굴림 굴림 굴림 > ??? 굴림 */
+.page_situationctl .tit_time {padding:13px 15px 13px; color:#fff; text-align:center; background-color:#3893c5;}
+.page_situationctl .tit_time h1 {font-size:15px;}
+.page_situationctl .tit_time p {margin-top:-11px; text-align:right;}
+
+/* content > 굴림 굴림 굴림 > ??? 굴림 > ??????? */
+.inner_totalmnt .tit_time {display:block; color:#fff; text-align:center; background-color:#3893c5;}
+
+.inner_totalmnt .notes_weather {height:20px; padding-top:15px;}
+.inner_totalmnt .notesWrap {float:right;}
+.inner_totalmnt .notes_weather p.tit {float:left; padding-right:5px;}
+.inner_totalmnt .notes_weather p.txt {float:left; padding-left:5px; vertical-align:top;}
+.inner_totalmnt .notes_weather p.txt img {height:18px; padding-top:1px; vertical-align:top;}
+.inner_totalmnt .notes_weather p.txt span {display:inline-block; padding:5px 10px 0 0; font-size:11px;}
+.inner_totalmnt .weatherWrap {float:left;}
+.inner_totalmnt .weatherWrap img {vertical-align:top;}
+.inner_totalmnt .weatherWrap span {display:inline-block; vertical-align:top; margin:2px 0;}
+.inner_totalmnt .weatherWrap ul li {float:left; padding-right:20px; border-right:1px solid #BBBBBB; margin-right:20px;}
+.inner_totalmnt .weatherWrap ul li.last {border:0; margin:0;}
+.inner_totalmnt .weatherWrap ul li span.point_text {display:inline-block; vertical-align:top; padding-left:10px; background:url('/images/renewal2/point_01.png') no-repeat left center; font-weight:bold; margin-right:5px;}
+
+.inner_totalmnt .riverMnt {padding:10px 0;}
+.inner_totalmnt .riverMnt:after {display:block; overflow:hidden; clear:both;  height:0; visibility:hidden; content:".";}
+* html .inner_totalmnt .riverMnt{height:1%;}
+*:first-child+html .inner_totalmnt .riverMnt {height:1%;}
+.inner_totalmnt .listBox {float:left; width:277px; margin-left:7px; padding:11px 8px 9px 9px; border:1px solid #ccc;}
+.inner_totalmnt .list_first {margin-left:0;}
+#container .inner_totalmnt .listBox h2 {padding:0 0 9px 15px; background:url(/images/common/bu_square.gif) no-repeat 0 3px;}
+.inner_totalmnt .listBox .weather {margin-top:-24px; padding-bottom:6px;}
+.inner_totalmnt .listBox .weather img {height:18px !important; padding-right:3px; vertical-align:middle;}
+.inner_totalmnt .listBox p {text-align:right;}
+.inner_totalmnt .listBox .dataTable {border:2px solid #ccc;}
+.inner_totalmnt .listBox .dataTable th {color:#333; background-color:#fff;}
+.inner_totalmnt .listBox .dataTable thead th {color:#3893c5; font-size:11px;}
+.inner_totalmnt .listBox .dataTable td {padding:6px 0 5px;}
+.inner_totalmnt .listBox .dataTable td span {display:block; padding:6px 0 5px;}
+.inner_totalmnt .listBox .dataTable td.num span {padding-right:10px;}
+.inner_totalmnt .listBox .dataTable th.ico {padding-top:4px; padding-bottom:3px;}
+.inner_totalmnt .listBox .graph {clear:both; height:107px; margin-top:5px; border:1px solid #ccc;}
+
+
+/* s : 20101021 통합감시 스크롤  */
+.inner_totalmnt .otherMnt .listBox .overBox 		{overflow:hidden;}
+.inner_totalmnt .otherMnt .listBox .fixedHeader 	{	}
+.inner_totalmnt .otherMnt .listBox .autoBody 		{	height:320px;margin:0;padding:0;overflow-y:auto;overflow-x:hidden;}
+.inner_totalmnt .otherMnt .listBox .dataTable { border-collapse:collapse;}
+.inner_totalmnt .otherMnt .listBox .fixedHeader .dataTable {border-top:2px solid #cccccc !important;border-right:2px solid #cccccc;border-bottom:1px solid #cccccc;border-left:2px solid #cccccc;}
+.inner_totalmnt .otherMnt .listBox .autoBody .dataTable {border-top:0 solid #cccccc !important;border-right:2px solid #cccccc;border-bottom:2px solid #cccccc;border-left:2px solid #cccccc;}
+/* e : 20101021 통합감시 스크롤  */
+
+/* s : 20101022 통합감시 스크롤  
+.inner_totalmnt .otherMnt .listBox .overBox 		{	overflow:hidden;}
+.inner_totalmnt .otherMnt .listBox .autoBody 		{	overflow-y:auto;overflow-x:hidden;height:315px;margin:0;padding:0;border-top:0 solid #cccccc !important;border-bottom:2px solid #cccccc;}
+.inner_totalmnt .otherMnt .listBox .dataTable 		{	border-collapse:collapse;	}
+ e : 20101022 통합감시 스크롤  */
+
+
+/* s : 20101022 수질정보조회 스크롤  */
+.inner_riverwater .data_wrap .overBox 		{	height:500px;width:831px;overflow-y:auto;overflow-x:auto;	}
+/* s : 추가_1102 */.inner_riverwater .data_wrap .overBox2 		{	overflow-y:auto;overflow-x:auto;	}/* e : 추가_1102 */
+.inner_riverwater .data_wrap .fixedHeader 	{	border:1px solid red;}
+.inner_riverwater .data_wrap .autoBody  {
+	overflow-y:auto;overflow-x:auto;width:800px;
+	margin:0;padding:0;height:500px;background-color:#efefef;
+}
+/* e : 20101022 수질정보조회 스크롤  */
+
+
+/* s: 스크롤테이블 기본1 */
+table {empty-cells:show;}
+.areaTOver {overflow:hidden;width:1020px;height:577px;border:1px solid #cccccc; }  /* 화면사이즈가 다른 경우 width값을 재정의 한다 */
+.areaTOver .dataTable {width:90px;border:0;} /* dataTable width:100% 일단축소 */
+.areaTOver .dataTable th {border-left:0;}
+.areaTOver .dataTable td {border-left:0;color:#555555;}
+.areaTOver td.btn { text-align:center !important;padding:0!important;}
+/* e: 스크롤테이블 기본1 */
+/* s: 스크롤테이블 기본2 */
+#areaTOver					{		}  /* 영역 인식자: areaTOver_"id" */
+#areaTHeader_intercptn 		{	overflow:hidden;float:left;clear:left;width:420px;height:80px;}
+#areaTHeader_top 			{	overflow:hidden;width:604px;height:80px;background-color:#eaf1f6;border-left:1px solid #cccccc;}
+#areaTHeader_left 			{	overflow:hidden;float:left;clear:left;width:420px;height:482px;border-top:1px solid #cccccc;border-bottom:1px solid #cccccc;}
+#areaTData					{	overflow:scroll;overflow-x:scroll;overflow-y:scroll;width:604x;height:499px;border-top:1px solid #cccccc;border-left:1px solid #cccccc;border-bottom:1px solid #cccccc;}
+#areaTHeader_intercptn th 	{	vertical-align:middle;height:80px;padding:0;margin:0;border-top:0 !important;}
+#areaTHeader_top th			{	vertical-align:middle;height:40px;padding:0;margin:0;border-top:0 !important;}
+/* e: 스크롤테이블 기본2 */
+
+/* s: 스크롤테이블 기본3: 한페이지안  여러개  */
+#areaTOver					{		}  /* 영역 인식자: areaTOver_"id" */
+/* id=>class */
+.areaTHeader_intercptn 		{	overflow:hidden;float:left;clear:left;width:420px;height:80px;}
+.areaTHeader_top 			{	overflow:hidden;width:604px;height:80px;background-color:#eaf1f6;border-left:1px solid #cccccc;}
+.areaTHeader_left 			{	overflow:hidden;float:left;clear:left;width:420px;height:482px;border-top:1px solid #cccccc;border-bottom:1px solid #cccccc;}
+.areaTData					{	overflow:scroll;overflow-x:scroll;overflow-y:scroll;width:604x;height:499px;border-top:1px solid #cccccc;border-left:1px solid #cccccc;border-bottom:1px solid #cccccc;}
+.areaTHeader_intercptn th 	{	vertical-align:middle;height:80px;padding:0;margin:0;border-top:0 !important;}
+.areaTHeader_top th			{	vertical-align:middle;height:40px;padding:0;margin:0;border-top:0 !important;}
+/* e: 스크롤테이블 기본3: 한페이지안  여러개 */
+
+
+
+/* riverwater_a 하천수질조회(수질측정망) : 세로스크롤 
+#areaTOver_riverwater_a .areaTOver {width:980px;height:600px;overflow:hidden; }
+#areaTOver_riverwater_a #areaTHeader_top	{ }
+#areaTOver_riverwater_a #areaTHeader_left{	width:421px;height:482px;	}
+#areaTOver_riverwater_a #areaTHeader_top	{	overflow:hidden; }
+#areaTOver_riverwater_a #areaTData 		{	overflow-x:scroll;overflow-y:hidden;width:605px;height:499px;}
+*/
+
+/* riverwater_a : 하천수질조회(수질측정망) : 가로스크롤 */
+#areaTOver_riverwater_a 						{	width:1020px;height:577px;	}
+#areaTOver_riverwater_a #areaTHeader_intercptn 	{	width:430px;width:429px\9;height:80px;	}
+#areaTOver_riverwater_a #areaTHeader_top 		{	width:589px;width:589\9;height:80px;	}
+#areaTOver_riverwater_a #areaTHeader_left 		{ 	width:430px;width:429px\9;height:480px;height:481px\9;} /* IE 6,7,8 hack */
+#areaTOver_riverwater_a #areaTData				{ 	overflow-x:scroll;overflow-y:hidden;width:589px;width:589\9;height:497px;height:498px\9;	}/* IE 6,7,8 hack */
+#areaTOver_riverwater_a #areaTHeader_intercptn table {width:430x;}
+#areaTOver_riverwater_a #areaTHeader_left table	{ 	width:430px;	}
+#areaTOver_riverwater_a #areaTHeader_intercptn th{	80px;}
+#areaTOver_riverwater_a #areaTHeader_top th		{	height:40px;}
+#areaTOver_riverwater_a #areaTHeader_top table	{	width:3960px;}
+#areaTOver_riverwater_a #areaTData table			{ 	width:3960px;}
+/* riverwater_a : 하천수질조회(수질측정망) : 가로스크롤 */
+
+
+/* watersysmnt_R01 수계별 통합감시> 탁수모니터링 : 세로스크롤 */
+#areaTOver_watersysmnt_R01 							{	width:947px;height:438px;	}
+#areaTOver_watersysmnt_R01 #areaTHeader_intercptn 	{	overflow:hidden;width:500px;height:80px;	}
+#areaTOver_watersysmnt_R01 #areaTHeader_top 		{	width:446px;height:80px;	}
+#areaTOver_watersysmnt_R01 #areaTHeader_left 		{ 	overflow:hidden;width:500px;height:358px;	}
+#areaTOver_watersysmnt_R01 #areaTData				{ 	overflow-x:hidden;overflow-y:auto;width:446px;height:358px;}
+#areaTOver_watersysmnt_R01 #areaTData td			{ 	color:green;font-weight:bold;	}
+#areaTOver_watersysmnt_R01 #areaTHeader_intercptn table {width:500px;}
+#areaTOver_watersysmnt_R01 #areaTHeader_left table	{ 	width:500px;	}
+#areaTOver_watersysmnt_R01 #areaTHeader_intercptn th{	height:80px;}
+#areaTOver_watersysmnt_R01 #areaTHeader_top th		{	height:40px;}
+#areaTOver_watersysmnt_R01 #areaTHeader_top table	{	width:446px;}
+#areaTOver_watersysmnt_R01 #areaTData table			{ 	width:446px;}
+#areaTOver_watersysmnt_R01 #areaTHeader_top .lastth	{ 	width:106px;}/* IE +17 */
+#areaTOver_watersysmnt_R01 #areaTData .lasttd		{ 	width:106px;}/* IE -17 */
+
+/* watersysmnt_R01 수계별 통합감시> 탁수모니터링 : 스크롤 */
+
+
+/* watersysmnt_R03 수계별 통합감시> 국가수질자동측정망 : 가로세로스크롤 */
+#areaTOver_watersysmnt_R03 							{	width:947px;height:438px;	}
+#areaTOver_watersysmnt_R03 #areaTHeader_intercptn 	{	width:540px;height:80px;	}
+#areaTOver_watersysmnt_R03 #areaTHeader_top 		{	width:406px;height:80px;	}
+#areaTOver_watersysmnt_R03 #areaTHeader_left 		{ 	width:540px;height:340px;height:339px\9;	}
+#areaTOver_watersysmnt_R03 #areaTData				{ 	width:406px;height:358px;height:357px\9;	}
+#areaTOver_watersysmnt_R03 #areaTData td			{ 	color:green;font-weight:bold;	}
+#areaTOver_watersysmnt_R03 #areaTHeader_intercptn table {width:540px;}
+#areaTOver_watersysmnt_R03 #areaTHeader_left table	{ 	width:540px;}
+#areaTOver_watersysmnt_R03 #areaTHeader_intercptn th{	height:80px;}
+#areaTOver_watersysmnt_R03 #areaTHeader_top th		{	height:40px;}
+#areaTOver_watersysmnt_R03 #areaTHeader_top table	{	width:3960px;width:3977px\9;}	/* IE +17 */
+#areaTOver_watersysmnt_R03 #areaTData table			{ 	width:3960px;} 
+#areaTOver_watersysmnt_R03 #areaTHeader_top .lastth	{ 	width:90px;width:107px\9;}/* IE +17 */
+#areaTOver_watersysmnt_R03 #areaTData .lasttd		{ 	width:90px;width:73px\9;}/* IE -17 */
+/* watersysmnt_R03 수계별 통합감시> 국가수질자동측정망 : 가로세로스크롤 */
+
+
+/* totalmntpopdetail_all 측정소별 상세정보: 가로세로스크롤 */
+#areaTOver_totalmntpopdetail_all 						{	width:400px;height:716px;	}
+#areaTOver_totalmntpopdetail_all #areaTHeader_intercptn {	width:80px;height:80px;	}
+#areaTOver_totalmntpopdetail_all #areaTHeader_top 		{	width:319px;height:80px;	}
+#areaTOver_totalmntpopdetail_all #areaTHeader_left 		{ 	width:80px;height:619px !important;	}
+#areaTOver_totalmntpopdetail_all #areaTData				{ 	width:319px;height:636px !important;	}
+#areaTOver_totalmntpopdetail_all #areaTData td			{ 	color:green;font-weight:bold;	}
+#areaTOver_totalmntpopdetail_all #areaTHeader_intercptn table {width:80px;}
+#areaTOver_totalmntpopdetail_all #areaTHeader_left table{ 	width:80px;	}
+#areaTOver_totalmntpopdetail_all #areaTHeader_intercptn th{	height:80px;}
+#areaTOver_totalmntpopdetail_all #areaTHeader_top th	{	height:40px;}
+#areaTOver_totalmntpopdetail_all #areaTHeader_top table	{	width:3960px;width:3977px\9;}	/* IE +17 */
+#areaTOver_totalmntpopdetail_all #areaTData table		{ 	width:3960px;} 
+#areaTOver_totalmntpopdetail_all #areaTHeader_top .lastth{	width:90px;width:107px\9;}	/* IE +17 */
+#areaTOver_totalmntpopdetail_all #areaTData .lasttd		{	width:90px;width:73px\9;} /* IE -17 */	
+/* totalmntpopdetail_all 측정소별 상세정보: 가로세로스크롤 */
+
+
+/* totalmntpopdetail_simple 측정소별 상세정보: 세로스크롤 */
+#areaTOver_totalmntpopdetail_simple 						{	width:400px;height:716px;	}
+#areaTOver_totalmntpopdetail_simple #areaTHeader_intercptn 	{	width:80px;height:80px;	}
+#areaTOver_totalmntpopdetail_simple #areaTHeader_top 		{	overflow:hidden;width:319px;height:80px;	}
+#areaTOver_totalmntpopdetail_simple #areaTHeader_left 		{ 	width:80px;height:636px !important;	}
+#areaTOver_totalmntpopdetail_simple #areaTData				{ 	overflow-x:hidden;width:319px;height:636px !important;	}
+#areaTOver_totalmntpopdetail_simple #areaTData td			{ 	color:green;font-weight:bold;	}
+#areaTOver_totalmntpopdetail_simple #areaTHeader_intercptn table {width:80px;}
+#areaTOver_totalmntpopdetail_simple #areaTHeader_left table { 	width:80px;	}
+#areaTOver_totalmntpopdetail_simple #areaTHeader_intercptn th{	height:80px;}
+#areaTOver_totalmntpopdetail_simple #areaTHeader_top th		{	height:40px;}
+#areaTOver_totalmntpopdetail_simple #areaTHeader_top table	{	width:319px;}	
+#areaTOver_totalmntpopdetail_simple #areaTData table		{ 	width:319px;}
+#areaTOver_totalmntpopdetail_simple #areaTHeader_top .lastth{	width:71px;}	
+#areaTOver_totalmntpopdetail_simple #areaTData .lasttd		{	width:71px;} 
+/* totalmntpopdetail_simple 측정소별 상세정보: 세로스크롤 */
+
+
+/* s : watersysmnt_factdetail */  /* 수계별 통합 감시 popup#2 => factdetail */
+.watersysmnt_factdetail {width:1035px; margin:0 auto;}
+.watersysmnt_factdetail .listBox {float:left; width:335px;}
+.watersysmnt_factdetail .listBox .con .wrap {margin:0 1px; padding:9px;}
+.watersysmnt_factdetail .listBox .con h2 {height:30px; padding-top:5px; background-position:0 7px;}
+.watersysmnt_factdetail .listBox .con .data {margin-top:-35px;}
+.watersysmnt_factdetail .listBox .form_select {height:30px; text-align:right;}
+.watersysmnt_factdetail .listBox .form_select select {width:110px;}
+.watersysmnt_factdetail .listBox td {height:17px; background-color:#fff;}
+.watersysmnt_factdetail .listBox .overBox {overflow:auto; width:310px; height:424px; padding-right:1px; }
+.watersysmnt_factdetail .listBox .overBox_header { width:310px;}
+.watersysmnt_factdetail .listBox .data {border:0;}
+
+.watersysmnt_factdetail .listBox_point {margin:0 10px;}
+.watersysmnt_factdetail .listBox_point .con .wrap {padding:9px 9px 8px; background-color:#e9e9e9;}
+.watersysmnt_factdetail .listBox_point table {border:1px solid #ccc;}
+.watersysmnt_factdetail .listBox_point table.titleTable {border-bottom:none;}
+.watersysmnt_factdetail .listBox_point table.conTable {border-top:none;}
+.watersysmnt_factdetail .listBox_point .overBox {width:310px; height:425px;}
+.watersysmnt_factdetail .listBox_point .overBox_header {width:310px;}
+.watersysmnt_factdetail .listBox_point .form_select {height:29px;}
+.watersysmnt_factdetail .listBox_point .graph {margin:12px 0;}
+
+.watersysmnt_factdetail .graph_box {width:1025px;clear:both; padding:10px 0 0; background-color:#fff;}
+.watersysmnt_factdetail .graph_box .roundBox .con {padding:10px;}
+.watersysmnt_factdetail .graph_box .select_box {width:120px;padding-bottom:5px;padding-top:5px;text-align:right;float:right;position:absolute; padding-left:870px}
+.watersysmnt_factdetail .graph_box .map {height:210px;}
+/* e : watersysmnt_factdetail */
+
+
+/*s : totalmntpop2 =>chuckjungmangpop */
+#chuckjungmangpop
+	{
+		border:1px solid #cccccc;
+	}
+	
+#chuckjungmangpop .overBoxHeader_left { border-bottom:1px solid #cccccc;}
+#chuckjungmangpop .overBoxData { border-bottom:1px solid #cccccc;}
+
+/*e : totalmntpop2 =>chuckjungmangpop */
+
+.inner_totalmnt .otherMnt .con1 {float:left; width:310px;}
+.inner_totalmnt .otherMnt .con1:after {display:block; overflow:hidden; clear:both;  height:0; visibility:hidden; content:".";}
+* html .inner_totalmnt .otherMnt .con1 {height:1%;}
+*:first-child+html .inner_totalmnt .otherMnt .con1 {height:1%;}
+.inner_totalmnt .otherMnt .dataTable th {background-color:#eaf1f6;}
+.inner_totalmnt .otherMnt .list_first {margin-bottom:10px;}
+.inner_totalmnt .otherMnt .listBox h2.tits {margin-top:18px;}
+.inner_totalmnt .otherMnt .listBox .dataTable td {padding:0;}
+#container .inner_totalmnt .otherMnt .con1 .listBox h4 {padding:0 0 13px 15px;}
+.inner_totalmnt .otherMnt .con1 .dataTable th {font-weight:normal;}
+.inner_totalmnt .otherMnt .con1 .listBox {padding-bottom:11px;}
+.inner_totalmnt .otherMnt .con1 .listBox .innerBox {clear:both;}
+
+.inner_totalmnt .otherMnt .con2 {float:left; width:609px; height:484px; margin-right:9px; border:1px solid #cccccc;}
+.inner_totalmnt .otherMnt .select_menu {padding-bottom:5px;}
+.inner_totalmnt .otherMnt .select_menu li {display:inline-block; *display:inline; *zoom:1; *padding-right:4px;}
+.inner_totalmnt .otherMnt .select_menu li select {width:107px;}
+.inner_totalmnt .otherMnt .select_menu li.align {width:55px; padding-right:0; text-align:right;}
+.inner_totalmnt .otherMnt .con3 li.selectWidth1 select {width:147px;}
+.inner_totalmnt .otherMnt .con3 li.selectWidth1 {padding-bottom:5px;}
+.inner_totalmnt .otherMnt .con3 li.selectWidth2 select {width:147px;}
+.inner_totalmnt .otherMnt .con3 li.selectWidth3 select {width:147px;}
+.inner_totalmnt .otherMnt .con3 li.selectWidth4 select {width:147px;}
+.inner_totalmnt .otherMnt .con3 .overBox {width:298px; height:424px; border:1px solid #cccccc; border-width:1px 0;}
+.inner_totalmnt .otherMnt .overBox {width:277px; height:344px;}
+.inner_totalmnt .auction_info {overflow:hidden; clear:both; width:1183px; padding:10px 10px 10px; border:1px solid #cccccc;}
+
+/* content > 굴림 굴림 굴림 > ??? 굴림 > ???? ??????? */
+.inner_watersysmnt .tit_time {display:block; color:#fff; text-align:center; background-color:#3893c5;}
+.inner_watersysmnt h1.tit {padding:13px 15px 0; color:#fff; font-size:15px; text-align:center; background-color:#3893c5;}
+.sub_waterpolmnt .inner_watersysmnt .watersysmnt_wrap {clear:both; padding-top:10px;}
+.sub_waterpolmnt .inner_watersysmnt .data_graph {float:left; width:242px; padding-right:15px;}
+.sub_waterpolmnt .inner_watersysmnt .data .select_area {padding-bottom:3px;}
+.sub_waterpolmnt .inner_watersysmnt .data .select_area select {width:119px;}
+.sub_waterpolmnt .inner_watersysmnt .data .radio_area {padding:7px 0 0 2px;}
+.sub_waterpolmnt .inner_watersysmnt .data .radio_area li {display:inline; padding-left:10px;}
+.sub_waterpolmnt .inner_watersysmnt .data .radio_area li.first {padding-left:0px;}
+.sub_waterpolmnt .inner_watersysmnt .data .radio_area li label {display:inline-block; padding-top:1px;}
+.sub_waterpolmnt .inner_watersysmnt .overBox_data {overflow:none; float:left; width:140px; padding:0; height:211px;}
+.sub_waterpolmnt .inner_watersysmnt .data table {border:2px solid #cccccc;}
+.inner_watersysmnt .objectBox {padding-top:15px;}
+.sub_waterpolmnt .inner_watersysmnt .watersysmnt_con {float:left; width:949px; margin:0; padding:0;}
+#container .inner_watersysmnt h2 {padding:10px 0 12px 15px; background:url(/images/common/bu_square.gif) no-repeat 0 13px;}
+
+.watersysmnt_wrap .objectBox .roundBox2 .top_l,
+.watersysmnt_wrap .objectBox .roundBox2 .top_r,
+.watersysmnt_wrap .objectBox .roundBox2 .bot_l,
+.watersysmnt_wrap .objectBox .roundBox2 .bot_r {background-image:url(/images/common/box_roundGray4.gif);}
+.watersysmnt_wrap .objectBox .roundBox2 .top,
+.watersysmnt_wrap .objectBox .roundBox2 .bot {height:2px; border:1px solid #cccccc; background:#fff;}
+.watersysmnt_wrap .objectBox .roundBox2 .top {border-width:1px 0 0;}
+.watersysmnt_wrap .objectBox .roundBox2 .bot {border-width:0 0 1px;}
+.watersysmnt_wrap .objectBox .roundBox2 .con {border:1px solid #cccccc; border-width:0 1px; background:#fff;}
+
+.inner_watersysmnt .watersysmnt_con .con_r {height:280px; padding:0 8px;}
+.inner_watersysmnt .watersysmnt_con .notes {padding:10px 0; font-weight:bold; font-size:11px; text-align:right;}
+.inner_watersysmnt .watersysmnt_con .notes li {display:inline; padding-right:10px;}
+.inner_watersysmnt .watersysmnt_con .notes li span {font-size:12px;}
+.alr_noRcv {color:;}
+.alr_normal {color:green;}
+.alr_interest {color:blue;}
+.alr_caution {color:yellow;}
+.alr_alert {color:#ffa600;}
+.alr_over {color:red;}
+.inner_watersysmnt .watersysmnt_con .list_data {float:left; width:290px; margin:10px 0; padding:0 10px;}
+.inner_watersysmnt .watersysmnt_con .list_data .tit_weather {height:20px;}
+.inner_watersysmnt .watersysmnt_con .list_data .tit_weather h2 {float:left; padding:0 0 0 12px !important; background-position:0 2px !important;}
+.inner_watersysmnt .watersysmnt_con .list_data .tit_weather .weather {float:right;}
+.inner_watersysmnt .watersysmnt_con .list_data .dataTable td {height:25px;}
+
+.inner_watersysmnt .watersysmnt_con .innerBox h3 {width:600px; padding:10px 0 12px 15px; background:url(/images/common/bu_square.gif) no-repeat 0 13px;}
+.inner_watersysmnt .watersysmnt_con .innerBox .overBox {float:left; width:200px; height:135px;}
+.inner_watersysmnt .watersysmnt_con .innerBox .overBox .dataTable {border:2px solid #cccccc;}
+.inner_watersysmnt .watersysmnt_con .innerBox .overBox td {padding:8px 0 7px;}
+.inner_watersysmnt .watersysmnt_con .lastList dl {padding-top:5px;}
+.inner_watersysmnt .watersysmnt_con .lastList dt {padding-top:4px;}
+.inner_watersysmnt .watersysmnt_con .firstBox {margin-bottom:10px;}
+.inner_watersysmnt .watersysmnt_con .graph {_zoom:1; overflow:hidden; height:180px; padding:10px 0 0;}
+.inner_watersysmnt .watersysmnt_con .graph ul {float:left; padding-left:8px; text-align:center;}
+.inner_watersysmnt .watersysmnt_con .graph ul li {display:inline; padding-top:7px; text-align:center;}
+/*.inner_watersysmnt .watersysmnt_con .graph img {display:block;} */
+.inner_watersysmnt .watersysmnt_con .graph {text-align:center;}
+.inner_watersysmnt .watersysmnt_con .graph img {display:inline-block; *display:inline; *zoom:1; padding-bottom:7px;} /* ??? */
+
+.inner_watersysmnt .watersysmnt_con .dataBox {overflow:auto; width:949px; height:451px; margin-top:5px; border:1px solid #cccccc; border-width:1px 0;}
+
+/* content > 굴림 굴림 굴림 > 굴림 굴림 ??? > ??o 굴림 ??? */
+.inner_riverwater dl.firstDl dd select {width:85px;}
+
+/* content > 굴림 굴림 굴림 > 굴림 굴림 ??? > ??o ?? 굴림 ??? */
+.inner_riverwater3mw .roundBox dt {padding:5px 8px 0px;}
+.inner_riverwater3mw .roundBox dd {padding:0px 10px 0px 0px;}
+.inner_riverwater3mw .roundBox dd select {width:100px;}
+
+/* content > 굴림 굴림 굴림 > 굴림 굴림 ??? > ??? 굴림 ???, 굴림 굴림 ??? */
+.airmnt_inner,
+.algacast_inner {padding:23px 0 0 10px;}
+.airmnt_inner h4,
+.algacast_inner h4 {margin:0 !important; padding:0 0 9px 13px !important;}
+.buSqu_tit {padding:0 0 9px 13px; vertical-align:top; background:url(/images/common/bu_square.gif) no-repeat 0 2px;}
+.airmnt_inner .spacing1 {margin-top:20px;}
+.airmnt_inner .spacing2,
+.algacast_inner .spacing1 {margin:20px 0 3px;}
+.airmnt_inner .dataTable li,
+.algacast_inner .dataTable li {padding:2px 0 2px 10px; text-align:left;}
+.airmnt_inner .btnMenu,
+.algacast_inner .btnMenu {padding-top:12px; text-align:right;}
+.airmnt_inner .btnMenu li,
+.algacast_inner .btnMenu li {display:inline;}
+.algacast_inner .textArea {width:100%; height:40px;}
+
+.algacast_inner .clearTable {clear:both}
+.algacast_inner .spacing3 {margin-bottom:10px;}
+.algacast_inner .centerBox {overflow:hidden; padding:10px 0;}
+.algacast_inner .centerBox .list_box1 {float:left; width:650px; margin-right:10px;}
+.algacast_inner .centerBox .list_box2 {float:left; width:355px;}
+.algacast_inner .import_txt {font-size:11px; padding-left:10px;}
+
+.algacast_inner .resultTable td {text-align:left; padding-left:10px; padding-right:10px; vertical-align:middle;}
+.algacast_inner .resultTable td a {display:inline-block; padding-top:3px; vertical-align:top;}
+.algacast_inner .resultTable td img,
+.algacast_inner .resultTable td input {text-align:top;}
+
+/* content > 굴림 굴림 굴림 > ?? ?? */
+.sub_waterpolmnt .page_alarmmng .roundBox dd span.space {padding:0 10px;}
+.sub_waterpolmnt .page_alarmmng .roundBox dd {padding:0 40px 0 0;}
+
+.sub_waterpolmnt .page_alarmmng .data_wrap {padding:20px 0 0;}
+.sub_waterpolmnt .page_alarmmng .data_wrap .overBox {width:auto;}
+.sub_waterpolmnt .page_alarmmng .btnMenu {float:right; padding-top:10px;}
+
+.sub_waterpolmnt .page_alarmmng td.choice input.inputCheck,
+.sub_waterpolmnt .page_alarmmng td.choice label {vertical-align:middle;}
+.sub_waterpolmnt .page_alarmmng td.choice label {padding:0 10px 0 4px;}
+.sub_waterpolmnt .page_alarmmng td.choice label.last {padding-right:0;}
+
+/* content > 굴림 굴림 굴림 > ?? ?? > ?? ??? ??? ??? */
+.sub_waterpolmnt .inner_alarmhis .roundBox dd.type {padding:0 0 0 40px;}
+
+/* 추가_1102 */
+.sub_waterpolmnt .inner_alarmhis .dataTable td select { text-align:center;}
+
+
+/* content > 굴림 굴림 굴림 > ?? ?? > 굴림????, 굴림 ??? ??, ?? 굴림 굴림, 굴림 굴림 굴림 */
+.sub_waterpolmnt .inner_noticelist .data_wrap,
+.sub_waterpolmnt .inner_alarmstand .data_wrap,
+.sub_waterpolmnt .inner_accdntact .data_wrap,
+.sub_waterpolmnt .inner_waterstand .data_wrap {position:relative; padding-top:45px;}
+.sub_waterpolmnt .inner_noticelist .data_wrap .btnMenu,
+.sub_waterpolmnt .inner_alarmstand .data_wrap .btnMenu,
+.sub_waterpolmnt .inner_accdntact .data_wrap .btnMenu,
+.sub_waterpolmnt .inner_waterstand .data_wrap .btnMenu {position:absolute; top:20px; right:0; padding:0;}
+.sub_waterpolmnt .inner_noticelist .data_wrap .btnMenu li,
+.sub_waterpolmnt .inner_alarmstand .data_wrap .btnMenu li,
+.sub_waterpolmnt .inner_accdntact .data_wrap .btnMenu li,
+.sub_waterpolmnt .inner_waterstand .data_wrap .btnMenu li {float:left; padding-left:5px; _padding-bottom:1px;} 
+/* content > 굴림 굴림 굴림 > ?? ?? > 굴림 ??? ?? */
+.dataNotes {margin:-22px 0 10px;}
+/* content > 굴림 굴림 굴림 > ?? ?? > ???굴림.굴림 굴림 ?? */
+.inner_alertMngList .listView,
+.inner_alertMngList .listView_write {clear:both; padding-top:3px;}
+.inner_alertMngList .listView table {border:2px solid #000000; border-width:2px 0;}
+.inner_alertMngList .listView th {border:2px solid #000000; border-width:0 0 2px; background-color:#fff;}
+.inner_alertMngList .listView td {border-width:0 0 1px 0;}
+.inner_alertMngList .listView td.tit {padding-left:10px; padding-right:10px; text-align:left;}
+.inner_alertMngList .listView p.btn {text-align:right;}
+
+.inner_alertMngList .listView_write .popup_situReceive {padding:3px 0; border:2px solid #2f8bc0; border-width:2px 0;}
+
+/* content > 굴림 굴림 굴림 > ?? ?? > 굴림 ??? ?뺸 */
+.inner_alertSmsSend .smsForm {overflow:hidden; _height:1%; padding:30px 0 30px 30px !important;}
+.inner_alertSmsSend .smsForm h4 {height:27px; padding:0 0 0 16px !important; color:#2f8bc0;}
+.inner_alertSmsSend .smsForm .sms_write {_display:inline; float:left; width:290px;}
+.inner_alertSmsSend .smsForm .sms_write_form {clear:both; width:194px; height:231px; background:url('/images/waterpolmnt/bg_alertSmsSend.gif')}
+.inner_alertSmsSend .smsForm .sms_write_form textarea {width:149px; height:124px; border:0; background-color:#eaf2f6;}
+.inner_alertSmsSend .smsForm .sms_write_form .txt {padding:37px 0 0 21px;}
+.inner_alertSmsSend .smsForm .sms_write_form .byte {padding-top:30px; font-weight:bold; text-align:center;}
+
+.inner_alertSmsSend .smsForm .sms_target {_display:inline; float:left; width:630px;}
+.inner_alertSmsSend .smsForm .sms_target_form {clear:both; padding:18px 0 32px 0;}
+.inner_alertSmsSend .smsForm .sms_target_form dt {width:50px; padding-left:20px; _padding-left:10px; font-weight:bold;}
+.inner_alertSmsSend .smsForm .sms_target_form dd {width:500px;}
+.inner_alertSmsSend .smsForm .sms_target_form dd.first_form {height:33px; padding-top:3px;}
+.inner_alertSmsSend .smsForm .sms_target_form dd.third_form {height:36px;}
+.inner_alertSmsSend .smsForm .sms_target_form dd.second_form {width:550px; margin-left:80px; _margin-left:40px; margin-top:0;}
+
+.inner_alertSmsSend .smsForm .sms_target_form dd .treeview .hitarea {cursor:pointer; float:left; width:18px; height:16px; margin-left:-16px;}
+.inner_alertSmsSend .smsForm .sms_target_form dd ul {padding-top:5px;}
+.inner_alertSmsSend .smsForm .sms_target_form dd ul#groupDiv {padding-top:0;}
+.inner_alertSmsSend .smsForm .sms_target_form dd .treeview li {padding:3px 0pt 3px 16px; background:url('/images/tree/treeview-default-line.gif') no-repeat 0 0;}
+.inner_alertSmsSend .smsForm .sms_target_form dd .treeview li.lastCollapsable, 
+.inner_alertSmsSend .smsForm .sms_target_form dd .treeview li.lastExpandable {background-image:url('/images/tree/treeview-default.gif');}  
+.inner_alertSmsSend .smsForm .sms_target_form dd .treeview li.lastCollapsable {background-position: 0 -111px}
+.inner_alertSmsSend .smsForm .sms_target_form dd .treeview li.lastExpandable {background-position:-32px -67px}
+.inner_alertSmsSend .smsForm .sms_target_form dd .treeview div.lastCollapsable-hitarea,
+.inner_alertSmsSend .smsForm .sms_target_form dd .treeview div.lastExpandable-hitarea {background-position:0;}
+.inner_alertSmsSend .smsForm .sms_target_form dd .treeview li.last {background-position:0 -1766px;}
+.inner_alertSmsSend .smsForm .sms_target_form dd .expandable-hitarea{background:url('/images/tree/icon_folder_plus.gif') no-repeat 0 0;}
+.inner_alertSmsSend .smsForm .sms_target_form dd .collapsable-hitarea{background:url('/images/tree/icon_folder_minus.gif') no-repeat 0 0;}
+
+.inner_alertSmsSend .smsForm .sms_target_form dd .first_label {margin-right:25px;}
+.inner_alertSmsSend .smsForm .sms_target_form dd.first_form input {vertical-align:top;}
+.inner_alertSmsSend .smsForm .sms_target_form dd label {display:inline-block; padding-top:1px;}
+.inner_alertSmsSend .smsForm .smsForm_btn {padding-top:43px; text-align:right;}
+.inner_alertSmsSend .smsForm .smsForm_btn li {display:inline;}
+
+/* ??? */
+.inner_alertSmsSend .smsForm .sms_target_form dd .groupBg {float:left; padding-right:5px; width:120px;height:191px; background:url('/images/common/bg_graBox.gif') no-repeat 0 0; margin-top:5px;}
+.inner_alertSmsSend .smsForm .sms_target_form dd .groupTit {width:120px;height:20px; padding-top:8px; color:#2f8bc0; font-size:12px; font-weight:bold; text-align:center;}
+.inner_alertSmsSend .smsForm .sms_target_form dd .groupBtn {float:left; padding-top:65px; padding-right:5px;}
+.inner_alertSmsSend .smsForm .sms_target_form dd .groupBtn2 {float:left; padding-top:60px; padding-right:5px;}
+.inner_alertSmsSend .smsForm .sms_target_form dd .selectMultiple {width:110px;height:150px; padding:7px; margin-left:5px;}
+
+.inner_alertSmsSend .smsForm .sms_target_form dd .groupBg2 {float:left; padding-right:5px; width:170px;height:191px; background:url('/images/common/bg_graBox2.gif') no-repeat 0 0; margin-top:5px;}
+.inner_alertSmsSend .smsForm .sms_target_form dd .groupTit2 {width:170px;height:20px; padding-top:8px; color:#2f8bc0; font-size:12px; font-weight:bold; text-align:center;}
+.inner_alertSmsSend .smsForm .sms_target_form dd .selectMultiple2 {width:160px;height:150px; padding:7px; margin-left:5px;}
+
+/* ??? */
+.inner_alertSmsSend2 .smsForm .sms_target_form dd .groupBg {float:left; padding-right:5px; width:120px;height:191px; background:url('/images/common/bg_graBox.gif') no-repeat 0 0; margin-top:5px;}
+.inner_alertSmsSend2 .smsForm .sms_target_form dd .groupTit {width:120px;height:20px; padding-top:8px; color:#2f8bc0; font-size:12px; font-weight:bold; text-align:center;}
+.inner_alertSmsSend2 .smsForm .sms_target_form dd .groupBtn {float:left; padding-top:65px; padding-right:5px;}
+.inner_alertSmsSend2 .smsForm .sms_target_form dd .groupBtn2 {float:left; padding-top:60px; padding-right:5px;}
+.inner_alertSmsSend2 .smsForm .sms_target_form dd .selectMultiple {width:110px;height:150px; padding:7px; margin-left:5px;}
+
+.inner_alertSmsSend2 .smsForm .sms_target_form dd .groupBg2 {float:left; padding-right:5px; width:170px;height:191px; background:url('/images/common/bg_graBox2.gif') no-repeat 0 0; margin-top:5px;}
+.inner_alertSmsSend2 .smsForm .sms_target_form dd .groupTit2 {width:170px;height:20px; padding-top:8px; color:#2f8bc0; font-size:12px; font-weight:bold; text-align:center;}
+.inner_alertSmsSend2 .smsForm .sms_target_form dd .selectMultiple2 {width:160px;height:150px; padding:7px; margin-left:5px;}
+
+
+/* content > 굴림 굴림 굴림 > 굴림 ??? 굴림 > 굴림 ??? 굴림?? */
+.page_protecttechinfo p.locationSta {padding:7px 230px 0 12px;}
+.sec_gallery {clear:both; *zoom:1; padding-top:4px;}
+.sec_gallery .header {width:795px; padding-top:25px;}
+.sec_gallery .photo_tit {padding:0 0 8px 0 !important;}
+.sec_gallery .photo_time {float:right; font-size:11px;}
+.sec_gallery .photo_img {clear:both;}
+.sec_gallery .photo_img p.img img {width:795px !important; height:450px;}
+.sec_gallery .photo_con {width:795px; padding:15px 0; line-height:1.4;}
+.sec_gallery .photo_btn {width:795px; text-align:right;}
+
+.sec_gallery .photo_list {position:relative; width:795px; background-color:#0a1926;}
+.sec_gallery .photo_list p {position:absolute;}
+.sec_gallery .photo_list p.btn_prev,
+.sec_gallery .photo_list p.btn_next {top:20px; z-index:20;}
+.sec_gallery .photo_list p.btn_prev {left:0; padding-left:11px;}
+.sec_gallery .photo_list p.btn_next {right:0; padding-right:11px;}
+
+.sec_gallery .photo_list .list {overflow:hidden; width:710px; margin:0 auto; padding:8px 0;}
+.sec_gallery .photo_list .list li {float:left; padding:0 2px;}
+.sec_gallery .photo_list .list li img {width:66px !important; height:53px !important; vertical-align:top;}
+.sec_gallery .photo_list .list li a {float:left; border:3px solid #000;}
+.sec_gallery .photo_list .list li a.on,
+.sec_gallery .photo_list .list li a:focus,
+.sec_gallery .photo_list .list li a:hover {border-color:#2f8bc0;}
+
+.sec_gallery .photo_list .list li img {width:61px !important; height:46px !important;}
+
+
+/* content > ????? */
+.sub_situationmng .formBox {clear:both;}
+/* content > ????? > 굴림?? ??? > 굴림??? ??? */
+.sub_situationmng .inner_protstat select.day {width:90px;}
+/* content > ????? > ??? ??? ?м? */
+.sub_situationmng .page_correlation .hour select {width:80px;}
+
+.page_correlation .showData_graph {padding-top:20px;}
+.page_correlation .showData_graph .graph {float:left; width:645px; padding-right:8px;}
+.page_correlation .showData_graph .graph_p p {padding:6px 0 6px 35px; background:url('/images/common/bu_arrowGray_r.gif') no-repeat 25px 9px;}
+.page_correlation .showData_graph .graph_box {height:420px; margin-top:8px; border:1px solid #cccccc;}
+.page_correlation .showData_graph .data_wrap {float:left; width:370px;}
+.page_correlation .showData_graph .overBox {height:458px;} 
+
+/* content > ????? > ??? ??? ?м? > ??°? */
+.inner_careerMng  .lastList .inputText {width:600px;}
+.inner_careerMng .overBox {padding-top:10px;}
+
+.inner_careerMng .view_result_box1 {clear:both;}
+.inner_careerMng .view_result_box2 li {float:left; width:485px; margin:10px 0 0 10px; padding:10px; border:1px solid #cccccc;}
+.inner_careerMng .view_result_box2 li.first {margin-left:0;}
+.inner_careerMng .view_result_box2 li p {padding-bottom:10px; font-weight:bold;}
+.inner_careerMng .view_result_box2 li .over_con_table {overflow:auto; overflow-x:hidden; height:200px;}
+
+/* content > ????? > ??? ??? ?м? > ??? ??? ?м? */
+.inner_inCorrelation .formWrap {clear:both;}
+.inner_inCorrelation .formWrap .list1 {float:left; width:568px;}
+.inner_inCorrelation .formWrap .list2 {float:left; width:84px; height:494px;}
+.inner_inCorrelation .formWrap .list3 {float:left; width:373px;}
+.inner_inCorrelation .formWrap .list1 .searchBox {overflow:hidden; padding:3px 20px 0;}
+.inner_inCorrelation .formWrap .list1 .searchBox li.first {float:left;}
+.inner_inCorrelation .formWrap .list1 .searchBox li {float:right;}
+.inner_inCorrelation .formWrap .list1 .roundBox3 {margin-bottom:10px;}
+.inner_inCorrelation .formWrap .list1 .over_con_dataTable {overflow:auto; overflow-x:hidden; height:545px;}
+
+.inner_inCorrelation .formWrap .list2 p {height:90px; padding:130px 0 0 16px; color:#2f8bc0; line-height:1.6; background:url('/images/content/bg_inCorrelation.gif') no-repeat 6px 76px;}
+.inner_inCorrelation .formWrap .list2 p.first {padding:160px 0 0 16px; background-position:6px 106px;}
+
+.inner_inCorrelation .formWrap .list3 .roundBox3 p {padding:7px 0; font-weight:bold; text-align:center;}
+.inner_inCorrelation .formWrap .list3 .tit {padding:10px 0; color:#2f8bc0; font-weight:bold;}
+.inner_inCorrelation .formWrap .list3 .inputText {width:90px;}
+.inner_inCorrelation .formWrap .list3 .over_con_dataTable1 {overflow:auto; overflow-x:hidden; height:191px;}
+.inner_inCorrelation .formWrap .list3 .over_con_dataTable2 {overflow:auto; overflow-x:hidden; height:125px;}
+.inner_inCorrelation .formWrap .list3 p {text-align:right;}
+
+.inner_inCorrelation .inCorrelation_view1 {overflow:hidden; clear:both;}
+.inner_inCorrelation .inCorrelation_view1 li {float:left; width:485px; margin:10px 0 0 10px; padding:10px; border:1px solid #cccccc;}
+.inner_inCorrelation .inCorrelation_view1 li.first {margin-left:0;}
+.inner_inCorrelation .inCorrelation_view1 li .tit {padding-bottom:10px; font-weight:bold;}
+.inner_inCorrelation .inCorrelation_view1 li .over_con_dataTable {overflow:auto; overflow-x:hidden; height:280px;}
+
+.inner_inCorrelation .inCorrelation_view2 {padding-top:10px;}
+.inner_inCorrelation .inCorrelation_view2 td {padding-left:10px; text-align:left;}
+.inner_inCorrelation .inCorrelation_view2 p {padding-top:10px; text-align:center;}
+
+/* content > ????? > ?? ?? */
+.page_opermng .forms_gis {clear:both;}
+
+.page_opermng .formBox1 {_display:inline; float:left; position:relative; width:383px; padding-right:8px;}
+#container .page_opermng .formBox1 h4 {margin-bottom:6px; padding:9px 0 8px 10px; border:2px solid #cccccc;}
+#container .page_opermng .formBox2 h4 {margin-bottom:6px; padding:9px 0 8px 10px; border:2px solid #cccccc;}
+.page_opermng .formBox1 .btn {position:absolute; right:0; top:8px; padding-right:15px;}
+.page_opermng .formBox1 .btn li {_display:inline; float:left; margin-left:5px; _padding-bottom:1px;}
+.page_opermng .formBox1 .dataTable {border:2px solid #cccccc;;}
+.page_opermng .formBox1 th {line-height:1.2;}
+.page_opermng .formBox1 td select {width:246px;vertical-align:middle;}
+.page_opermng .formBox1 td input {width:240px;vertical-align:middle;}
+.page_opermng .formBox1 td textarea {width:240px; height:295px;}
+
+.page_opermng .form_gisBox {float:left; width:634px;}
+.page_opermng .form_gisBox .formBox2 {margin-bottom:6px; padding:6px 7px 5px; background-color:#e9e9e9;}
+.page_opermng .form_gisBox .formBox2 select {width:120px;}
+.page_opermng .form_gisBox .formBox2 select,
+.page_opermng .form_gisBox .formBox2 input {vertical-align:middle;}
+
+/* content > ????? > ?? ?? > 굴림 ?? */
+.page_opermng .inner_sectionmng .formBox1 td select {width:266px;}
+.page_opermng .inner_sectionmng .formBox1 td input {width:260px;}
+.page_opermng .inner_sectionmng .formBox1 td textarea {width:260px; height:295px;}
+.page_opermng .inner_sectionmng .formBox1 td.tdInput1 input {width:120px;}
+.page_opermng .inner_sectionmng .formBox1 td.tdInput2 input {width:109px;}
+.page_opermng .inner_sectionmng .formBox1 td.tdInput2 img {vertical-align:middle;}
+.page_opermng .inner_sectionmng .form_gisBox .gis {height:547px; *height:555px; border:1px solid #cccccc;}
+/* content > ????? > ?? ?? > 굴림 ?? */
+.page_opermng .inner_fluxmng .formBox1 p {margin-bottom:6px; padding:9px 0 8px 10px; border:2px solid #cccccc;}
+.page_opermng .inner_fluxmng .formBox1 .overBox {overflow:auto; height:470px; _height:490px;}
+.page_opermng .inner_fluxmng .formBox1 table {border-width:1px;}
+.page_opermng .inner_fluxmng .formBox1 td input {width:165px;}
+.page_opermng .form_overBox {_display:inline; float:left; width:634px;}
+.page_opermng .form_overBox .formBox2 {margin-bottom:6px; padding:6px 7px 5px; background-color:#e9e9e9;}
+.page_opermng .form_overBox .formBox2 select {width:120px;}
+.page_opermng .form_overBox .formBox2 select,
+.page_opermng .form_overBox .formBox2 input {vertical-align:middle;}
+.page_opermng .form_overBox .overBox {overflow:auto; height:509px;}
+
+/* content > ????? > ?? ?? > ??? 굴림 ?? */
+.page_opermng .inner_hotpointmng .formBox1 td.tdInput1 input {width:99px;}
+.page_opermng .inner_hotpointmng .formBox1 td.tdInput1 img {vertical-align:middle;}
+.page_opermng .inner_hotpointmng .form_gisBox .gis {height:540px; *height:548px; border:1px solid #cccccc;}
+/* content > ????? > ?? ?? > 굴림? ?? */
+.page_opermng .inner_stationmng .formBox1 td.tdInput1 input {width:99px;}
+.page_opermng .inner_stationmng .formBox1 td.tdInput1 img {vertical-align:middle;}
+.page_opermng .inner_stationmng .formBox1 td.curve input.textWidth {width:45px;}
+.page_opermng .inner_stationmng .formBox1 td.curve select {width:60px;}
+.page_opermng .inner_stationmng .formBox1 td.curve div {padding-top:3px;}
+.page_opermng .inner_stationmng .form_gisBox .gis {height:544px; *height:546px; border:1px solid #cccccc;}
+.page_opermng .inner_stationmng .formBox1 td textarea {height:80px;}
+
+/* popup */
+.popup #wrap {width:auto;}
+
+.popup h1.tit {padding-bottom:15px;}
+.popup .writeForm {padding-top:10px;}
+.popup .writeForm .dataTable td {padding:7px 15px 6px 10px; text-align:left;}
+.popup .writeForm .dataTable td select {width:120px;}
+.popup .writeForm .dataTable td input {vertical-align:middle;}
+.popup .writeForm .dataTable td textarea {width:100%; height:100px;}
+.popup .writeForm .btnMenu {float:right; padding-top:10px;}
+.popup .writeForm .btnMenu li {float:left; padding-left:5px;}
+
+/* popup > SMS  */
+.popup_sms #wrap {width:600px;}
+.smsSection form {padding-top:15px;}
+.smsSection form td {padding-left:8px; text-align:left;}
+.smsSection form td select,
+.smsSection form td input,
+.smsSection form td img {vertical-align:middle;}
+.smsSection form td label {padding-left:10px;}
+.smsSection form td .inputCheck {margin-top:-2px;}
+.smsSection form td .align {float:right; padding-right:8px}
+.smsSection form td input.inputText {width:280px;}
+.smsSection form td select {width:120px;}
+.smsSection form td textarea {width:505px; height:80px;}
+.smsSection form td .smsSelect li {display:inline; padding-right:20px;}
+.smsSection form td.date input.inputText {width:140px;}
+.smsSection form td.date select {width:60px;}
+.smsSection form .btn {padding-top:10px; text-align:right;}
+.smsSection form .btn li {display:inline;} 
+.smsSection form.target {padding-top:0;}
+.smsSection .btnMenu {padding-top:10px; text-align:center;}
+.smsSection .btnMenu li {display:inline;} 
+
+/* popup >  */
+
+.popup #wrap {}
+.popup #container #content {width:auto; padding:0 10px; background:#FFFFFF;}
+.popup h3.popTit {float:none; text-align:center;}
+.fixLayout {width:1251px !important; margin:0 auto !importnat;}
+
+/* popup > 굴림 */
+.popup_situReceive #wrap {width:auto; min-width:600px;}
+.popup_situReceive .first {padding-bottom:10px;}
+.popup_situReceive th {line-height:1.2;}
+.popup_situReceive td {padding:5px 0 4px; text-align:left; vertical-align:middle; padding-left:10px;}
+.popup_situReceive td.tit {font-weight:bold; color:#2f8bc0; text-align:center;}
+.popup_situReceive td input,
+.popup_situReceive td select,
+.popup_situReceive td textarea,
+.popup_situReceive td img {vertical-align:middle;}
+.popup_situReceive td input,
+.popup_situReceive td textarea {width:100%;}
+.popup_situReceive td.textArea1 textarea,
+.popup_situReceive td.textArea2 textarea {height:160px;}
+.popup_situReceive td.textArea3 textarea {height:60px;}
+.popup_situReceive td.textArea4 textarea {height:100px;width:50%;}
+.popup_situReceive td.textArea5 { padding:0px 0 5px 10px;}
+.popup_situReceive td.textArea5 textarea {height:80px;width:500px;}
+.popup_situReceive td input.style1 {width:150px;}
+.popup_situReceive td input.style2 {width:68px;}
+.popup_situReceive td select {width:60px;}
+.popup_situReceive .btnMenu {height:27px; padding:10px 0 0; text-align:right;}
+.popup_situReceive .btnMenu li {display:inline;}
+
+/* 추가_1108 */
+.popup_situReceive ul.place li{ padding:5px 0 5px 0px;}
+
+/* e : 추가_1104 */
+
+.search_all_wrap3 {width:600px;}
+.search_all_wrap3 dl {overflow:hidden; padding:0px 0;}
+.search_all_wrap3 dt {float:left; padding:4px 5px 0 8px; background:url(/images/common/bu_arrowGray2.gif) no-repeat 0 8px;}
+.search_all_wrap3 dt img {vertical-align:top;}
+.search_all_wrap3 dd {float:left; margin-right:25px; padding:0px 0px 0 0; vertical-align:top;}
+.search_all_wrap3 dd input {vertical-align:top;}
+.search_all_wrap3 dd select {vertical-align:top;}
+.search_all_wrap3 dd span {display:inline-block; padding:4px 4px 0;}
+.search_all_wrap3 dd img {display:inline-block; padding-top:3px; vertical-align:top;}
+
+
+/* popup >  */
+.popup_situPrint .btnMenu {height:27px; padding:11px 13px 0 0; border-bottom:1px solid #368ebe; text-align:right;}
+.popup_situPrint .btnMenu li {display:inline;}
+.popup_situPrint h1 {height:64px; padding-top:32px; border-top:1px solid #cccccc;text-align:center;}
+.popup_situPrint .data {padding:0 10px;}
+.popup_situPrint .data p.time {text-align:right;}
+.popup_situPrint .data p.time span {padding-left:10px; font-weight:bold;}
+.popup_situPrint .data table {margin-top:10px;}
+.popup_situPrint th {line-height:1.2;}
+.popup_situPrint td {padding:8px 10px 7px; text-align:left; line-height:1.4; vertical-align:middle;}
+.popup_situPrint td.tit {font-weight:bold; text-align:center;}
+
+/* GIS */
+.GISTable {width:200px;height:100px;  border-collapse:collapse; table-layout:fixed;}
+.GISTable th,
+.GISTable td {padding:8px 0 7px; border:1px solid #cccccc; text-align:center; vertical-align:middle;}
+.GISTable th {color:#2f8bc0; font-weight:bold; background-color:#eaf1f6;}
+.GISTable tr.add td {background-color:#eee;}
+.GISTable td {padding:7px 0 6px; line-height:1.4;}
+
+.GISTable .bgStyle {background-color:#e7e7e7;}
+
+.GISTable td.num {text-align:right;}
+.GISTable td.num span {padding-right:10px;}
+.GISTable td.step {text-align:left;}
+.GISTable td.step span {padding-left:15px;}
+.GISTable td.txtP {text-align:left;}
+.GISTable td.txtP span {padding-left:30px;}
+
+.GISTable tr.noLine th,
+.GISTable tr.noLine td {border-top:none;}
+
+@media print{
+	.popup_situPrint .btnMenu {display:none;}
+	.popup_situPrint h1 {border:none;}
+	.popup_situPrint .data {padding:0;}
+	.popup_situPrint th,
+	.popup_situPrint td {border-color:#999;}
+}
+.preView {  padding-top:0px; width: 90px; height: 70px; border:1px solid silver; }
+
+/* 추가_1104 */
+.caption_bt {padding-top:5px; line-height:130%; color:#555; caption-side:bottom;}
+
+/* 추가_1108 */
+.group_left {float:left; display:inline; padding-top:5px; width:727px;} 
+.br_pad {float:left; padding-top:5px;}
+.preView2 { position:absolute; left:985px; top:548px; float:left; padding-top:0 0 0 5px; width: 120px; height: 107px; border:1px solid silver; }
+.preView3 {float:right;padding-top:0 0 0 5px;margin-top:8px; width: 120px; height: 107px; border:1px solid silver;}
+
+/* 추가_1216 청구서 PrintPage */
+#printarea h1 { font-size:30px; margin-top:15px; margin-bottom:20px; text-align:center; }
+#printarea .period { font-size:12px;font-weight:bold; margin-bottom:5px; text-align:right; padding-right:10px; color:white; }
+#printarea th { font-size:12px; height:24px; }
+#printarea td { font-size:12px; }
+#printarea .sum { font-size:18px; font-weight:bold; margin-top:10px; text-align:right; padding-right:10px; }
+.button { margin-top:15px; margin-bottom:20px; text-align:center; }
+.button input { width:80px; font-size:12px; }
+
+/* 추가_1227 */
+.noticeSpan1{color:red}
+
+/*-- layer --------------------------------------*/
+#layerFullBgDiv{display:none; position: fixed; left:0; top:0; width:100%; height:100%; background:#000000; opacity:0.2; filter:alpha(opacity=40);z-index:9;}

@@ -1,0 +1,235 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Certificate Information Sample</title>
+
+</head>
+
+<body>
+
+<script language='javascript' src='./sg_scripts/sg_basic.js'></script>
+<script language='javascript' src='./sg_scripts/sg_error.js'></script>
+<script language='javascript' src='./sg_scripts/sg_util.js'></script>
+<script language='javascript' src='./sg_scripts/sg_cert.js'></script>
+<script language='javascript' src='./sg_scripts/sg_sign.js'></script>
+<script language='javascript' src='./sg_scripts/sg_encrypt.js'></script>
+<script language='javascript' src='./sg_scripts/sg_pkcs7.js'></script>
+<script language='javascript' src='./sg_scripts/sg_hash.js'></script>
+<script language='javascript' src='./sg_scripts/sg_base64.js'></script>
+
+<h3>인증서 정보 보기</h3>
+
+<form name="sample">
+주민등록번호/사업자등록번호
+<input type=text name=SSN value=1234561234563><br>
+인증서 소유자 확인을 위한 값
+<input type=text name=RandomNumber><br>
+<textarea name=PemCert rows="15" cols="80"></textarea><br>
+<input type=button value="인증서 선택" onClick="select_cert()"> <br>
+<input type=button value="전자서명용 인증서 얻기" onClick="get_sign_cert()"> <br>
+<input type=button value="암호화용 인증서 얻기" onClick="get_km_cert()"> <br>
+<input type=button value="인증서 정보 보기" onClick="show_cert_info()"> <br>
+<input type=button value="인증서 소유자 확인" onClick="check_cert_owner()"> <br>
+</form>
+
+<script language="javascript">
+
+function select_cert()
+{
+	var strCertID = "LoginID@DomainName";
+
+	var bReturn = reselectCertificate( strCertID );
+	if ( !bReturn )
+	{
+		var strErr = getErrorString();
+		if ( strErr == "" )	//	사용자가 인증서 선택을 취소한 경우
+		{
+			alert( "인증서 선택을 취소하였습니다");
+			return;
+		}
+		else
+		{
+			alert( strErr );
+			return;
+		}
+	}
+}
+
+function get_sign_cert()
+{
+	var strCertID = "LoginID@DomainName";
+	
+	
+	//	사용자 서명용 인증서 얻기
+	var strSignCert = getUserSignCert( strCertID );
+	if ( strSignCert == "" )
+	{
+		var strErr = getErrorString();
+		if ( strErr == "" )	//	사용자가 인증서 선택을 취소한 경우
+		{
+			alert( "인증서 선택을 취소하였습니다");
+			return;
+		}
+		else
+		{
+			alert( strErr );
+			return;
+		}
+	}
+	else
+	{
+		document.sample.PemCert.value = strSignCert;
+	}
+
+
+//	clearCertificateInfo( strCertID );
+}
+
+function get_km_cert()
+{
+	var strCertID = "LoginID@DomainName";
+
+	//	사용자 키관리용 인증서 얻기
+	var strKMCert = getUserKMCert( strCertID );
+	if ( strKMCert == "" )
+	{
+		var strErr = getErrorString();
+		if ( strErr == "" )	//	사용자가 인증서 선택을 취소한 경우
+		{
+			alert( "인증서 선택을 취소하였습니다");
+			return;
+		}
+		else
+		{
+			alert( strErr );
+			return;
+		}
+	}
+	else
+	{
+		document.sample.PemCert.value = strKMCert;
+	}
+
+//	clearCertificateInfo( strCertID );
+}
+
+function show_cert_info()
+{
+	var strCert = document.sample.PemCert.value;
+
+	//	인증서에서 일련번호 얻기
+	var nSerial = getCertSerialNumber( strCert );
+	if ( nSerial < 0 )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		alert( "serial: " + nSerial );
+	}
+	
+	var strSubject = getCertSubjectDN( strCert );
+	if ( strSubject == "" )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		alert( "Subject: " + strSubject );
+	}
+	
+	var strIssuer = getCertIssuerDN( strCert );
+	if ( strIssuer == "" )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		alert( "Issuer: " + strIssuer );
+	}
+	
+	var strStartTime = getCertNotBefore( strCert );
+	if ( strStartTime == "" )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		alert( "From: " + strStartTime );
+	}
+	
+	var strEndTime = getCertNotAfter( strCert );
+	if ( strEndTime == "" )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		alert( "To: " + strEndTime );
+	}
+	
+	var strPublicKey = getCertPublicKey( strCert );
+	if ( strPublicKey == "" )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		alert( "Public Key: " + strPublicKey );
+	}
+	
+	var strKeyUsage = getCertKeyUsage( strCert );
+	if ( strKeyUsage == "" )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		alert( "Key Usage: " + strKeyUsage );
+	}
+	
+	var strPolicy = getCertPolicy( strCert );
+	if ( strPolicy == "" )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		alert( "Policy: " + strPolicy );
+	}
+
+	var bReturn = checkCertValidity( strCert );
+	if ( !bReturn )
+	{
+		alert( "checkCertValidity() 인증서유효성검증: " + getErrorString() );
+	}
+	else
+	{
+		alert( "유효한 인증서 입니다" );
+	}
+
+	return;
+}
+
+function check_cert_owner()
+{
+	var strCert = document.sample.PemCert.value;
+	var strRandomNumber = document.sample.RandomNumber.value;
+	var strSSN = document.sample.SSN.value;
+
+	var bReturn = checkCertOwner( strCert, strSSN, strRandomNumber )
+	if ( !bReturn )
+	{
+		alert( getErrorString() );
+	}
+	else
+	{
+		alert( "인증서 소유자 확인에 성공하였습니다." );
+	}
+
+}
+
+</script>
+
+</body>
+</html>

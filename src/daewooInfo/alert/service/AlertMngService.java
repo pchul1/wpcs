@@ -1,0 +1,96 @@
+package daewooInfo.alert.service;
+
+import java.util.List;
+
+import daewooInfo.alert.bean.AlertMngVO;
+import daewooInfo.alert.bean.AlertStepVO;
+import daewooInfo.alert.bean.AlertTestVO; 
+
+/**
+ * 상황 접수, 전파 일지 관리를 위한 서비스 인터페이스 클래스
+ * @author 김태훈
+ * @since 2010.06.28
+ * @version 1.0
+ * @see
+ *
+ * <pre>
+ * << 개정이력(Modification Information) >>
+ *   
+ *   수정일      수정자           수정내용
+ *  -------     --------    ---------------------------
+ *   2010.6.28  김태훈          최초 생성
+ *
+ */
+public interface AlertMngService {
+	/**
+	 * 일지 목록을 가져온다.
+	 * 
+	 * @param AlertMngVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<AlertMngVO> getAlertMngList(AlertMngVO vo) throws Exception;
+
+	/**
+	 * 해당 일지를 가져온다.
+	 * 
+	 * @param AlertMngVO
+	 * @return
+	 * @throws Exception
+	 */
+	public AlertMngVO getAlertMng(AlertMngVO vo) throws Exception;
+	
+	/**
+	 * 해당 일지를 추가하거나 갱신한다.
+	 * 
+	 * @param AlertMngVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int mergeAlertMng(AlertMngVO vo) throws Exception;
+	
+	/**
+	 * 해당 일지를 삭제한다.
+	 * 
+	 * @param AlertMngVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int deleteAlertMng(AlertMngVO vo) throws Exception;
+	
+	/**
+	 * 일지의 PK를 가져온다.
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public int getAlertMngPk() throws Exception;
+	
+	/**
+	 * 일지의 갯수를 가져온다.
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public int getAlertMngCnt() throws Exception;
+	
+	/**
+	 * 해당일지에서 전파하는 조직 목록을 가져온다.
+	 * 
+	 * @param AlertMngVO
+	 * @return
+	 * @throws Exception
+	 */
+	public String getAlertMngSpreadDept(AlertMngVO vo) throws Exception;
+	
+	
+	/** 탁수정보 테스트
+	 * @param vo
+	 * @return
+	 * @throws Exception
+	 */
+	public List<AlertTestVO> getTaksuTest(AlertTestVO vo) throws Exception;
+
+	public int alertMngHistDelete(AlertStepVO alertStepVO) throws Exception;
+	
+}

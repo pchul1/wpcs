@@ -1,0 +1,1688 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SpotManageCounterDAO">
+	<typeAlias alias="spotManageVO" type="daewooInfo.spotmanage.bean.SpotManageVO"/>
+	<typeAlias alias="memberAddVO" type="daewooInfo.spotmanage.bean.MemberAddVO"/>
+	<typeAlias alias="usnItemVO" type="daewooInfo.spotmanage.bean.UsnItemVO"/>
+	<typeAlias alias="eqItemVO" type="daewooInfo.spotmanage.bean.EqItemVO"/>
+	<typeAlias alias="adminHistoryVO" type="daewooInfo.spotmanage.bean.AdminHistoryVO"/>
+	<typeAlias alias="itemVO" type="daewooInfo.spotmanage.bean.ItemVO"/>
+	<typeAlias alias="zipcodeVOSpot" type="daewooInfo.spotmanage.bean.ZipcodeVO"/>
+	<typeAlias alias="branchItemVO" type="daewooInfo.spotmanage.bean.BranchItemVO"/>
+	<typeAlias alias="itemGroupVO" type="daewooInfo.itemmanage.bean.ItemGroupVO"/>
+	<typeAlias alias="factinfoVOSpot" type="daewooInfo.spotmanage.bean.FactinfoVO"/>
+	<typeAlias alias="sysEquipVO" type="daewooInfo.spotmanage.bean.SysEquipVO"/>
+	<typeAlias alias="spotInfoVO" type="daewooInfo.spotmanage.bean.SpotInfoVO"/>
+	
+	<!-- 지점관리 리스트 -->
+	<statement id="getSpotMgrList_OLD" parameterClass="spotManageVO" resultClass="spotManageVO" remapResults="true">
+		/* 지점관리 리스트 getSpotMgrList 2012-01-31 Yong  */
+		SELECT 
+				 factCode
+				,branchNo
+				,branchName
+				,areaName
+				,riverName
+				,riverDiv
+				,sysKind
+				,mgrOrg
+				,riverNo
+				,loss_flag
+				,branchUseFlag
+		FROM (SELECT A.FACT_CODE AS factCode,
+				A.BRANCH_NO AS branchNo ,
+				NVL(A.BRANCH_NAME,'미등록') AS branchName,
+				D.AREA_NAME AS areaName,
+				D.RIVER_NAME AS riverName,
+				DECODE(B.SYS_KIND,'W','미확인','T','탁수모니터링','U','이동형측정기기','A','국가수질자동측정망') AS sysKind,
+				NVL(A.MGR_ORG,'미등록') AS mgrOrg,
+				D.RIVER_DIV AS riverDiv,
+				ROWNUM AS RNUM,
+				A.LOSS_FLAG,
+				A.BRANCH_USE_FLAG AS branchUseFlag
+			FROM T_FACT_BRANCH_INFO A
+			LEFT OUTER JOIN T_FACT_INFO B 
+				ON A.FACT_CODE = B.FACT_CODE
+			LEFT OUTER JOIN T_RIVER_INFO_DIV D
+				ON B.RIVER_DIV = D.RIVER_DIV
+		<isNotEmpty property="sysKind" prepend="WHERE">
+			B.SYS_KIND = #sysKind#
+		</isNotEmpty>
+		<isNotEmpty property="riverDiv" prepend="AND">
+		<isNotEqual property="riverDiv" compareValue="ALL">
+				D.RIVER_DIV = #riverDiv# 
+		</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="searchText" prepend="AND">
+				A.BRANCH_NAME LIKE '%'||#searchText#||'%'
+		</isNotEmpty>
+				)
+		WHERE
+			<![CDATA[
+				RNUM > #firstIndex#
+				AND RNUM <= #firstIndex# + #recordCountPerPage# 
+			]]>
+	</statement>
+	
+	<statement id="getSpotMgrList" parameterClass="spotManageVO" resultClass="spotManageVO" remapResults="true">
+		SELECT 
+				 factCode
+				,branchNo
+				,branchName
+				,areaName
+				,riverDiv
+				,riverName
+				,sysKind
+				,mgrOrg
+				,branchUseFlag
+				,latitude
+				,longitude
+				,factAddr
+				,riverNo
+				,factName
+				,equipCode
+		FROM (SELECT A.FACT_CODE AS FACTCODE,
+				A.BRANCH_NO AS branchNo ,
+				NVL(A.BRANCH_NAME,'미등록') AS branchName,
+				D.AREA_NAME AS areaName,
+				D.RIVER_DIV AS riverDiv,
+				D.RIVER_NAME AS riverName,
+				B.SYS_KIND AS sysKind,
+				NVL(B.MGR_ORG,'미등록') AS mgrOrg,
+				ROW_NUMBER() OVER(ORDER BY A.FACT_CODE, A.BRANCH_NO) RNUM,
+				A.BRANCH_USE_FLAG AS branchUseFlag,
+				A.LATITUDE AS latitude,
+				A.LONGITUDE AS longitude,
+				A.FACT_ADDR AS factAddr,
+				D.RIVER_NO AS riverNo,
+				B.FACT_NAME AS factName,
+				A.EQUIP_CODE AS equipCode
+				FROM T_FACT_BRANCH_INFO A
+				LEFT OUTER JOIN T_FACT_INFO B
+					ON A.FACT_CODE = B.FACT_CODE
+				LEFT OUTER JOIN T_RIVER_INFO_DIV D
+					ON B.RIVER_DIV = D.RIVER_DIV
+		<isNotEmpty property="sysKind" prepend="WHERE">
+					B.SYS_KIND = #sysKind#
+		</isNotEmpty>
+		<isNotEmpty property="riverDiv" prepend="AND">
+			<isNotEqual property="riverDiv" compareValue="ALL">
+					D.RIVER_DIV = #riverDiv# 
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="searchText" prepend="AND">
+					A.BRANCH_NAME LIKE '%'||#searchText#||'%'
+		</isNotEmpty>
+		<isNotEmpty property="factCode">
+				AND ( #factCode# IS NULL OR A.FACT_CODE = #factCode#)
+		</isNotEmpty>
+		<isNotEqual property="searchUseFlag"  compareValue="ALL">
+				AND A.BRANCH_USE_FLAG = #searchUseFlag#
+		</isNotEqual>
+				)
+		WHERE
+			<![CDATA[
+				RNUM > #firstIndex#
+				AND RNUM <= #firstIndex# + #recordCountPerPage#
+			]]>
+	</statement>
+	
+	<!-- 리스트 페이징 처리 카운트 -->
+	<select id="getSpotMgrCnt" parameterClass="spotManageVO" resultClass="java.lang.Integer">
+		SELECT 
+				 COUNT(*)
+		FROM (SELECT A.FACT_CODE AS FACTCODE,
+				A.BRANCH_NO AS branchNo ,
+				NVL(A.BRANCH_NAME,'미등록') AS branchName,
+				D.AREA_NAME AS areaName,
+				D.RIVER_DIV AS riverDiv,
+				D.RIVER_NAME AS riverName,
+				B.SYS_KIND AS sysKind,
+				NVL(B.MGR_ORG,'미등록') AS mgrOrg,
+				ROW_NUMBER() OVER(ORDER BY A.FACT_CODE, A.BRANCH_NO) RNUM,
+				A.BRANCH_USE_FLAG AS branchUseFlag,
+				A.LATITUDE AS latitude,
+				A.LONGITUDE AS longitude,
+				A.FACT_ADDR AS factAddr,
+				D.RIVER_NO AS riverNo,
+				B.FACT_NAME AS factName
+				FROM T_FACT_BRANCH_INFO A
+				LEFT OUTER JOIN T_FACT_INFO B
+					ON A.FACT_CODE = B.FACT_CODE
+				LEFT OUTER JOIN T_RIVER_INFO_DIV D
+					ON B.RIVER_DIV = D.RIVER_DIV
+		<isNotEmpty property="sysKind" prepend="WHERE">
+					B.SYS_KIND = #sysKind#
+		</isNotEmpty>
+		<isNotEmpty property="riverDiv" prepend="AND">
+			<isNotEqual property="riverDiv" compareValue="ALL">
+					D.RIVER_DIV = #riverDiv# 
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="searchText" prepend="AND">
+					A.BRANCH_NAME LIKE '%'||#searchText#||'%'
+		</isNotEmpty>
+		<isNotEmpty property="factCode">
+				AND ( #factCode# IS NULL OR A.FACT_CODE = #factCode#)
+		</isNotEmpty>
+		<isNotEqual property="searchUseFlag"  compareValue="ALL">
+				AND A.BRANCH_USE_FLAG = #searchUseFlag#
+		</isNotEqual>
+				)
+	</select>
+	
+	<!-- 지점관리 상세보기 -->
+	<select id="getSpotView" parameterClass="spotManageVO" resultClass="spotManageVO">
+		/* 지점관리 상세보기 getSpotView 2012-01-31 Yong */
+		SELECT
+			A.FACT_CODE AS factCode,
+			A.BRANCH_NO AS branchNo ,
+			NVL(A.BRANCH_NAME,'미등록') AS branchName,
+			D.AREA_NAME AS areaName,
+			D.RIVER_DIV AS riverDiv,
+			D.RIVER_NAME AS riverName,
+			DECODE(B.SYS_KIND,'W','미확인','T','탁수모니터링','U','이동형측정기기','A','국가수질자동측정망') AS sysKind,
+			NVL(B.MGR_ORG,'미등록') AS mgrOrg,
+			NVL(E.DO_NAME,'미등록') AS sido, 
+			NVL(E.CTY_NAME,'미등록') AS gugun, 
+			<!-- NVL(E.DONG,'미등록') AS dong, --> 
+			<!-- NVL(B.FACT_ADDR,'미등록') AS factAddr, --> 
+			NVL(A.FACT_ADDR,'미등록') AS factAddr, 
+			NVL(B.OPER_ORG,'미등록') AS operOrg, 
+			A.LONGITUDE, 
+			A.LATITUDE,
+			B.SYS_KIND AS itemRiverDiv,
+			D.RIVER_NO AS riverNo,
+			B.FACT_NAME AS factName,
+			A.EQUIP_CODE AS equipCode,
+			(SELECT MEMBER_NAME FROM T_MEMBER M WHERE A.BRANCH_MGR = M.MEMBER_ID) branchMgr,
+			A.BRANCH_MGR_TEL_NO AS branchMgrTel,
+			A.BRANCH_USE_FLAG as branchUseFlag,
+			DECODE(A.BRANCH_USE_FLAG,'Y','사용','미사용') branchUseName
+		FROM T_FACT_BRANCH_INFO A
+		LEFT OUTER JOIN 
+			T_FACT_INFO B ON A.FACT_CODE = B.FACT_CODE
+		LEFT OUTER JOIN 
+			T_RIVER_INFO_DIV D ON B.RIVER_DIV = D.RIVER_DIV
+		LEFT OUTER JOIN 
+			T_AREA E ON B.DO_CODE = E.DO_CODE AND B.CTY_CODE = E.CTY_CODE
+		WHERE A.FACT_CODE = #factCode#
+			AND A.BRANCH_NO = #branchNo#
+			AND D.RIVER_NO = #riverNo#
+	</select>
+	<!-- usn 리스트 -->
+	<statement id="getUsnList" parameterClass="usnItemVO" resultClass="usnItemVO" remapResults="true">
+		/* usn 리스트 getUsnList 2012-01-31 Yong  */
+		SELECT
+			FACT_CODE AS factCode,
+			BRANCH_NO AS branchNo,
+			ITEMSEQ,
+			BRANCH_NAME AS branchName,
+			FRDATE,
+			longitude,
+			latitude,
+			memo,
+			user_Flag as userFlag
+		FROM 
+			T_FACT_BRANCH_ITEM
+		WHERE
+			FACT_CODE = #factCode#
+		AND
+			BRANCH_NO = #branchNo#
+			
+			ORDER BY frdate,itemseq  asc
+		<!-- ORDER BY ITEMSEQ ASC -->
+	</statement>
+	 
+	<!-- 설치장비 리스트 -->
+	<statement id="getEqList" parameterClass="eqItemVO" resultClass="eqItemVO" remapResults="true">
+		/* 지점관리 리스트 getEqList 2012-01-31 Yong  */
+		SELECT 
+			FACT_CODE AS factCode,
+			BRANCH_NO AS branchNo,
+			EQSEQ AS eqSeq,
+			EQ_NAME AS eqName,
+			ITEM_NAME AS itemName,
+			INTRODATE AS introDate,
+			CONPANY_SEQ AS conpanySeq,
+			MODEL_SEQ AS modelSeq,
+			MEMO, 
+			EQ_CODE AS eqCode,
+			OUTDATE AS outDate
+		FROM 
+			T_FACT_BRANCH_EQ
+		WHERE
+			FACT_CODE = #factCode#
+		AND
+			BRANCH_NO = #branchNo#
+		AND
+			USER_FLAG = 'Y'
+		ORDER BY CRTDATE DESC
+	</statement>
+
+	
+	<!-- 항목 리스트 -->
+	<statement id="getItemList_OLD" parameterClass="itemVO" resultClass="itemVO" remapResults="true">
+		/* 항목 리스트 getItemList 2012-01-31 Yong  */
+		SELECT DISTINCT 
+			D.ITEM_CODE AS itemCode, 
+			E.ITEM_NAME AS itemName, 
+			NVL(F.ITEM_GREEN_ST,0) AS itemGreenSt, 
+			NVL(F.ITEM_GREEN_EN,0) AS itemGreenEn, 
+			NVL(F.ITEM_BLUE_ST,0) AS itemBlueSt, 
+			NVL(F.ITEM_BLUE_EN,0) AS itemBlueEn, 
+			NVL(F.ITEM_YELLOW_ST,0) AS itemYellowSt, 
+			NVL(F.ITEM_YELLOW_EN,0) AS itemYellowEn, 
+			NVL(F.ITEM_ORANGE_ST,0) AS itemOrangeSt, 
+			NVL(F.ITEM_ORANGE_EN,0) AS itemOrangeEn, 
+			NVL(F.ITEM_RED_ST,0) AS itemRedSt, 
+			NVL(F.ITEM_RED_EN,0) AS itemRedEn, 
+			F.VALUE_FORMAT AS valueFormat 
+		FROM 
+			T_SYSTEM A 
+		LEFT OUTER JOIN T_SYSTEM_GROUP B 
+		ON 
+			A.SYS_CODE = B.SYS_CODE 
+		LEFT OUTER JOIN T_FACT_MEASU_ITEM_GROUP C 
+		ON 
+			B.GROUP_CODE = C.GROUP_CODE 
+		LEFT OUTER JOIN T_FACT_MEASU_GROUP_ITEM D 
+		ON 
+			C.GROUP_CODE = D.GROUP_CODE 
+		LEFT OUTER JOIN T_ITEM_INFO E 
+		ON 
+			D.ITEM_CODE = E.ITEM_CODE 
+		LEFT OUTER JOIN T_ITEM_INFO_ADD F 
+		ON 
+			D.ITEM_CODE = F.ITEM_CODE 
+		WHERE 
+			A.SYS_TYPE = #sysType# 
+		AND 
+			C.DP_YN = 'Y' 
+		<!-- AND 
+			D.DP_YN = 'Y' -->
+	</statement>
+	
+	<!-- 항목 리스트 -->
+	<statement id="getItemList" parameterClass="itemVO" resultClass="itemVO" remapResults="true">
+		SELECT   T2.ITEM_CODE AS itemCode
+				,T2.ITEM_NAME AS itemName
+		FROM  (
+					SELECT  GROUP_CODE
+							,ITEM_CODE
+							,DP_YN
+					FROM  T_SYSTEM_ITEM_GROUP_INFO
+					WHERE  SYS_CODE IN (
+											SELECT  DISTINCT SYS_CODE
+											FROM  T_SYSTEM
+											WHERE  SYS_TYPE = #sysType#
+												AND  SYS_YN = 'Y'
+												AND  SYS_FLAG = 'Y'
+										)
+				) T1,
+				(
+					SELECT   G.GROUP_CODE
+							,G.ITEM_CODE
+							,I.ITEM_NAME
+					FROM T_FACT_MEASU_GROUP_ITEM G
+						 ,T_ITEM_INFO I
+					WHERE  G.ITEM_CODE = I.ITEM_CODE
+				) T2
+		WHERE T1.GROUP_CODE(+) = T2.GROUP_CODE
+			AND  T1.ITEM_CODE(+) = T2.ITEM_CODE
+		ORDER BY T2.ITEM_CODE
+	</statement>
+	
+	<!-- 관리자 리스트 -->
+	<statement id="getMemberList" parameterClass="spotManageVO" resultClass="memberAddVO" remapResults="true">
+		/* 관리자 리스트 getMemberList 2012-02-06 Yong  */
+		SELECT 
+			MEMBER_ID AS memberId,
+			MEMBER_NAME AS memberName
+		FROM 
+			T_MEMBER
+		WHERE
+			MEMBER_ID NOT IN (
+							SELECT 
+								MEMBER_ID 
+							FROM 
+								T_FACT_BRANCH_MEMBER 
+							WHERE 
+								FACT_CODE||BRANCH_NO = #factCode#||#branchNo#
+							)
+		<isNotEmpty property="searchText" prepend="AND">
+			MEMBER_NAME LIKE '%'||#searchText#||'%'
+		</isNotEmpty>
+	</statement>
+	<!-- 지점 관리자 등록 -->
+	<insert id="branchmemberInsert" parameterClass="memberAddVO">
+		/* 지점 관리자 등록 branchmemberInsert 2012-02-06 Yong  */
+		INSERT INTO 
+			T_FACT_BRANCH_MEMBER 
+			(
+				FACT_CODE, 
+				BRANCH_NO, 
+				MEMBERSEQ, 
+				MEMBER_ID,
+				CRTDATE
+			)
+		VALUES
+			(
+				#factCode#,
+				#branchNo#,
+				(SELECT NVL(MAX(MEMBERSEQ),0)+1 FROM T_FACT_BRANCH_MEMBER WHERE FACT_CODE = #factCode# AND BRANCH_NO = #branchNo#),
+				#memberId#,
+				SYSDATE
+			)
+	</insert>
+	
+	<!-- 지점 관리자 리스트 -->
+	<statement id="getSpotMemList" parameterClass="spotManageVO" resultClass="memberAddVO" remapResults="true">
+		/* 지점 관리자 리스트 getSpotMemList 2012-02-06 Yong  */
+		SELECT 
+			A.MEMBER_ID AS memberId,
+			B.MEMBER_NAME AS memberName,
+			A.FACT_CODE AS factCode,
+			BRANCH_NO AS branchNo,
+			MEMBERSEQ as memberSeq
+		FROM
+			T_FACT_BRANCH_MEMBER A
+		LEFT OUTER JOIN 
+			T_MEMBER B ON A.MEMBER_ID = B.MEMBER_ID 
+		WHERE
+			A.FACT_CODE = #factCode#
+		AND
+			BRANCH_NO = #branchNo#
+	</statement>
+	
+	<!-- 지점 관리지 삭제 -->
+	<delete id="branchmemberdel" parameterClass="memberAddVO">
+		/* 지점 관리자 삭제 branchmemberdel 2012-02-06 Yong  */
+			DELETE FROM 
+				T_FACT_BRANCH_MEMBER
+			WHERE
+				FACT_CODE = #factCode#
+			AND
+				BRANCH_NO = #branchNo#
+			AND
+				MEMBERSEQ = #memberSeq#
+	</delete>
+	<!-- 지점 관리지 삭제 시 SMS 문자 받는 대상에서 자동 삭제 -->
+	<delete id="branchSmsTargetdel" parameterClass="memberAddVO">
+		/* 지점 관리자 SMS대상에서도 삭제 "branchSmsTargetdel" 2016-12-07 KANG JINAM  */
+			DELETE FROM 
+				T_SMS_TARGET
+			WHERE
+				FACT_CODE = #factCode#
+			AND
+				BRANCH_NO = #branchNo#
+			AND
+				MEMBER_ID = #memberId#
+	</delete>
+	
+	<statement id="getAddrList" parameterClass="spotManageVO" resultClass="spotManageVO" remapResults="true">
+		/* 주소 정보 가져오기 getAddrList 2012-02-07 Yong  */
+		SELECT 
+			ZIPCODE,
+			SIDO, 
+			GUGUN, 
+			DONG 
+		FROM 
+			ZIPCODE 
+		WHERE 
+			DONG LIKE '%'||#dong#||'%'
+	</statement>
+	
+	<!-- Usn 측정일 등록 -->
+	<insert id="usnInsert" parameterClass="usnItemVO">
+		/* Usn 측정일 등록 usnInsert 2012-02-07 Yong  */
+		<isNotNull property="atchFileId">
+		INSERT INTO 
+			T_FACT_BRANCH_ITEM 
+			(
+				FACT_CODE,
+				BRANCH_NO,
+				ITEMSEQ,
+				FRDATE,
+				TODATE,
+				BRANCH_NAME,
+				LATITUDE,
+				LONGITUDE,
+				ATCH_FILE_ID,
+				SAVE_PATH,
+				SAVE_FILE_NAME,
+				ORIGNL_FILE_NAME,
+				FILE_EXTSN,
+				FILE_MG,
+				MEMO
+			)
+		VALUES
+			(
+				#factCode#,
+				#branchNo#,
+				(SELECT NVL(MAX(ITEMSEQ),0)+1 FROM T_FACT_BRANCH_ITEM WHERE FACT_CODE = #factCode# AND BRANCH_NO = #branchNo#),
+				#frdate#,
+				#todate#,
+				#branchName#,
+				#latitude#,
+				#longitude#,
+				#atchFileId#,
+				#savePath#,
+				#saveFileName#,
+				#orignlFileName#,
+				#fileExtsn#,
+				#fileMg#,
+				#memo#
+			)
+		 </isNotNull>
+		 <isNull property="atchFileId">
+		 INSERT INTO 
+			T_FACT_BRANCH_ITEM 
+			(
+				FACT_CODE,
+				BRANCH_NO,
+				ITEMSEQ,
+				FRDATE,
+				TODATE,
+				BRANCH_NAME,
+				LATITUDE,
+				LONGITUDE,
+				MEMO
+			)
+		VALUES
+			(
+				#factCode#,
+				#branchNo#,
+				(SELECT NVL(MAX(ITEMSEQ),0)+1 FROM T_FACT_BRANCH_ITEM WHERE FACT_CODE = #factCode# AND BRANCH_NO = #branchNo#),
+				#frdate#,
+				#todate#,
+				#branchName#,
+				#latitude#,
+				#longitude#,
+				#memo#
+			)
+		 </isNull>
+	</insert>
+	
+	<!-- Usn 수정 데이터 가져오기 -->
+	<select id="getUpdateView" parameterClass="usnItemVO" resultClass="usnItemVO">
+		/* Usn 수정 데이터 가져오기 getUpdateView 2012-02-08 Yong */
+		SELECT
+			FACT_CODE AS factCode,
+			BRANCH_NO AS branchNo,
+			ITEMSEQ AS itemseq,
+			FRDATE,
+			TODATE,
+			BRANCH_NAME AS branchName,
+			LATITUDE,
+			LONGITUDE,
+			ATCH_FILE_ID AS atchFileId,
+			SAVE_PATH AS savePath,
+			SAVE_FILE_NAME AS saveFileName,
+			ORIGNL_FILE_NAME AS orignlFileName,
+			FILE_EXTSN AS fileExtsn,
+			FILE_MG AS fileMg,
+			FILE_CONTENT AS fileContent,
+			MEMO
+		FROM T_FACT_BRANCH_ITEM
+		WHERE FACT_CODE = #factCode#
+			AND BRANCH_NO = #branchNo#
+			AND ITEMSEQ = #itemseq#
+	</select>
+	
+	<!-- Usn 측정일 수정 -->
+	<update id="usnUpdate" parameterClass="usnItemVO">
+		/* Usn 측정일 등록 usnInsert 2012-02-07 Yong  */
+		<isNotNull property="atchFileId">
+		UPDATE T_FACT_BRANCH_ITEM SET
+				FRDATE = #frdate#,
+				TODATE = #todate#,
+				BRANCH_NAME = #branchName#,
+				LATITUDE = #latitude#,
+				LONGITUDE = #longitude#,
+				MODDATE = SYSDATE,
+				ATCH_FILE_ID = #atchFileId#,
+				SAVE_PATH = #savePath#,
+				SAVE_FILE_NAME = #saveFileName#,
+				ORIGNL_FILE_NAME = #orignlFileName#,
+				FILE_EXTSN = #fileExtsn#,
+				FILE_MG = #fileMg#,
+				MEMO = #memo#
+		WHERE
+			FACT_CODE = #factCode#
+		AND
+			BRANCH_NO = #branchNo#
+		AND
+			ITEMSEQ = #itemseq#
+		</isNotNull>
+		<isNull property="atchFileId">
+			UPDATE T_FACT_BRANCH_ITEM SET
+					FRDATE = #frdate#,
+					TODATE = #todate#,
+					BRANCH_NAME = #branchName#,
+					LATITUDE = #latitude#,
+					LONGITUDE = #longitude#,
+					MEMO = #memo#
+			WHERE
+				FACT_CODE = #factCode#
+			AND
+				BRANCH_NO = #branchNo#
+			AND
+				ITEMSEQ = #itemseq#
+		</isNull>
+	</update>
+	
+	<update id="usndel" parameterClass="usnItemVO">
+		UPDATE T_FACT_BRANCH_ITEM SET
+			USER_FLAG = 'N'
+		WHERE
+			FACT_CODE = #factCode#
+		AND
+			BRANCH_NO = #branchNo#
+		AND
+			ITEMSEQ = #itemseq#
+		</update>
+		<select id="selectFileInfo" parameterClass="usnItemVO" resultClass="usnItemVO">
+		SELECT
+			ATCH_FILE_ID AS atchFileId,
+			SAVE_PATH AS savePath,
+			SAVE_FILE_NAME AS saveFileName,
+			ORIGNL_FILE_NAME AS orignlFileName,
+			FILE_EXTSN AS fileExtsn,
+			FILE_MG AS fileMg,
+			FILE_CONTENT AS fileContent
+		FROM
+			T_FACT_BRANCH_ITEM
+		WHERE
+			FACT_CODE = #factCode#
+		AND
+			BRANCH_NO = #branchNo#
+		AND
+			ITEMSEQ = #itemseq#
+	</select>
+	
+	<!-- 설치장비 등록 -->
+	<insert id="eqInsert" parameterClass="eqItemVO">
+		/* 설치 장비 등록 eqInsert 2012-02-10 Yong  */
+		INSERT INTO 
+			T_FACT_BRANCH_EQ
+			(
+				FACT_CODE,
+				BRANCH_NO,
+				EQSEQ,
+				INTRODATE,
+				ITEM_NAME,
+				CONPANY_SEQ,
+				MODEL_SEQ,
+				EQ_NAME,
+				MEMO, 
+				EQ_CODE
+			)
+		VALUES
+			(
+				#factCode#,
+				#branchNo#,
+				(SELECT NVL(MAX(EQSEQ), 0)+1 FROM T_FACT_BRANCH_EQ WHERE FACT_CODE = #factCode# AND BRANCH_NO = #branchNo#),
+				#introDate#,
+				#itemName#,
+				#conpanySeq#,
+				#modelSeq#,
+				#eqName#,
+				#memo#,
+				#eqCode#
+			)
+	</insert>
+	
+	<!-- 설치장비수정 내용 가져오기 -->
+	<select id="eqUpDateForm" parameterClass="eqItemVO" resultClass="eqItemVO">
+		/* 설치 장비 수정 내용 가져오기 eqUpDateForm 2012-02-10 Yong  */
+		SELECT
+			FACT_CODE AS factCode,
+			BRANCH_NO AS branchNo,
+			EQSEQ AS eqSeq,
+			EQ_NAME AS eqName,
+			ITEM_NAME AS itemName,
+			INTRODATE AS introDate,
+			CONPANY_SEQ AS conpanySeq,
+			MODEL_SEQ AS modelSeq,
+			MEMO, 
+			EQ_CODE AS eqCode,
+			OUTDATE AS outDate
+		FROM
+			T_FACT_BRANCH_EQ
+		WHERE
+			FACT_CODE = #factCode#
+		AND
+			BRANCH_NO = #branchNo#
+		AND
+			EQSEQ = #eqSeq#
+	</select>
+	
+	<!-- 설치장비 수정처리 -->
+	<update id="eqUpdate" parameterClass="eqItemVO">
+		/* 설치 장비 수정처리 eqUpdate 2012-02-10 Yong  */
+		UPDATE	T_FACT_BRANCH_EQ SET
+				EQ_NAME = #eqName#,
+				ITEM_NAME = #itemName#,
+				INTRODATE = #introDate#,
+				MODDATE = SYSDATE,
+				CONPANY_SEQ = #conpanySeq#,
+				MODEL_SEQ = #modelSeq#,
+				MEMO = #memo#, 
+				EQ_CODE = #eqCode#,
+				OUTDATE = #outDate#
+		WHERE
+			FACT_CODE = #factCode#
+		AND
+			BRANCH_NO = #branchNo#
+		AND
+			EQSEQ = #eqSeq# 
+	</update>
+	<!-- 설치장비 삭제처리 -->
+	<update id="eqDel" parameterClass="eqItemVO">
+		/* 설치 장비 삭제처리 eqDel 2012-02-10 Yong  */
+		UPDATE	T_FACT_BRANCH_EQ SET
+				USER_FLAG = 'N'
+		WHERE
+			FACT_CODE = #factCode#
+		AND
+			BRANCH_NO = #branchNo#
+		AND
+			EQSEQ = #eqSeq# 
+	</update>
+	
+	<statement id="getAdminHistoryList" parameterClass="adminHistoryVO" resultClass="adminHistoryVO" >
+		SELECT
+			FACT_CODE AS factCode, 
+			BRANCH_NO AS branchNo,
+			EQSEQ,
+			HSSEQ,
+			CONTENT AS content,
+			CRTDATE AS crtDate
+		FROM
+			T_FACT_BRANCH_EQ_HISTORY
+		WHERE
+			FACT_CODE = #factCode#
+		AND
+			BRANCH_NO = #branchNo#
+		AND
+			EQSEQ = #eqSeq#
+	</statement>
+	
+	<insert id="adminHistoryInsert" parameterClass="adminHistoryVO">
+		INSERT INTO 
+			T_FACT_BRANCH_EQ_HISTORY
+			(
+				FACT_CODE,
+				BRANCH_NO,
+				EQSEQ,
+				HSSEQ,
+				CONTENT
+			)
+		VALUES
+			(
+				#factCode#,
+				#branchNo#,
+				#eqSeq#,
+				(SELECT NVL(MAX(HSSEQ),0)+1 FROM T_FACT_BRANCH_EQ_HISTORY WHERE FACT_CODE = #factCode# AND BRANCH_NO = #branchNo# AND EQSEQ = #eqSeq#),
+				#content#
+			)
+	</insert>
+	
+	<update id="adminHistoryUpdate" parameterClass="adminHistoryVO">
+		UPDATE T_FACT_BRANCH_EQ_HISTORY SET
+			CONTENT = #content#
+		WHERE FACT_CODE = #factCode#
+			AND BRANCH_NO = #branchNo#
+			AND EQSEQ = #eqSeq#
+			AND HSSEQ = #hsSeq#
+	</update>
+	<delete id="adminHistorydel" parameterClass="adminHistoryVO">
+		DELETE FROM T_FACT_BRANCH_EQ_HISTORY
+		WHERE  FACT_CODE = #factCode#
+			AND BRANCH_NO = #branchNo#
+			AND EQSEQ = #eqSeq#
+			AND HSSEQ = #hsSeq#
+	</delete>
+	
+	<select id="getAddressListSpot" parameterClass="zipcodeVOSpot" resultClass="zipcodeVOSpot">
+		SELECT
+			 ZIPCODE
+			,SIDO
+			,GUGUN
+			,DONG
+			,BUNJI
+		FROM ZIPCODE 
+		WHERE DONG LIKE REPLACE(#dong#||'%',' ','')
+	</select>
+	<statement id="getSysItemList" parameterClass="spotManageVO" resultClass="itemGroupVO" remapResults="true">
+		SELECT 
+			C.GROUP_NAME AS groupName
+		FROM
+			T_SYSTEM A
+		LEFT OUTER JOIN
+			T_SYSTEM_GROUP B 
+		ON
+			A.SYS_CODE = B.SYS_CODE
+		LEFT OUTER JOIN
+			T_FACT_MEASU_ITEM_GROUP C
+		ON
+			B.GROUP_CODE = C.GROUP_CODE
+		WHERE 
+			A.SYS_TYPE = #sysKind#
+		AND 
+		    A.SYS_YN='Y'
+		AND
+			C.DP_YN = 'Y'
+	</statement>
+
+	<insert id="singleSaveInsert" parameterClass="branchItemVO">
+		INSERT INTO
+			T_FACT_BRANCH_ITEM_INFO
+			(
+				FACT_CODE
+				,BRANCH_NO
+				,ITEM_CODE
+				,ITEM_VALUE_HI
+				,ITEM_VALUE_LO
+				,LEG_YN
+				,USER_FLAG
+			)
+		VALUES
+			(
+				#factCode#
+				,#branchNo#
+				,#itemCode#
+				,#itemValueHi#
+				,#itemValueLo#
+				,#legYn#
+				,#allSave#
+			)
+	</insert>
+
+	<statement id="getBranchItemList" parameterClass="branchItemVO" resultClass="branchItemVO" remapResults="true">
+		SELECT
+			A.ITEM_CODE AS itemCode 
+			,B.ITEM_NAME AS itemName
+			,LEG_YN AS legYn
+			,TRIM(TO_CHAR(ITEM_VALUE_HI,'999,999,999,990.99')) As itemValueHi
+			,TRIM(TO_CHAR(ITEM_VALUE_LO,'999,999,999,990.99')) AS itemValueLo
+			,A.USER_FLAG AS userFlag
+		FROM
+			T_FACT_BRANCH_ITEM_INFO A
+		LEFT OUTER JOIN
+			T_ITEM_INFO B
+		ON
+			A.ITEM_CODE = B.ITEM_CODE
+		WHERE
+			FACT_CODE = #factCode#
+		AND
+			BRANCH_NO = #branchNo#
+	</statement>
+
+	<update id="singleSaveUpdate" parameterClass="branchItemVO">
+		MERGE INTO T_FACT_BRANCH_ITEM_INFO
+		 USING DUAL
+		 ON ( FACT_CODE = #factCode# AND BRANCH_NO = #branchNo# AND ITEM_CODE = #itemCode# )
+		 WHEN MATCHED THEN
+		 UPDATE SET
+			ITEM_VALUE_HI	= #itemValueHi#
+			,ITEM_VALUE_LO	= #itemValueLo#
+			,LEG_YN			= #legYn#
+			,USER_FLAG		= #allSave#
+			,DRY_SEASON_YN	= #drySeasonYn#
+			,DRY_SEASON_FROM_MM	= #drySeasonFromMm#
+			,DRY_SEASON_TO_MM	= #drySeasonToMm#
+			,ITEM_DRY_VALUE_HI	= #itemDryValueHi#
+			,ITEM_DRY_VALUE_LO	= #itemDryValueLo#
+			,TIME_DUR_VAL	= #timeDurVal#
+			,STAND_YN	= #standYn#
+		WHEN NOT MATCHED THEN
+		INSERT (FACT_CODE, BRANCH_NO, ITEM_CODE,ITEM_VALUE_HI,ITEM_VALUE_LO,LEG_YN, USER_FLAG, DRY_SEASON_YN, DRY_SEASON_FROM_MM, DRY_SEASON_TO_MM, ITEM_DRY_VALUE_HI, ITEM_DRY_VALUE_LO,TIME_DUR_VAL,STAND_YN )
+		VALUES (#factCode#, #branchNo#, #itemCode#, #itemValueHi#, #itemValueLo#, #legYn#, #allSave#, #drySeasonYn#, #drySeasonFromMm#, #drySeasonToMm#, #itemDryValueHi#, #itemDryValueLo#,#timeDurVal#,#standYn# )
+	</update>
+	
+	<insert id="saveFactinfoSpot" parameterClass="factinfoVOSpot">
+		INSERT INTO T_FACT_INFO ( FACT_CODE ,FACT_NAME ,BRANCH_CNT ,SYS_KIND ,FACT_IP ,FACT_USE_FLAG, RIVER_DIV )
+		VALUES ( #fact_code#, #fact_name#, 0, #sys_kind#, #fact_ip#, #fact_use_flag#, #river_div# )
+	</insert>
+	
+	<insert id="saveEquipInfo" parameterClass="sysEquipVO">
+		INSERT INTO T_SYS_EQUIP_INFO ( SYS_KIND ,EQUIP_CODE ,EQUIP_MAKER ,EQUIP_NAME ,REG_ID ,REG_DATE )
+		VALUES ( #sys_kind#, #equip_code#, #equip_maker#, #equip_name#, #reg_id#, SYSDATE )
+	</insert>
+	
+	<insert id="FactbranchInfoSpot" parameterClass="factinfoVOSpot">
+		INSERT INTO 
+			T_FACT_BRANCH_INFO 
+			( 
+				FACT_CODE
+				,BRANCH_NO
+				,BRANCH_USE_FLAG
+				,LATITUDE
+				,LONGITUDE
+				,BRANCH_MGR_TEL_NO
+				,BRANCH_NAME
+				,BRANCH_MGR
+				,LEAVE_DISTANCE
+			)
+		VALUES
+			(
+				#fact_code#
+				,(SELECT NVL(MAX(BRANCH_NO),0)+1 FROM T_FACT_BRANCH_INFO WHERE FACT_CODE = #fact_code#)
+				,#branch_use_flag# 
+				,#latitude# 
+				,#longitude# 
+				,#branch_mgr_tel_no# 
+				,#branch_name# 
+				,#branch_mgr#
+				,#leave_distance#
+			)
+	</insert>
+	
+	<insert id="FactbranchAddSpot" parameterClass="factinfoVOSpot">
+		INSERT INTO 
+			T_FACT_BRANCH_ADD
+			(
+				 FACT_CODE
+				,BRANCH_NO
+				,RIVER_NO
+				,FACT_ADDR
+			)
+		VALUES 
+			(
+				#fact_code#
+				,(SELECT NVL(MAX(BRANCH_NO),0)+1 FROM T_FACT_BRANCH_INFO WHERE FACT_CODE = #fact_code#)
+				,#river_no#
+				,#fact_addr#
+			)
+	</insert>
+	
+	<select id="getFactinfoListSpot_OLD" parameterClass="factinfoVOSpot" resultClass="factinfoVOSpot">
+		SELECT FACT_CODE
+			,FACT_NAME
+			,FACT_FNAME
+			,BRANCH_CNT
+			,RIVER_DIV
+			,SYS_KIND
+			,FACT_USE_FLAG
+		FROM
+			( SELECT ROWNUM NUM
+					,FACT_CODE
+					,FACT_NAME
+					,FACT_FNAME
+					,BRANCH_CNT
+					,RIVER_DIV
+					,SYS_KIND
+					,FACT_USE_FLAG
+			FROM T_FACT_INFO
+		<isNotNull property="searchKeyword" prepend="WHERE">
+			FACT_CODE LIKE '%'||#searchKeyword#||'%'
+		</isNotNull>
+			ORDER BY FACT_CODE ) I
+		WHERE I.NUM &gt;= #firstIndex#
+		AND I.NUM &lt;= #lastIndex#
+	</select>
+	
+	<select id="getFactinfoListSpot" parameterClass="factinfoVOSpot" resultClass="factinfoVOSpot">
+		SELECT I.FACT_CODE
+			,I.FACT_NAME
+			,I.FACT_FNAME
+			,I.BRANCH_CNT
+			,I.RIVER_DIV
+			,I.SYS_KIND
+			,I.FACT_USE_FLAG
+			,D.RIVER_NO
+		FROM
+			(SELECT ROWNUM NUM
+				,FACT_CODE
+				,FACT_NAME
+				,FACT_FNAME
+				,BRANCH_CNT
+				,RIVER_DIV
+				,SYS_KIND
+				,FACT_USE_FLAG
+			FROM T_FACT_INFO
+			WHERE FACT_USE_FLAG = 'Y'
+			<isNotNull property="searchKeyword" prepend="AND">
+			    <isEqual property="searchCondition" compareValue="code">
+			     	FACT_CODE LIKE '%'||#searchKeyword#||'%'   
+			    </isEqual>
+			    <isEqual property="searchCondition" compareValue="name">
+			     	FACT_NAME LIKE '%'||#searchKeyword#||'%'   
+			    </isEqual>
+			</isNotNull>
+			ORDER BY FACT_CODE ) I,
+			T_RIVER_INFO_DIV D
+		WHERE I.RIVER_DIV = D.RIVER_DIV(+)
+			AND I.NUM &gt;= #firstIndex#
+			AND I.NUM &lt;= #lastIndex#
+		</select>
+		
+		<select id="getFactinfoListCntSpot" parameterClass="factinfoVOSpot" resultClass="java.lang.Integer">
+		SELECT COUNT(FACT_CODE) FROM T_FACT_INFO
+		WHERE FACT_USE_FLAG = 'Y'
+		<isNotNull property="searchKeyword" prepend="AND">
+		    <isEqual property="searchCondition" compareValue="code">
+		     	FACT_CODE LIKE '%'||#searchKeyword#||'%'   
+		    </isEqual>
+		    <isEqual property="searchCondition" compareValue="name">
+		     	FACT_NAME LIKE '%'||#searchKeyword#||'%'   
+		    </isEqual>
+		</isNotNull>
+	</select>
+	
+	<select id="getFactbranchInfoAddListSpot" parameterClass="factinfoVOSpot" resultClass="factinfoVOSpot">
+		SELECT FACT_CODE
+			,BRANCH_NO
+		FROM
+			( SELECT 
+				ROWNUM NUM
+				,FACT_CODE
+				,BRANCH_NO
+		FROM T_FACT_BRANCH_INFO
+		<isNotNull property="searchKeyword" prepend="WHERE">
+			FACT_CODE LIKE '%'||#searchKeyword#||'%'
+		</isNotNull>
+		ORDER BY FACT_CODE, BRANCH_NO) I
+		WHERE I.NUM &gt;= #firstIndex#
+		AND I.NUM &lt;= #lastIndex#
+	</select>
+	
+	<select id="getFactbranchInfoAddListCntSpot" parameterClass="factinfoVOSpot" resultClass="java.lang.Integer">
+		SELECT COUNT(FACT_CODE) FROM T_FACT_BRANCH_INFO
+	<isNotNull property="searchKeyword" prepend="WHERE">
+		FACT_CODE LIKE '%'||#searchKeyword#||'%'
+	</isNotNull>
+	</select>
+	
+	<select id="getFactbranchInfoAddSpot" parameterClass="factinfoVOSpot" resultClass="factinfoVOSpot">
+		SELECT 
+			 I.FACT_CODE
+			,B.FACT_NAME
+			,I.BRANCH_NO
+			,I.BRANCH_USE_FLAG
+			,I.LATITUDE
+			,I.LONGITUDE
+			,I.BRANCH_NAME
+			,I.BRANCH_MGR
+			,I.BRANCH_MGR_TEL_NO
+			,M.MEMBER_NAME AS BRANCH_MGR_NAME
+			,B.RIVER_DIV
+			,B.SYS_KIND
+			,I.FACT_ADDR
+			,I.LEAVE_DISTANCE
+		FROM T_FACT_BRANCH_INFO I
+		LEFT OUTER JOIN T_FACT_INFO B
+			ON I.FACT_CODE = B.FACT_CODE
+		LEFT OUTER JOIN T_MEMBER M
+			ON I.BRANCH_MGR = M.MEMBER_ID
+		WHERE I.FACT_CODE = #fact_code#
+		AND I.BRANCH_NO = #branch_no#
+	</select>
+	
+	<select id="getFactbranchInfoAddSpot_OLD" parameterClass="factinfoVOSpot" resultClass="factinfoVOSpot">
+		SELECT 
+			I.FACT_CODE
+			,I.BRANCH_NO
+			,I.BRANCH_USE_FLAG
+			,I.LATITUDE
+			,I.LONGITUDE
+			,I.LOSS_FLAG
+			,I.BRANCH_NAME
+			,I.CDMA_TEL_NO
+			,I.ZIPCODE
+			,I.MGR_ORG
+			,I.OPER_ORG
+			,I.FACT_ADDR
+			,Z.SIDO||Z.GUGUN||Z.DONG||Z.BUNJI AS ADDR
+		FROM T_FACT_BRANCH_INFO I
+		LEFT OUTER JOIN ZIPCODE Z
+		ON I.ZIPCODE = Z.ZIPCODE
+		WHERE I.FACT_CODE = #fact_code#
+		AND I.BRANCH_NO = #branch_no#
+	</select>
+	
+	<update id="updateFactbranchInfoSpot" parameterClass="factinfoVOSpot">
+		MERGE INTO T_FACT_BRANCH_INFO
+			USING DUAL
+			ON ( FACT_CODE = #fact_code# AND BRANCH_NO = #branch_no# )
+		WHEN MATCHED THEN
+			UPDATE SET
+				BRANCH_USE_FLAG = #branch_use_flag#
+				,LATITUDE = #latitude#
+				,LONGITUDE = #longitude#
+				,BRANCH_NAME = #branch_name#
+				,BRANCH_MGR = #branch_mgr#
+				,BRANCH_MGR_TEL_NO = #branch_mgr_tel_no#
+				,FACT_ADDR = #fact_addr#
+				,CTY_CODE = (SELECT MAX(cty_code) FROM WTMSC_AREA B WHERE #fact_addr# LIKE '%' || TRIM(B.CTY_NAME) || '%')
+		WHEN NOT MATCHED THEN
+			INSERT (
+					 FACT_CODE
+					,BRANCH_NO
+					,BRANCH_USE_FLAG
+					,LATITUDE
+					,LONGITUDE
+					,BRANCH_MGR_TEL_NO
+					,BRANCH_NAME
+					,BRANCH_MGR
+					,FACT_ADDR
+					,CTY_CODE
+					,EQUIP_CODE
+				)
+			VALUES
+				(
+					 #fact_code#
+					,#branch_no#
+					,#branch_use_flag#
+					,#latitude#
+					,#longitude#
+					,#branch_mgr_tel_no#
+					,#branch_name#
+					,#branch_mgr#
+					,#fact_addr#
+					,(SELECT MAX(cty_code) FROM WTMSC_AREA B WHERE #fact_addr# LIKE '%' || TRIM(B.CTY_NAME) || '%')
+					,#sys_equip_code#
+				)
+	</update>
+		
+	<update id="updateFactbranchWeatherSpot" parameterClass="factinfoVOSpot">
+		MERGE INTO T_WEATHER_AREA A USING
+		    (SELECT STATION_ID, 
+		           REG_ID, 
+		           #fact_code# FACT_CODE,
+		           #branch_no# BRANCH_NO,
+		           #branch_name# BRANCH_NAME,
+		           #river_div# RIVER_DIV,
+		           STATION_NAME 
+		      FROM 
+		           (SELECT RANK() OVER(ORDER BY FN_CALC_DISTANCE (#latitude#,#longitude#,A.LANG, A.LOT)) RNK , 
+		                  ROW_NUMBER() OVER(PARTITION BY A.STATION_NAME ORDER BY B.REG_ID DESC ) RNUM, 
+		                  A.STATION_ID, 
+		                  B.REG_ID,
+		                  A.STATION_NAME
+		             FROM T_WEATHER_STATION_CODE_INFO A, 
+	                    (SELECT A.REG_ID,
+	                       CASE 
+	                          WHEN a.STN_FD IS NOT NULL THEN a.STN_FD  
+	                          WHEN 'aaa' != substr(REPLACE(REVERSE(SUBSTR(SYS_CONNECT_BY_PATH(REVERSE(NVL(A.STN_FD,'aaa')),'/'),2)),'aaa/',''),0,3) 
+	                          THEN substr(REPLACE(REVERSE(SUBSTR(SYS_CONNECT_BY_PATH(REVERSE(NVL(A.STN_FD,'aaa')),'/'),2)),'aaa/',''),0,INSTR(REPLACE(REVERSE(SUBSTR(SYS_CONNECT_BY_PATH(REVERSE(NVL(A.STN_FD,'aaa')),'/'),2)),'aaa/',''),'/')-1)
+	                       END STN_FD
+	                  FROM T_WEATHER_AREA_CODE_INFO A
+	                    START WITH A.REG_UP      IS NULL
+	                    CONNECT BY PRIOR A.REG_ID = A.REG_UP
+	                  ORDER SIBLINGS BY REG_ID) B 
+	              WHERE A.STATION_ID = B.STN_FD(+) 
+	                    AND A.USE_YN = 'Y' 
+		           ) 
+		     WHERE RNK = 1 
+		           AND RNUM = 1  
+		    ) B
+		    ON ( A.FACT_CODE = B.FACT_CODE AND A.BRANCH_NO = B.BRANCH_NO)
+		WHEN MATCHED THEN 
+		       UPDATE SET 
+		       		  REG_ID = B.REG_ID,
+		              STATION_ID = B.STATION_ID, 
+		              REG_NAME = B.BRANCH_NAME,
+		              STATION_NAME = B.STATION_NAME
+		WHEN NOT MATCHED THEN 
+		       INSERT 
+		              ( 
+		                  REG_ID,
+		                  REG_NAME,
+		                  RIVER_DIV,
+		                  STATION_ID,
+		                  RIVER_SEQ,
+		                  FACT_CODE,
+		                  STATION_NAME,
+		                  BRANCH_NO
+		              ) 
+		              VALUES 
+		              ( 
+		                  B.REG_ID,
+		                  B.BRANCH_NAME,
+		                  B.RIVER_DIV,
+		                  B.STATION_ID,
+		                  (SELECT MAX(RIVER_SEQ) +1 FROM T_WEATHER_AREA),
+		                  B.FACT_CODE,
+		                  B.STATION_NAME,
+		                  B.BRANCH_NO
+		              )      
+	</update>
+		     
+	
+	<update id="updateFactSystemGroupItem" parameterClass="factinfoVOSpot">
+		MERGE INTO T_FACT_MEASU_ITEM A USING
+		    (SELECT C.ITEM_CODE, 
+		           #fact_code# FACT_CODE, 
+		           #branch_no# BRANCH_NO 
+		      FROM T_SYSTEM A, 
+		           T_SYSTEM_GROUP B, 
+		           T_FACT_MEASU_GROUP_ITEM C 
+		     WHERE A.SYS_CODE = B.SYS_CODE 
+		           AND B.GROUP_CODE = C.GROUP_CODE 
+		           AND A.SYS_TYPE = (SELECT MAX(SYS_KIND) FROM T_FACT_INFO WHERE FACT_CODE = #fact_code#)
+		    ) B ON (A.ITEM_CODE = B.ITEM_CODE AND A.FACT_CODE = B.FACT_CODE AND A.BRANCH_NO = B.BRANCH_NO) 
+		WHEN NOT MATCHED THEN 
+		       INSERT 
+		              (
+		                  ITEM_CODE,
+		                  FACT_CODE,
+		                  BRANCH_NO
+		              ) 
+		              VALUES 
+		              (
+		                  B.ITEM_CODE,
+		                  B.FACT_CODE,
+		                  B.BRANCH_NO
+		              ) 
+		              
+	</update>
+			
+	<update id="saveLoadDataSpot" parameterClass="factinfoVOSpot">
+		UPDATE T_FACT_BRANCH_INFO SET
+			BRANCH_USE_FLAG = #branch_use_flag#
+		WHERE FACT_CODE = #fact_code#
+		AND BRANCH_NO = #branch_no#
+	</update>
+	
+	<!-- 지점별 SMS 수신대상자에 추가 중복등록 방지 2016-12-07 KANG JINAM-->
+	<insert id="branchSmsTargetInsert" parameterClass="memberAddVO">
+	MERGE INTO T_SMS_TARGET A USING 
+    (SELECT #factCode# FACT_CODE, 
+           #branchNo# BRANCH_NO, 
+           #memberId# MEMBER_ID, 
+           DET_CODE 
+      FROM T_SMS 
+     WHERE USER_YN = 'Y' 
+           AND FACT_CODE = #factCode# 
+           AND BRANCH_NO = #branchNo# 
+           AND SYS_KIND = 
+           (SELECT B.SYS_KIND 
+             FROM T_FACT_INFO B 
+            WHERE B.FACT_CODE = #factCode# 
+                  AND B.FACT_USE_FLAG = 'Y'
+           ) 
+    ) B ON ( A.FACT_CODE = B.FACT_CODE AND A.BRANCH_NO = B.BRANCH_NO AND A.MEMBER_ID = B.MEMBER_ID AND A.DET_CODE = B.DET_CODE) 
+	WHEN NOT MATCHED THEN 
+	       INSERT 
+	              ( 
+	                  SMS_TARGET_NO, 
+	                  FACT_CODE, 
+	                  BRANCH_NO, 
+	                  MEMBER_ID, 
+	                  DET_CODE 
+	              ) 
+	              VALUES 
+	              ( 
+	                  SEQ_SMS_TARGET.NEXTVAL, 
+	                  B.FACT_CODE, 
+	                  B.BRANCH_NO, 
+	                  B.MEMBER_ID, 
+	                  B.DET_CODE 
+	              )
+	</insert>
+	<insert id="branchSmsTargetInsert_old" parameterClass="memberAddVO">
+		INSERT INTO
+			T_SMS_TARGET
+			(
+				SMS_TARGET_NO,
+				FACT_CODE,
+				BRANCH_NO,
+				MEMBER_ID,
+				DET_CODE
+			)
+		SELECT SEQ_SMS_TARGET.NEXTVAL,
+				#factCode#,
+				#branchNo#,
+				#memberId#,
+				DET_CODE
+		FROM T_SMS
+		WHERE USER_YN = 'Y'
+		AND FACT_CODE = #factCode#
+		AND BRANCH_NO = #branchNo#
+        AND SYS_KIND = (SELECT B.SYS_KIND FROM T_FACT_INFO B WHERE B.FACT_CODE = #factCode# AND B.FACT_USE_FLAG = 'Y')
+	</insert>
+	
+	<!-- 측정장비 입력시 시스템 구분에 따른 항목명 조회 -->
+	<select id="getItemName" parameterClass="spotManageVO" resultClass="String">
+		SELECT NVL(SUBSTR(XMLAGG(XMLELEMENT(A,', '||T2.ITEM_NAME)).EXTRACT('//text()'),3),'')
+		FROM (
+					SELECT	GROUP_CODE
+							,ITEM_CODE
+							,DP_YN
+					FROM T_SYSTEM_ITEM_GROUP_INFO
+					WHERE SYS_CODE IN (
+											SELECT DISTINCT SYS_CODE
+											FROM T_SYSTEM
+											WHERE SYS_TYPE = #sysKind#
+												AND SYS_YN	= 'Y'
+												AND SYS_FLAG = 'Y'
+										)
+						AND DP_YN = 'Y'
+				) T1,
+				(
+					SELECT  G.GROUP_CODE
+							,G.ITEM_CODE
+							,I.ITEM_NAME
+					FROM  T_FACT_MEASU_GROUP_ITEM G
+							,T_ITEM_INFO I
+					WHERE  G.ITEM_CODE = I.ITEM_CODE
+				) T2
+		WHERE T1.GROUP_CODE = T2.GROUP_CODE
+			AND T1.ITEM_CODE = T2.ITEM_CODE
+		ORDER BY T2.ITEM_CODE 
+	</select>
+
+	<statement id="getBranchItemCodeList" parameterClass="ItemVO" resultClass="ItemVO" remapResults="true">
+		SELECT ITEM_CODE AS itemCode
+		FROM T_FACT_BRANCH_ITEM_INFO
+		WHERE FACT_CODE = #factCode#
+			AND BRANCH_NO = #branchNo#
+			ORDER BY ITEM_CODE DESC 
+	</statement>
+	
+	<statement id="getBranchItemFullList" parameterClass="branchItemVO" resultClass="branchItemVO" remapResults="true">
+		SELECT
+			T1.ITEM_CODE AS itemCode 
+			,ITEM_NAME AS itemName
+			,NVL(LEG_YN,(SELECT LEG_YN FROM T_ITEM_INFO_ADD WHERE T1.ITEM_CODE = ITEM_CODE)) AS legYn
+			,TRIM(TO_CHAR(NVL(ITEM_VALUE_HI,(SELECT ITEM_VALUE_HI FROM T_ITEM_INFO_ADD WHERE T1.ITEM_CODE = ITEM_CODE)),'999,999,999,990.99')) AS itemValueHi
+			,TRIM(TO_CHAR(NVL(ITEM_VALUE_LO,(SELECT ITEM_VALUE_LO FROM T_ITEM_INFO_ADD WHERE T1.ITEM_CODE = ITEM_CODE)),'999,999,999,990.99')) AS itemValueLo
+			,DRY_SEASON_YN AS drySeasonYn
+			,DRY_SEASON_FROM_MM AS drySeasonFromMm
+			,DRY_SEASON_TO_MM AS drySeasonToMm
+			,TRIM(TO_CHAR(ITEM_DRY_VALUE_HI,'999,999,999,990.99')) AS itemDryValueHi
+			,TRIM(TO_CHAR(ITEM_DRY_VALUE_LO,'999,999,999,990.99')) AS itemDryValueLo
+			,USER_FLAG AS userFlag
+			,TRIM(TO_CHAR(NVL(TIME_DUR_VAL,(SELECT TIME_DUR_VAL FROM T_ITEM_INFO_ADD WHERE T1.ITEM_CODE = ITEM_CODE)),'999,999,999,990.99')) AS timeDurVal
+			,NVL(STAND_YN,(SELECT STAND_YN FROM T_ITEM_INFO_ADD WHERE T1.ITEM_CODE = ITEM_CODE)) AS standYn
+		FROM (
+				SELECT S.SYS_CODE
+					,G.GROUP_CODE
+					,G.GROUP_NAME
+					,I.ITEM_CODE
+					,IT.ITEM_NAME
+				FROM T_SYSTEM_GROUP S
+				LEFT OUTER JOIN T_FACT_MEASU_ITEM_GROUP G
+					ON S.GROUP_CODE = G.GROUP_CODE
+					,T_FACT_MEASU_GROUP_ITEM I
+					,T_ITEM IT
+				WHERE SYS_CODE IN (
+								SELECT DISTINCT SYS_CODE
+								FROM T_SYSTEM
+								WHERE SYS_TYPE = #sysType#
+									AND SYS_YN = 'Y'
+									AND SYS_FLAG = 'Y'
+								)
+				AND UPPER(DP_YN) = 'Y'
+				AND G.GROUP_CODE = I.GROUP_CODE
+				AND I.ITEM_CODE = IT.ITEM_CODE
+				ORDER BY G.GROUP_CODE
+		)T1 LEFT OUTER JOIN T_FACT_BRANCH_ITEM_INFO T2
+		ON T1.ITEM_CODE = T2.ITEM_CODE
+		AND T2.FACT_CODE = #factCode#
+		AND T2.BRANCH_NO = #branchNo#
+		ORDER BY T1.ITEM_CODE DESC
+	</statement>
+	
+	<statement id="getExcelSpotmgrList" parameterClass="spotManageVO" resultClass="spotManageVO" remapResults="true">
+		SELECT 
+			 rownum num
+			,factCode
+			,branchName
+			,areaName
+			,riverDiv
+			,sysKind
+			,mgrOrg
+			,DECODE(branchUseFlag,'Y','사용','N','미사용') branchUseFlag
+		FROM (SELECT A.FACT_CODE AS factCode,
+				A.BRANCH_NO AS branchNo ,
+				NVL(A.BRANCH_NAME,'미등록') AS branchName,
+				D.AREA_NAME AS areaName,
+				D.RIVER_NAME AS riverDiv,
+				DECODE(B.SYS_KIND,'W','방류수질정보','T','탁수모니터링','U','이동형측정기기','A','국가수질자동측정망') AS sysKind,
+				NVL(B.MGR_ORG,'미등록') AS mgrOrg,
+				A.BRANCH_USE_FLAG AS branchUseFlag
+			FROM T_FACT_BRANCH_INFO A 
+			LEFT OUTER JOIN T_FACT_INFO B
+				ON A.FACT_CODE = B.FACT_CODE 
+			LEFT OUTER JOIN T_RIVER_INFO_DIV D
+				ON B.RIVER_DIV = D.RIVER_DIV
+		<isNotEmpty property="sysKind" prepend="WHERE">
+			B.SYS_KIND = #sysKind#
+		</isNotEmpty>
+		<isNotEmpty property="riverDiv" prepend="AND">
+		<isNotEqual property="riverDiv" compareValue="ALL">
+				D.RIVER_DIV = #riverDiv# 
+		</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="searchText" prepend="AND">
+				A.BRANCH_NAME LIKE '%'||#searchText#||'%'
+		</isNotEmpty>
+		ORDER BY A.FACT_CODE, A.BRANCH_NO
+			)
+	</statement>
+	
+	<!-- 측정장비 입력시 최종지점 구하기 -->
+	<select id="getMaxBranchNo" parameterClass="spotManageVO" resultClass="String">
+		SELECT NVL(MAX(BRANCH_NO),0)+1
+		FROM T_FACT_BRANCH_INFO
+		WHERE FACT_CODE = #factCode#
+	</select>
+	
+	<select id="getSysinfoList" parameterClass="sysEquipVO" resultClass="sysEquipVO">
+		SELECT SYS_KIND
+		    ,DECODE(SYS_KIND, 'U', '이동형측정기기', 'A', '국가수질자동측정망', 'W', '방류수질정보') SYS_KIND_NAME
+			,EQUIP_CODE
+			,EQUIP_MAKER
+			,EQUIP_NAME
+			,REG_ID
+			,REG_DATE
+		FROM
+			(SELECT ROWNUM NUM
+				,SYS_KIND
+				,EQUIP_CODE
+				,EQUIP_MAKER
+				,EQUIP_NAME
+				,REG_ID
+				,REG_DATE
+			FROM T_SYS_EQUIP_INFO
+		  WHERE SYS_KIND = #searchSysKind#
+			<isNotNull property="searchSysKeyword" prepend="AND">
+				EQUIP_CODE LIKE '%'||#searchSysKeyword#||'%'
+			</isNotNull>
+			ORDER BY EQUIP_CODE )
+		WHERE NUM &gt;= #firstIndex#
+			AND NUM &lt;= #lastIndex#
+		</select>
+		
+		<select id="getSysinfoListCnt" parameterClass="sysEquipVO" resultClass="java.lang.Integer">
+		SELECT COUNT(*) FROM T_SYS_EQUIP_INFO
+		WHERE SYS_KIND = #searchSysKind#
+		<isNotNull property="searchSysKeyword" prepend="AND">
+			EQUIP_CODE LIKE '%'||#searchSysKeyword#||'%'
+		</isNotNull>
+	</select>
+	
+	
+		<!-- USN 설치장비이력 리스트 -->
+	<statement id="getEqHsList" parameterClass="eqItemVO" resultClass="eqItemVO" remapResults="true">
+		/* 지점관리 리스트 getEqHsList 2015-11-11 HMS  */
+		SELECT
+			FACT_CODE AS factCode,
+			BRANCH_NO AS branchNo,
+			EQSEQ AS eqSeq1,
+			EQ_NAME AS eqName,
+			ITEM_NAME AS itemName,
+			INTRODATE AS introDate,
+			CONPANY_SEQ AS conpanySeq,
+			MODEL_SEQ AS modelSeq,
+			MEMO, 
+			EQ_CODE AS eqCode,
+			OUTDATE AS outDate,
+			EQSEQ_HS_NO AS eqSeqHsNo
+		FROM 
+			T_FACT_BRANCH_EQ
+		WHERE
+			FACT_CODE = #factCode#
+		AND
+			BRANCH_NO = #branchNo#
+		<isNotEmpty property="introDate" prepend="and">
+            TO_DATE(introdate,'yy/mm/dd') &gt;= TO_DATE(#introDate#,'yy/mm/dd')
+		</isNotEmpty>
+		<isNotEmpty property="outDate" prepend="and">
+		 	TO_DATE(introdate,'yy/mm/dd') &lt;= TO_DATE(#outDate#,'yy/mm/dd')
+		</isNotEmpty>
+		ORDER BY INTRODATE DESC
+	</statement>
+	
+	<insert id="usnHsInsert" parameterClass="usnItemVO">
+		/* Usn 관리이력 등록 usnHsInsert 2015-11-11 HMS  */
+		INSERT INTO 
+			T_FACT_BRANCH_ITEM 
+			(
+				FACT_CODE,
+				BRANCH_NO,
+				ITEMSEQ,
+				FRDATE,
+				BRANCH_NAME,
+				LATITUDE,
+				LONGITUDE,
+				MEMO,
+				USER_FLAG
+			)
+		VALUES
+			(
+				#factCode#,
+				#branchNo#,
+				(SELECT NVL(MAX(ITEMSEQ),0)+1 FROM T_FACT_BRANCH_ITEM WHERE FACT_CODE = #factCode# AND BRANCH_NO = #branchNo#),
+				SYSDATE,
+				#branchName#,
+				#latitude#,
+				#longitude#,
+				#memo#,
+				#userFlag#
+			)
+	</insert>
+	<select id="getSpotInfoA" parameterClass="spotInfoVO" resultClass="spotInfoVO">
+	SELECT *
+	FROM(	
+		SELECT  ROWNUM RNUM,
+				N.FACT_CODE factCode, 
+		        N.FACT_NAME factName, 
+		        N.FACT_FNAME factFname, 
+		        N.FACT_ADDR factAddr, 
+		        (SELECT RIVER_NAME FROM T_RIVER_INFO_DIV WHERE RIVER_DIV = N.RIVER_DIV) riverDiv, 
+		        DECODE(N.LONGITUDE,NULL,'-',N.LONGITUDE) longitude, 
+                DECODE(N.LATITUDE,NULL,'-', N.LATITUDE) latitude, 
+		        O.FACT_CODE factCode1, 
+		        O.FACT_NAME factName1, 
+		        O.FACT_FNAME factFname1, 
+		        O.FACT_ADDR factAddr1, 
+		        (SELECT RIVER_NAME FROM T_RIVER_INFO_DIV WHERE RIVER_DIV = O.RIVER_DIV) riverDiv1,
+		        DECODE(O.LONGITUDE,NULL,'-', O.LONGITUDE) longitude1, 
+                DECODE(O.LATITUDE,NULL,'-', O.LATITUDE) latitude1 
+		  FROM  
+		      (SELECT N.FACT_CODE, 
+		              N.FACT_NAME, 
+		              N.FACT_FNAME, 
+		              N.FACT_ADDR, 
+		              N.RIVER_DIV, 
+		              N.LONGITUDE, 
+		              N.LATITUDE 
+		         FROM T_FACT_INFO_TEMP N 
+		        WHERE sys_kind = 'A' 
+		        MINUS  
+		       SELECT O.FACT_CODE, 
+		              O.FACT_NAME, 
+		              O.FACT_FNAME, 
+		              O.FACT_ADDR, 
+		              O.RIVER_DIV, 
+		              O.LONGITUDE, 
+		              O.LATITUDE 
+		         FROM T_FACT_INFO O 
+		        WHERE sys_kind = 'A' 
+		       ) N,  
+		      (SELECT O.FACT_CODE, 
+		              O.FACT_NAME, 
+		              O.FACT_FNAME, 
+		              O.FACT_ADDR, 
+		              O.RIVER_DIV, 
+		              O.LONGITUDE, 
+		              O.LATITUDE 
+		         FROM T_FACT_INFO O 
+		        WHERE sys_kind = 'A' 
+		        MINUS  
+		       SELECT N.FACT_CODE, 
+		              N.FACT_NAME, 
+		              N.FACT_FNAME, 
+		              N.FACT_ADDR, 
+		              N.RIVER_DIV, 
+		              N.LONGITUDE, 
+		              N.LATITUDE 
+		         FROM T_FACT_INFO_TEMP N 
+		        WHERE sys_kind = 'A' 
+		       ) O 
+		 WHERE N.FACT_CODE = O.FACT_CODE(+)
+	)
+	 WHERE 1=1
+	 <![CDATA[
+	   AND	RNUM > #firstIndex#
+	   AND RNUM <= #firstIndex# + #recordCountPerPage# 
+	 ]]>
+	</select>
+	<statement id="updateSpotInfoA" parameterClass="spotInfoVO">
+		MERGE INTO T_FACT_INFO A
+		USING (
+				SELECT FACT_CODE,
+					   FACT_NAME,
+					   FACT_FNAME,
+					   RIVER_DIV,
+					   LATITUDE,
+					   LONGITUDE,
+					   FACT_ADDR
+				FROM   T_FACT_INFO_TEMP
+				WHERE FACT_CODE = #factCode#
+		) B 
+		ON ( A.FACT_CODE  = B.FACT_CODE )
+		WHEN MATCHED THEN
+			UPDATE SET A.FACT_NAME  = B.FACT_NAME,
+                       A.FACT_FNAME = B.FACT_FNAME,
+                       A.RIVER_DIV  = B.RIVER_DIV,
+                       A.LATITUDE   = B.LATITUDE,
+                       A.LONGITUDE  = B.LONGITUDE,
+                       A.FACT_ADDR  = B.FACT_ADDR
+		WHEN NOT MATCHED THEN
+			INSERT (
+					  A.FACT_CODE, 
+                      A.FACT_NAME, 
+                      A.FACT_FNAME,
+                      A.BRANCH_CNT,
+                      A.FACT_ADDR,
+                      A.RIVER_DIV,
+                      A.SYS_KIND,
+                      A.FACT_USE_FLAG,
+                      A.LATITUDE,
+                      A.LONGITUDE
+					)
+			VALUES (
+					   B.FACT_CODE
+					 , B.FACT_NAME
+					 , B.FACT_FNAME
+					 , 1
+                     , B.FACT_ADDR
+                     , B.RIVER_DIV
+                     , 'A'
+                     , 'Y'
+                     , B.LATITUDE
+                     , B.LONGITUDE
+					)
+	</statement>
+	<statement id="updateSpotInfoBranchA" parameterClass="spotInfoVO">
+		MERGE INTO T_FACT_BRANCH_INFO A
+		USING (
+				SELECT FACT_CODE,
+					   FACT_NAME,
+					   FACT_FNAME,
+					   LATITUDE,
+					   LONGITUDE,
+					   FACT_ADDR
+				FROM   T_FACT_INFO_TEMP
+				WHERE FACT_CODE = #factCode#
+		) B 
+		ON ( A.FACT_CODE  = B.FACT_CODE AND A.BRANCH_NO = 1)
+		WHEN MATCHED THEN
+			UPDATE SET A.BRANCH_NAME  = B.FACT_NAME,
+					   A.BRANCH_FNAME = B.FACT_FNAME,
+                       A.LATITUDE     = B.LATITUDE,
+                       A.LONGITUDE    = B.LONGITUDE,
+                       A.FACT_ADDR    = B.FACT_ADDR
+		WHEN NOT MATCHED THEN
+			INSERT (
+					  A.FACT_CODE, 
+                      A.BRANCH_NO, 
+                      A.BRANCH_USE_FLAG,
+                      A.LATITUDE,
+                      A.LONGITUDE,
+                      A.BRANCH_NAME,
+                      A.BRANCH_FNAME,
+                      A.FACT_ADDR
+					)
+			VALUES (
+					   B.FACT_CODE
+					 , 1
+					 , 'Y'
+					 , B.LATITUDE
+					 , B.LONGITUDE
+					 , B.FACT_NAME
+					 , B.FACT_FNAME
+					 , B.FACT_ADDR
+					)
+	</statement>
+	<select id="getSpotInfoACnt" parameterClass="spotInfoVO" resultClass="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM
+		(
+		SELECT  
+				N.FACT_CODE factCode, 
+		        N.FACT_NAME factName, 
+		        N.FACT_FNAME factFname, 
+		        N.FACT_ADDR factAddr, 
+		        N.RIVER_DIV riverDiv, 
+		        DECODE(N.LONGITUDE,NULL,'-',N.LONGITUDE) longitude, 
+                DECODE(N.LATITUDE,NULL,'-', N.LATITUDE) latitude, 
+		        O.FACT_CODE factCode1, 
+		        O.FACT_NAME factName1, 
+		        O.FACT_FNAME factFname1, 
+		        O.FACT_ADDR factAddr1, 
+		        O.RIVER_DIV riverDiv1, 
+		        DECODE(O.LONGITUDE,NULL,'-', O.LONGITUDE) longitude1, 
+                DECODE(O.LATITUDE,NULL,'-', O.LATITUDE) latitude1 
+		  FROM  
+		      (SELECT N.FACT_CODE, 
+		              N.FACT_NAME, 
+		              N.FACT_FNAME, 
+		              N.FACT_ADDR, 
+		              N.RIVER_DIV, 
+		              N.LONGITUDE, 
+		              N.LATITUDE 
+		         FROM T_FACT_INFO_TEMP N 
+		        WHERE sys_kind = 'A' 
+		        MINUS  
+		       SELECT O.FACT_CODE, 
+		              O.FACT_NAME, 
+		              O.FACT_FNAME, 
+		              O.FACT_ADDR, 
+		              O.RIVER_DIV, 
+		              O.LONGITUDE, 
+		              O.LATITUDE 
+		         FROM T_FACT_INFO O 
+		        WHERE sys_kind = 'A' 
+		       ) N,  
+		      (SELECT O.FACT_CODE, 
+		              O.FACT_NAME, 
+		              O.FACT_FNAME, 
+		              O.FACT_ADDR, 
+		              O.RIVER_DIV, 
+		              O.LONGITUDE, 
+		              O.LATITUDE 
+		         FROM T_FACT_INFO O 
+		        WHERE sys_kind = 'A' 
+		        MINUS  
+		       SELECT N.FACT_CODE, 
+		              N.FACT_NAME, 
+		              N.FACT_FNAME, 
+		              N.FACT_ADDR, 
+		              N.RIVER_DIV, 
+		              N.LONGITUDE, 
+		              N.LATITUDE 
+		         FROM T_FACT_INFO_TEMP N 
+		        WHERE sys_kind = 'A' 
+		       ) O 
+		 WHERE N.FACT_CODE = O.FACT_CODE(+)
+		)
+	</select>
+</sqlMap>

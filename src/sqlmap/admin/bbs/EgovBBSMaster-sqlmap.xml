@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="BBSAttributeManageDAO">
+
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="BoardMasterVO" type="daewooInfo.bbs.bean.BoardMasterVO"/>
+	<typeAlias  alias="BoardMaster" type="daewooInfo.bbs.bean.BoardMaster"/>
+	
+	<resultMap id="boardMasterList" class="daewooInfo.bbs.bean.BoardMasterVO">
+		<result property="bbsId" column="BBS_ID" columnIndex="1"/>
+		<result property="bbsTyCode" column="BBS_TYPE" columnIndex="2"/>
+		<result property="bbsTyCodeNm" column="CODE_NAME" columnIndex="3"/>
+		<result property="bbsAttrbCode" column="BBS_ATTR" columnIndex="4"/>
+		<result property="bbsAttrbCodeNm" column="CODE_NAME" columnIndex="5"/>
+		<result property="bbsNm" column="BBS_NAME" columnIndex="6"/>
+		<result property="useAt" column="USE_FLAG" columnIndex="7"/>
+		<result property="frstRegisterPnttm" column="REG_DATE" columnIndex="8"/>
+		 
+	</resultMap>
+
+	<resultMap id="boardMasterDetail" class="daewooInfo.bbs.bean.BoardMasterVO">
+		<result property="bbsId" column="BBS_ID" columnIndex="1"/>
+		<result property="bbsTyCode" column="BBS_TYPE" columnIndex="2"/>
+		<result property="bbsAttrbCode" column="BBS_ATTR" columnIndex="3"/>
+		<result property="bbsNm" column="BBS_NAME" columnIndex="4"/>
+		<result property="bbsIntrcn" column="BBS_DESC" columnIndex="5"/>
+		<result property="replyPosblAt" column="REPLY_FLAG" columnIndex="6"/>
+		<result property="fileAtchPosblAt" column="ATCH_FILE_FLAG" columnIndex="7"/>
+		<result property="posblAtchFileNumber" column="ATCH_FILE_CNT" columnIndex="8"/>
+		<result property="frstRegisterId" column="REG_ID" columnIndex="9"/>
+		<result property="frstRegisterNm" column="MEMBER_NAME" columnIndex="10"/>
+		<result property="frstRegisterPnttm" column="REG_DATE" columnIndex="11"/>
+		<result property="bbsTyCodeNm" column="COMMON_CODE_NAME" columnIndex="12"/>
+		<result property="bbsAttrbCodeNm" column="COMMON_CODE_NAME" columnIndex="13"/>
+		<result property="authFlag" column="AUTH_FLAG" columnIndex="14"/>
+	</resultMap>
+
+	<resultMap id="boardMasterAll" class="daewooInfo.bbs.bean.BoardMasterVO">
+		<result property="bbsId" column="BBS_ID" columnIndex="1"/>
+		<result property="bbsTyCode" column="BBS_TYPE" columnIndex="2"/>
+		<result property="bbsAttrbCode" column="BBS_ATTR" columnIndex="3"/>
+		<result property="bbsNm" column="BBS_NAME" columnIndex="4"/>
+	</resultMap>
+
+	<insert id="insertBBSMasterInf" parameterClass="BoardMaster" >
+		<![CDATA[
+			INSERT INTO T_BBSMASTER
+			(BBS_ID, BBS_TYPE, BBS_ATTR, BBS_NAME, BBS_DESC, 
+			 REPLY_FLAG, ATCH_FILE_FLAG, ATCH_FILE_CNT,
+			 USE_FLAG, REG_ID, REG_DATE )
+			VALUES
+			( #bbsId#, #bbsTyCode#, #bbsAttrbCode#, #bbsNm#, #bbsIntrcn#, 
+			  #replyPosblAt#, #fileAtchPosblAt#, #posblAtchFileNumber#, 
+			  #useAt#, #frstRegisterId#, SYSDATE  
+			 )			
+		]]>
+	</insert>
+	
+	<select id="selectBBSMasterInfs" parameterClass="BoardMasterVO" resultMap="boardMasterList" >
+		<![CDATA[
+		 SELECT *  FROM (
+     	SELECT 
+				  a.BBS_ID
+				, a.BBS_TYPE 
+				, b.CODE_NAME 
+				, a.BBS_ATTR 
+				, a.BBS_NAME
+				, a.USE_FLAG
+				, TO_CHAR(a.REG_DATE, 'YYYY-MM-DD') as REG_DATE
+				, a.ATCH_FILE_CNT
+				, rownum rn
+			FROM
+				T_BBSMASTER a
+				LEFT OUTER JOIN 
+					(SELECT COMMON_CODE_CATEGORY CODE_ID,COMMON_CODE CODE,COMMON_CODE_NAME CODE_NAME
+	        		 FROM  T_COMMON_CODE 
+	        		 WHERE COMMON_CODE_CATEGORY = '28' AND USE_FLAG='Y') b  /* 게시판속성 ? */
+					 ON a.BBS_TYPE = b.CODE
+				LEFT OUTER JOIN 
+					(SELECT COMMON_CODE_CATEGORY CODE_ID,COMMON_CODE CODE,COMMON_CODE_NAME CODE_NAME
+	        		 FROM T_COMMON_CODE 
+	        		 WHERE COMMON_CODE_CATEGORY = '29' AND USE_FLAG='Y') c  /* 게시판유형 ? */
+					 ON a.BBS_ATTR = c.CODE
+			WHERE 1=1		
+			AND a.USE_FLAG = 'Y'
+		]]>
+			<isEqual prepend="AND" property="searchCnd" compareValue="0">
+			    <![CDATA[	a.BBS_NAME LIKE '%' || #searchWrd# || '%' 		]]>
+			</isEqual>
+			<isEqual prepend="AND" property="searchCnd" compareValue="1">
+				<![CDATA[	b.CODE_NAME LIKE '%' || #searchWrd# || '%'		]]>
+			</isEqual>	
+		<![CDATA[
+		 ORDER BY a.REG_DATE DESC 
+          )  WHERE rn BETWEEN #firstIndex# + 1 AND #firstIndex# + #recordCountPerPage#
+		]]>				
+	</select>	
+	
+	<select id="selectBBSMasterInfsCnt" parameterClass="BoardMasterVO" resultClass="java.lang.Integer" >
+		<![CDATA[
+			 SELECT  COUNT(a.BBS_ID)
+			 FROM
+				T_BBSMASTER a
+				LEFT OUTER JOIN 
+					(SELECT COMMON_CODE CODE,COMMON_CODE_NAME CODE_NAME
+	        		 FROM  T_COMMON_CODE 
+	        		 WHERE COMMON_CODE_CATEGORY = '28' AND USE_FLAG='Y') b
+				ON a.BBS_TYPE = b.CODE
+					 LEFT OUTER JOIN 
+					(SELECT COMMON_CODE CODE,COMMON_CODE_NAME CODE_NAME
+	        		 FROM T_COMMON_CODE 
+	       			 WHERE COMMON_CODE_CATEGORY = '29' AND USE_FLAG='Y') c
+				ON a.BBS_ATTR = c.CODE
+			WHERE 1=1   
+		]]>
+			<isNotEmpty property="useAt">
+				 AND a.USE_FLAG = 'Y'
+			</isNotEmpty>
+			<isEqual prepend="AND" property="searchCnd" compareValue="0">
+				<![CDATA[	a.BBS_NAME LIKE '%' || #searchWrd# || '%' 		]]>
+			</isEqual>
+			<isEqual prepend="AND" property="searchCnd" compareValue="1">
+				<![CDATA[	b.CODE_NAME LIKE '%' || #searchWrd# || '%'			]]>
+			</isEqual>	
+	</select>	
+ 
+	<select id="selectBBSMasterInf" parameterClass="BoardMaster" resultMap="boardMasterDetail" >
+		<![CDATA[
+			SELECT 
+				a.BBS_ID, 
+				a.BBS_TYPE, 
+				b.COMMON_CODE_NAME , 
+				a.BBS_DESC, 
+				a.BBS_ATTR, 
+				c.COMMON_CODE_NAME , 
+				a.BBS_NAME, 
+				a.ATCH_FILE_FLAG, 
+				a.ATCH_FILE_CNT,
+				a.REPLY_FLAG, 
+				a.REG_ID, 
+				e.MEMBER_NAME,
+				a.USE_FLAG, 
+				TO_CHAR(a.REG_DATE, 'YYYY-MM-DD') as REG_DATE ,
+				a.ATCH_FILE_FLAG , 
+				'Y' as AUTH_FLAG 
+			FROM
+				T_BBSMASTER a
+			LEFT OUTER JOIN 
+				(SELECT COMMON_CODE_CATEGORY, COMMON_CODE, COMMON_CODE_NAME FROM T_COMMON_CODE WHERE COMMON_CODE_CATEGORY = '28' AND USE_FLAG='Y') b
+				ON a.BBS_TYPE = b.COMMON_CODE
+			LEFT OUTER JOIN 
+				(SELECT COMMON_CODE_CATEGORY, COMMON_CODE, COMMON_CODE_NAME FROM T_COMMON_CODE WHERE COMMON_CODE_CATEGORY = '29' AND USE_FLAG='Y') c
+				ON a.BBS_ATTR = c.COMMON_CODE
+			LEFT OUTER JOIN T_MEMBER e
+				ON a.REG_ID = e.UNIQ_ID			
+			WHERE a.BBS_ID = #bbsId#
+		]]>				
+	</select> 
+ 
+ 	<update id="updateBBSMasterInf" parameterClass="BoardMaster">
+ 		<![CDATA[
+			UPDATE T_BBSMASTER SET 
+				BBS_NAME = #bbsNm#,
+				BBS_DESC = #bbsIntrcn#,
+				ATCH_FILE_FLAG = #fileAtchPosblAt#,
+				ATCH_FILE_CNT = #posblAtchFileNumber#,
+				MOD_ID = #lastUpdusrId#,
+				MOD_DATE = SYSDATE
+			WHERE BBS_ID = #bbsId#
+ 		]]>
+ 	</update>
+
+ 	<update id="deleteBBSMasterInf" parameterClass="BoardMaster">
+ 		<![CDATA[
+		   UPDATE T_BBSMASTER 
+     	      SET USE_FLAG = 'N',
+				  MOD_ID = #lastUpdusrId#,
+				  MOD_DATE = SYSDATE
+			WHERE BBS_ID = #bbsId#
+ 		]]>
+ 	</update>
+
+	<select id="selectAllBBSMaster" parameterClass="BoardMasterVO" resultMap="boardMasterAll" >
+		<![CDATA[
+			SELECT 
+				  BBS_ID
+				, BBS_TYPE
+				, BBS_ATTR
+				, BBS_NAME 
+			FROM
+				T_BBSMASTER 
+			WHERE USE_FLAG = 'Y'		
+ 		]]>				
+	</select>
+	
+	<select id="selectAllBdMstrByTrget" parameterClass="BoardMasterVO" resultMap="boardMasterAll" >
+		<![CDATA[
+			SELECT 
+				  a.BBS_ID
+				, a.BBS_TYPE
+				, a.BBS_ATTR
+				, a.BBS_NAME
+			FROM
+				  T_BBSMASTER a
+				, T_BBSUSE b
+			WHERE a.BBS_ID = b.BBS_ID
+			AND b.TRGET_ID = #trgetId#
+			AND a.USE_FLAG = 'Y'	 AND b.USE_AT = 'Y'		
+			ORDER BY a.BBS_ID  
+ 		]]>				
+	</select>	
+
+	<select  id="selectBdMstrListByTrget" parameterClass="BoardMasterVO" resultMap="boardMasterList" >
+		<![CDATA[
+		SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+			SELECT 
+				  a.BBS_ID
+				, a.BBS_TYPE
+				, b.COMMON_CODE_NAME 
+				, a.BBS_ATTR
+				, c.COMMON_CODE_NAME 
+				, a.BBS_NAME
+				, a.USE_FLAG, 
+				TO_CHAR(a.REG_DATE, 'YYYY-MM-DD') as REG_DATE
+			FROM
+				T_BBSMASTER a
+			LEFT OUTER JOIN 
+				(SELECT COMMON_CODE_CATEGORY, COMMON_CODE, COMMON_CODE_NAME FROM 
+					T_COMMON_CODE WHERE COMMON_CODE_CATEGORY = '28' AND USE_FLAG='Y') b
+				ON a.BBS_TYPE = b.COMMON_CODE
+			LEFT OUTER JOIN 
+				(SELECT COMMON_CODE_CATEGORY, COMMON_CODE, COMMON_CODE_NAME FROM 
+					T_COMMON_CODE WHERE COMMON_CODE_CATEGORY = '29' AND USE_FLAG='Y') c
+				ON a.BBS_ATTR = c.COMMON_CODE,
+			T_BBSUSE d
+			WHERE 
+				a.BBS_ID = d.BBS_ID
+			AND
+				d.TRGET_ID = #trgetId#
+		]]>
+			<isEqual prepend="AND" property="searchCnd" compareValue="0">
+				<![CDATA[	a.BBS_NAME LIKE '%' || #searchWrd# || '%' 		]]>
+			</isEqual>
+			<isEqual prepend="AND" property="searchCnd" compareValue="1">
+				<![CDATA[	b.COMMON_CODE_NAME LIKE '%' || #searchWrd# || '%' 		]]>
+			</isEqual>	
+		<![CDATA[			
+			ORDER BY a.REG_DATE DESC 
+			) TB ) WHERE rn BETWEEN #firstIndex# + 1 AND #firstIndex# + #recordCountPerPage#
+		]]>			
+	</select>
+
+	<select  id="selectBdMstrListCntByTrget" parameterClass="BoardMasterVO" resultClass="java.lang.Integer" >
+		<![CDATA[
+			SELECT 
+				COUNT(a.BBS_ID)
+			FROM
+				T_BBSMASTER a
+			LEFT OUTER JOIN 
+				(SELECT COMMON_CODE_CATEGORY, COMMON_CODE, COMMON_CODE_NAME FROM 
+					T_COMMON_CODE WHERE COMMON_CODE_CATEGORY = '28' AND USE_FLAG='Y') b
+				ON a.BBS_TYPE = b.COMMON_CODE
+			LEFT OUTER JOIN 
+				(SELECT COMMON_CODE_CATEGORY, COMMON_CODE, COMMON_CODE_NAME FROM 
+					T_COMMON_CODE WHERE COMMON_CODE_CATEGORY = '29' AND USE_FLAG='Y') c
+				ON a.BBS_ATTR = c.COMMON_CODE,
+			T_BBSUSE d  
+			WHERE 
+				a.BBS_ID = d.BBS_ID
+			AND d.TRGET_ID = #trgetId#
+		]]>
+			<isEqual prepend="AND" property="searchCnd" compareValue="0">
+				<![CDATA[	a.BBS_NAME LIKE '%' || #searchWrd# || '%' 		]]>
+			</isEqual>
+			<isEqual prepend="AND" property="searchCnd" compareValue="1">
+				<![CDATA[	b.COMMON_CODE_NAME LIKE '%' || #searchWrd# || '%' 		]]>
+			</isEqual>	
+	</select>
+
+	<select id="selectNotUsedBdMstrList" parameterClass="BoardMasterVO" resultMap="boardMasterList" >
+		<![CDATA[
+		SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+			SELECT 
+				  a.BBS_ID
+				, a.BBS_TYPE
+				, b.COMMON_CODE_NAME as BBS_TY_CODE_NM
+				, a.BBS_ATTR
+				, c.COMMON_CODE_NAME as BBS_ATTRB_CODE_NM
+				, a.BBS_NAME
+				, a.USE_FLAG
+				, TO_CHAR(a.REG_DATE, 'YYYY-MM-DD') as REG_DATE
+			FROM
+				T_BBSMASTER a
+			LEFT OUTER JOIN 
+				(SELECT COMMON_CODE_CATEGORY, COMMON_CODE, COMMON_CODE_NAME FROM 
+					T_COMMON_CODE WHERE COMMON_CODE_CATEGORY = '28' AND USE_FLAG='Y') b   
+				ON a.BBS_TYPE = b.COMMON_CODE
+			LEFT OUTER JOIN 
+				(SELECT COMMON_CODE_CATEGORY, COMMON_CODE, COMMON_CODE_NAME FROM 
+					T_COMMON_CODE WHERE COMMON_CODE_CATEGORY = '29' AND USE_FLAG='Y') c   
+				ON a.BBS_ATTR = c.COMMON_CODE
+			WHERE a.USE_FLAG = 'Y'
+				AND a.BBS_ID NOT IN (SELECT BBS_ID FROM T_BBSUSE WHERE USE_FLAG = 'Y')
+		]]>
+			<isEqual prepend="AND" property="searchCnd" compareValue="0">
+				<![CDATA[	a.BBS_NAME LIKE '%' || #searchWrd# || '%' 		]]>
+			</isEqual>
+			<isEqual prepend="AND" property="searchCnd" compareValue="1">
+				<![CDATA[	b.COMMON_CODE_NAME LIKE '%' || #searchWrd# || '%' 		]]>
+			</isEqual>	
+		<![CDATA[			
+			ORDER BY a.REG_DATE DESC 
+			) TB ) WHERE rn BETWEEN #firstIndex# + 1 AND #firstIndex# + #recordCountPerPage#
+		]]>				
+	</select>	
+	
+	<select id="selectNotUsedBdMstrListCnt" parameterClass="BoardMasterVO" resultClass="java.lang.Integer" >
+		<![CDATA[
+		SELECT 
+				COUNT(a.BBS_ID)
+			FROM
+				T_BBSMASTER a
+			LEFT OUTER JOIN 
+				(SELECT COMMON_CODE_CATEGORY, COMMON_CODE, COMMON_CODE_NAME FROM 
+					T_COMMON_CODE WHERE COMMON_CODE_CATEGORY = '28' AND USE_FLAG='Y') b
+				ON a.BBS_TYPE = b.COMMON_CODE
+			LEFT OUTER JOIN 
+				(SELECT COMMON_CODE_CATEGORY, COMMON_CODE, COMMON_CODE_NAME FROM 
+					T_COMMON_CODE WHERE COMMON_CODE_CATEGORY = '29' AND USE_FLAG='Y') c
+				ON a.BBS_ATTR = c.COMMON_CODE
+			WHERE a.USE_FLAG = 'Y'
+				AND a.BBS_ID NOT IN (SELECT BBS_ID FROM T_BBSUSE WHERE USE_AT = 'Y') 
+		]]>
+			<isEqual prepend="AND" property="searchCnd" compareValue="0">
+				<![CDATA[	a.BBS_NAME LIKE '%' || #searchWrd# || '%' 		]]>
+			</isEqual>
+			<isEqual prepend="AND" property="searchCnd" compareValue="1">
+				<![CDATA[	b.COMMON_CODE_NAME LIKE '%' || #searchWrd# || '%' 		]]>
+			</isEqual>	
+	</select>	
+
+</sqlMap>

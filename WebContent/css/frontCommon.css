@@ -1,0 +1,130 @@
+@charset "utf-8";
+@import url("http://fonts.googleapis.com/earlyaccess/nanumgothic.css");
+/*------------------------------------------------
+    project:    수질오염 방제정보 시스템
+    created:    2013-10-17
+------------------------------------------------ */
+
+/*-- reset --------------------------------------*/
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,textarea,p,blockquote,th,td,input,select,textarea,button{margin:0;padding:0}
+fieldset,img{border:0 none}
+dl,ul,ol,menu,li{list-style:none}
+blockquote,q{quotes:'none'}
+blockquote:before,blockquote:after,q:before,q:after{content:'';content:'none'}
+input,select,textarea,button{vertical-align:middle}
+address,caption,cite,code,dfn,em,var{font-weight:normal;font-style:normal}
+textarea, input, a, a:hover, a:active, a:focus {outline: 0px!important;}
+html {
+		overflow: auto;
+/* 		overflow-x: hidden; */
+	}
+html, body {height:100%;}
+
+body{height:100%;}
+body,th,td,input,select,textarea,button{font-size:12px;letter-spacing:0px; font-family:NanumGothic,'나눔고딕','Nanum Gothic','돋움',dotum,sans-serif;line-height:1.5;color:#333;-webkit-text-size-adjust:none}
+a{color:#333;text-decoration:none}
+table{width:100%;border-collapse:collapse;border-spacing:0}
+table td img{vertical-align:middle}
+img{vertical-align:middle}
+
+textarea{padding:5px;border:1px solid #e1e0de}
+input[type=text]{_padding:2px 0 3px 5px;border:solid 1px #ccc;line-height:15px}
+input[type=radio],input[type=checkbox]{width:13px;height:13px}
+button,input[type=button]{border:0 none;background-color:transparent;cursor:pointer}
+select{border:1px solid #ccc;height:22px;}
+label{cursor:pointer}
+hr,caption{display:none}
+legend{overflow:hidden;position:absolute;height:0;font-size:0;line-height:0;text-indent:-20000px}
+
+
+/*-- general --------------------------------------*/
+.clear:before,.clear:after{display:table;line-height:0;content:''}
+.clear:after{clear:both}
+.clear{zoom:1/* For IE 6/7 (trigger hasLayout) */}
+.skip_link{position:absolute;left:-9999px}
+.borderless {border-bottom:none;} 
+.noneBackground{background-image:none;}
+.blue{color:#006699}
+.red{color:red}
+.right{float:right}
+.none{display:none;}
+.txtalignL{text-align:left;}
+
+/* IE Hack */
+*html #container { height: 100%;}
+
+/*-- layout --------------------------------------*/
+/* #wrap {position:relative;min-width:1000px;height:100%;} */
+/* #header {width: 100%;_background:url(/images/renewal/top_menu_bg.gif) repeat-x 0 0; height: 147px; z-index:999;} */
+/* #header_content{width:1200px;margin:0 auto;} */
+/* *:first-child+html #header{position:absolute;} */
+/* #footer {_background:url(/images/renewal/copy_bg.gif) repeat-x 0 bottom;height: 90px;text-align:center; } */
+/* #footer_content{width:1200px;margin:0 auto;} */
+
+#wrap { width: 100%; height: auto; background-image: url(/images/index/common/top_bg.gif); background-repeat: repeat-x; }
+#header { width: 1004px; height: 146px; position: relative; margin: 0 auto 0 auto; }
+#container{background:url(/images/renewal/site_bg.gif) repeat-x 0 0;width: 100%;overflow:hidden; _text-align:center;}
+
+/*-- header --------------------------------------*/
+/* #header_content h1 { width:270px; height:62px; top:24px; position:absolute; z-index:2; } */
+/* .topSubNavi{position:absolute;  top:24px; width:1200px;text-align:right; z-index:2;} */
+/* .topSubNavi ul{position:absolute;right:0} */
+/* .topSubNavi li { float:left;font-size:11px} */
+/* .topSubNavi a { display:block; height:20px; color:#333; } */
+/* .topSubNavi a {display:inline; height:auto; padding:0 0 0 10px; text-decoration:none; text-indent:0px;} */
+/* .topSubNavi a:visited{color:#333; text-decoration:none;} */
+/* .topSubNavi a:hover{color:#007db4; text-decoration:none;} */
+/* .topSubNavi a:active{color:#007db4; text-decoration:none;} */
+/* .topSubNavi a.active{ color:#007db4; text-decoration:none;} */
+/* .top_info_point { color:#007db4; font-weight:bold; } */
+
+/* #gnbArea {margin:0 auto; position:relative; width:1200px; height:60px; padding-top:72px; display:inline-block; z-index:1;font-weight:600;} */
+/* #gnbArea:after { content:""; display:block; clear:both; } */
+/* #gnbArea ul { position:relative;float:right;} */
+/* #gnbArea ul ul { position:absolute; top:45px; display:none; white-space:nowrap; } */
+/* #gnbArea li { float:left; padding:0; text-align:center;} */
+/* #gnbArea li li { float:left; width:auto; text-align:left;} */
+/* #gnbArea li a { display:block; height:20px; color:#fff; } */
+/* #gnbArea li li a {display:inline; height:auto; padding:0 0 0 8px;  margin:0 7px;font-size:15px; text-decoration:none; text-indent:0px; background:url(/images/renewal/bullet2.gif) 0 30% no-repeat;} */
+/* #gnbArea li li a:visited{font-weight:600; color:#fff; text-decoration:none;} */
+/* #gnbArea li li a:hover{font-weight:600; color:#333; text-decoration:none;} */
+/* #gnbArea li li a:active{font-weight:600; color:#333; text-decoration:none;} */
+/* #gnbArea li li a.active{font-weight:600; color:#333; text-decoration:none;} */
+
+/* .gnb{width:157px; height:32px; margin-left:4px;border:none;background:url(/images/renewal/gnb_sprite.gif) no-repeat;text-align:center;cursor:pointer;font-size:0; line-height:999px;} */
+/* #gnb01{} */
+/* #gnb01:hover , #gnb01.on {background-position:-160px 0px;} */
+/* #gnb02{background-position:0 -40px;} */
+/* #gnb02:hover , #gnb02.on {background-position:-160px -40px;} */
+/* #gnb03{background-position:0 -80px;} */
+/* #gnb03:hover , #gnb03.on {background-position:-160px -80px;} */
+/* #gnb04{background-position:0 -120px;} */
+/* #gnb04:hover , #gnb04.on {background-position:-160px -120px;} */
+/* #gnb05{background-position:0 -160px;} */
+/* #gnb05:hover , #gnb05.on {background-position:-160px -160px;} */
+
+/* #gm5{position:absolute;right:0;} */
+
+/*-- copyright --------------------------------------*/
+/* #copy_1st_field {width:1200px; height:25px; padding-top:15px;} */
+/* #copy_ci {width:185px; height:20px; background-image: url(/images/renewal/copy_ci.gif); background-repeat:no-repeat; float:left} */
+/* #copy_family {height:25px; float:right;} */
+/* .copy_family {width:150px; color: #bbb;} */
+
+/* #copy_2nd_field {width:1200px; height:30px;} */
+/* #copy_address {float:left; font-size: 11px; color: #666666;} */
+/* #copy_copy {width: 323px; height:16px; margin-top:4px; float:right; text-align:right; background-image: url(/images/renewal/copy_copy.gif); background-repeat: no-repeat; } */
+
+
+/*-- btn --------------------------------------*/
+
+
+/*-- 파폭핵 --------------------------------------*/
+@-moz-document url-prefix(){
+
+}
+
+/*-- 크롬핵 --------------------------------------*/
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+
+}

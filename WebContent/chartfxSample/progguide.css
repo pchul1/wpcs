@@ -1,0 +1,98 @@
+p
+{
+	font-size: 80%;
+	color: #333333;
+	font-family: Arial,Trebuchet MS,sans-serif;
+}
+li
+{
+	font-size: 80%;
+	color: #333333;
+	font-family: Arial,Trebuchet MS,sans-serif;
+}
+a
+{
+	color: #3399CC;
+	font-family: Arial,Trebuchet MS,sans-serif;
+	font-weight: bold;
+	text-decoration: none;
+}
+a:active
+{
+	color: #3399CC;
+	font-family: Arial,Trebuchet MS,sans-serif;
+	font-weight: bold;
+	text-decoration: none;
+}
+a:hover
+{
+	color: #3399CC;
+	font-family: Arial,Trebuchet MS,sans-serif;
+	font-weight: bold;
+	text-decoration: underline;
+}
+a:link
+{
+	color: #3399CC;
+	font-family: Arial,Trebuchet MS,sans-serif;
+	font-weight: bold;
+	text-decoration: none;
+}
+a:visited
+{
+	color: #3399CC;
+	font-family: Arial,Trebuchet MS,sans-serif;
+	font-weight: bold;
+	text-decoration: none;
+}
+.categorytitle
+{
+	font-weight: bold;
+	font-size: 110%;
+	color: #333333;
+	font-family: Arial, "Trebuchet MS", sans-serif;
+}
+.title
+{
+	font-weight: bold;
+	font-size: 100%;
+	color: #333333;
+	font-family: Arial,Trebuchet MS,sans-serif;
+}
+.subtitle
+{
+	font-weight: bold;
+	font-size: 90%;
+	color: #333333;
+	font-family: Arial,Trebuchet MS,sans-serif;
+}
+.footer
+{
+	font-size: 70%;
+	color: #999999;
+	font-family: Arial,Trebuchet MS,sans-serif;
+}
+.samplecode
+{
+	
+	font-size: 90%;
+	color: #000000;
+	font-family: "Courier New", Courier, mono;
+}
+.samplecodecomment
+{
+	color: #008000;
+	font-family: "Courier New", Courier, mono;
+}
+.tdheading
+{
+	background-color: #f7f4e6;
+}
+.codeblock
+{
+	background-color: #FCFBF3;
+	border-top: 1px solid #3399CC;
+	border-bottom: 1px solid #3399CC;
+	border-left: 1px solid #3399CC;
+	border-right: 1px solid #3399CC;
+}

@@ -1,0 +1,166 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Digital Signature Sample</title>
+</head>
+
+<body>
+
+<script language='javascript' src='./sg_scripts/sg_basic.js'></script>
+<script language='javascript' src='./sg_scripts/sg_error.js'></script>
+<script language='javascript' src='./sg_scripts/sg_util.js'></script>
+<script language='javascript' src='./sg_scripts/sg_cert.js'></script>
+<script language='javascript' src='./sg_scripts/sg_sign.js'></script>
+<script language='javascript' src='./sg_scripts/sg_encrypt.js'></script>
+<script language='javascript' src='./sg_scripts/sg_pkcs7.js'></script>
+<script language='javascript' src='./sg_scripts/sg_hash.js'></script>
+<script language='javascript' src='./sg_scripts/sg_base64.js'></script>
+
+<h3>전자서명 생성 및 검사</h3>
+
+<form name="sample">
+메시지<br>
+<textarea name=OriginalMessage rows="3" cols="80">이것은 원문 메시지 입니다. This is original message.</textarea>
+<br>전자서명<br>
+<textarea name=DigitalSignature rows="3" cols="80"></textarea>
+<br>전자서명용 인증서<br>
+<textarea name=SignCert rows="10" cols="80"></textarea>
+<br>파일
+<input type=file name=FilePath size=80><br>
+<input type=button value="전자서명 생성" onClick="sign()"> <br>
+<input type=button value="전자서명 검사" onClick="verify()"> <br>
+<input type=button value="파일 전자서명 생성" onClick="file_sign()"> <br>
+<input type=button value="파일 전자서명 검사" onClick="file_verify()"> <br>
+<input type=button value="선택한 인증서 정보를 지우고 초기화" onClick="clear_cert()"> <br>
+</form>
+
+<script language="javascript">
+
+function clear_cert()
+{
+	var strCertID = "LoginID@DomainName";
+
+	clearCertificateInfo( strCertID );
+}
+
+function sign()
+{
+	var strCertID = "LoginID@DomainName";
+	var strOriginalMessage = document.sample.OriginalMessage.value;
+	
+	//	사용자 전자서명용 인증서 얻기
+	var strSignCert = getUserSignCert( strCertID );
+	if ( strSignCert == "" )
+	{	
+		alert("에러");
+
+		var strErr = getErrorString();
+		if ( strErr == "" )	//	사용자가 인증서 선택을 취소한 경우
+		{
+			alert( "인증서 선택을 취소하였습니다");
+			return;
+		}
+		else
+		{
+			alert( strErr );
+			return;
+		}
+	}
+	else
+	{
+		document.sample.SignCert.value = strSignCert;
+	}
+
+	//	스트링 데이터에 대한 전자서명 생성하기
+	var strSignValue = generateDigitalSignature( strCertID, strOriginalMessage );
+	if ( strSignValue == "" )
+	{
+		alert( getErrorString() );
+		return;
+	}
+	else
+	{
+		document.sample.DigitalSignature.value =  strSignValue;
+	}
+}
+
+function verify()
+{
+	var strOriginalMessage = document.sample.OriginalMessage.value;
+	var strSignCert = document.sample.SignCert.value;
+	var strSignValue = document.sample.DigitalSignature.value;
+
+	//	스트링 데이터에 대한 전자서명 검사하기
+	var bReturn = verifyDigitalSignature( strOriginalMessage, strSignValue, strSignCert );
+	if ( bReturn )
+	{
+		alert( "전자서명 검사에 성공하였습니다" );
+	}
+	else
+	{
+		alert( getErrorString() );
+	}
+}
+
+function file_sign()
+{
+	var strCertID = "LoginID@DomainName";
+	var strFilePath = document.sample.FilePath.value;
+
+	//	사용자 전자서명용 인증서 얻기
+	var strSignCert = getUserSignCert( strCertID );
+	if ( strSignCert == "" )
+	{
+		var strErr = getErrorString();
+		if ( strErr == "" )	//	사용자가 인증서 선택을 취소한 경우
+		{
+			alert( "인증서 선택을 취소하였습니다");
+			return;
+		}
+		else
+		{
+			alert( strErr );
+			return;
+		}
+	}
+	else
+	{
+		document.sample.SignCert.value = strSignCert;
+	}
+
+	//	파일 데이터에 대한 전자서명 생성하기
+	var strSignValue = generateDigitalSignatureFromFile( strCertID, strFilePath );
+	if ( strSignValue == "" )
+	{
+		alert( getErrorString() );
+		return;
+	}
+	else
+	{
+		document.sample.DigitalSignature.value =  strSignValue;
+	}
+}
+
+function file_verify()
+{
+	var strFilePath = document.sample.FilePath.value;
+	var strSignCert = document.sample.SignCert.value;
+	var strSignValue = document.sample.DigitalSignature.value;
+
+	//	파일 데이터에 대한 전자서명 검사하기
+	bReturn = verifyDigitalSignatureFromFile( strFilePath, strSignValue, strSignCert );
+	if ( bReturn )
+	{
+		alert( "전자서명 검사에 성공하였습니다" );
+	}
+	else
+	{
+		alert( getErrorString() );
+	}
+}
+
+</script>
+
+
+</body>
+</html>
