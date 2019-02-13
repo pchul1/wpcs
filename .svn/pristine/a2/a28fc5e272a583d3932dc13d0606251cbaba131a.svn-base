@@ -1,1 +1,0 @@
-document.write('<object id=Rdviewer name=Rdviewer width=900 height=580 classid="clsid:ADB6D20D-80A1-4aa4-88AE-B2DC820DA076" codebase="'+ROOT_PATH+'cab/rdviewer50.cab#version=5,0,0,183"></object>');

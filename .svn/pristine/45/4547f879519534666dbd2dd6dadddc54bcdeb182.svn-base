@@ -1,4 +1,0 @@
-table {clear:both; width:100%; line-height:1.5em; margin-bottom:18px; border:1px solid #0066b3 !important;  }
-table tr th {padding:5px 7px; border:1px solid #e3e3dd; background-color:#f7f7f5; color:#717171; text-align:left; font-weight:normal;  }
-table tr td {padding:7px 7px; border:1px solid #e3e3dd;}
-.text_left {text-align:left; }

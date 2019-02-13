@@ -1,9 +1,0 @@
-<CHARTFX>
-  <COLUMNS>
-     <COLUMN NAME="d1e14" TYPE="String" DESCRIPTION="Question 5"/>
-     <COLUMN NAME="d1e194" TYPE="Integer" DESCRIPTION="Duly Made"/>
-  </COLUMNS>
-  <ROW d1e14="Yes" d1e194="1686"/>
-  <ROW d1e14="No" d1e194="95"/>
-  <ROW d1e14="No Opinion" d1e194="98"/>
-</CHARTFX>

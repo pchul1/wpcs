@@ -1,5 +1,0 @@
-<gooarc>
-	<key>ABQIAAAAAUqzKskvQXw_UTKpILtz0BRqs7OO1Tb_cumvo_a2JFiOp5iBHRSME5u3O-Ts911e0yjTpD4PjiNW5g</key>
-	<restUrl>http://192.168.0.57:8399/arcgis/rest/services/tms/MapServer</restUrl>
-	<hostUrl>http://localhost:8080</hostUrl>
-</gooarc>

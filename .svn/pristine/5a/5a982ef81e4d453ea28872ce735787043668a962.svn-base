@@ -1,6 +1,0 @@
-<CfxIESettings>
-	<Relative>/ChartFX70/Temp</Relative>
-	<AxCompat>True</AxCompat>
-	<RequiredRoot>.</RequiredRoot>
-	<DefaultHandler>ChartFX.WebForms.Internal.OutputFileHandler,ChartFX.WebForms</DefaultHandler>
-</CfxIESettings>
