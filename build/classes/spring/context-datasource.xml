@@ -17,7 +17,7 @@
  		<property name="url" value="jdbc:oracle:thin:@10.101.214.95:1521:orcl"/> 
 		 -->
 		<property name="username" value="wpcs"/>
-		<property name="password" value="wpcs"/>
+        <property name="password" value="wpcs"/>
 	</bean> 
 	<!-- oracle wpcs_taksu dev
 	<bean id="wpcs_taksu" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">

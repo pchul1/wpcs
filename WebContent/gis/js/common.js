@@ -8,6 +8,7 @@ $common.slide = function(id, align, size) {
 	
 	anim[align] = size;
 	$(box).animate(anim, 500);
+	
 };
 
 // comma
