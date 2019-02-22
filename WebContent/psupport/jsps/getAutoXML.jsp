@@ -297,7 +297,7 @@ try
 // 	sql += "ORDER BY RIVER_DIV ASC, BRANCH_MAP_Y ASC, STRDATE DESC, STRTIME DESC, FACTNAME ASC, BRANCH_NO ASC ";	//모식도를 기반으로 한 루프를 위해 변경(수계와 모식도 기준)
 	sql += "ORDER BY RIVER_DIV ASC, BRANCH_MAP_Y ASC, FACTNAME ASC, BRANCH_NO ASC ";	//모식도를 기반으로 한 루프를 위해 변경(수계와 모식도 기준)
 
-	//System.out.println("getAutoXML sql : "+sql);
+	System.out.println("getAutoXML sql : "+sql);
 	JSONArray reJson = new JSONArray();
 	try
 	{ 

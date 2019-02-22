@@ -15,9 +15,8 @@
 <c:import url="/WEB-INF/jsp/include/common/include_js.jsp" />
 <script type="text/javascript" src="<c:url value='/js/JQuery/jquery.form.js'/>"></script>
 
-<script type="text/javascript" src="http://js.arcgis.com/3.8/"></script>
 <script src="/gis/js/define.js"></script>
-<script type="text/javascript" src="<c:url value='/gis/js/editMap.js'/>"></script>
+
 
 <script type="text/javascript">
 var regUpdateType = 0;
@@ -35,7 +34,7 @@ var tempData;
 			$('#regBtn').html('등록');
 		}else{
 			$('#regBtn').html('수정');
-			tempData = opener.$kecoMap.view.tempBData;
+// 			tempData = opener.$kecoMap.view.tempBData;
 			
 			if(tempData == null){
 				alert('선택된 정보가 없습니다.');
@@ -82,6 +81,8 @@ var tempData;
 			alert('상세 정보를 입력하세요.');
 			return;
 		}
+		
+		
 		if(regUpdateType == 0){
 			$editMap.model.addTempPoint(obj , function(result){
 				if(result.callbacktype == 'S') {

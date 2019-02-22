@@ -221,11 +221,11 @@ public class FileScrty {
     	
     	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 
-    	if(request.getRequestURL().indexOf("10.101.213.48") > -1 || request.getRequestURL().indexOf("10.101.164.196") > -1 || request.getRequestURL().indexOf("10.101.164.228") > -1|| request.getRequestURL().indexOf("10.101.164.236") > -1){
+//    	if(request.getRequestURL().indexOf("10.101.213.48") > -1 || request.getRequestURL().indexOf("10.101.164.196") > -1 || request.getRequestURL().indexOf("10.101.164.228") > -1|| request.getRequestURL().indexOf("10.101.164.236") > -1){
     		return encryptPasswordlocal(data);
-    	}else{
-    		return encryptPasswordserver(data);
-    	}
+//    	}else{
+//    		return encryptPasswordserver(data);
+//    	}
     }
     
     public static String encryptPasswordlocal(String data) throws Exception {
