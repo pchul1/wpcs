@@ -90,7 +90,7 @@ $(function() {
 		pub.intervalEvent = function()
 		{
 			// 지도위에 올려진 아이콘들을 삭제 한다.
-			$kecoMap.model.markerClear();
+//			$kecoMap.model.markerClear();
 			
 			this.accidentData = [];
 			
@@ -187,6 +187,8 @@ $(function() {
 		};
 		pub.getAllserene = function(sys)
 		{
+			debugger;
+			
 			if(sys != 'W')
 			{
 				$.ajax({
@@ -2262,7 +2264,7 @@ $(function() {
 			});
 			
 //			page.model.getDetailRiverAlert();
-			page.model.getTotalMnt();
+//			page.model.getTotalMnt();
 			page.model.getWaterPollutionStatus();
 			
 			page.view.system.trigger('change');
