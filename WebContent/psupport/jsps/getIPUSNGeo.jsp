@@ -1,20 +1,22 @@
+<%@page import="daewooInfo.mobile.com.utl.ObjectUtil"%>
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <%@ page import = "java.io.*, java.sql.*, java.util.*, java.net.*, net.sf.json.*"%>
-<%@ include file="dbconn.jsp" %>
+<%@ include file="dbconn.jsp" %><%
 
-<%
 response.setContentType("text/html; charset=utf-8");
 try
 {
+	String userId = (String) request.getSession().getAttribute("userId");
+	String rvCd = (String) request.getParameter("rvCd");
+	 
 	Statement stmt=null;
-	sql = "SELECT A.WH_CODE , B.ITEM_CODE, B.ITEM_NAME , B.ITEM_NAME||' ['||B.ITEM_UNIT||'] : '||A.ITEM_CNT||' '||B.ITEM_STAN AS MSG "+
-			" FROM T_ITEM_STOCK A, T_ITEM_CODE B "+
-			" WHERE A.ITEM_CODE = B.ITEM_CODE AND  A.ITEM_CODE_NUM = B.ITEM_CODE_NUM ";
-	
-	//System.out.println("getWH >>>> " + sql);
+	sql  = "SELECT OBJECTID, X, Y, FACI_NM, FACI_ADDR, RV_CD, FACT_CODE, BRANCH_NO, USE_FLAG FROM GIS_IPUSN WHERE 1=1";
+	if(!"A".equals(rvCd)){
+		sql += " AND RV_CD = '"+rvCd+"'";
+	}
 	
 	JSONArray reJson = new JSONArray();
-	
+
 	try
 	{
 		stmt=conn.createStatement();
@@ -44,12 +46,11 @@ catch(Exception ex)
 {
 	ex.printStackTrace();
 }
-%>
-<%!
-	public void closeConn(ResultSet rs, Statement stmt, Connection con) throws Exception
-	{
-		rs.close();
-		con.close();
-		stmt.close();
-	}
+%><%!
+ public void closeConn(ResultSet rs, Statement stmt, Connection con) throws Exception
+ {
+  rs.close();
+  con.close();
+  stmt.close();
+ }
 %>

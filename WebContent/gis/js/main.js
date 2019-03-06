@@ -187,8 +187,6 @@ $(function() {
 		};
 		pub.getAllserene = function(sys)
 		{
-			debugger;
-			
 			if(sys != 'W')
 			{
 				$.ajax({
@@ -695,7 +693,7 @@ $(function() {
 					html = html +'<li >'+obj['주소']+'</li>';
 					html = html +'</ul>';
 				}
-			}	edddxdd
+			}
 			
 			$main.view.resultCount.html('총 '+result.features.length+'건');
 			$main.view.resultBx.html(html);

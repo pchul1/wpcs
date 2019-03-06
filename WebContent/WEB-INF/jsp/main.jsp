@@ -65,7 +65,8 @@ response.addCookie(cookie); */
 <!-- <script src="/gis/js/acco.js"></script> -->
 <script src="/gis/js/define.js"></script>
 <script src="/gis/js/common.js"></script>
-<script src="/gis/js/main.js"></script>
+<script src="/gis/js/new_main.js"></script>
+<script src="/gis/js/new_kecoMap.js"></script>
 
 
 <script type="text/javascript" src="/gis/new_js/lib/proj4.js" ></script>
@@ -116,7 +117,17 @@ response.addCookie(cookie); */
       }
       .tooltip-static:before {
         border-top-color: #ffcc33;
-      }    
+      } 
+      .tempTooltip {
+		  position: relative;
+		  padding: 3px;
+		  background: rgba(0, 0, 0, 0.5);
+		  color: white;
+		  opacity: 0.7;
+		  white-space: nowrap;
+		  font: 10pt sans-serif;
+		}
+   
 </style>
       
 <script type="text/javascript">
@@ -129,8 +140,14 @@ response.addCookie(cookie); */
 			layerPopOpen('layerApprovalIns');
 		}
 		
-		_CoreMap.init('map');
-		
+		_CoreMap.init('map',{
+			satellite: true,
+			measure:true,
+			print:true,
+			save:true,
+			search:true,
+			temp:true
+		});
 	});
 	
 	/* 모든 레이어 닫기*/
