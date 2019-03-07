@@ -2,7 +2,7 @@ var _CoreMap = function() {
 	'use strict'
 	// private functions & variables
 	
-	var TAG = '[Air Korea MAP]';
+	var TAG = '[WPCS MAP]';
 	var vworldAddrUrl = 'http://apis.vworld.kr/coord2jibun.do?x=#X#&y=#Y#&apiKey=7A0635A7-67B9-39CD-96BC-65D901E709B3&domain=http://www.eburin.net&output=json&epsg=EPSG:4326&callback=?';
 	var nhnAddrUrl = 'http://openapi.map.naver.com/api/reversegeocode?key=ed361f09f893f6489eed72ec266fa190&encoding=utf-8&coord=latlng&output=json&callback=?&query=#X#,#Y#';
 
