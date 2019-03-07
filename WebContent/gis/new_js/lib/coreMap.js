@@ -2,7 +2,7 @@ var _CoreMap = function() {
 	'use strict'
 	// private functions & variables
 	
-	_proxyUrl
+	//_proxyUrl
 	
 	var TAG = '[Air Korea MAP]';
 	var vworldAddrUrl = 'http://apis.vworld.kr/coord2jibun.do?x=#X#&y=#Y#&apiKey=7A0635A7-67B9-39CD-96BC-65D901E709B3&domain=http://www.eburin.net&output=json&epsg=EPSG:4326&callback=?';

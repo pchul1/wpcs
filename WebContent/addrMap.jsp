@@ -50,14 +50,21 @@
 
 <script type="text/javascript" src="/gis/gis/jsapi_vsdoc10_v36.js"></script>
 <script type="text/javascript" src="/gis/js/jquery.dialog.custom.js"></script>
-<script type="text/javascript" src="http://js.arcgis.com/3.8/"></script>
-
+<!-- <script type="text/javascript" src="http://js.arcgis.com/3.8/"></script> -->
 
 <script type="text/javascript" src="/gis/js/xml2json.js"></script>
 <script type="text/javascript" src="/gis/js/define.js"></script>
 <script type="text/javascript" src="/gis/js/common.js"></script>
-<script type="text/javascript" src="/gis/js/kecoMap.js"></script>
+<!-- <script type="text/javascript" src="/gis/js/kecoMap.js"></script> -->
 <script type="text/javascript" src="/gis/js/control.js"></script>
+
+
+<script type="text/javascript" src="/gis/new_js/lib/proj4.js" ></script>
+<script type="text/javascript" src="/gis/new_js/lib/mapEventBus.js" ></script>
+<script type="text/javascript" src="http://tsauerwein.github.io/ol3/mapbox-gl-js/build/ol.js"></script>
+<script type="text/javascript" src="/gis/new_js/mapService.js"></script>
+<script type="text/javascript" src="/gis/new_js/lib/vworldLayer.js"></script>
+<script type="text/javascript" src="/gis/new_js/lib/coreMap.js"></script>
 
 <!-- 실서버-->
 <!-- <SCRIPT language="JavaScript" type="text/javascript" src="http://map.vworld.kr/js/vworldMapInit.js.do?apiKey=3728760A-A99F-39F6-96C8-74746BA4A738"></SCRIPT>	 -->
@@ -65,7 +72,7 @@
 <!-- <SCRIPT language="JavaScript" type="text/javascript" src="http://map.vworld.kr/js/vworldMapInit.js.do?apiKey=C4246B58-A669-3643-A7FD-F545A61ECE20"></SCRIPT>    -->
 <!-- 210.99.81.159:9090-->
 <!-- <SCRIPT language="JavaScript" type="text/javascript" src="http://map.vworld.kr/js/vworldMapInit.js.do?apiKey=4EA77A23-29BC-37C9-A4EE-D3BCABCD9846"></SCRIPT> -->
-<SCRIPT language="JavaScript" type="text/javascript" src="http://map.vworld.kr/js/vworldMapInit.js.do?apiKey=C4246B58-A669-3643-A7FD-F545A61ECE20"></SCRIPT>
+<script language="JavaScript" type="text/javascript" src="http://map.vworld.kr/js/vworldMapInit.js.do?apiKey=C4246B58-A669-3643-A7FD-F545A61ECE20"></script>
 <script language="javascript" type="text/javascript" src="/js/mobile/Vworld.js"></script>
 </head>
 <body class="subPop"><!-- 추가 및 수정 -->
@@ -90,11 +97,9 @@
 									<option value="1" >지번 -> 좌표</option>
 									<option value="2" >도로명 -> 좌표</option>
 								</select>
-								<input type="hidden" id="epsg" name="epsg" value="EPSG:4326" />
 								위도(Y) : <input id="y" type="text" value="" style="width:140px; padding:2px 0 3px 5px;" />
 								경도(X) : <input id="x" type="text" style="width:140px; padding:2px 0 3px 5px;" value="" />
 								주소 : <input id="q" type="text" value="" style="width:260px; padding:2px 0 3px 5px;"/>
-								<input type="hidden" id="output" name="output" value="json" >
 								<input type="button" style="width:40px;height:21px;background:url('/images/renewal/bt_search.gif') no-repeat;text;color:#fff;" value="변환" onclick="go_url();">&nbsp;
 								<input type="button" style="width:40px;height:21px;background:url('/images/renewal/bt_search.gif') no-repeat;text;color:#fff;" value="반영" onclick="applyLonLat();">
 								<br/>
@@ -102,12 +107,12 @@
 								지번주소 : 태평로1가 31 *행정동 + 지번까지 입력 / 도로명주소 : 세종대로 110 *도로명 + 건물번호 입력<br/>
 							</li>
 						</ul>
-						<div id="mapBoxBj" onclick="javascript:getXy(event);" style="height:640px;">
+						<div id="mapBoxBj" style="height:640px;">
 							<div id="map" class="claro"></div>
 							<!--우측 상단 버튼 Start-->
 							<div id="tool" style="width:100px;">
-								<div class="tool_bu1"><a href="javascript:$kecoMap.model.generalMap();" onmouseout="$kecoMap.controller.MM_swapImgRestore('Image1','/gis/images/tool_1_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image1','/gis/images/tool_1_over1.gif',1)" ><img idx="0" src="/gis/images/tool_1_over1.gif" id="Image1" border="0"/></a></div>
-								<div class="tool_bu1"><a href="javascript:$kecoMap.model.flightMap();" onmouseout="$kecoMap.controller.MM_swapImgRestore('Image2','/gis/images/tool_2_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image2','/gis/images/tool_2_over1.gif',1)" ><img idx="1" src="/gis/images/tool_2_off.gif" id="Image2" border="0"/></a></div>
+								<div class="tool_bu1"><a href="javascript:void(0);"><img idx="0" src="/gis/images/tool_1_over1.gif" id="Image1" border="0"/></a></div>
+								<div class="tool_bu1"><a href="javascript:void(0);"><img idx="1" src="/gis/images/tool_2_off.gif" id="Image2" border="0"/></a></div>
 							</div>
 							<!--우측 상단 버튼 End-->
 						</div>
@@ -119,7 +124,42 @@
 	<div class="footerWrap"><span class="footerBg_r"><span class="footer"></span></span></div><!-- //추가 및 수정 -->
 	
 	<script type="text/javascript">
-	
+		$(function() {
+			_CoreMap.init('map');
+			
+			var pointLayer;
+			
+			_MapEventBus.on(_MapEvents.map_singleclick, function(event, data){
+				
+				if(pointLayer){
+					_MapEventBus.trigger(_MapEvents.map_removeLayer, pointLayer);
+				}
+				
+				var geometry = new ol.geom.Point(data.result.coordinate);
+				
+				pointLayer = new ol.layer.Vector({
+					source : new ol.source.Vector({
+						features : [new ol.Feature({geometry:geometry})]
+					}),
+					style : new ol.style.Style({
+			    		geometry: geometry,
+		    			image: new ol.style.Icon(({
+		    				src: '/gis/images/apoint.png'
+		        		}))
+					}),
+					visible: true,
+					id:'clickPoint'
+				});
+				
+				_MapEventBus.trigger(_MapEvents.map_addLayer, pointLayer);
+				
+				var tempCoord = ol.proj.transform(data.result.coordinate, 'EPSG:3857', 'EPSG:4326');
+				
+				$('#x').val(tempCoord[0]);
+				$('#y').val(tempCoord[1]);
+			});
+		});
+		
 		function go_url(){
 			var t = $("#type").val();
 			var q = document.getElementById("q").value;
@@ -130,8 +170,8 @@
 			var apiKey= "C4246B58-A669-3643-A7FD-F545A61ECE20";  //waterkorea
 // 			var domain = 'http://map.vworld.kr';
 			var domain = 'http://210.99.81.159';
-			var output = document.getElementById("output").value;
-			var epsg = document.getElementById("epsg").value;
+			var output = 'json';
+			var epsg = 'EPSG:4326';
 			var x = document.getElementById("x").value;
 			var y = document.getElementById("y").value;
 			var go_url="";
