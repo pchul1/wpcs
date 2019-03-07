@@ -1,22 +1,17 @@
 var _MapServiceInfo = {
-	params    : "/geoserver/CE-TECH/ows?&service=WFS&version=1.0.0&request=GetFeature&outputFormat=application%2Fjson",
-	type : "&typeName=CE-TECH",
+	params    : "/geoserver/wpcs/ows?&service=WFS&version=1.0.0&request=GetFeature&outputFormat=application%2Fjson",
+	type : "&typeName=wpcs",
 	property : "&PROPERTYNAME=",
 	sort : "&SORTBY=",
-	serviceUrl: 'http://27.101.139.181:8088'
+	serviceUrl: 'http://112.218.1.243:48002',
+	wmsBaseUrl: '/geoserver/wpcs/wms?'
 }
- 
-//test
-//var _proxyUrl = 'http://112.218.1.243:44002';
-
-//real
-var _proxyUrl = 'http://27.101.139.181:8088';
 
 var _MapService = function () {
 	
 	var getWfs = function(typeName, propertyName, cqlFilter, sortby){
 		
-		var url = _proxyUrl + _MapServiceInfo.params + _MapServiceInfo.type + typeName + _MapServiceInfo.property + propertyName + "&urlType=geoServer";
+		var url = _MapServiceInfo.serviceUrl + _MapServiceInfo.params + _MapServiceInfo.type + typeName + _MapServiceInfo.property + propertyName;
 		
 		if(cqlFilter != undefined){
 			url += "&CQL_FILTER="+cqlFilter;
@@ -41,7 +36,7 @@ var _MapService = function () {
 	
 	var getRealPointWfs = function(typeName, propertyName, cneterPoint){
 		//var url = proxyUrl + _MapServiceInfo.serviceUrl + _MapServiceInfo.params + _MapServiceInfo.type + typeName
-		var url = _proxyUrl + _MapServiceInfo.params + _MapServiceInfo.type + typeName 
+		var url = _MapServiceInfo.serviceUrl + _MapServiceInfo.params + _MapServiceInfo.type + typeName 
 			+ "&bbox="+cneterPoint[0]+","+cneterPoint[1]+","+cneterPoint[0]+","+cneterPoint[1] + "&urlType=geoServer";
 		
 		

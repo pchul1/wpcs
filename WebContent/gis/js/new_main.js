@@ -159,8 +159,7 @@ $(function() {
 					var data = JSON.parse(result);
 					$main.model.alertData = data;
 					$main.model.getWriteAlert(data);
-					
-					$kecoMap.model.initFeatureLayer($main.model.alertData);
+					_MapEventBus.trigger(_MapEvents.initFeatureLayer, $main.model.alertData);
 				},
 				error:function(result){
 				}

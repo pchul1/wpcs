@@ -52,6 +52,9 @@ _MapEvents.clear_bottom_grid_tab = 'clear_bottom_grid_tab';
 
 _MapEvents.addWriteLayerForBiz = 'addWriteLayerForBiz';
 
+_MapEvents.initFeatureLayer = 'initFeatureLayer';
+
+
 var _MapEventBus = $({});
 
 // sample 
