@@ -1,8 +1,8 @@
-var _MapChangeType = true;
-
 var _CoreMap = function() {
 	'use strict'
 	// private functions & variables
+	
+	_proxyUrl
 	
 	var TAG = '[Air Korea MAP]';
 	var vworldAddrUrl = 'http://apis.vworld.kr/coord2jibun.do?x=#X#&y=#Y#&apiKey=7A0635A7-67B9-39CD-96BC-65D901E709B3&domain=http://www.eburin.net&output=json&epsg=EPSG:4326&callback=?';
@@ -14,10 +14,11 @@ var _CoreMap = function() {
 	var TOOL_TYPE_SATELLITE = 1;
 	var TOOL_TYPE_DISTANCE = 2;
 	var TOOL_TYPE_AREA = 3;
-	var TOOL_TYPE_SAVE = 4;
-	var TOOL_TYPE_PRINT = 5;
-	var TOOL_TYPE_TEMP_INPUT = 6;
-	
+	var TOOL_TYPE_SAVE = 5;
+	var TOOL_TYPE_PRINT = 4;
+	var TOOL_TYPE_SEARCH = 6;
+	var TOOL_TYPE_TEMP_INPUT = 7;
+	var TOOL_TYPE_RESET = 8;
 	
 	var coreMap;
 	var mapLayers = [];
@@ -62,6 +63,20 @@ var _CoreMap = function() {
 	var measureTextLayer;
 	var helpTooltipElement;
 	var helpTooltip;
+	
+	// 임의 지점 관련
+	
+	var tempBranchLayer;
+	var tempBranchToolTip;
+	var tempBranchTooltipElement;
+	var TEMP_B_TEMP = {
+			title:  "${TITLE}",
+			content: "<ul>"
+						+ "<li> ● 등록자 : ${REG_ID} </li>"
+						+ "<li> ● 등록일자 : ${REG_DATE} </li>"
+						+ "<li> ● 상세정보 : ${CONTENT} </li>"
+					};
+	var selectedTempBranchFeature;
 	
 	var isIE = false;
 	
@@ -211,32 +226,142 @@ var _CoreMap = function() {
 //		});
 		// VWORLD wms layer on/off check box 생성
 		// setVworldWmsLayerCheckbox();
+	    
+	    setTempBranchLayer();
 	}
 	
+	var setTempBranchLayer = function(){
+		
+		drawTempBranchLayer();
+		
+		_MapEventBus.on(_MapEvents.map_mousemove, function(event, data){
+			 var pixel = coreMap.getEventPixel(data.result.originalEvent);
+			 
+			 var feature = coreMap.forEachFeatureAtPixel(pixel, function(feature, layer) {
+				 return feature;
+			 });
+			
+			 if(feature && feature.getProperties().properties.featureType == 'TEMP'){
+				 tempBranchTooltipElement.innerHTML = feature.getProperties().properties.TITLE;
+				 tempBranchToolTip.setPosition( feature.getGeometry().getCoordinates() );
+				 tempBranchTooltipElement.classList.remove('hidden');
+			 }else{
+				 tempBranchToolTip.setPosition(undefined);
+			 }
+		}); 
+		
+		_MapEventBus.on(_MapEvents.map_singleclick, function(event, data){
+			 var pixel = coreMap.getEventPixel(data.result.originalEvent);
+			 
+			 var feature = coreMap.forEachFeatureAtPixel(pixel, function(feature, layer) {
+				 return feature;
+			 });
+			 
+			 if(feature && feature.getProperties().properties.featureType == 'TEMP'){
+				 selectedTempBranchFeature = feature.getProperties().properties;
+				 window.open("/tempBRegPop.jsp?regId="+$('#userId').val()+"&type=1",'tempBRegPop','width=550,height=430,toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=no,left=100,top=50');
+			 }else{
+				 
+			 }
+		});
+		
+		createTempBranchTooltip();
+	}
 	
-	var setTools = function(option){
+	var drawTempBranchLayer = function(){
+		$.ajax({
+			url:'/psupport/jsps/getTempBranch.jsp',
+			dataType:"text",
+			success:function(result){
+				var data = JSON.parse(result);
+				var tempBranchFeatures = [];
+				
+				for(var i=0; i<data.length; i++){
+					var tempCoord = ol.proj.transform([parseFloat(data[i].X), parseFloat(data[i].Y)], 'EPSG:4326', 'EPSG:3857');
+					
+					data[i].featureType = 'TEMP';
+					
+					var feature = new ol.Feature({geometry:new ol.geom.Point(tempCoord), properties: data[i]});
+					tempBranchFeatures.push(feature);
+				} 
+				tempBranchLayer = new ol.layer.Vector({ 
+						name : 'tempBranchLayer',
+						source : new ol.source.Vector({
+							features : tempBranchFeatures
+						}),
+						style : new ol.style.Style({
+							image: new ol.style.Icon({
+								opacity: 1,
+								src: '/gis/new_images/post-it.png'
+							})
+						})
+				}); 
+
+				coreMap.addLayer(tempBranchLayer);
+			}, 
+			error:function(result){  
+			}
+		});
+	}
+	var refreshTempBranchLayer = function(){
+		if(tempBranchLayer){
+			coreMap.removeLayer(tempBranchLayer);
+		}
+		drawTempBranchLayer();
+	}
+	
+	var toolDefaults = { 
+			satellite: true,
+			measure:false,
+			print:false,
+			save:false,
+			search:false,
+			temp:false
+	}
+	
+	var currentToolType = 0;
+	
+	var setTools = function(options){
 		
-		var tools = '<div id="tool" style="position: absolute; right: 10px; top: 2px; background-color: #000; z-index: 10000; ">';
+		var settings = $.extend({}, toolDefaults, options);
+
+		var toolNoneFlag = false;
+		for(var key in settings){
+			if(settings[key]){
+				toolNoneFlag = true;
+				break;
+			}
+		}
+		if(toolNoneFlag){
+			var tools = '<div id="tool" style="position: absolute; right: 10px; top: 2px; background-color: #000; z-index: 10000; ">';
+			if(settings.satellite){
+				tools += '<div class="tool_bu1 toolBtn" type="0" ><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_1_over1.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
+				tools += '<div class="tool_bu1 toolBtn" type="1"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_2_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
+			}
+			if(settings.measure){
+				tools += '<div class="tool_bu2 toolBtn" type="2"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_3_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
+				tools += '<div class="tool_bu2 toolBtn" type="3"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_4_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
+			}
+			if(settings.print){
+				tools += '<div class="tool_bu1 toolBtn" type="4"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_5_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
+			}
+			if(settings.save){
+				tools += '<div class="tool_bu1 toolBtn" type="5"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_6_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
+			}
+			if(settings.search){
+				tools += '<div class="tool_bu1 toolBtn" type="6""><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_13_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
+			}
+			if(settings.temp){
+				tools += '<div class="tool_bu1 toolBtn" type="7""><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_14_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
+			}
+			if(settings.measure){
+				tools += '<div class="tool_bu2 toolBtn" type="8"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_8_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
+			}
+			
+			tools += '</div>'; 
+			$('#mapBox').append(tools); 
+		}
 		
-		tools += '<div class="tool_bu1 toolBtn" type="0" ><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_1_over1.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-		tools += '<div class="tool_bu1 toolBtn" type="1"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_2_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-		tools += '<div class="tool_bu2 toolBtn" type="2"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_3_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-		tools += '<div class="tool_bu2 toolBtn" type="3"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_4_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-		tools += '<div class="tool_bu1 toolBtn" type="4"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_5_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-		tools += '<div class="tool_bu1 toolBtn" type="5"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_6_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-		tools += '<div class="tool_bu1 toolBtn" type="6""><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_7_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-		tools += '<div class="tool_bu1 toolBtn" type="7""><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_9_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-		tools += '<div class="tool_bu1 toolBtn" type="8""><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_10_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-		tools += '<div class="tool_bu1 toolBtn" type="9""><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_11_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-		tools += '<div class="tool_bu1 toolBtn" type="10""><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_12_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-		tools += '<div class="tool_bu1 toolBtn" type="11""><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_13_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-		tools += '<div class="tool_bu1 toolBtn" type="12""><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_14_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-		
-		tools += '<div class="tool_bu1"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_8_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-		
-		tools += '</div>'; 
-		
-		$('#mapBox').append(tools); 
 		
 		$('.toolBtn').on('click', function(event){
 			var target = $(this);
@@ -251,17 +376,16 @@ var _CoreMap = function() {
 				addInteraction(toolType);
 			}else if(toolType == TOOL_TYPE_AREA){
 				addInteraction(toolType);
-			}else if(toolType == TOOL_TYPE_SAVE){
+			}else if(toolType == TOOL_TYPE_PRINT){
 				coreMap.once('postcompose', function(event) {
 					var canvas = event.context.canvas;
 					var mapImg = canvas.toDataURL('image/png'); 
 					var url = mapImg.replace(/^data:image\/[^;]+/, 'data:application/octet-stream');
-//					window.open(url);  
 					$('#__fileDownloadIframe__').remove(); 
 					$('body').append('<iframe src='+url+' id="__fileDownloadIframe__" name="__fileDownloadIframe__" width="0" height="0" style="display:none;"/>');
 				}); 
 				coreMap.renderSync();
-			}else if(toolType == TOOL_TYPE_PRINT){
+			}else if(toolType == TOOL_TYPE_SAVE){
 				coreMap.once('postcompose', function(event) {
 					var canvas = event.context.canvas;
 					var mapImg = canvas.toDataURL('image/png'); 
@@ -273,23 +397,34 @@ var _CoreMap = function() {
 					}
 				}); 
 				coreMap.renderSync();
+			}else if(toolType == TOOL_TYPE_SEARCH){
+				window.open("/vworldSearchPop.jsp",'vworldSearchPop','width=750,height=410,toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=no,left=100,top=50');
 			}else if(toolType == TOOL_TYPE_TEMP_INPUT){
 				
+				if(currentToolType == TOOL_TYPE_DISTANCE || currentToolType == TOOL_TYPE_AREA){
+					clearMap();
+				}
 				alert('임시지점으로 등록할 곳을 지도에서 클릭하세요.');
 				
-				_MapEventBus.on(_MapEvents.map_singleclick, tempInput);
+				_MapEventBus.on(_MapEvents.map_singleclick, tempBranchInput);
 				
-			}else{
+			}else if(toolType == TOOL_TYPE_RESET){
 				clearMap();
 			}
+			
+			currentToolType = toolType;
 		});
 	} 
-	
-	var tempInput = function(event, data){
+	 
+	var tempBranchInput = function(event, data){
 		
-		var tempCoord = ol.proj.transform([data.result.coordinate[0], data.result.coordinate[1]], 'EPSG:3857', 'EPSG:4326');
-		window.open("/tempBRegPop.jsp?regId="+$('#userId').val()+"&type=0&X="+tempCoord[0]+"&Y="+tempCoord[1],'tempBRegPop','width=550,height=430,toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=no,left=100,top=50');
+		if(currentToolType == TOOL_TYPE_TEMP_INPUT){
+			var tempCoord = ol.proj.transform([data.result.coordinate[0], data.result.coordinate[1]], 'EPSG:3857', 'EPSG:4326');
+			window.open("/tempBRegPop.jsp?regId="+$('#userId').val()+"&type=0&X="+tempCoord[0]+"&Y="+tempCoord[1],'tempBRegPop','width=550,height=430,toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=no,left=100,top=50');
+		}
+		currentToolType = -1;
 	}
+	
 	var clearMap = function(){
 		if(draw){
 			coreMap.removeInteraction(draw);
@@ -460,6 +595,20 @@ var _CoreMap = function() {
 		});
 	};
 	
+	function createTempBranchTooltip() {
+		if (tempBranchTooltipElement) {
+			tempBranchTooltipElement.parentNode.removeChild(tempBranchTooltipElement);
+		}
+		tempBranchTooltipElement = document.createElement('div');
+		tempBranchTooltipElement.className = 'tooltip hidden';
+		tempBranchToolTip = new ol.Overlay({
+        	element: tempBranchTooltipElement,
+        	offset: [15, 0],
+        	positioning: 'center-left'
+        });
+        coreMap.addOverlay(tempBranchToolTip);
+	}
+	
 	function createHelpTooltip() {
 		if (helpTooltipElement) {
 			helpTooltipElement.parentNode.removeChild(helpTooltipElement);
@@ -600,52 +749,6 @@ var _CoreMap = function() {
 			_MapEventBus.trigger(_MapEvents.map_singleclick, {
 				result : event
 			});
-			
-			/*
-			popupOverlay.setPosition(undefined);
-			
-			var getLayer = coreMap.forEachLayerAtPixel( event.coordinate, function ( _layer ) {
-
-				  // you will get the vector layer here
-
-				}, this, function ( _layer ) {
-					
-				    if ( _layer instanceof ol.layer.Tile ) {
-				    	
-				        if(_layer.getProperties().searchWfS){
-				        	
-				        	var resolution = coreMap.getView().getResolution();
-				        	
-				        	 var url = _layer.getSource().getGetFeatureInfoUrl(
-						                        event.coordinate,
-						                        resolution,
-						                        'EPSG:3857',
-						                        {
-						                            'INFO_FORMAT': 'application/json',
-						                            'propertyName': 'CODE'
-						                        }
-						                    );
-				        	
-				        	$.getJSON( url, function( features ) {
-				        		features = new ol.format.GeoJSON().readFeatures(features);
-				        		if(features.length > 0){
-				        			var properties = features[0].getProperties();
-				        			popupOverlay.setPosition(event.coordinate);
-				        			
-				        			$('#popupOverlay div').remove();
-				        			$('#popupOverlay').append('<div id=\"popup-content\">'+properties.CODE+'</div>');
-				        		}
-				        		
-				        	});
-				        }
-				        
-				    }
-				});
-			
-			_MapEventBus.trigger(_MapEvents.map_singleclick, {
-				result : event
-			});
-			*/
 		});
 		
 		//
@@ -697,7 +800,7 @@ var _CoreMap = function() {
 	var mapMove = function(event, data){
 		centerMap(data.x, data.y, data.zoom);
 	}
-	var centerMap = function(long, lat, zoomLavel , type) {
+	var centerMap = function(long, lat, zoomLavel) {
 		var centerPoint;
 
 		if (typeof (long) == 'string')
@@ -722,11 +825,6 @@ var _CoreMap = function() {
 		if (zoomLavel != null){
 			coreMap.getView().setZoom(zoomLavel);
 		}
-		
-		if(type == false){
-			_MapChangeType = false;
-		}
-			
 	}
 
 	var addLayer = function(event, layer) {
@@ -916,11 +1014,11 @@ var _CoreMap = function() {
 	// public functions
 	return {
 
-		init : function(mapDivId, toolsOption) {
+		init : function(mapDivId, toolsOptions) {
 			var me = this;
 			init();
 			createMap(mapDivId);
-			setTools(toolsOption);
+			setTools(toolsOptions);
 			return me;
 		},
 		centerMap : function(long, lat, zoomLavel, type) {
@@ -980,6 +1078,12 @@ var _CoreMap = function() {
 		},
 		requestParam:function(flag){
 			requestParam(flag);
+		},
+		getSelectedTempBranchFeature:function(){
+			return selectedTempBranchFeature;
+		},
+		refreshTempBranchLayer:function(){
+			refreshTempBranchLayer();
 		}
 	};
 }();

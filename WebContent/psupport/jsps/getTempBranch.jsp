@@ -1,20 +1,18 @@
+<%@page import="daewooInfo.mobile.com.utl.ObjectUtil"%>
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <%@ page import = "java.io.*, java.sql.*, java.util.*, java.net.*, net.sf.json.*"%>
-<%@ include file="dbconn.jsp" %>
+<%@ include file="dbconn.jsp" %><%
 
-<%
 response.setContentType("text/html; charset=utf-8");
 try
 {
+	String userId = (String) request.getSession().getAttribute("userId");
+	 
 	Statement stmt=null;
-	sql = "SELECT A.WH_CODE , B.ITEM_CODE, B.ITEM_NAME , B.ITEM_NAME||' ['||B.ITEM_UNIT||'] : '||A.ITEM_CNT||' '||B.ITEM_STAN AS MSG "+
-			" FROM T_ITEM_STOCK A, T_ITEM_CODE B "+
-			" WHERE A.ITEM_CODE = B.ITEM_CODE AND  A.ITEM_CODE_NUM = B.ITEM_CODE_NUM ";
-	
-	//System.out.println("getWH >>>> " + sql);
+	sql  = "SELECT OBJECTID, TEMP_SRNO, TITLE, CONTENT, REG_ID, REG_DATE, X, Y, ALL_YN, USE_YN FROM TEMP_BRANCH WHERE USE_YN ='0' AND ALL_YN = '1' OR REG_ID = '"+userId+"'"; 
 	
 	JSONArray reJson = new JSONArray();
-	
+
 	try
 	{
 		stmt=conn.createStatement();
@@ -44,12 +42,11 @@ catch(Exception ex)
 {
 	ex.printStackTrace();
 }
-%>
-<%!
-	public void closeConn(ResultSet rs, Statement stmt, Connection con) throws Exception
-	{
-		rs.close();
-		con.close();
-		stmt.close();
-	}
+%><%!
+ public void closeConn(ResultSet rs, Statement stmt, Connection con) throws Exception
+ {
+  rs.close();
+  con.close();
+  stmt.close();
+ }
 %>

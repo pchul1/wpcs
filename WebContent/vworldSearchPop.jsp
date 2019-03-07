@@ -85,7 +85,10 @@ var selectedPOI;
 			alert('지도정보가 없습니다. 해당 창을 닫습니다.');
 			window.close();
 		}
-		opener.GL_MOVE_XY(selectedPOI.xpos, selectedPOI.ypos);
+		if(opener){
+			opener._MapEventBus.trigger(opener._MapEvents.map_move, {x:selectedPOI.xpos, y:selectedPOI.ypos});
+		}
+// 		opener.GL_MOVE_XY(selectedPOI.xpos, selectedPOI.ypos);
 	}
 	
 	function searchVworld(){
@@ -170,7 +173,7 @@ var selectedPOI;
 										<tr>
 											<th scope="row">명칭</th>
 											<td>
-												<input type="text" id="keyword" name="keyword"  style="width:300px; background-color:#f2f2f2;"/>
+												<input type="text" id="keyword" name="keyword"  style="width:300px; background-color:#f2f2f2;" onkeypress="if(event.keyCode==13){searchVworld()}"/>
 												<a onclick="javascript:searchVworld();" id="searchBtn" style="selector-dummy:expression(this.hideFocus=false);" class="btn_mng"><span><em>조회</em></span></a>&nbsp;
 												<a onclick="javascript:panMap();" id="moveBtn" style="selector-dummy:expression(this.hideFocus=false);" class="btn_mng"><span><em>지도이동</em></span></a>&nbsp;
 											</td>

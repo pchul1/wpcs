@@ -51,7 +51,7 @@ try {
 		sql +=" AND WPS_STEP = '"+searchstep+"'";
 	}
 	
-	//System.out.println("getAccident >>>>> " + sql);
+	System.out.println("getAccident >>>>> " + sql);
 	
 	try {
 	//out.println(sql);

@@ -15,9 +15,6 @@
 <c:import url="/WEB-INF/jsp/include/common/include_js.jsp" />
 <script type="text/javascript" src="<c:url value='/js/JQuery/jquery.form.js'/>"></script>
 
-<script src="/gis/js/define.js"></script>
-
-
 <script type="text/javascript">
 var regUpdateType = 0;
 var tempData;
@@ -34,7 +31,11 @@ var tempData;
 			$('#regBtn').html('등록');
 		}else{
 			$('#regBtn').html('수정');
-// 			tempData = opener.$kecoMap.view.tempBData;
+			if(opener){
+				tempData = opener._CoreMap.getSelectedTempBranchFeature();	
+			}else{
+			 	window.close();
+			}
 			
 			if(tempData == null){
 				alert('선택된 정보가 없습니다.');
@@ -49,7 +50,6 @@ var tempData;
 				$("#allYn").val(tempData.ALL_YN);
 				$('#useYn').val(tempData.USE_YN);
 			}
-			
 		}
 	});
 	
@@ -59,51 +59,48 @@ var tempData;
 		var date = new Date();
 		var regDate = date.getFullYear() + addzero(date.getMonth()+1) + addzero(date.getDate())+addzero(date.getHours())+addzero(date.getMinutes());
 		if(regUpdateType == 1 && tempData != null){
-			obj.OBJECTID = tempData.OBJECTID;	
-			obj.TEMP_SRNO = tempData.TEMP_SRNO;
+			obj.objectId = tempData.OBJECTID;	
+			obj.tempSrno = tempData.TEMP_SRNO;
+			obj.type = 'U';
 		}else{
-			obj.TEMP_SRNO = parseInt(Math.random()*1000000)+date.getDate();
+// 			obj.TEMP_SRNO = parseInt(Math.random()*1000000)+date.getDate();
+			obj.type = 'I';
 		}
 		
-		obj.TITLE = $("#titleNm").val();
-		obj.CONTENT = $("#contentNm").val();
-		obj.REG_ID = $("#regId").val();
-		obj.REG_DATE = regDate;
-		obj.X = $("#longitude").val();
-		obj.Y = $("#latitude").val();
-		obj.ALL_YN = $("#allYn").val();
-		obj.USE_YN = $('#useYn').val();
-		if(obj.TITLE.length <= 0) {
+ 		obj.title = $("#titleNm").val();
+		obj.content = $("#contentNm").val();
+// 		obj.REG_ID = $("#regId").val();
+//		obj.REG_DATE = regDate;
+		obj.x = $("#longitude").val();
+		obj.y = $("#latitude").val();
+		obj.allYn = $("#allYn").val();
+		obj.useYn = $('#useYn').val();
+		if(obj.title.length <= 0) {
 			alert('임의지점 명을 입력하세요.');
 			return;
 		}
-		if(obj.CONTENT.length <= 0) {
+		if(obj.content.length <= 0) {
 			alert('상세 정보를 입력하세요.');
 			return;
 		}
 		
-		
-		if(regUpdateType == 0){
-			$editMap.model.addTempPoint(obj , function(result){
-				if(result.callbacktype == 'S') {
+		$.ajax({
+			url:'/psupport/jsps/editTempBranch.jsp',
+			type :'POST',
+			data: obj,
+			success:function(result){
+				if(parseInt(result)> 0){
 					alert("저장했습니다");
+					if(opener){
+						opener._CoreMap.refreshTempBranchLayer();	
+					}
 					window.close();
-				} else{
-					alert("서버접속에 실패하였습니다.\n다시 확인해주세요.");
-					return;
 				}
-			});
-		}else{
-			$editMap.model.updateTempPoint(obj , function(result){
-				if(result.callbacktype == 'S') {
-					alert("저장했습니다");
-					window.close();
-				} else{
-					alert("서버접속에 실패하였습니다.\n다시 확인해주세요.");
-					return;
-				}
-			});
-		}
+			}, 
+			error:function(result){  
+				alert("서버접속에 실패하였습니다.\n다시 확인해주세요.");
+			}
+		});
 	}
 </script>
 </head>
