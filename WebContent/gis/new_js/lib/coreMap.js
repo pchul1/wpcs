@@ -2,8 +2,6 @@ var _CoreMap = function() {
 	'use strict'
 	// private functions & variables
 	
-	_proxyUrl
-	
 	var TAG = '[Air Korea MAP]';
 	var vworldAddrUrl = 'http://apis.vworld.kr/coord2jibun.do?x=#X#&y=#Y#&apiKey=7A0635A7-67B9-39CD-96BC-65D901E709B3&domain=http://www.eburin.net&output=json&epsg=EPSG:4326&callback=?';
 	var nhnAddrUrl = 'http://openapi.map.naver.com/api/reversegeocode?key=ed361f09f893f6489eed72ec266fa190&encoding=utf-8&coord=latlng&output=json&callback=?&query=#X#,#Y#';
@@ -26,7 +24,6 @@ var _CoreMap = function() {
 	var mapDiv;
 	
 	var format = 'image/png';
-	var wmsBaseUrl = '/geoserver/CE-TECH/wms?';
 	
 	var highlightFeature;
 
@@ -775,7 +772,7 @@ var _CoreMap = function() {
       			visible: layerInfos[i].isVisible,
       			opacity : layerInfos[i].opacity,
       			source: new ol.source.TileWMS({
-      				url: _proxyUrl+wmsBaseUrl,
+      				url: _MapServiceInfo.serviceUrl+_MapServiceInfo.wmsBaseUrl,
       				params: {'FORMAT': format, 
 	      				'VERSION': '1.3.0',
 	      				tiled: layerInfos[i].isTiled,
@@ -1028,7 +1025,7 @@ var _CoreMap = function() {
 			return coreMap;
 		},
 		getZoom : function() {
-			return map.getView().getZoom();
+			return coreMap.getView().getZoom(); 
 		},
 		addLayer : function(layer) {
 			addLayer(null, layer);
