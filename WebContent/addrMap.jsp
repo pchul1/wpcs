@@ -111,8 +111,8 @@
 							<div id="map" class="claro"></div>
 							<!--우측 상단 버튼 Start-->
 							<div id="tool" style="width:100px;">
-								<div class="tool_bu1"><a href="javascript:void(0);"><img idx="0" src="/gis/images/tool_1_over1.gif" id="Image1" border="0"/></a></div>
-								<div class="tool_bu1"><a href="javascript:void(0);"><img idx="1" src="/gis/images/tool_2_off.gif" id="Image2" border="0"/></a></div>
+								<div class="tool_bu1 toolBtn" type="0"><a href="javascript:void(0);"><img idx="0" src="/gis/images/tool_1_over1.gif" id="Image1" border="0"/></a></div>
+								<div class="tool_bu1 toolBtn" type="1"><a href="javascript:void(0);"><img idx="1" src="/gis/images/tool_2_off.gif" id="Image2" border="0"/></a></div>
 							</div>
 							<!--우측 상단 버튼 End-->
 						</div>
@@ -128,6 +128,19 @@
 			_CoreMap.init('map');
 			
 			var pointLayer;
+			
+			$('.toolBtn').on('click',function(){
+				var img = $('.toolBtn').find('img');
+				var type = $(this).attr('type');
+				
+				for(var i = 0; i < img.length; i++){
+					if($(img[i]).attr('idx')==type){
+						$(img[i]).attr('src',$(img[i]).attr('src').replace('off','over1'));
+					}else{
+						$(img[i]).attr('src',$(img[i]).attr('src').replace('over1','off'));
+					}
+				}
+			});
 			
 			_MapEventBus.on(_MapEvents.map_singleclick, function(event, data){
 				
