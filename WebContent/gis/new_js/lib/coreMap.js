@@ -224,7 +224,7 @@ var _CoreMap = function() {
 		// VWORLD wms layer on/off check box 생성
 		// setVworldWmsLayerCheckbox();
 	    
-	    setTempBranchLayer();
+	    //setTempBranchLayer();
 	}
 	
 	var setTempBranchLayer = function(){
@@ -350,13 +350,17 @@ var _CoreMap = function() {
 			}
 			if(settings.temp){
 				tools += '<div class="tool_bu1 toolBtn" type="7""><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_14_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
+				
+				setTempBranchLayer();
+				
 			}
 			if(settings.measure){
 				tools += '<div class="tool_bu2 toolBtn" type="8"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_8_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
 			}
 			
 			tools += '</div>'; 
-			$('#mapBox').append(tools); 
+			
+			$('#'+mapDiv).parent().append(tools); 
 		}
 		
 		

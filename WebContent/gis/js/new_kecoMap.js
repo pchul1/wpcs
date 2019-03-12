@@ -550,6 +550,8 @@ $(function() {
 		
 		pub.visibleLayers = [];
 		
+		pub.wmsLayers = {};
+		
 		pub.coordCallback = '$kecoMap.model.daumCallBack';
 		
 		pub.getThemeIpusnData = function(factcode , branchno) {
@@ -627,19 +629,30 @@ $(function() {
 			if(idx == undefined) {
 				var inputs = $(".list_item");
 				
-				this.visibleLayers = [];
+				var visibleLayers = [];
 				
 				for (var i=0, il=inputs.length; i<il; i++) {
 					if (inputs[i].checked) {
-						this.visibleLayers.push(inputs[i].id);
+						visibleLayers.push(inputs[i].id);
 					}
 				}
-				if(this.visibleLayers.length === 0){
-					this.visibleLayers.push(-1);
-				}
-				pub.visibleLayers = this.visibleLayers;
+				
+				pub.visibleLayers = visibleLayers;
 				 
-				//page.view.mainLayer.setVisibleLayers(this.visibleLayers);
+				for(var key in $kecoMap.model.wmsLayers){
+					$kecoMap.model.wmsLayers[key].setVisible(false);
+				}
+				
+				for(var i=0; i<visibleLayers.length; i++){
+					if($kecoMap.model.wmsLayers[visibleLayers[i]]){
+						$kecoMap.model.wmsLayers[visibleLayers[i]].setVisible(true);	
+					}else{
+						var layerInfo = [{layerNm:'wpcs:'+visibleLayers[i],isVisible:true,isTiled:true,cql:null,opacity:1}];
+						$kecoMap.model.wmsLayers[visibleLayers[i]] = _CoreMap.createTileLayer(layerInfo)[0];
+						
+						_MapEventBus.trigger(_MapEvents.map_addLayer, $kecoMap.model.wmsLayers[visibleLayers[i]]);
+					}
+				} 
 				
 			} else if(idx == 0) {
 				if($('#autoLd').attr('checked')){
@@ -710,59 +723,54 @@ $(function() {
 		};
 			
 		pub.moveCenter = function(x,y, whflag,wh_code, whnm ) {
-			if(page.view.map.getLevel() < 6)
-				page.view.map.setLevel(6);
+			
+			var zoom = _CoreMap.getZoom();
+			
+			if(zoom < 10){
+				_MapEventBus.trigger(_MapEvents.setZoom , 10);
+			}
 		
-			var wm = esri.geometry.geographicToWebMercator(new esri.geometry.Point(x,y));
-			page.view.map.centerAt(wm);
+			if(x == null || y == null || x == "" || y == ""){
+				return;
+			}
+			
+			_MapEventBus.trigger(_MapEvents.map_move , {x:x, y:y});
 			
 			if(whflag != undefined && whflag == 'w') {
 				setTimeout(function(){
-					var point = new esri.geometry.ScreenPoint($kecoMap.view.map.width/2, $kecoMap.view.map.height/2);
 					var obj = $kecoMap.model.baseObj.model.getWhData(wh_code);
 					
-					var graphic = new esri.Graphic(undefined, undefined);
-					
-					if(obj != undefined)
-					{
-						graphic.setAttributes(obj);
-						
-						obj.WH_NAME = whnm;
-						var contentHTML = '<ul>';
-						var hsize = 0;
-						for ( var i = 0; i < obj.msgs.length; i++) 
-						{
-							contentHTML += '<li>'+obj.msgs[i]+'</li>'
-							hsize += 25;
-						}
-						var temp  = {
-							title:obj.WH_NAME,
-							content: contentHTML};
-						
-						graphic.setAttributes(obj);
-						graphic.setInfoTemplate(new esri.InfoTemplate(temp)); 
-						$kecoMap.view.map.infoWindow.resize(250, hsize+50);
-					}
-					else
-					{
-						graphic.setAttributes({});
-						graphic.attributes.FACI_NM = whnm
-						
-						graphic.setAttributes(graphic.attributes);
-						graphic.setInfoTemplate(new esri.InfoTemplate(NULL_TEMP)); 
-						$kecoMap.view.map.infoWindow.resize(250, 100);
-					}
-					
-					$kecoMap.view.map.infoWindow.setContent(graphic.getContent());
-					$kecoMap.view.map.infoWindow.setTitle(graphic.getTitle());
-					$kecoMap.view.map.infoWindow.show(point,$kecoMap.view.map.getInfoWindowAnchor(point));
+//					if(obj != undefined) {
+//						graphic.setAttributes(obj);
+//						
+//						obj.WH_NAME = whnm;
+//						var contentHTML = '<ul>';
+//						var hsize = 0;
+//						for ( var i = 0; i < obj.msgs.length; i++)  {
+//							contentHTML += '<li>'+obj.msgs[i]+'</li>'
+//							hsize += 25;
+//						}
+//						var temp  = {
+//							title:obj.WH_NAME,
+//							content: contentHTML};
+//						
+//						graphic.setAttributes(obj);
+//						graphic.setInfoTemplate(new esri.InfoTemplate(temp)); 
+//						$kecoMap.view.map.infoWindow.resize(250, hsize+50);
+//					} else {
+//						graphic.setAttributes({});
+//						graphic.attributes.FACI_NM = whnm
+//						
+//						graphic.setAttributes(graphic.attributes);
+//						graphic.setInfoTemplate(new esri.InfoTemplate(NULL_TEMP)); 
+//						$kecoMap.view.map.infoWindow.resize(250, 100);
+//					}
 					
 				}, 1000);
 			}
 		};
 		
-		pub.moveCenterTm = function(x,y)
-		{
+		pub.moveCenterTm = function(x,y) {
 			if(x=='' || y==''){
 				return;
 			}else{
@@ -776,15 +784,13 @@ $(function() {
 		
 		
 		
-		pub.sear = function()
-		{
+		pub.sear = function() {
 			page.view.tb.activate(esri.toolbars.Draw.POLYGON);
 			page.view.map.graphics.clear();
 			page.view.dtype = 0;
 		};
 		
-		pub.coordMood = function(callBack)
-		{
+		pub.coordMood = function(callBack) {
 			if(callBack == undefined)
 				return;
 			
@@ -792,8 +798,7 @@ $(function() {
 			this.coordCallback = callBack;
 		};
 		
-		pub.info = function()
-		{
+		pub.info = function() {
 			$('#Image9').attr('class','on');
 			$('#Image10').attr('class','off');
 			$('#Image11').attr('class','off');
@@ -803,8 +808,7 @@ $(function() {
 		}
 		
 		// 경보지점 
-		pub.buffer = function()
-		{
+		pub.buffer = function() {
 			$('#Image9').attr('class','off');
 			$('#Image10').attr('class','on');
 			$('#Image11').attr('class','off');
@@ -813,8 +817,7 @@ $(function() {
 			
 		}
 		// 사고지점 
-		pub.buffer_all = function()
-		{
+		pub.buffer_all = function() {
 			$('#Image9').attr('class','off');
 			$('#Image10').attr('class','off');
 			$('#Image11').attr('class','on');
@@ -824,8 +827,7 @@ $(function() {
 		}
 		
 		//다중선택
-		pub.buffer_drag = function()
-		{
+		pub.buffer_drag = function() {
 			$('#Image9').attr('class','off');
 			$('#Image10').attr('class','off');
 			$('#Image11').attr('class','off');
@@ -836,8 +838,8 @@ $(function() {
 			page.view.dtype = 6;
 			this.toolbaridx = 6;
 		}
-		pub.drawSymbol = function(mevt)
-		{
+		
+		pub.drawSymbol = function(mevt) {
 			page.view.map.infoWindow.hide();
 			
 			if(page.view.dtype == 0) {
@@ -1197,7 +1199,7 @@ $(function() {
 							return [new ol.style.Style({
 								image: new ol.style.Icon({
 									opacity: 1,
-									src: url+layers[12].layerId+'/images/'+layers[12].legend[0].url
+									src: url+layers[12].layerId+'/images/'+layers[12].url
 								})
 							})];
 						}
@@ -1233,7 +1235,7 @@ $(function() {
 							return [new ol.style.Style({
 								image: new ol.style.Icon({
 									opacity: 1,
-									src: url+layers[13].layerId+'/images/'+layers[13].legend[0].url
+									src: url+layers[13].layerId+'/images/'+layers[13].url
 								})
 							})];
 						}
@@ -1269,7 +1271,7 @@ $(function() {
 							return [new ol.style.Style({
 								image: new ol.style.Icon({
 									opacity: 1,
-									src: url+layers[29].layerId+'/images/'+layers[29].legend[0].url
+									src: url+layers[29].layerId+'/images/'+layers[29].url
 								})
 							})];
 						}
@@ -1303,7 +1305,7 @@ $(function() {
 							return [new ol.style.Style({
 								image: new ol.style.Icon({
 									opacity: 1,
-									src: url+layers[30].layerId+'/images/'+layers[30].legend[0].url
+									src: url+layers[30].layerId+'/images/'+layers[30].url
 								})
 							})];
 						}
@@ -1337,7 +1339,7 @@ $(function() {
 							return [new ol.style.Style({
 								image: new ol.style.Icon({
 									opacity: 1,
-									src: url+layers[31].layerId+'/images/'+layers[31].legend[0].url
+									src: url+layers[31].layerId+'/images/'+layers[31].url
 								})
 							})];
 						}
@@ -1371,7 +1373,7 @@ $(function() {
 							return [new ol.style.Style({
 								image: new ol.style.Icon({
 									opacity: 1,
-									src: url+layers[32].layerId+'/images/'+layers[32].legend[0].url
+									src: url+layers[32].layerId+'/images/'+layers[32].url
 								})
 							})];
 						}
@@ -1404,57 +1406,46 @@ $(function() {
 					}
 					
 					html += '<ul><li class="tit">중요 시설물</li>';
-					html +='<li><label><input id="de4" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(4);"/><img src="'+url+data.layers[12].layerId+'/images/'+data.layers[12].legend[0].url+'" alt=""/> '+data.layers[12].layerName+' </label></li>';
-					html +='<li><label><input id="de5" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(5);"/><img src="'+url+data.layers[13].layerId+'/images/'+data.layers[13].legend[0].url+'" alt=""/> '+data.layers[13].layerName+' </label></li>';
-					html +='<li><label><input id="de6" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(6);"/><img src="'+url+data.layers[29].layerId+'/images/'+data.layers[29].legend[0].url+'" alt=""/> '+data.layers[29].layerName+' </label></li>';
-					html +='<li><label><input id="de7" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(7);"/><img src="'+url+data.layers[30].layerId+'/images/'+data.layers[30].legend[0].url+'" alt=""/> '+data.layers[30].layerName+' </label></li>';
-					html +='<li><label><input id="de8" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(8);"/><img src="'+url+data.layers[31].layerId+'/images/'+data.layers[31].legend[0].url+'" alt=""/> '+data.layers[31].layerName+' </label></li>';
-					html +='<li><label><input id="de9" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(9);"/><img src="'+url+data.layers[32].layerId+'/images/'+data.layers[32].legend[0].url+'" alt=""/> '+data.layers[32].layerName+' </label></li>';
+					html +='<li><label><input id="de4" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(4);"/><img src="'+url+data.layers[12].layerId+'/images/'+data.layers[12].url+'" alt=""/> '+data.layers[12].layerName+' </label></li>';
+					html +='<li><label><input id="de5" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(5);"/><img src="'+url+data.layers[13].layerId+'/images/'+data.layers[13].url+'" alt=""/> '+data.layers[13].layerName+' </label></li>';
+					html +='<li><label><input id="de6" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(6);"/><img src="'+url+data.layers[29].layerId+'/images/'+data.layers[29].url+'" alt=""/> '+data.layers[29].layerName+' </label></li>';
+					html +='<li><label><input id="de7" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(7);"/><img src="'+url+data.layers[30].layerId+'/images/'+data.layers[30].url+'" alt=""/> '+data.layers[30].layerName+' </label></li>';
+					html +='<li><label><input id="de8" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(8);"/><img src="'+url+data.layers[31].layerId+'/images/'+data.layers[31].url+'" alt=""/> '+data.layers[31].layerName+' </label></li>';
+					html +='<li><label><input id="de9" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(9);"/><img src="'+url+data.layers[32].layerId+'/images/'+data.layers[32].url+'" alt=""/> '+data.layers[32].layerName+' </label></li>';
 					
 					html += '</ul><ul><li class="tit">수질측정지점</li>';
 					
-					for ( var i = 0; i < data.layers.length; i++)
-					{
+					for ( var i = 0; i < data.layers.length; i++) {
 						var l = data.layers[i];
 						
-						if(i != 13 || i != 14 || i != 33 || i != 34 || i != 35 || i != 36){
-							html += '<li>'+
-										'<label><input type="checkbox" class="list_item" id="'+l.layerId+'" onclick="$kecoMap.model.updateLayerVisibility();"/><img src="'+url+l.layerId+'/images/'+l.legend[0].url+'" alt=""/> '+l.layerName+'</label>'+
-									'</li>';
+						if((i > 11 && i < 14) || (i > 28 && i < 33)){
+							continue;
 						}
-						if(l.layerId == '7')
-						{
+						
+						html += '<li>'+
+									'<label><input type="checkbox" class="list_item '+l.layerId+'" id="'+l.geoLayerId+'" onclick="$kecoMap.model.updateLayerVisibility();"/><img src="'+url+l.layerId+'/images/'+l.url+'" alt=""/> '+l.layerName+'</label>'+
+								'</li>';
+						
+						if(l.layerId == '7') {
 							html += '</ul>';
 							html += '<ul><li class="tit">퇴적물조사지점</li>';
-						}
-						else if(l.layerId == '9')
-						{
+						} else if(l.layerId == '9') {
 							html += '</ul>';
 							html += '<ul><li class="tit">기타측정지점</li>';
-						}
-						else if(l.layerId == '18')
-						{
+						} else if(l.layerId == '18') {
 							html += '</ul>';
 							html += '<ul><li class="tit">환경기초시설</li>';
-						}
-						else if(l.layerId == '27')
-						{
+						} else if(l.layerId == '27') {
 							html += '</ul>';
 							html += '<ul><li class="tit">시설물</li>';
-						}
-						else if(l.layerId == '38')
-						{
+						} else if(l.layerId == '38') {
 							html +='<li><label><input id="whLd" type="checkbox" class=""  onclick="$kecoMap.model.updateLayerVisibility(3);"/><img src="'+$define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/5/images/'+$define.ARC_SERVER_IMG_WH+'" alt=""/> 방제창고 </label></li>';
 							html += '</ul>';
 							html += '<ul><li class="tit">하천</li>';
-						}
-						else if(l.layerId == '41')
-						{
+						} else if(l.layerId == '41') {
 							html += '</ul>';
 							html += '<ul><li class="tit">수질영향권역</li>';
-						}
-						else if(l.layerId == '45')
-						{
+						} else if(l.layerId == '45') {
 							html += '</ul>';
 							html += '<ul><li class="tit">행정구역</li>';
 						}
@@ -1465,15 +1456,19 @@ $(function() {
 					$('#chkInfoBx').html(html);
 					
 					setTimeout(function(){
-						
 						if(window.location.href.indexOf('goDetailFLUX') > -1){
 							$('#11').attr('checked', true);
 							$('#12').attr('checked', true);
 						}
 						
-						if(window.location.href.indexOf('goDetailDam') > -1)
+						if(window.location.href.indexOf('goDetailDam') > -1){
 							$('#16').attr('checked', true);
+						}
+						
 						$kecoMap.model.updateLayerVisibility();
+						
+						_MapEventBus.trigger(_MapEvents.layerLoaded, {});
+						
 					}, 500);
 				}
 			});
@@ -1482,8 +1477,8 @@ $(function() {
 		pub.markerData = [];
 		
 		// 지도위에 표출
-		pub.addMarker = function(type, x, y, obj, flag) // type = 0 사고지점 , 1 = 방제창고, 2 = 진입지점 , 3 = 이탈 USN, 4 = 실시간, 5 = 주제도 
-		{
+		// type = 0 사고지점 , 1 = 방제창고, 2 = 진입지점 , 3 = 이탈 USN, 4 = 실시간, 5 = 주제도 
+		pub.addMarker = function(type, x, y, obj, flag) {
 			if(page.view.markerLayer == undefined)
 				return;
 			
@@ -1510,8 +1505,8 @@ $(function() {
 		};
 		
 		// 주제도 지도위에 표출
-		pub.addMarkerTm = function(type, x, y, obj, flag, bermImg) // type = 0 사고지점 , 1 = 방제창고, 2 = 진입지점 , 3 = 이탈 USN, 4 = 실시간, 5 = 주제도 
-		{
+		// type = 0 사고지점 , 1 = 방제창고, 2 = 진입지점 , 3 = 이탈 USN, 4 = 실시간, 5 = 주제도
+		pub.addMarkerTm = function(type, x, y, obj, flag, bermImg) {
 			if(page.view.markerLayer == undefined)
 				return;
 			
@@ -1537,17 +1532,16 @@ $(function() {
 			
 		};
 		
-		pub.markerClear = function()
-		{
-			page.view.markerLayer.clear();
+		pub.markerClear = function() {
+			if(page.view.markerLayer){
+				page.view.markerLayer.clear();
+			}
 			this.markerData = [];
 		};
 		
-		pub.getMargerSymbol = function(type)
-		{
+		pub.getMargerSymbol = function(type) {
 			var size = 30;
-			if(type == 0 || type == 3 || type == 5)
-			{
+			if(type == 0 || type == 3 || type == 5) {
 				var level = page.view.map.getLevel();
 				if(level < 3)
 					size = 30;
@@ -1555,17 +1549,13 @@ $(function() {
 					size = 50;
 				else
 					size = 80;
-			}	
-			else if( type == 2 )
-			{
+			} else if( type == 2 ) {
 				var level = page.view.map.getLevel();
 				if(level < 4)
 					size = 16;
 				else
 					size = 32;
-			}
-			else if(type == 4)
-			{
+			} else if(type == 4) {
 				var level = page.view.map.getLevel();
 				if(level < 4)
 					size = 16;
@@ -1787,7 +1777,6 @@ $(function() {
 						if( $('#tmsLd').attr('checked')){
 							isVisibled = true;
 						}
-						isVisibled = true;
 						
 						$kecoMap.view.tmsLayer = new ol.layer.Vector({ 
 								name : 'tmsLayer',
@@ -1883,7 +1872,6 @@ $(function() {
 						if( $('#ipLd').attr('checked')){
 							isVisibled = true; 
 						}
-						isVisibled = true;
 						
 						$kecoMap.view.ipusnLayer = new ol.layer.Vector({ 
 								name : 'ipusnLayer',
@@ -2002,7 +1990,6 @@ $(function() {
 						if( $('#autoLd').attr('checked')){
 							isVisibled = true;
 						}
-						isVisibled = true; 
 						
 						$kecoMap.view.autoLayer = new ol.layer.Vector({ 
 								name : 'autoLayer',
@@ -2100,120 +2087,61 @@ $(function() {
 			page.view.map.infoWindow.show(sp, page.view.map.getInfoWindowAnchor(sp));
 		}
 		
-		pub.addWhLayer = function(level)
-		{
+		pub.addWhLayer = function(level) {
 			var firstFlag = false;
 			if($kecoMap.view.whLayer == null){
-				firstFlag = true;
-				$kecoMap.view.whLayer = new esri.layers.FeatureLayer($define.ARC_SERVER_URL+"/rest/services/WPCS_EDIT/FeatureServer/5",{
-					mode: esri.layers.FeatureLayer.MODE_SNAPSHOT,
-//					infoTemplate: new esri.InfoTemplate(TEMPLATJSON),
-					outFields: ["*"],
-					id: "whLayer"
-				});
-			}
-			
-			
-			var h = 41;
-			var w = 26;
-			var y = 13;
-			
-			if(level < 2)
-			{
-				h = 22;
-				w = 13;
-				y = 6;
-			}else if( level < 6)
-			{
-				h = 36;
-				w = 22;
-				y = 11;
-			}
-			
-			var symbol = new esri.symbol.PictureMarkerSymbol({
-				"url":$define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/5/images/'+$define.ARC_SERVER_IMG_WH,
-				"height":h,
-				"width":w,
-				"type":"esriPMS",
-				"yoffset":y
-			});
-			
-			var rend = new esri.renderer.SimpleRenderer(symbol);
-			
-			var symbolSel = new esri.symbol.PictureMarkerSymbol({
-				"url":$define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/5/images/'+$define.ARC_SERVER_IMG_WH,
-				"height":h+4,
-				"width":w+4,
-				"type":"esriPMS",
-				"yoffset":y
-			});
-			
-//			$kecoMap.view.whLayer.setSelectionSymbol(symbolSel);
-			
-			$kecoMap.view.whLayer.setRenderer(rend);
-			$kecoMap.view.whLayer.setDefinitionExpression("USE_FLAG = 'Y'");
-			if(firstFlag){
-				$kecoMap.view.map.addLayer($kecoMap.view.whLayer, 4);
-			}
-//			dojo.connect($kecoMap.view.whLayer, "onLoad" , $kecoMap.model.initWhLayerEdit);
-			
-			if($('#whLd').attr('checked'))
-				$kecoMap.view.whLayer.show();
-			else
-				$kecoMap.view.whLayer.hide();
-			if(firstFlag){
-				dojo.connect($kecoMap.view.whLayer, "onMouseOver", function(evt) {
-//					page.view.map.graphics.clear();  //use the maps graphics layer as the highlight layer
-					var graphic = new esri.Graphic(undefined, undefined);
-					try{
-						var obj = $kecoMap.model.baseObj.model.getWhData(evt.graphic.attributes.WH_CODE);
+				var firstFlag = true;
+				$.ajax({
+					url:'/psupport/jsps/getWHGeo.jsp',
+					dataType:"text",
+					success:function(result){
+						var data = JSON.parse(result);
+						var whFeatures = [];
 						
-						graphic.setAttributes(obj);
-						
-						if(obj != undefined){
-							obj.WH_NAME = evt.graphic.attributes.WH_NAME;
-							var contentHTML = '<ul>';
-							var hsize = 0;
-							for ( var i = 0; i < obj.msgs.length; i++){
-								contentHTML += '<li>'+obj.msgs[i]+'</li>'
-								hsize += 25;
-							}
-							var temp = {
-									title:obj.WH_NAME,
-									content: contentHTML};
+						for(var i=0; i<data.length; i++){
+							var tempCoord = ol.proj.transform([parseFloat(data[i].X), parseFloat(data[i].Y)], 'EPSG:4326', 'EPSG:3857');
 							
-							graphic.setAttributes(obj);
-							graphic.setInfoTemplate(new esri.InfoTemplate(temp)); 
-							page.view.map.infoWindow.resize(250, hsize+50);
-						}else{
-							evt.graphic.attributes.FACI_NM = evt.graphic.attributes.WH_NAME;
+							data[i].featureType = 'WH';
 							
-							graphic.setAttributes(evt.graphic.attributes);
-							graphic.setInfoTemplate(new esri.InfoTemplate(NULL_TEMP)); 
-							page.view.map.infoWindow.resize(250, 100);
+							var feature = new ol.Feature({geometry:new ol.geom.Point(tempCoord), properties: data[i]});
+							whFeatures.push(feature);
 						}
-					}catch(e)
-					{}
-					
-//					page.view.map.infoWindow.setContent(graphic.getContent());
-//					page.view.map.infoWindow.setTitle(graphic.getTitle());
-//					page.view.map.infoWindow.show(evt.screenPoint,page.view.map.getInfoWindowAnchor(evt.screenPoint));
-					page.model.showInfoWindow(graphic, evt);
-				});
-				
-				dojo.connect($kecoMap.view.whLayer, "onMouseOut", function(evt) {
-//					page.view.map.graphics.clear();
-					page.view.map.infoWindow.hide();
-				});
-				dojo.connect($kecoMap.view.whLayer, "onClick", function(evt) { //1105추가
-					if($('#Image9').attr('class','on')){
-						layer_onClick("방제창고",evt.graphic.attributes.FACT_CODE,evt.graphic.attributes.BRANCH_NO);
+						var isVisibled = false;
+						
+						if( $('#whLd').attr('checked')){
+							isVisibled = true;
+						}
+						
+						$kecoMap.view.whLayer = new ol.layer.Vector({ 
+								name : 'whLayer',
+								source : new ol.source.Vector({
+									features : whFeatures
+								}),
+								visible: isVisibled,
+								style : $kecoMap.model.whStyleFunction
+						}); 
+ 
+						_MapEventBus.trigger(_MapEvents.map_addLayer, $kecoMap.view.whLayer);
+					}, 
+					error:function(result){  
 					}
 				});
 			}
-			
 		};
 		
+		pub.whStyleFunction = function(feature, resolution){
+			
+			var zoom = _CoreMap.getZoom();
+			
+			var whIconUrl = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/5/images/'+$define.ARC_SERVER_IMG_WH;
+			
+			return [new ol.style.Style({
+						image: new ol.style.Icon({
+							opacity: 1,
+							src: whIconUrl
+						})
+					})];
+		}
 		
 		pub.removeAllLayer = function() {
 			page.view.map.removeLayer(page.view.tmsLayer);
@@ -2227,8 +2155,7 @@ $(function() {
 			this.addAutoLayer(level);
 			this.addipusnLayer(level);
 			this.addTMSLayer(level);
-//			this.addWhLayer(level);
-//			this.addTempBLayer(level);
+			this.addWhLayer(level);
 		};
 		
 		pub.init = function() {
