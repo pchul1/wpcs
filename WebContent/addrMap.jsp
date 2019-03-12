@@ -233,6 +233,7 @@
 			if(Y != undefined)	{ $("#y").val(Y); }
 		}
 		
+		
 		function getXy(evt){
 			var lonlat = esri.geometry.xyToLngLat(evt.mapPoint.x, evt.mapPoint.y);
 			
