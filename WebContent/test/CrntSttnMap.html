@@ -5,14 +5,19 @@
     <title>현황판</title>
     
     
-    <link rel="stylesheet" media="all" href="https://js.arcgis.com/3.22/esri/css/esri.css">
+    <!-- <link rel="stylesheet" media="all" href="https://js.arcgis.com/3.22/esri/css/esri.css">
     <link rel="stylesheet" media="all" href="https://js.arcgis.com/3.22/dijit/themes/claro/claro.css">
     
-    <script type="text/javascript" src="https://js.arcgis.com/3.22/"></script>
+    <script type="text/javascript" src="https://js.arcgis.com/3.22/"></script> -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     
-    <script type="text/javascript" src="/test/js_water/crntSttnMap.js"></script>
-    
+    <!-- <script type="text/javascript" src="/test/js_water/crntSttnMap.js"></script> -->
+    <script type="text/javascript" src="/gis/new_js/lib/proj4.js" ></script>
+	<script type="text/javascript" src="/gis/new_js/lib/mapEventBus.js" ></script>
+	<script type="text/javascript" src="http://tsauerwein.github.io/ol3/mapbox-gl-js/build/ol.js"></script>
+	<script type="text/javascript" src="/gis/new_js/mapService.js"></script>
+	<script type="text/javascript" src="/gis/new_js/lib/vworldLayer.js"></script>
+	<script type="text/javascript" src="/gis/new_js/lib/coreMap.js"></script>
 </head>  
 
 <body>
@@ -34,8 +39,9 @@
 	</div>
 </body>
 <script >
-	$(document).ready(function() {    
-        dojo.ready($waterMap.init);
+	$(document).ready(function() {
+		_CoreMap.init('map');
+       // dojo.ready($waterMap.init);
         $('.ctrlBtn').hover(function(){
             $(this).prop('src', '/test/images/btn/'+$(this).attr('icon')+'_on.png');
         });
@@ -57,14 +63,14 @@
 
         // type 정보 d1 = 시도, d2= 시군구 , d3= 측정소
         // 아래 featureClicked 함수를 재정의 하여 사용하세요.
-        $waterMap.featureClicked = function(type, feature){
+        /* $waterMap.featureClicked = function(type, feature){
             console.log(type, feature);
         }
 
         // type 정보 d1 = 시도, d2= 시군구 , d3= 측정소
         $waterMap.zoomEnded = function(type, level){
             console.log(type, level);
-        }
+        } */
 	});
 </script>
 </html>
