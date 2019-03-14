@@ -110,10 +110,10 @@
 						<div id="mapBoxBj" style="height:640px;">
 							<div id="map" class="claro"></div>
 							<!--우측 상단 버튼 Start-->
-							<div id="tool" style="width:100px;">
-								<div class="tool_bu1 toolBtn" type="0"><a href="javascript:void(0);"><img idx="0" src="/gis/images/tool_1_over1.gif" id="Image1" border="0"/></a></div>
-								<div class="tool_bu1 toolBtn" type="1"><a href="javascript:void(0);"><img idx="1" src="/gis/images/tool_2_off.gif" id="Image2" border="0"/></a></div>
-							</div>
+<!-- 							<div id="tool" style="width:100px;"> -->
+<!-- 								<div class="tool_bu1 toolBtn" type="0"><a href="javascript:void(0);"><img idx="0" src="/gis/images/tool_1_over1.gif" id="Image1" border="0"/></a></div> -->
+<!-- 								<div class="tool_bu1 toolBtn" type="1"><a href="javascript:void(0);"><img idx="1" src="/gis/images/tool_2_off.gif" id="Image2" border="0"/></a></div> -->
+<!-- 							</div> -->
 							<!--우측 상단 버튼 End-->
 						</div>
 					</div>
@@ -124,48 +124,41 @@
 	<div class="footerWrap"><span class="footerBg_r"><span class="footer"></span></span></div><!-- //추가 및 수정 -->
 	
 	<script type="text/javascript">
-		$(function() {
-			_CoreMap.init('map');
+		var pointLayer;
+		
+		function addMarker(coord){
+			if(pointLayer){
+				_MapEventBus.trigger(_MapEvents.map_removeLayer, pointLayer);
+			}
 			
-			var pointLayer;
+			var geometry = new ol.geom.Point(coord);
 			
-			$('.toolBtn').on('click',function(){
-				var img = $('.toolBtn').find('img');
-				var type = $(this).attr('type');
-				
-				for(var i = 0; i < img.length; i++){
-					if($(img[i]).attr('idx')==type){
-						$(img[i]).attr('src',$(img[i]).attr('src').replace('off','over1'));
-					}else{
-						$(img[i]).attr('src',$(img[i]).attr('src').replace('over1','off'));
-					}
-				}
+			pointLayer = new ol.layer.Vector({
+				source : new ol.source.Vector({
+					features : [new ol.Feature({geometry:geometry})]
+				}),
+				style : new ol.style.Style({
+		    		geometry: geometry,
+	    			image: new ol.style.Icon(({
+	    				src: '/gis/images/apoint.png'
+	        		}))
+				}),
+				visible: true,
+				id:'clickPoint'
 			});
+			
+			_MapEventBus.trigger(_MapEvents.map_addLayer, pointLayer);
+		}
+		$(function() {
+			_CoreMap.init('map',{
+				satellite: true
+			});
+			
+			
 			
 			_MapEventBus.on(_MapEvents.map_singleclick, function(event, data){
 				
-				if(pointLayer){
-					_MapEventBus.trigger(_MapEvents.map_removeLayer, pointLayer);
-				}
-				
-				var geometry = new ol.geom.Point(data.result.coordinate);
-				
-				pointLayer = new ol.layer.Vector({
-					source : new ol.source.Vector({
-						features : [new ol.Feature({geometry:geometry})]
-					}),
-					style : new ol.style.Style({
-			    		geometry: geometry,
-		    			image: new ol.style.Icon(({
-		    				src: '/gis/images/apoint.png'
-		        		}))
-					}),
-					visible: true,
-					id:'clickPoint'
-				});
-				
-				_MapEventBus.trigger(_MapEvents.map_addLayer, pointLayer);
-				
+				addMarker(data.result.coordinate);
 				var tempCoord = ol.proj.transform(data.result.coordinate, 'EPSG:3857', 'EPSG:4326');
 				
 				$('#x').val(tempCoord[0]);
@@ -240,6 +233,7 @@
 			if(Y != undefined)	{ $("#y").val(Y); }
 		}
 		
+		
 		function getXy(evt){
 			var lonlat = esri.geometry.xyToLngLat(evt.mapPoint.x, evt.mapPoint.y);
 			
@@ -275,8 +269,7 @@
 			X = '<%=X%>';
 			Y = '<%=Y%>';
 			
-			if(('' != X && 'null' != X) || ('' != Y && 'null' != Y))
-			{
+			if(('' != X && 'null' != X) || ('' != Y && 'null' != Y)) {
 				setTimeout(function(){
 					
 					if(isNaN(X) || isNaN(Y)){
@@ -298,19 +291,11 @@
 					document.getElementById("y").value =lonlat[1];
 					document.getElementById("q").value = "";
 					
-					var point = new esri.geometry.Point(lonlat[0], lonlat[1]);
-					point = esri.geometry.geographicToWebMercator(point);
+					var tempCoord = ol.proj.transform([lonlat[0], lonlat[1]], 'EPSG:4326', 'EPSG:3857');
 					
-					//yoffset을 주기 위해 변경
-					var symbol = new esri.symbol.PictureMarkerSymbol({ "url":"/gis/images/apoint.png", "height":"31", "width":"17", "type":"esriPMS", "yoffset":"14" });
-					var graphic = new esri.Graphic(point, symbol);
+					addMarker(tempCoord);
 					
-					$kecoMap.view.map.graphics.clear();
-					
-					$kecoMap.view.map.graphics.add(graphic);
-					
-					var wm = esri.geometry.geographicToWebMercator(new esri.geometry.Point(X,Y));
-					$kecoMap.view.map.centerAndZoom(wm,8);
+					_MapEventBus.trigger(_MapEvents.map_move, {x:tempCoord[0], y:tempCoord[1], zoom:10});
 					
 				}, 2000)
 			}

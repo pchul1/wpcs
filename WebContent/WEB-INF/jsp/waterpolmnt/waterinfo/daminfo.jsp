@@ -1011,12 +1011,8 @@
 <!--									</div> -->
 								<div id="data_map" class="data_map" style="position:relative; width:480px;height:271px;border:solid 2px #CCC;">
 									<div id="map" class="claro" style="border:1px solid #000; width:100%; height:100%;">
-										<div id="tool" style="right: 1px; top: 10px; width:150px; height:24px;  position: absolute;  z-index: 1000;"> 
-											<div class="tool_bu1"><a href="javascript:$kecoMap.model.generalMap();" onmouseout="$kecoMap.controller.MM_swapImgRestore('Image1','/gis/images/tool_1_off.gif')" onMouseOver="$kecoMap.controller.MM_swapImage('Image1','/gis/images/tool_1_over1.gif',1)" ><img idx="0" src="/gis/images/tool_1_over1.gif" id="Image1" border="0" /></a></div>
-											<div class="tool_bu1"><a href="javascript:$kecoMap.model.flightMap();" onmouseout="$kecoMap.controller.MM_swapImgRestore('Image2','/gis/images/tool_2_off.gif')" onMouseOver="$kecoMap.controller.MM_swapImage('Image2','/gis/images/tool_2_over1.gif',1)" ><img idx="1" src="/gis/images/tool_2_off.gif" id="Image2"  border="0" /></a></div>
+										<div id="layerTool" style="right: 1px; top: 10px; width:150px; height:24px;  position: absolute;  z-index: 1000;"> 
 											<div class="tool_bu2"><a href="javascript:javascript:showLayerDiv();" onmouseout="$kecoMap.controller.MM_swapImgRestore('Image3','/gis/images/btn_smapLegend_off.png')" onMouseOver="$kecoMap.controller.MM_swapImage('Image3','/gis/images/btn_smapLegend_over.png',1)" ><img idx="3" src="/gis/images/btn_smapLegend_off.png" id="Image3" border="0" /></a></div>
-<!-- 											<input type="button" name="" value="기초시설물" class="smapLegend" onclick="javascript:showLayerDiv()"/> -->
-<!-- 											<div class="tool_bu1"><a href="javascript:showLayerDiv()" onMouseOut="$kecoMap.controller.MM_swapImgRestore('Image2','/gis/images/tool_2_off.gif')" onMouseOver="$kecoMap.controller.MM_swapImage('Image2','/gis/images/tool_2_over1.gif',1)" ><img idx="1" src="/gis/images/tool_2_off.gif" id="Image2" width="42" height="24" border="0"></a></div> -->
 										</div>
 										<div id="layerDiv"style="position:absolute; bottom:-130px;right:1px;border:1px solid #0066cc; text-align:left;  width:180px;height:100px;background:#fff;overflow-y:auto;padding:10px;  z-index: 1000; display: none;}">
 											<span class="title" style="font-size:14px;text-align:left;font-weight:600;height:32px;display:inline-block;">측정소 정보</span>
@@ -1024,14 +1020,30 @@
 										</div>
 									</div>
 									
-									<link type="text/css" rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css" />
-									<link type="text/css" rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css" />
-									<script type="text/javascript" src="/gis/gis/jsapi_vsdoc10_v36.js"></script>
-									<script type="text/javascript" src="http://js.arcgis.com/3.8/"></script>
 									<script type="text/javascript" src="/gis/js/common.js"></script>
-									<script type="text/javascript" src="/gis/js/control.js"></script>
-									<script type="text/javascript" src="/gis/js/kecoMap.js"></script>
+									<script type="text/javascript" src="/gis/js/new_control.js"></script>
+									<script type="text/javascript" src="/gis/js/new_kecoMap.js"></script>
 									
+									<script type="text/javascript" src="/gis/new_js/lib/proj4.js" ></script>
+									<script type="text/javascript" src="/gis/new_js/lib/mapEventBus.js" ></script>
+									<!-- <script type="text/javascript" src="/gis/new_js/lib/ol/ol.js"></script> -->
+									<script type="text/javascript" src="http://tsauerwein.github.io/ol3/mapbox-gl-js/build/ol.js"></script>
+									 
+									<script type="text/javascript" src="/gis/new_js/lib/jsts/jsts.min.js"></script>
+									
+									<script type="text/javascript" src="/gis/new_js/mapService.js"></script>
+									<script type="text/javascript" src="/gis/new_js/lib/vworldLayer.js"></script>
+									<script type="text/javascript" src="/gis/new_js/lib/coreMap.js"></script>
+									<script type="text/javascript" src="/gis/new_js/lib/jquery-ui.js"></script>
+									
+									
+									<script type="text/javascript">
+										$(function () {
+											_CoreMap.init('map',{
+												satellite: true
+											});
+										});
+									</script>
 									<div class="topBx mtop5" style="z-index:5;">
 										<span style="line-height:20px;"><img src="/images/common/bu_square.gif"></img>&nbsp; 변화추이 그래프</span>
 									</div>

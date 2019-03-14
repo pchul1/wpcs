@@ -102,8 +102,8 @@ $(function() {
 		// 창고 재고
 		pub.whList = [];
 		
-		pub.intervalEvent = function()
-		{
+		pub.intervalEvent = function()  {
+			
 			$kecoMap.model.markerClear();
 			
 			this.accidentData = new Array();
@@ -151,14 +151,12 @@ $(function() {
 				dataType:"text",
 				success:function(result){
 					var data = JSON.parse(result);
-					for ( var i = 0; i < data.length; i++) 
-					{
+					for ( var i = 0; i < data.length; i++)  {
 						var stock = data[i]; 
 						var wh = $control.model.getWhData(stock.WH_CODE)
-						if(wh != undefined)
+						if(wh != undefined){
 							wh.msgs.push(stock.MSG);
-						else
-						{
+						} else {
 							wh = {}
 							wh.WH_CODE = stock.WH_CODE;
 							wh.msgs = [];
@@ -192,14 +190,15 @@ $(function() {
 					$control.model.alertData = data;
 //					$control.model.getWriteAlert(data);
 					
-					$kecoMap.model.initFeatureLayer($control.model.alertData);
+					_MapEventBus.trigger(_MapEvents.initFeatureLayer, $control.model.alertData);
+					
+//					$kecoMap.model.initFeatureLayer($control.model.alertData);
 				},
 				error:function(result){
 				}
 			});
 		};
-		pub.getAlertData = function(factcode, branchno)
-		{
+		pub.getAlertData = function(factcode, branchno) {
 			for ( var i = 0; i < $control.model.alertData.length; i++) 
 			{
 				if( $control.model.alertData[i].FACT_CODE == factcode &&
@@ -209,9 +208,9 @@ $(function() {
 				}
 			}
 		};
+		
 		pub.getAllserene = function(sys) {
-			if(sys != 'W')
-			{
+			if(sys != 'W') {
 				$.ajax({
 					url:'/psupport/jsps/getAutoXML.jsp?sys='+sys,
 					dataType:"json",
@@ -220,10 +219,9 @@ $(function() {
 						//var data = JSON.parse(result);
 						var data = result;
 						
-						if(sys == 'U')
+						if(sys == 'U'){
 							$control.model.ipusnData = data;
-						else
-						{
+						} else {
 							$control.model.autoData = data;
 							$control.model.getAlert();
 						}
@@ -231,9 +229,7 @@ $(function() {
 					error:function(result){
 					}
 				});
-			}
-			else
-			{
+			} else {
 				$.ajax({
 					url:'/psupport/jsps/getTMSXML.jsp',
 					dataType:"text",
@@ -258,8 +254,7 @@ $(function() {
 			else
 				data = $control.model.tmsData;
 			
-			for ( var i = 0; i < data.length; i++) 
-			{
+			for ( var i = 0; i < data.length; i++)  {
 				if(data[i].FACT_CODE == factcode && data[i].BRANCH_NO == branchno)
 					return data[i];
 			}
@@ -437,7 +432,7 @@ $(function() {
 					for ( var i = 0; i < datas.length; i++) {
 						var obj = datas[i];
 						
-						obj.sear = i + 's';
+						obj.sear = i + 's'; 
 						obj.no = i + 1;
 						
 						if(obj.river_div == 'R01'){
@@ -1364,10 +1359,8 @@ $(function() {
 					$kecoMap.model.writeBuffer('1', $control.model.accident, de, function(result){
 						var html = '';
 						
-						if(result != undefined)
-						{
-							for ( var i = 0; i < result.length; i++) 
-							{
+						if(result != undefined) {
+							for ( var i = 0; i < result.length; i++)  {
 								var obj = result[i].attributes;
 								
 								html += '<tr onclick="$kecoMap.model.moveCenter(\''+obj.LONGITUDE+'\',\''+obj.LATITUDE+'\');"><td>'+obj.RIVER_NM+'</td>'+
@@ -1387,10 +1380,8 @@ $(function() {
 					$kecoMap.model.writeBuffer('2', $control.model.accident, de, function(result){
 						var html = '';
 						
-						if(result != undefined)
-						{
-							for ( var i = 0; i < result.length; i++) 
-							{
+						if(result != undefined) {
+							for ( var i = 0; i < result.length; i++)  {
 								var obj = result[i].attributes;
 	//								var wh  = $control.model.getWhData(obj.WH_CODE);
 								

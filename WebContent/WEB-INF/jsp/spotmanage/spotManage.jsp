@@ -33,8 +33,7 @@
 
 <c:import url="/WEB-INF/jsp/include/common/include_commonjs.jsp" />
 
-<script type="text/javascript" src="http://js.arcgis.com/3.8/"></script>
-<script type="text/javascript" src="<c:url value='/gis/js/editMap.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/gis/js/new_editMap.js'/>"></script>
 <script type="text/javascript">
 	//<![CDATA[
 	var EventDivobj = null;
@@ -2128,9 +2127,9 @@
 				obj.USE_FLAG = $("#branch_use_flag").val();
 				// 				console.log("esri 등록정보 : ",obj);
 
-				$editMap.model.addMemtPoint(sysKind, obj, function(result) {
+// 				$editMap.model.addMemtPoint(sysKind, obj, function(result) {
 
-				});
+// 				});
 				$editMap.model
 						.updateMemtPoint(
 								sysKind,
