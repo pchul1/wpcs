@@ -7,13 +7,13 @@ response.setContentType("text/html; charset=utf-8");
 try
 {
 	String userId = (String) request.getSession().getAttribute("userId");
-	String type = (String) request.getParameter("type");
+	String flag = (String) request.getParameter("flag");
 	String factCode = (String) request.getParameter("factCode");
 	String branchNo = (String) request.getParameter("branchNo");
 	 
 	Statement stmt=null;
 	sql  = "SELECT OBJECTID, X, Y, FACI_NM, FACI_ADDR, RV_CD, FACT_CODE, BRANCH_NO FROM GIS_AUTO WHERE  ";
-	if("U".equals(type)){
+	if("U".equals(flag)){
 		sql  = "SELECT OBJECTID, X, Y, FACI_NM, FACI_ADDR, RV_CD, FACT_CODE, BRANCH_NO, USE_FLAG FROM GIS_IPUSN WHERE  ";
 	}
 	sql += "FACT_CODE = '"+factCode+"' AND BRANCH_NO = '"+branchNo+"'";

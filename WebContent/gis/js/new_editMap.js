@@ -46,6 +46,7 @@ $(function() {
 							success:function(result){
 								if(parseInt(result)> 0){
 									if(callBack != undefined) {
+										result = {};
 										result.callbacktype = 'S';
 										callBack(result);
 									}
@@ -66,7 +67,7 @@ $(function() {
 							callBack(reObj);
 						}
 					}
-				}, 
+				},
 				error:function(error){  
 					if(callBack != undefined) {
 						error.callbacktype = 'E';
@@ -107,6 +108,7 @@ $(function() {
 							success:function(result){
 								if(parseInt(result)> 0){
 									if(callBack != undefined) {
+										result = {};
 										result.callbacktype = 'S';
 										callBack(result);
 									}
@@ -157,6 +159,7 @@ $(function() {
 							success:function(result){
 								if(parseInt(result)> 0){
 									if(callBack != undefined) {
+										result = {};
 										result.callbacktype = 'S';
 										callBack(result);
 									}
@@ -203,6 +206,7 @@ $(function() {
 				success:function(result){
 					if(parseInt(result)> 0){
 						if(callBack != undefined) {
+							result = {};
 							result.callbacktype = 'S';
 							callBack(result);
 						}
@@ -241,6 +245,7 @@ $(function() {
 				success:function(result){
 					if(parseInt(result)> 0){
 						if(callBack != undefined) {
+							result = {};
 							result.callbacktype = 'S';
 							callBack(result);
 						}
@@ -276,6 +281,7 @@ $(function() {
 				success:function(result){
 					if(parseInt(result)> 0){
 						if(callBack != undefined) {
+							result = {};
 							result.callbacktype = 'S';
 							callBack(result);
 						}
