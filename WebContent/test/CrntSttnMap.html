@@ -18,6 +18,8 @@
 	<script type="text/javascript" src="/gis/new_js/mapService.js"></script>
 	<script type="text/javascript" src="/gis/new_js/lib/vworldLayer.js"></script>
 	<script type="text/javascript" src="/gis/new_js/lib/coreMap.js"></script>
+	
+	<script type="text/javascript" src="/test/js_water/crntSttnMap_ol.js"></script>
 </head>  
 
 <body>
@@ -41,6 +43,7 @@
 <script >
 	$(document).ready(function() {
 		_CoreMap.init('map');
+		_CrntSttnMap_ol.init();
        // dojo.ready($waterMap.init);
         $('.ctrlBtn').hover(function(){
             $(this).prop('src', '/test/images/btn/'+$(this).attr('icon')+'_on.png');
@@ -58,7 +61,7 @@
             $(this).prop('src', '/test/images/btn/'+$(this).attr('icon')+'_on.png');
             $('.ctrlBtn').removeClass('active');
             $(this).addClass('active');
-            $waterMap.changeRdngFeatureLayer($(this).attr('value'));
+            //$waterMap.changeRdngFeatureLayer($(this).attr('value'));
         });
 
         // type 정보 d1 = 시도, d2= 시군구 , d3= 측정소
