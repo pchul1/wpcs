@@ -28,9 +28,9 @@
 <c:import url="/WEB-INF/jsp/include/common/include_js.jsp" />
 <c:import url="/WEB-INF/jsp/include/common/include_authUserPopup.jsp" />	<!-- 로그인 여부 -->
 <script type="text/javascript" src="<c:url value='/js/JQuery/jquery.form.js'/>"></script>
-<script type="text/javascript" src="http://js.arcgis.com/3.8/"></script>
+<!-- <script type="text/javascript" src="http://js.arcgis.com/3.8/"></script> -->
 <script src="/gis/js/define.js"></script>
-<script type="text/javascript" src="<c:url value='/gis/js/editMap.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/gis/js/new_editMap.js'/>"></script>
 
 <script type="text/javaScript">
 

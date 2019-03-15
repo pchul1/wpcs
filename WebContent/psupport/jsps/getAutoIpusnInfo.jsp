@@ -4,11 +4,19 @@
 <%@ include file="dbconn.jsp" %><%
 
 response.setContentType("text/html; charset=utf-8");
-try {
+try
+{
 	String userId = (String) request.getSession().getAttribute("userId");
+	String flag = (String) request.getParameter("flag");
+	String factCode = (String) request.getParameter("factCode");
+	String branchNo = (String) request.getParameter("branchNo");
 	 
 	Statement stmt=null;
-	sql  = "SELECT OBJECTID, TEMP_SRNO, TITLE, CONTENT, REG_ID, REG_DATE, X, Y, ALL_YN, USE_YN FROM TEMP_BRANCH WHERE (USE_YN = '0' AND ALL_YN = '1') OR (REG_ID = '"+userId+"' AND USE_YN = '0')"; 
+	sql  = "SELECT OBJECTID, X, Y, FACI_NM, FACI_ADDR, RV_CD, FACT_CODE, BRANCH_NO FROM GIS_AUTO WHERE  ";
+	if("U".equals(flag)){
+		sql  = "SELECT OBJECTID, X, Y, FACI_NM, FACI_ADDR, RV_CD, FACT_CODE, BRANCH_NO, USE_FLAG FROM GIS_IPUSN WHERE  ";
+	}
+	sql += "FACT_CODE = '"+factCode+"' AND BRANCH_NO = '"+branchNo+"'";
 	
 	JSONArray reJson = new JSONArray();
 
@@ -32,14 +40,14 @@ try {
 		ex.printStackTrace();
 	}
 }
-catch(Exception ex)
-{
+catch(Exception ex) {
 	ex.printStackTrace();
 }
 %><%!
-public void closeConn(ResultSet rs, Statement stmt, Connection con) throws Exception {
- 	rs.close();
-  	con.close();
-  	stmt.close();
-}
+ public void closeConn(ResultSet rs, Statement stmt, Connection con) throws Exception
+ {
+  rs.close();
+  con.close();
+  stmt.close();
+ }
 %>

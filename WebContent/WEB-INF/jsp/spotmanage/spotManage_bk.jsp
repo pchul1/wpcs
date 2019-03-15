@@ -31,8 +31,8 @@
 
 <c:import url="/WEB-INF/jsp/include/common/include_commonjs.jsp" />
 
-<script type="text/javascript" src="http://js.arcgis.com/3.8/"></script>
-<script type="text/javascript" src="<c:url value='/gis/js/editMap.js'/>"></script>
+<!-- <script type="text/javascript" src="http://js.arcgis.com/3.8/"></script> -->
+<script type="text/javascript" src="<c:url value='/gis/js/new_editMap.js'/>"></script>
 <script type="text/javascript">
 //<![CDATA[
 	var memFactCode = "${member.factCode}";

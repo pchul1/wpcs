@@ -29,7 +29,7 @@
 <%-- <script type="text/javascript" src="<c:url value='/gis/js/define.js'/>"></script> --%>
 <%-- <script type="text/javascript" src="<c:url value='/gis/js/editMap.js'/>"></script> --%>
 
-<!-- <script> -->
+<!-- <script> --> 
 <%-- // 	var ROOT_PATH = '<c:url value="/"/>'; --%>
 <!-- </script> -->
 
