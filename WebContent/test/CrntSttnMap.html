@@ -42,7 +42,9 @@
 </body>
 <script >
 	$(document).ready(function() {
-		_CoreMap.init('map');
+		_CoreMap.init('map',{
+			satellite: false
+		});
 		_CrntSttnMap_ol.init();
        // dojo.ready($waterMap.init);
         $('.ctrlBtn').hover(function(){
@@ -61,6 +63,7 @@
             $(this).prop('src', '/test/images/btn/'+$(this).attr('icon')+'_on.png');
             $('.ctrlBtn').removeClass('active');
             $(this).addClass('active');
+            _CrntSttnMap_ol.selectButton($(this).attr('value'));
             //$waterMap.changeRdngFeatureLayer($(this).attr('value'));
         });
 

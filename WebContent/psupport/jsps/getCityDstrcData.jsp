@@ -6,7 +6,7 @@ response.setContentType("text/html; charset=utf-8");
 try
 {
 	Statement stmt=null;
-	sql = "SELECT RPAD(CODE, 10, '0') AS CODE,DO_NM,NORMAL,A1,A2,A3,A4,M,PHY,V2,V3,V4,V5,V6 FROM V_FACT_LOC_INFO_1D";
+	sql = "SELECT RPAD(CODE, 10, '0') AS CODE,CTY_NM,DO_NM,NORMAL,A1,A2,A3,A4,M,PHY,V2,V3,V4,V5,V6 FROM V_FACT_LOC_INFO_2D";
  
 	JSONArray reJson = new JSONArray();
 	
