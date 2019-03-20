@@ -154,8 +154,6 @@
 				satellite: true
 			});
 			
-			
-			
 			_MapEventBus.on(_MapEvents.map_singleclick, function(event, data){
 				
 				addMarker(data.result.coordinate);
