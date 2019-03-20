@@ -23,11 +23,11 @@ try
 
 	if("A".equals(type)){
 		if("I".equals(flag)){
-			sql  = "INSERT INTO GIS_AUTO(OBJECTID, X, Y, DATE_, TIME, FACI_NM, FACI_ADDR, RV_CD, FACT_CODE, BRANCH_NO) "+ 
+			sql  = "INSERT INTO GIS_AUTO(OBJECTID, X, Y, DATE_, TIME, FACI_NM, FACI_ADDR, RV_CD, FACT_CODE, BRANCH_NO, USE_FLAG) "+ 
 					   "VALUES((SELECT MAX(OBJECTID)+1 FROM GIS_AUTO), "+X+", "+Y+","+ 
-					   "TO_CHAR(SYSDATE, 'YYYY/MM/DD'), TO_CHAR(SYSDATE, 'HH24:MI') , '"+FACI_NM+"', '"+FACI_ADDR+"', '"+RV_CD+"', '"+FACT_CODE+"', '"+BRANCH_NO+"')";			                                                                    
+					   "TO_CHAR(SYSDATE, 'YYYY/MM/DD'), TO_CHAR(SYSDATE, 'HH24:MI') , '"+FACI_NM+"', '"+FACI_ADDR+"', '"+RV_CD+"', '"+FACT_CODE+"', '"+BRANCH_NO+"', '"+USE_FLAG+"')";			                                                                    
 		}else if("U".equals(type)){
-			sql  = "UPDATE GIS_AUTO SET X = '"+X+"', Y = '"+Y+"',FACI_NM = '"+FACI_NM+"',FACI_ADDR = '"+FACI_ADDR+"', FACT_CODE='"+FACT_CODE+"', BRANCH_NO='"+BRANCH_NO+"'"+
+			sql  = "UPDATE GIS_AUTO SET X = '"+X+"', Y = '"+Y+"',FACI_NM = '"+FACI_NM+"',FACI_ADDR = '"+FACI_ADDR+"', FACT_CODE='"+FACT_CODE+"', BRANCH_NO='"+BRANCH_NO+"', USE_FLAG='"+USE_FLAG+"'"+
 					" WHERE FACT_CODE='"+FACT_CODE+"' AND BRANCH_NO='"+BRANCH_NO+"'"; 
 		}else if("D".equals(type)) {
 			sql  = "DELETE FROM GIS_AUTO"+

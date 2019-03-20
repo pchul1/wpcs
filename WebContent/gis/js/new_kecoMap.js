@@ -1199,7 +1199,8 @@ $(function() {
 							return [new ol.style.Style({
 								image: new ol.style.Icon({
 									opacity: 1,
-									src: url+layers[12].layerId+'/images/'+layers[12].url
+									src: url+layers[12].layerId+'/images/'+layers[12].url,
+									crossOrigin: 'Anonymous'
 								})
 							})];
 						}
@@ -1235,7 +1236,8 @@ $(function() {
 							return [new ol.style.Style({
 								image: new ol.style.Icon({
 									opacity: 1,
-									src: url+layers[13].layerId+'/images/'+layers[13].url
+									src: url+layers[13].layerId+'/images/'+layers[13].url,
+									crossOrigin: 'Anonymous'
 								})
 							})];
 						}
@@ -1271,7 +1273,8 @@ $(function() {
 							return [new ol.style.Style({
 								image: new ol.style.Icon({
 									opacity: 1,
-									src: url+layers[29].layerId+'/images/'+layers[29].url
+									src: url+layers[29].layerId+'/images/'+layers[29].url,
+									crossOrigin: 'Anonymous'
 								})
 							})];
 						}
@@ -1305,7 +1308,8 @@ $(function() {
 							return [new ol.style.Style({
 								image: new ol.style.Icon({
 									opacity: 1,
-									src: url+layers[30].layerId+'/images/'+layers[30].url
+									src: url+layers[30].layerId+'/images/'+layers[30].url,
+									crossOrigin: 'Anonymous'
 								})
 							})];
 						}
@@ -1339,7 +1343,8 @@ $(function() {
 							return [new ol.style.Style({
 								image: new ol.style.Icon({
 									opacity: 1,
-									src: url+layers[31].layerId+'/images/'+layers[31].url
+									src: url+layers[31].layerId+'/images/'+layers[31].url,
+									crossOrigin: 'Anonymous'
 								})
 							})];
 						}
@@ -1373,7 +1378,8 @@ $(function() {
 							return [new ol.style.Style({
 								image: new ol.style.Icon({
 									opacity: 1,
-									src: url+layers[32].layerId+'/images/'+layers[32].url
+									src: url+layers[32].layerId+'/images/'+layers[32].url,
+									crossOrigin: 'Anonymous'
 								})
 							})];
 						}
@@ -1484,23 +1490,21 @@ $(function() {
 			
 			if(x == undefined || y == undefined)
 				return;
+			
 			var nobj = {};
 			nobj.type = type;
 			nobj.x = x;
 			nobj.y = y;
 			nobj.obj = obj;
 			
-			if(flag == undefined)
+			if(flag == undefined){
 				this.markerData.push(nobj);
-			
-			var template = this.getInfoTemplate(type);
-			var symbol = this.getMargerSymbol(type);
-			var graphic = new esri.Graphic(esri.geometry.geographicToWebMercator(new esri.geometry.Point(x,y)), symbol);
-			
-			graphic.setAttributes(obj);
-			graphic.setInfoTemplate(template);
-			
-			page.view.markerLayer.add(graphic);
+			}
+				
+			var tempCoord = ol.proj.transform([parseFloat(x), parseFloat(y)], 'EPSG:4326', 'EPSG:3857');
+			nobj.obj.featureType = 'MARKER';
+			var feature = new ol.Feature({geometry:new ol.geom.Point(tempCoord), properties: nobj.obj});
+			page.view.markerLayer.getSource().addFeature(feature);
 			
 		};
 		
@@ -1512,23 +1516,21 @@ $(function() {
 			
 			if(x == undefined || y == undefined)
 				return;
+			
 			var nobj = {};
 			nobj.type = type;
 			nobj.x = x;
 			nobj.y = y;
 			nobj.obj = obj;
 			
-			if(flag == undefined)
+			if(flag == undefined){
 				this.markerData.push(nobj);
+			}
 			
-			var template = this.getInfoTemplate(type);
-			var symbol = this.getMargerSymbolTm(bermImg);
-			var graphic = new esri.Graphic(esri.geometry.geographicToWebMercator(new esri.geometry.Point(x,y)), symbol);
-			
-			graphic.setAttributes(obj);
-			graphic.setInfoTemplate(template);
-			
-			page.view.markerLayer.add(graphic);
+			var tempCoord = ol.proj.transform([parseFloat(x), parseFloat(y)], 'EPSG:4326', 'EPSG:3857');
+			nobj.obj.featureType = 'MARKER';
+			var feature = new ol.Feature({geometry:new ol.geom.Point(tempCoord), properties: nobj.obj});
+			page.view.markerLayer.getSource().addFeature(feature);
 			
 		};
 		
@@ -1725,12 +1727,32 @@ $(function() {
 			 
 			 if(feature){
 				 var featureInfo = feature.getProperties().properties;
+				 
 				 if(featureInfo.featureType == 'AUTO'){
-					 console.log('auto on click');
+					 
+					$('#system').val('A');
+					$('#system').trigger('change');
+					$kecoMap.model.baseObj.model.reloadDataForFact(featureInfo.FACT_CODE, featureInfo.RV_CD);
+					
+//					if($('#Image9').attr('class') == 'on'){
+//					}else if($('#Image10').attr('class') == 'on'){
+//						dobuffer("a",evt);
+//					}
+					
 				 } else if(featureInfo.featureType == 'TMS'){
-					 console.log('tms on click');
+					 $('#system').val('W');
+					 $('#system').trigger('change');
+					 $kecoMap.model.baseObj.model.reloadDataForFact(featureInfo.FACT_CODE);
 				 } else if(featureInfo.featureType == 'IPUSN'){
-					 console.log('ipusn on click');
+					 $('#system').val('U');
+					 $('#system').trigger('change');
+					 $kecoMap.model.baseObj.model.reloadDataForFact(featureInfo.FACT_CODE, featureInfo.RV_CD, featureInfo.BRANCH_NO);
+					 
+					 
+//					 if($('#Image9').attr('class') == 'on'){
+//					 }else if($('#Image10').attr('class') == 'on'){
+//						 dobuffer("u",evt);
+//					 }
 				 }else if(featureInfo.featureType == 'BO'){
 					 console.log('BO on click');
 				 } else if(featureInfo.featureType == 'DAM'){
@@ -1743,6 +1765,12 @@ $(function() {
 					 console.log('DAM_OBS on click');
 				 } else if(featureInfo.featureType == 'BO_OBS'){
 					 console.log('BO_OBS on click');
+				 } else if(featureInfo.featureType == 'MARKER'){
+					 console.log('MARKER on click');
+					 if(featureInfo.datatype == 'AC'){
+						 window.open("/waterpollution/waterPollutionDetail.do?clickMenu=32120&wpCode="+featureInfo.wpcode, 
+									'wpView','width='+window.screen.width+',height='+window.screen.height+',toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,left=0,top=0');
+					 }
 				 }
 			 } 
 		};
@@ -1836,13 +1864,13 @@ $(function() {
 			return [new ol.style.Style({
 						image: new ol.style.Icon({
 							opacity: 1,
-							src: tmsIconUrl
+							src: tmsIconUrl,
+							crossOrigin: 'Anonymous'
 						})
 					})];
 		}
 
-		pub.addipusnLayer = function(level)
-		{
+		pub.addipusnLayer = function(level) {
 			var firstFlag = false;
 			if($kecoMap.view.ipusnLayer == null){
 				var firstFlag = true;
@@ -1954,7 +1982,8 @@ $(function() {
 			return [new ol.style.Style({
 						image: new ol.style.Icon({
 							opacity: 1,
-							src: ipusnIconUrl
+							src: ipusnIconUrl,
+							crossOrigin: 'Anonymous'
 						})
 					})];
 		}
@@ -2073,7 +2102,8 @@ $(function() {
 			return [new ol.style.Style({
 						image: new ol.style.Icon({
 							opacity: 1,
-							src: autoIconUrl
+							src: autoIconUrl,
+							crossOrigin: 'Anonymous'
 						})
 					})];
 		}
@@ -2138,7 +2168,8 @@ $(function() {
 			return [new ol.style.Style({
 						image: new ol.style.Icon({
 							opacity: 1,
-							src: whIconUrl
+							src: whIconUrl,
+							crossOrigin: 'Anonymous'
 						})
 					})];
 		}
@@ -2203,6 +2234,7 @@ $(function() {
 		pub.tempBLayer = null;
 		
 		pub.markerLayer = null;
+		pub.markerSource = null;
 		pub.bufferLayer = null;
 		
 		pub.fLayer = null;
@@ -2210,8 +2242,91 @@ $(function() {
 		pub.dtype = -1; // 0 = 버퍼 , 2 = 길이 , 3 = 면적 , 4 = 좌표 얻기
 		pub.overviewDiv = null;
 		
+		pub.markerStyleFunction = function(){
+			
+			var level = _CoreMap.getZoom();
+			
+			var size = 30;
+			if(type == 0 || type == 3 || type == 5) {
+				if(level < 3)
+					size = 30;
+				else if( level < 8)
+					size = 50;
+				else
+					size = 80;
+			} else if( type == 2 ) {
+				if(level < 4)
+					size = 16;
+				else
+					size = 32;
+			} else if(type == 4) {
+				if(level < 4)
+					size = 16;
+				else
+					size = 24;
+			}
+			
+			var img = '/gis/images/event'+size+'.gif';
+			
+			if(type == 1)
+				img = '/gis/images/event'+size+'.gif';
+			else if(type == 2)
+				img = '/gis/images/flag'+size+'.gif';
+			else if(type == 3)
+				img = '/gis/images/rss_'+size+'.gif';
+			else if(type == 4)
+				img = '/gis/images/rss'+size+'.png';
+			
+			/**
+			 * 2014.10.27 주제도 관련 추가
+			 * kyr
+			 */
+			else if(type == 5)
+				img = '/gis/images/circle6_'+size+'.png';
+			
+			/**
+			 * 2014.10.27 주제도 관련 추가
+			 * 사고현황 아이콘
+			 */
+			else if(type == 10)
+				img = '/gis/images/watereventSTA.gif';
+
+			else if(type == 11)
+				img = '/gis/images/watereventPA.gif';
+
+			else if(type == 12)
+				img = '/gis/images/watereventPB.gif';
+
+			else if(type == 13)
+				img = '/gis/images/watereventPC.gif';
+
+			else if(type == 14)
+				img = '/gis/images/watereventPD.gif';
+			
+//			pictureMarkerSymbol.setOffset(parseInt(size/2),parseInt(size/2));
+			
+			return [new ol.style.Style({
+				image: new ol.style.Icon({
+					opacity: 1,
+					src: img,
+					crossOrigin: 'Anonymous'
+				})
+			})];
+		}
+		
 		// View 초기화
 		pub.init = function() {
+			page.view.markerSource = new ol.source.Vector({ });
+			
+			page.view.markerLayer =  new ol.layer.Vector({ 
+					name : 'markerLayer',
+					source : page.view.markerSource,
+					style : function(){
+						return page.view.markerStyleFunction;
+					}
+			}); 
+			
+			_MapEventBus.trigger(_MapEvents.map_addLayer, page.view.markerLayer);
 			
 			page.model.writeLayerLegend($define.ARC_SERVER_URL+'/rest/services/WPCS/MapServer/');
 		};
@@ -2344,23 +2459,23 @@ $(function() {
 			});
 		};
 		
-		pub.zoomEnd = function(extent, zoomFactor, anchor ,level) {
-			page.view.map.infoWindow.hide();
-			
-			if($kecoMap.model.markerData.length > 0) {
-				$kecoMap.view.markerLayer.clear();
-				
-				for ( var i = 0; i < $kecoMap.model.markerData.length; i++) {
-					$kecoMap.model.addMarker($kecoMap.model.markerData[i].type, $kecoMap.model.markerData[i].x,$kecoMap.model.markerData[i].y, $kecoMap.model.markerData[i].obj, 'zoom');
-				}
-			}
-			
-			if(window.location.href.indexOf('addrMap') <= -1) {
-//				$kecoMap.model.removeAllLayer();
-				$kecoMap.model.addAllLayer(level);
-			}
-			
-		};
+//		pub.zoomEnd = function(extent, zoomFactor, anchor ,level) {
+//			page.view.map.infoWindow.hide();
+//			
+//			if($kecoMap.model.markerData.length > 0) {
+//				$kecoMap.view.markerLayer.clear();
+//				
+//				for ( var i = 0; i < $kecoMap.model.markerData.length; i++) {
+//					$kecoMap.model.addMarker($kecoMap.model.markerData[i].type, $kecoMap.model.markerData[i].x,$kecoMap.model.markerData[i].y, $kecoMap.model.markerData[i].obj, 'zoom');
+//				}
+//			}
+//			
+//			if(window.location.href.indexOf('addrMap') <= -1) {
+////				$kecoMap.model.removeAllLayer();
+//				$kecoMap.model.addAllLayer(level);
+//			}
+//			
+//		};
 		// Controller 초기화
 		pub.init = function() {
 			// Model 과 View 초기화

@@ -121,6 +121,8 @@ $(function() {
 								}
 							}
 						});
+					}else{
+						$editMap.model.addMemtPoint(type, obj, callBack);
 					}
 				}, 
 				error:function(error){  

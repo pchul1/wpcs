@@ -267,8 +267,8 @@ $(function() {
 		};
 		
 		// 사고 지점 조회
-		pub.getAccident = function()
-		{
+		pub.getAccident = function() {
+			
 			$control.model.accidentData = [];
 			page.view.accidentDataView.setItems([]);
 			

@@ -289,9 +289,10 @@ var _CoreMap = function() {
 						style : new ol.style.Style({
 							image: new ol.style.Icon({
 								opacity: 1,
-								src: '/gis/new_images/post-it.png'
+								src: '/gis/new_images/post-it.png',
+								crossOrigin: 'Anonymous'
 							})
-						})
+						}) 
 				}); 
 
 				coreMap.addLayer(tempBranchLayer);
@@ -381,9 +382,17 @@ var _CoreMap = function() {
 				coreMap.once('postcompose', function(event) {
 					var canvas = event.context.canvas;
 					var mapImg = canvas.toDataURL('image/png'); 
-					var url = mapImg.replace(/^data:image\/[^;]+/, 'data:application/octet-stream');
-					$('#__fileDownloadIframe__').remove(); 
-					$('body').append('<iframe src='+url+' id="__fileDownloadIframe__" name="__fileDownloadIframe__" width="0" height="0" style="display:none;"/>');
+//					var url = mapImg.replace(/^data:image\/[^;]+/, 'data:application/octet-stream');
+					var url = mapImg.replace(/^data:image\/[^;]+/, '');
+					 
+					$('#_imageData_').val(url);
+					 
+					document._imagedownload_.target = "_imagedownloadFrame_";
+					document._imagedownload_.action="/psupport/jsps/mapImageSave.jsp";
+					document._imagedownload_.submit();
+					 
+//					$('#__fileDownloadIframe__').remove(); 
+//					$('body').append('<iframe src='+url+' id="__fileDownloadIframe__" name="__fileDownloadIframe__" width="0" height="0" style="display:none;"/>');
 				}); 
 				coreMap.renderSync();
 			}else if(toolType == TOOL_TYPE_SAVE){
@@ -785,8 +794,9 @@ var _CoreMap = function() {
 	      				CQL_FILTER:layerInfos[i].cql,
 	      				urlType: 'geoServer'
 	      				},
-      				serverType:'geoserver'
-      			}),
+      				serverType:'geoserver',
+    				crossOrigin: 'Anonymous'
+      			}), 
   				name: layerInfos[i].layerId,
   				zIndex: (layerInfos.zIndex ? layerInfos.zIndex: 1)
 			});

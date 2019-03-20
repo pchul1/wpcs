@@ -836,6 +836,13 @@ img{}
 		</c:if>
 		<!-- 4대강 수질상황 감시 영역 끝 -->
 		
+		<div id="main_div_m2" style="display:none;">
+			<form method="post" name="_imagedownload_">
+				<input type="hidden" id="_imageData_" name="_imageData_"></input>
+				<iframe id="_imagedownloadFrame_" name="_imagedownloadFrame_" width="1250" height="685" frameborder="0"></iframe> 
+			</form>
+		</div>
+		
 		<!--하단 패널 Start-->
 		<!-- Footer Start-->
 		<div id="footer" style="z-index: 100">
