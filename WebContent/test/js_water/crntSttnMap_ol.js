@@ -68,21 +68,75 @@
 		_MapEventBus.trigger(_MapEvents.map_addLayer,lyr);
 	};
 	
-	var styleFunction = function(f, r){
-		var p = f.getProperties();
+	var setSymbolColor = function(f, r){
+		var circle;
+		var symbolLegendObj = {
+				'NORMAL':{color:'#0FED64',flag:'basic'},
+				'A1':{color:'#7CAAF4',flag:'basic'},
+				'A2':{color:'#EDE91C',flag:'basic'},
+				'A3':{color:'#ED5610',flag:'basic'},
+				'A4':{color:'#ED2009',flag:'basic'},
+				'M':{color:'#6B6362',flag:'basic'},
+				'PHY':{flag:'item',standValue:0.0,color:function(v){
+					var color = '#7B7B7B';
+					var val = parseFloat(v);
+					if(0 <= val && val <= 5.9){
+						color = '#ED5610';
+					}else if(6 <= val && val <= 9.5){
+						color = '#42B9F4';
+					}else if(9.6 <= val && val <= 9999.0){
+						color = '#ED5610';
+					}
+					return color;
+				}},
+				'V2':{flag:'item',standValue:10.0,color:setLegendColor},
+				'V3':{flag:'item',standValue:50.0,color:setLegendColor},
+				'V4':{flag:'item',standValue:40.0,color:setLegendColor},
+				'V5':{flag:'item',standValue:30.0,color:setLegendColor},
+				'V6':{flag:'item',standValue:4.0,color:setLegendColor},
+		};
 		
-		return [new ol.style.Style({
-			image : new ol.style.Circle({
+		if(symbolLegendObj[itemValue].flag == 'item'){
+			circle = new ol.style.Circle({
 				radius : 37.5,
 				fill : new ol.style.Fill({
-					//color : '#ED5610', // red
-					color : '#42B9F4' // blue
+					color : symbolLegendObj[itemValue].color(f.getProperties()[itemValue],symbolLegendObj[itemValue].standValue)
 				}),
 				stroke : new ol.style.Stroke({
 					color : '#ACADA8',
 					width : 3
 				})
-			}),
+			});
+		}else{
+			circle = new ol.style.Circle({
+				radius : 37.5,
+				fill : new ol.style.Fill({
+					color : symbolLegendObj[itemValue].color
+				})
+			});
+		}
+		
+		return circle;
+	};
+	
+	var setLegendColor = function(v, standValue){
+		var value = parseFloat(v);
+		var color = '#7B7B7B';
+		if(0 <= value && value <= standValue){
+			color = '#42B9F4';
+		}else if((standValue+0.1) <= value && value <= 9999.0){
+			color = '#ED5610';
+		}
+		return color;
+	};
+	
+	var styleFunction = function(f, r){
+		var p = f.getProperties();
+		
+		var image = setSymbolColor(f, r);
+		
+		return [new ol.style.Style({
+			image : image,
 			text:new ol.style.Text({
 						textAlign : 'center',
 						textBaseline : 'top',
