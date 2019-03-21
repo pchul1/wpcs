@@ -5,6 +5,7 @@
 	
 	var cityFeature;
 	var cityDstrcFeature;
+	var factValueFeature;
 	
 	var itemValue = 'PHY';
 	
@@ -15,9 +16,24 @@
 		$.when(_MapService.getWfs(':CITY_POINT','*'),
 				_MapService.getWfs(':CITY_DSTRC_POINT','*'),
 				getData('/psupport/jsps/getCityData.jsp'),
-				getData('/psupport/jsps/getCityDstrcData.jsp')).then(function(feature1, feature2, data1, data2) {
+				getData('/psupport/jsps/getCityDstrcData.jsp'),
+				getData('/psupport/jsps/getFactValueForItem.jsp')).then(function(feature1, feature2, data1, data2, factValue) {
 					cityFeature = setFeatures(feature1[0].features, JSON.parse(data1[0]));
 					cityDstrcFeature = setFeatures(feature2[0].features, JSON.parse(data2[0]));
+					
+					var fArr = [];
+					var factValueResult = JSON.parse(factValue[0]);
+					
+					for(var i = 0; i < factValueResult.length; i++){
+						var feature = new ol.Feature();
+						var tempCoord = ol.proj.transform([parseFloat(factValueResult[i].X), parseFloat(factValueResult[i].Y)], 'EPSG:4326', 'EPSG:3857');
+						feature.setGeometry(new ol.geom.Point(tempCoord));
+						feature.setProperties(factValueResult[i]);
+						fArr.push(feature);
+					}
+					
+					factValueFeature = fArr;
+					
 					writeLayer();
 				});
 	};
@@ -44,10 +60,52 @@
 			var getZoom = _CoreMap.getMap().getView().getZoom();
 			if(preZoomLevel != getZoom){
 				preZoomLevel = getZoom;
-				
 				writeLayer();
 			}
 		});
+		
+		_MapEventBus.on(_MapEvents.map_mousemove, function(event, data){
+			 var pixel = _CoreMap.getMap().getEventPixel(data.result.originalEvent);
+			 
+			 var feature = _CoreMap.getMap().forEachFeatureAtPixel(pixel, function(feature, layer) {
+				 var p = feature.getProperties();
+				 if(p.BRANCH_NO){
+					console.log(p.FACT_NAME);
+				 }
+			 });
+		}); 
+	};
+	
+	var getRenderer = function (f, r) {
+		var p = f.getProperties();
+		
+		var symbols = {};			
+		
+		symbols['W0'] = './images/t_1.png';
+		symbols['W1'] = './images/t_3.png';
+		symbols['W2'] = './images/t_4.png';
+		symbols['W3'] = './images/t_5.png';
+		symbols['W9'] = './images/t_6.png';
+		
+		symbols['A0'] = './images/a_1.png';
+		symbols['A1'] = './images/a_2.png';
+		symbols['A2'] = './images/a_3.png';
+		symbols['A3'] = './images/a_4.png';
+		symbols['A4'] = './images/a_5.png';
+		symbols['A9'] = './images/a_6.png';
+		
+		symbols['U0'] = './images/u_1.png';
+		symbols['U1'] = './images/u_2.png';
+		symbols['U2'] = './images/u_3.png';
+		symbols['U3'] = './images/u_4.png';
+		symbols['U4'] = './images/u_5.png';
+		symbols['U9'] = './images/u_6.png';
+
+		return new ol.style.Icon({
+            opacity: 1,
+            scale:1.5,
+            src: symbols[p.SYS_KIND+p.MIN_OR]
+        });
 	};
 	
 	var writeLayer = function(){
@@ -57,15 +115,36 @@
 			lyr = null;
 		}
 		
-		lyr = new ol.layer.Vector({
-	        source: new ol.source.Vector({
-				features: _CoreMap.getMap().getView().getZoom() > 9 ? cityDstrcFeature : cityFeature
-			}),
-			style:styleFunction,
-			opacity: 0.9
-		});
+		var isFactValue = _CoreMap.getMap().getView().getZoom() > 11 ? true : false;
+		
+		if(isFactValue){
+			$('#playBtnDiv').hide();
+			lyr = new ol.layer.Vector({
+		        source: new ol.source.Vector({
+					features: factValueFeature
+				}),
+				style:factValueStyleFunction,
+				opacity: 1
+			});
+			
+		}else{
+			$('#playBtnDiv').show();
+			lyr = new ol.layer.Vector({
+		        source: new ol.source.Vector({
+					features: _CoreMap.getMap().getView().getZoom() > 9 ? cityDstrcFeature : cityFeature
+				}),
+				style:styleFunction,
+				opacity: 0.9
+			});
+		}
 		
 		_MapEventBus.trigger(_MapEvents.map_addLayer,lyr);
+	};
+	
+	var factValueStyleFunction = function(f, r){
+		return [new ol.style.Style({
+			image : getRenderer(f)
+		})];
 	};
 	
 	var setSymbolColor = function(f, r){
