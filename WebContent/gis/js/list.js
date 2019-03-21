@@ -203,6 +203,7 @@ $(function() {
 				url: url,
 				dataType: 'text',
 				success: function(data) {
+					
 					data = xml2json.parser(data);
 					
 					var datas = undefined;
