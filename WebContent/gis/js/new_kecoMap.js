@@ -726,6 +726,8 @@ $(function() {
 			
 			var zoom = _CoreMap.getZoom();
 			
+			zoom = zoom-7;
+			
 			if(zoom < 10){
 				_MapEventBus.trigger(_MapEvents.setZoom , 10);
 			}
@@ -1493,6 +1495,9 @@ $(function() {
 			
 			var nobj = {};
 			nobj.type = type;
+			obj.markerType = 'map';
+			obj.iconType = type;
+			
 			nobj.x = x;
 			nobj.y = y;
 			nobj.obj = obj;
@@ -1503,7 +1508,10 @@ $(function() {
 				
 			var tempCoord = ol.proj.transform([parseFloat(x), parseFloat(y)], 'EPSG:4326', 'EPSG:3857');
 			nobj.obj.featureType = 'MARKER';
+			nobj.obj.markerIndex = this.markerData.length;
+			
 			var feature = new ol.Feature({geometry:new ol.geom.Point(tempCoord), properties: nobj.obj});
+			
 			page.view.markerLayer.getSource().addFeature(feature);
 			
 		};
@@ -1519,6 +1527,10 @@ $(function() {
 			
 			var nobj = {};
 			nobj.type = type;
+			obj.markerType = 'theme';
+			obj.iconType = type;
+			obj.iconImg = bermImg;
+			
 			nobj.x = x;
 			nobj.y = y;
 			nobj.obj = obj;
@@ -1530,81 +1542,18 @@ $(function() {
 			var tempCoord = ol.proj.transform([parseFloat(x), parseFloat(y)], 'EPSG:4326', 'EPSG:3857');
 			nobj.obj.featureType = 'MARKER';
 			var feature = new ol.Feature({geometry:new ol.geom.Point(tempCoord), properties: nobj.obj});
+			
 			page.view.markerLayer.getSource().addFeature(feature);
 			
 		};
 		
 		pub.markerClear = function() {
 			if(page.view.markerLayer){
-				page.view.markerLayer.clear();
-			}
+				page.view.markerLayer.getSource().clear();
+			} 
 			this.markerData = [];
 		};
 		
-		pub.getMargerSymbol = function(type) {
-			var size = 30;
-			if(type == 0 || type == 3 || type == 5) {
-				var level = page.view.map.getLevel();
-				if(level < 3)
-					size = 30;
-				else if( level < 8)
-					size = 50;
-				else
-					size = 80;
-			} else if( type == 2 ) {
-				var level = page.view.map.getLevel();
-				if(level < 4)
-					size = 16;
-				else
-					size = 32;
-			} else if(type == 4) {
-				var level = page.view.map.getLevel();
-				if(level < 4)
-					size = 16;
-				else
-					size = 24;
-			}
-			var img = '/gis/images/event'+size+'.gif';
-			
-			if(type == 1)
-				img = '/gis/images/event'+size+'.gif';
-			else if(type == 2)
-				img = '/gis/images/flag'+size+'.gif';
-			else if(type == 3)
-				img = '/gis/images/rss_'+size+'.gif';
-			else if(type == 4)
-				img = '/gis/images/rss'+size+'.png';
-			
-			/**
-			 * 2014.10.27 주제도 관련 추가
-			 * kyr
-			 */
-			else if(type == 5)
-				img = '/gis/images/circle6_'+size+'.png';
-			
-			/**
-			 * 2014.10.27 주제도 관련 추가
-			 * 사고현황 아이콘
-			 */
-			else if(type == 10)
-				img = '/gis/images/watereventSTA.gif';
-
-			else if(type == 11)
-				img = '/gis/images/watereventPA.gif';
-
-			else if(type == 12)
-				img = '/gis/images/watereventPB.gif';
-
-			else if(type == 13)
-				img = '/gis/images/watereventPC.gif';
-
-			else if(type == 14)
-				img = '/gis/images/watereventPD.gif';
-			
-			var pictureMarkerSymbol = new esri.symbol.PictureMarkerSymbol(img, size, size);
-			pictureMarkerSymbol.setOffset(parseInt(size/2),parseInt(size/2));
-			return pictureMarkerSymbol;
-		};
 		
 
 		pub.LayerAuthIn = function(FACT_CODE,BRANCH_NO,SYS) {
@@ -1825,7 +1774,7 @@ $(function() {
 		
 		pub.tmsStyleFunction = function(feature, resolution){
 			
-			var zoom = _CoreMap.getZoom();
+			var zoom = _CoreMap.getZoom()-7;
 			
 			var symbol1 = window.location.origin+'/gis/images/auticon/t_1.png';
 			var symbol2 = window.location.origin+'/gis/images/auticon/t_2.png';
@@ -1919,7 +1868,7 @@ $(function() {
 		};
 		pub.ipusnStyleFunction = function(feature, resolution){
 			
-			var zoom = _CoreMap.getZoom();
+			var zoom = _CoreMap.getZoom()-7;
 			
 			var symbol  = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/2/images/'+$define.ARC_SERVER_IMG_USN1;
 			var symbol1 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/2/images/'+$define.ARC_SERVER_IMG_USN2;
@@ -2038,7 +1987,7 @@ $(function() {
 		};
 		pub.autoStyleFunction = function(feature, resolution){
 			
-			var zoom = _CoreMap.getZoom();
+			var zoom = _CoreMap.getZoom()-7;
 			
 			var symbol = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO1;
 			var symbol1 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO2;
@@ -2161,7 +2110,7 @@ $(function() {
 		
 		pub.whStyleFunction = function(feature, resolution){
 			
-			var zoom = _CoreMap.getZoom();
+			var zoom = _CoreMap.getZoom()-7;
 			
 			var whIconUrl = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/5/images/'+$define.ARC_SERVER_IMG_WH;
 			
@@ -2237,75 +2186,119 @@ $(function() {
 		pub.markerSource = null;
 		pub.bufferLayer = null;
 		
+		pub.markerOverlay = [];
+		
 		pub.fLayer = null;
 		
 		pub.dtype = -1; // 0 = 버퍼 , 2 = 길이 , 3 = 면적 , 4 = 좌표 얻기
 		pub.overviewDiv = null;
 		
-		pub.markerStyleFunction = function(){
+		pub.markerStyleFunction = function(feature, resolution){
 			
-			var level = _CoreMap.getZoom();
+			var level = _CoreMap.getZoom() - 7;
+		
+			var featureInfo = feature.getProperties().properties;
 			
 			var size = 30;
-			if(type == 0 || type == 3 || type == 5) {
+			var img; 
+			
+			var hw = 30;
+			
+			if(featureInfo.markerType == 'map'){
+				
+				if(featureInfo.iconType == 0 || featureInfo.iconType == 3 || featureInfo.iconType == 5) {
+					if(level < 3)
+						size = 30;
+					else if( level < 8)
+						size = 50;
+					else
+						size = 80;
+				} else if( featureInfo.iconType == 2 ) {
+					if(level < 4)
+						size = 16;
+					else
+						size = 32;
+				} else if(featureInfo.iconType == 4) {
+					if(level < 4)
+						size = 16;
+					else
+						size = 24;
+				}
+				
+				var img = '/gis/images/event'+size+'.gif';
+				
+				if(featureInfo.iconType == 1)
+					img = '/gis/images/event'+size+'.gif';
+				else if(featureInfo.iconType == 2)
+					img = '/gis/images/flag'+size+'.gif';
+				else if(featureInfo.iconType == 3)
+					img = '/gis/images/rss_'+size+'.gif';
+				else if(featureInfo.iconType == 4)
+					img = '/gis/images/rss'+size+'.png';
+				
+				/**
+				 * 2014.10.27 주제도 관련 추가
+				 * kyr
+				 */
+				else if(featureInfo.iconType == 5)
+					img = '/gis/images/circle6_'+size+'.png';
+				
+				/**
+				 * 2014.10.27 주제도 관련 추가
+				 * 사고현황 아이콘
+				 */
+				else if(featureInfo.iconType == 10){
+					img = '/gis/images/watereventSTA.gif';
+					size = 40;
+				} else if(featureInfo.iconType == 11){
+					img = '/gis/images/watereventPA.gif';
+					size = 40;
+				} else if(featureInfo.iconType == 12){
+					img = '/gis/images/watereventPB.gif';
+					size = 40;
+				} else if(featureInfo.iconType == 13){
+					img = '/gis/images/watereventPC.gif';
+					size = 40;
+				} else if(featureInfo.iconType == 14){
+					img = '/gis/images/watereventPD.gif';
+					size = 40;
+				}
+			}else{
+				
 				if(level < 3)
 					size = 30;
 				else if( level < 8)
 					size = 50;
 				else
 					size = 80;
-			} else if( type == 2 ) {
-				if(level < 4)
-					size = 16;
-				else
-					size = 32;
-			} else if(type == 4) {
-				if(level < 4)
-					size = 16;
-				else
-					size = 24;
+				
+				img = '/gis/images/'+featureInfo.iconImg+'_'+size+'.png';
 			}
 			
-			var img = '/gis/images/event'+size+'.gif';
-			
-			if(type == 1)
-				img = '/gis/images/event'+size+'.gif';
-			else if(type == 2)
-				img = '/gis/images/flag'+size+'.gif';
-			else if(type == 3)
-				img = '/gis/images/rss_'+size+'.gif';
-			else if(type == 4)
-				img = '/gis/images/rss'+size+'.png';
-			
-			/**
-			 * 2014.10.27 주제도 관련 추가
-			 * kyr
-			 */
-			else if(type == 5)
-				img = '/gis/images/circle6_'+size+'.png';
-			
-			/**
-			 * 2014.10.27 주제도 관련 추가
-			 * 사고현황 아이콘
-			 */
-			else if(type == 10)
-				img = '/gis/images/watereventSTA.gif';
-
-			else if(type == 11)
-				img = '/gis/images/watereventPA.gif';
-
-			else if(type == 12)
-				img = '/gis/images/watereventPB.gif';
-
-			else if(type == 13)
-				img = '/gis/images/watereventPC.gif';
-
-			else if(type == 14)
-				img = '/gis/images/watereventPD.gif';
+			hw = size;
 			
 //			pictureMarkerSymbol.setOffset(parseInt(size/2),parseInt(size/2));
+			 
+			if($kecoMap.view.markerOverlay[featureInfo.markerIndex]){
+				_CoreMap.getMap().removeOverlay($kecoMap.view.markerOverlay[featureInfo.markerIndex]);
+			}
 			
-			return [new ol.style.Style({
+			var img1 = document.createElement("IMG");
+			img1.height = hw;
+			img1.width = hw;
+			img1.src = img;
+			
+			var marker = new ol.Overlay({
+				  position: feature.getGeometry().getCoordinates(),
+				  positioning: 'center-center',
+				  element: img1, 
+				  stopEvent: false
+			});
+			
+			_CoreMap.getMap().addOverlay(marker);
+			$kecoMap.view.markerOverlay[featureInfo.markerIndex] = marker;
+			
+ 			return [new ol.style.Style({
 				image: new ol.style.Icon({
 					opacity: 1,
 					src: img,
@@ -2316,16 +2309,13 @@ $(function() {
 		
 		// View 초기화
 		pub.init = function() {
-			page.view.markerSource = new ol.source.Vector({ });
 			
-			page.view.markerLayer =  new ol.layer.Vector({ 
+			page.view.markerLayer = new ol.layer.Vector({ 
 					name : 'markerLayer',
-					source : page.view.markerSource,
-					style : function(){
-						return page.view.markerStyleFunction;
-					}
+					source : new ol.source.Vector({ }),
+					style : page.view.markerStyleFunction
 			}); 
-			
+			 
 			_MapEventBus.trigger(_MapEvents.map_addLayer, page.view.markerLayer);
 			
 			page.model.writeLayerLegend($define.ARC_SERVER_URL+'/rest/services/WPCS/MapServer/');

@@ -34,14 +34,28 @@
 <link rel="stylesheet" type="text/css" href="<c:url value='/gis/css/gis_style.css'/>"/>
 <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css">
 <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
-<script type="text/javascript" src="/gis/gis/jsapi_vsdoc10_v36.js"></script>
+<!-- <script type="text/javascript" src="/gis/gis/jsapi_vsdoc10_v36.js"></script> -->
 
-<script src="http://js.arcgis.com/3.8/"></script>
+<!-- <script src="http://js.arcgis.com/3.8/"></script> -->
 
 <script src="/gis/js/xml2json.js"></script>
 <script src="/gis/js/common.js"></script>
-<script src="/gis/js/kecoMap.js"></script>
+<script src="/gis/js/new_kecoMap.js"></script>
 <script src="/gis/js/thematicMap.js"></script>
+
+
+<script type="text/javascript" src="/gis/new_js/lib/proj4.js" ></script>
+<script type="text/javascript" src="/gis/new_js/lib/mapEventBus.js" ></script>
+<!-- <script type="text/javascript" src="/gis/new_js/lib/ol/ol.js"></script> -->
+<script type="text/javascript" src="http://tsauerwein.github.io/ol3/mapbox-gl-js/build/ol.js"></script>
+ 
+<script type="text/javascript" src="/gis/new_js/lib/jsts/jsts.min.js"></script>
+
+<script type="text/javascript" src="/gis/new_js/mapService.js"></script>
+<script type="text/javascript" src="/gis/new_js/lib/vworldLayer.js"></script>
+<script type="text/javascript" src="/gis/new_js/lib/coreMap.js"></script>
+<script type="text/javascript" src="/gis/new_js/lib/jquery-ui.js"></script>
+
 <script type="text/javascript">
 	//관리자 외에 등록 된 측정소가 없을 경우 메인으로 이동
 	if(user_roleCode != 'ROLE_ADMIN'){
@@ -53,6 +67,11 @@
 	
 //<![CDATA[       
 	$(function() {
+		
+		_CoreMap.init('map',{
+			satellite: true
+		});
+		
 		//user 측정소권한에 따른 수계 고정
 		if(user_roleCode == 'ROLE_ADMIN'){
 			selectedSugyeInMemberId(user_riverid, 'searchSugye');
@@ -984,10 +1003,10 @@
 						<form name="frm" action="" method="post">
 						<div class="mapBxTm" style=height:600px;>
 							<div id="map" class="claro" style="width:100%; height:100%; border:1px solid #000; position:relative;">
-								<div id="tool" style="right:1px; top:10px; position:absolute; width:100px; height:24px; z-index:10;">
-									<div class="tool_bu1"><a href="javascript:$kecoMap.model.generalMap();" onMouseOut="$kecoMap.controller.MM_swapImgRestore('Image1','/gis/images/tool_1_off.gif')" onMouseOver="$kecoMap.controller.MM_swapImage('Image1','/gis/images/tool_1_over1.gif',1)" ><img idx="0" src="/gis/images/tool_1_over1.gif" id="Image1" width="42" height="24" border="0"></a></div>
-									<div class="tool_bu1"><a href="javascript:$kecoMap.model.flightMap();" onMouseOut="$kecoMap.controller.MM_swapImgRestore('Image2','/gis/images/tool_2_off.gif')" onMouseOver="$kecoMap.controller.MM_swapImage('Image2','/gis/images/tool_2_over1.gif',1)" ><img idx="1" src="/gis/images/tool_2_off.gif" id="Image2" width="42" height="24" border="0"></a></div>
-								</div>
+<!-- 								<div id="tool" style="right:1px; top:10px; position:absolute; width:100px; height:24px; z-index:10;"> -->
+<!-- 									<div class="tool_bu1"><a href="javascript:$kecoMap.model.generalMap();" onMouseOut="$kecoMap.controller.MM_swapImgRestore('Image1','/gis/images/tool_1_off.gif')" onMouseOver="$kecoMap.controller.MM_swapImage('Image1','/gis/images/tool_1_over1.gif',1)" ><img idx="0" src="/gis/images/tool_1_over1.gif" id="Image1" width="42" height="24" border="0"></a></div> -->
+<!-- 									<div class="tool_bu1"><a href="javascript:$kecoMap.model.flightMap();" onMouseOut="$kecoMap.controller.MM_swapImgRestore('Image2','/gis/images/tool_2_off.gif')" onMouseOver="$kecoMap.controller.MM_swapImage('Image2','/gis/images/tool_2_over1.gif',1)" ><img idx="1" src="/gis/images/tool_2_off.gif" id="Image2" width="42" height="24" border="0"></a></div> -->
+<!-- 								</div> -->
 								<div id="search_result" style="margin-left: -220px;">
 									<div id="resultToggle">
 										<img src="/images/renewal2/toggle_bin.png" alt="닫기" />
