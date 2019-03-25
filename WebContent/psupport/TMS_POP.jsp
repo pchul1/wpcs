@@ -7,13 +7,46 @@
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="/gis/css/common.css"/>
 <link rel="stylesheet" type="text/css" href="/gis/css/gis_bj.css"/>
-<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css"/>
-<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css"/>
+<!-- <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css"/>
+<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css"/> -->
 
 <!-- <link rel="stylesheet" type="text/css" href="http://mleibman.github.io/SlickGrid/slick.grid.css"/> -->
 <link rel="stylesheet" type="text/css" href="/slickgrid/css/slick.grid.css"/>
 <link rel="stylesheet" type="text/css" href="/js/JQuery/css/ui.datepicker.css"/>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script type="text/javascript" src="/slickgrid/js/jquery.event.drag-2.2.js"></script>
+<script type="text/javascript" src="/slickgrid/js/slick.core.js"></script>
+<!-- <script type="text/javascript" src="/slickgrid/js/slick.grid.js"></script> -->
+<script type="text/javascript" src="/slickgrid/js/slick.grid_2.2.2.js"></script>
+<script type="text/javascript" src="/slickgrid/js/slick.dataview.js"></script>
+<script type="text/javascript" src="/slickgrid/js/slick.rowselectionmodel.js"></script>
 
+<script type="text/javascript" src="/gis/js/organictabs.jquery.js"></script>
+<script type="text/javascript" src="/gis/js/acco.js"></script>
+<script type="text/javascript" src="/gis/js/UI.js"></script>
+
+<script type="text/javascript" src="/gis/gis/jsapi_vsdoc10_v36.js"></script>
+<script type="text/javascript" src="/gis/js/jquery.dialog.custom.js"></script>
+<script type="text/javascript" src="/js/JQuery/ui/ui.datepicker.js"></script>
+<script type="text/javascript" src="/js/JQuery/ui/ui.datepicker.js"></script>
+
+<script type="text/javascript" src="/gis/new_js/lib/proj4.js" ></script>
+<script type="text/javascript" src="/gis/new_js/lib/mapEventBus.js" ></script>
+<script type="text/javascript" src="http://tsauerwein.github.io/ol3/mapbox-gl-js/build/ol.js"></script>
+<script type="text/javascript" src="/gis/new_js/mapService.js"></script>
+<script type="text/javascript" src="/gis/new_js/lib/vworldLayer.js"></script>
+<script type="text/javascript" src="/gis/new_js/lib/coreMap.js"></script>
+
+
+<!-- <script src="http://js.arcgis.com/3.8/"></script> -->
+
+<script src="/gis/js/define.js"></script>
+<script src="/gis/js/common.js"></script>
+<!-- <script src="/gis/js/kecoMapSub.js"></script> -->
+<script src="/gis/js/new_kecoMapSub.js"></script>
+<script src="/gis/js/xml2json.js"></script>
+<script src="/gis/js/new_control.js"></script>
 <title>수질오염 방제정보 시스템</title>
 <style>
 
@@ -27,6 +60,24 @@ img{}
 
 </style>
 <script type="text/javascript">
+
+$(function () {
+	
+	var dailyWorkAppCheck = '${dailyWorkAppCheck}';
+
+	if(dailyWorkAppCheck=='Y'){
+		layerPopOpen('layerApprovalIns');
+	}
+	
+	_CoreMap.init('map',{
+		satellite: true,
+		measure:true,
+		print:true,
+		save:true,
+		search:true,
+		temp:true
+	});
+});
 
 	var Request = function()
 	{
@@ -53,31 +104,7 @@ img{}
 
 	var user_riverid = request.getParameter('riverid')
 </script>
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.js"></script>
-<script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-<script type="text/javascript" src="/slickgrid/js/jquery.event.drag-2.2.js"></script>
-<script type="text/javascript" src="/slickgrid/js/slick.core.js"></script>
-<!-- <script type="text/javascript" src="/slickgrid/js/slick.grid.js"></script> -->
-<script type="text/javascript" src="/slickgrid/js/slick.grid_2.2.2.js"></script>
-<script type="text/javascript" src="/slickgrid/js/slick.dataview.js"></script>
-<script type="text/javascript" src="/slickgrid/js/slick.rowselectionmodel.js"></script>
 
-<script type="text/javascript" src="/gis/js/organictabs.jquery.js"></script>
-<script type="text/javascript" src="/gis/js/acco.js"></script>
-<script type="text/javascript" src="/gis/js/UI.js"></script>
-
-<script type="text/javascript" src="/gis/gis/jsapi_vsdoc10_v36.js"></script>
-<script type="text/javascript" src="/gis/js/jquery.dialog.custom.js"></script>
-<script type="text/javascript" src="/js/JQuery/ui/ui.datepicker.js"></script>
-<script type="text/javascript" src="/js/JQuery/ui/ui.datepicker.js"></script>
-
-<script src="http://js.arcgis.com/3.8/"></script>
-
-<script src="/gis/js/define.js"></script>
-<script src="/gis/js/common.js"></script>
-<script src="/gis/js/kecoMapSub.js"></script>
-<script src="/gis/js/xml2json.js"></script>
-<script src="/gis/js/control.js"></script>
 </head>
 
 <body>

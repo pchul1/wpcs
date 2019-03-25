@@ -20,3 +20,9 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+WebContent/WEB-INF/lib/spring-security-core-2.0.4/META-INF/maven/org.springframework.security/spring-security-core/.classpath
+WebContent/WEB-INF/lib/spring-security-core-2.0.4/META-INF/maven/org.springframework.security/spring-security-core/.gitignore
+WebContent/WEB-INF/lib/spring-security-core-2.0.4/META-INF/maven/org.springframework.security/spring-security-core/.project
+WebContent/WEB-INF/lib/spring-security-core-2.0.4/META-INF/maven/org.springframework.security/spring-security-core/.settings/org.eclipse.jdt.core.prefs
+WebContent/WEB-INF/lib/spring-security-core-2.0.4/META-INF/maven/org.springframework.security/spring-security-core/.settings/org.eclipse.m2e.core.prefs
+build/classes/.gitignore
