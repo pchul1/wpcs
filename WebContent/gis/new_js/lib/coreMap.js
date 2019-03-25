@@ -1095,6 +1095,12 @@ var _CoreMap = function() {
 		},
 		refreshTempBranchLayer:function(){
 			refreshTempBranchLayer();
+		},
+		getTempBranchToolTip: function(){
+			return tempBranchToolTip;
+		},
+		getTempBranchTooltipElement: function(){
+			return tempBranchTooltipElement;
 		}
 	};
 }();

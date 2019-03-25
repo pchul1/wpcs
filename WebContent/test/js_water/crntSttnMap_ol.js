@@ -9,10 +9,14 @@
 	
 	var itemValue = 'PHY';
 	
+	var tempBranchToolTip;
+	var tempBranchTooltipElement;
+	
 	//NORMAL, A1, A2, A3, A4, M, PHY, V2, V3, V4, V5, V6
 	var init = function(){
 		setEvent();
-
+		createTempBranchTooltip();
+		
 		$.when(_MapService.getWfs(':CITY_POINT','*'),
 				_MapService.getWfs(':CITY_DSTRC_POINT','*'),
 				getData('/psupport/jsps/getCityData.jsp'),
@@ -61,6 +65,10 @@
 			if(preZoomLevel != getZoom){
 				preZoomLevel = getZoom;
 				writeLayer();
+				
+				if(tempBranchTooltipElement.className.indexOf('hidden') == -1){
+					tempBranchTooltipElement.className = 'tooltip hidden';
+				}
 			}
 		});
 		
@@ -70,7 +78,14 @@
 			 var feature = _CoreMap.getMap().forEachFeatureAtPixel(pixel, function(feature, layer) {
 				 var p = feature.getProperties();
 				 if(p.BRANCH_NO){
-					console.log(p.FACT_NAME);
+					 
+					 var html = '';
+					 html += '<div style="background: black; color: white; padding: 5px 5px; border-top-left-radius: 5px; border-top-right-radius: 5px;">' + p.FACT_CODE + '</div>';
+					 html += '<div style="background: white; padding: 5px 5px; letter-spacing: -1px; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px">' + p.FACT_NAME + '</div>';
+					 
+					 $('.tooltip').html(html);
+					 tempBranchToolTip.setPosition( feature.getGeometry().getCoordinates() );
+					 tempBranchTooltipElement.classList.remove('hidden');
 				 }
 			 });
 		}); 
@@ -100,12 +115,12 @@
 		symbols['U3'] = './images/u_4.png';
 		symbols['U4'] = './images/u_5.png';
 		symbols['U9'] = './images/u_6.png';
-
+		
 		return new ol.style.Icon({
-            opacity: 1,
-            scale:1.5,
-            src: symbols[p.SYS_KIND+p.MIN_OR]
-        });
+			opacity: 1,
+			src: symbols[p.SYS_KIND+p.MIN_OR],
+			scale:1.5
+		});
 	};
 	
 	var writeLayer = function(){
@@ -145,6 +160,20 @@
 		return [new ol.style.Style({
 			image : getRenderer(f)
 		})];
+	};
+	
+	var createTempBranchTooltip = function() {
+		if (tempBranchTooltipElement) {
+			tempBranchTooltipElement.parentNode.removeChild(tempBranchTooltipElement);
+		}
+		tempBranchTooltipElement = document.createElement('div');
+		tempBranchTooltipElement.className = 'tooltip hidden';
+		tempBranchToolTip = new ol.Overlay({
+        	element: tempBranchTooltipElement,
+        	offset: [20, 20],
+        	positioning: 'center-left'
+        });
+        _CoreMap.getMap().addOverlay(tempBranchToolTip);
 	};
 	
 	var setSymbolColor = function(f, r){
