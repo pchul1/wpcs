@@ -927,9 +927,13 @@ $(function() {
 					$('#38').attr('checked', 'true');
 					$kecoMap.model.updateLayerVisibility();
 				}
-				if($kecoMap.view.fLayer != undefined) {
-					page.view.map.removeLayer($kecoMap.view.fLayer);
-					$kecoMap.view.fLayer = undefined;
+				if(_CoreMap.getMap().getLayerForName('fLayer') != undefined) {
+					_CoreMap.getMap().getLayerForName('fLayer').getSource().clear();
+				}
+				
+				//버퍼 레이어가 존재하면 지우기
+				if(_CoreMap.getMap().getLayerForName('bufferLayer') != undefined){
+					_CoreMap.getMap().getLayerForName('bufferLayer').getSource().clear();	
 				}
 				
 				//센터 이동
@@ -946,25 +950,34 @@ $(function() {
 				// convert back from JSTS and replace the geometry on the feature
 				feature.setGeometry(parser.write(buffered));
 				
-				//$kecoMap.view.bufferLayer.clear();
 				//버퍼 레이어 그리기
 				page.view.bufferLayer.getSource().addFeature(feature);
 				
-				console.info(feature.getGeometry().getExtent());
+				// extent 변수 생성
+				var extent = feature.getGeometry().getExtent();
 				
-				_MapService.getRealPointWfs(":PST_CMPNY" , "ADDRESS", feature.getGeometry().getExtent()).then(function(response) {
+				// 방제업체 extent로 공간검색
+				_MapService.getRealExtentWfs(":PST_CMPNY" , "*" , extent).then(function(response) {
 					
-					console.info(response)
+					if(response.features.length > 0 ){
+						for(var i = 0 ; i < response.features.length; i++){
+							
+							// 방제시설 featureLayer 그리기
+							var fFeature = new ol.Feature({geometry:new ol.geom.Point(response.features[i].geometry.coordinates)});
+							page.view.fLayer.getSource().addFeature(fFeature);
+							
+						}
+					}
 					
 				})
 				
 				
-				return;
+				//return;
 				//var wm = esri.geometry.geographicToWebMercator(new esri.geometry.Point(obj.longitude,obj.latitude));
 				
 				//page.view.map.centerAt(wm);
 				
-				var params = new esri.tasks.BufferParameters();
+				/*var params = new esri.tasks.BufferParameters();
 				params.geometries = [wm];
 				params.distances = [distances];
 				params.unit = esri.tasks.GeometryService.UNIT_KILOMETER;
@@ -1000,7 +1013,8 @@ $(function() {
 							callback(results);
 						}
 					});
-				});
+				});*/
+				
 			} else {
 				$('#whLd').attr('checked', 'true');
 				$kecoMap.view.whLayer.show();
@@ -2425,6 +2439,20 @@ $(function() {
 			}); 
 			 
 			_MapEventBus.trigger(_MapEvents.map_addLayer, page.view.bufferLayer);
+			
+			page.view.fLayer = new ol.layer.Vector({ 
+					name : 'fLayer',
+					source : new ol.source.Vector({ }),
+					style : [new ol.style.Style({
+						image: new ol.style.Icon({
+							opacity: 1,
+							src: '/gis/images/watereventSTA.gif', // test symbol
+							crossOrigin: 'Anonymous'
+						})
+					})]
+			}); 
+			 
+			_MapEventBus.trigger(_MapEvents.map_addLayer, page.view.fLayer);
 			
 			page.model.writeLayerLegend($define.ARC_SERVER_URL+'/rest/services/WPCS/MapServer/');
 		};
