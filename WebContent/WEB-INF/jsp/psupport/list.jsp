@@ -58,7 +58,6 @@ String menuID = (String)request.getSession().getAttribute("clickMenu");
 <script type="text/javascript" src="/gis/new_js/mapService.js"></script>
 <script type="text/javascript" src="/gis/new_js/lib/vworldLayer.js"></script>
 <script type="text/javascript" src="/gis/new_js/lib/coreMap.js"></script>
-<script type="text/javascript" src="/gis/new_js/lib/jquery-ui.js"></script>
 
 <script type="text/javascript">
 	var MENU_ID = request.getParameter('menuID');

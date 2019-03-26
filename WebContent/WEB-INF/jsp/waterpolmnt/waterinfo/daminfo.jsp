@@ -749,8 +749,14 @@
 			$("#map").css("height", "501px");
 			
 			setTimeout(function(){
-				$kecoMap.view.map.resize();
-				setTimeout(function(){$kecoMap.view.map.reposition();},500);
+				var map = _CoreMap.getMap();
+				
+				if(map){
+					map.setSize([480, 500]);	
+				}
+				
+				//$kecoMap.view.map.resize();
+// 				setTimeout(function(){$kecoMap.view.map.reposition();},500);
 				}, 500);
 			
 			$("#pendingBtn").attr("src","<c:url value='/images/popup/btn_arrow_up.gif'/>");
@@ -763,8 +769,13 @@
 			$("#map").css("height", "271px");
 			
 			setTimeout(function(){
-				$kecoMap.view.map.resize();
-				setTimeout(function(){$kecoMap.view.map.reposition();},500);
+				var map = _CoreMap.getMap();
+				
+				if(map){
+					map.setSize([480, 270]);	
+				}
+				//$kecoMap.view.map.resize();
+// 				setTimeout(function(){$kecoMap.view.map.reposition();},500);
 			}, 500);
 			
 			$("#pendingBtn").attr("src","<c:url value='/images/popup/btn_arrow_down.gif'/>");
@@ -1034,7 +1045,6 @@
 									<script type="text/javascript" src="/gis/new_js/mapService.js"></script>
 									<script type="text/javascript" src="/gis/new_js/lib/vworldLayer.js"></script>
 									<script type="text/javascript" src="/gis/new_js/lib/coreMap.js"></script>
-									<script type="text/javascript" src="/gis/new_js/lib/jquery-ui.js"></script>
 									
 									
 									<script type="text/javascript">

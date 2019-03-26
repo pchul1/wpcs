@@ -7,13 +7,35 @@
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="/gis/css/common.css"/>
 <link rel="stylesheet" type="text/css" href="/gis/css/gis_bj.css"/>
-<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css"/>
-<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css"/>
+<!-- <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css"/> -->
+<!-- <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css"/> -->
 
 <!-- <link rel="stylesheet" type="text/css" href="http://mleibman.github.io/SlickGrid/slick.grid.css"/> -->
 <link rel="stylesheet" type="text/css" href="/slickgrid/css/slick.grid.css"/>
 <link rel="stylesheet" type="text/css" href="/js/JQuery/css/ui.datepicker.css"/>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script type="text/javascript" src="/slickgrid/js/jquery.event.drag-2.2.js"></script>
+<script type="text/javascript" src="/slickgrid/js/slick.core.js"></script>
+<!-- <script type="text/javascript" src="/slickgrid/js/slick.grid.js"></script> -->
+<script type="text/javascript" src="/slickgrid/js/slick.grid_2.2.2.js"></script>
+<script type="text/javascript" src="/slickgrid/js/slick.dataview.js"></script>
+<script type="text/javascript" src="/slickgrid/js/slick.rowselectionmodel.js"></script>
 
+<script type="text/javascript" src="/gis/js/organictabs.jquery.js"></script>
+<script type="text/javascript" src="/gis/js/acco.js"></script>
+<script type="text/javascript" src="/gis/js/UI.js"></script>
+
+
+
+<!-- <script src="http://js.arcgis.com/3.8/"></script> -->
+
+<script src="/gis/js/define.js"></script>
+<script src="/gis/js/common.js"></script>
+<!-- <script src="/gis/js/kecoMapSub.js"></script> -->
+<script src="/gis/js/new_kecoMapSub.js"></script>
+<script src="/gis/js/xml2json.js"></script>
+<script src="/gis/js/new_control.js"></script>
 <title>수질오염 방제정보 시스템</title>
 <style>
 
@@ -27,6 +49,24 @@ img{}
 
 </style>
 <script type="text/javascript">
+
+$(function () {
+	
+	var dailyWorkAppCheck = '${dailyWorkAppCheck}';
+
+	if(dailyWorkAppCheck=='Y'){
+		layerPopOpen('layerApprovalIns');
+	}
+	
+	_CoreMap.init('map',{
+		satellite: true,
+		measure:true,
+		print:true,
+		save:true,
+		search:true,
+		temp:true
+	});
+});
 
 	var Request = function()
 	{
@@ -53,6 +93,7 @@ img{}
 
 	var user_riverid = request.getParameter('riverid')
 </script>
+<<<<<<< HEAD
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.js"></script>
 <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 <script type="text/javascript" src="/slickgrid/js/jquery.event.drag-2.2.js"></script>
@@ -66,34 +107,59 @@ img{}
 <script type="text/javascript" src="/gis/js/acco.js"></script>
 <script type="text/javascript" src="/gis/js/UI.js"></script>
 
-<script type="text/javascript" src="/gis/gis/jsapi_vsdoc10_v36.js"></script>
+<!-- <script type="text/javascript" src="/gis/gis/jsapi_vsdoc10_v36.js"></script> -->
+
 <script type="text/javascript" src="/gis/js/jquery.dialog.custom.js"></script>
 <script type="text/javascript" src="/js/JQuery/ui/ui.datepicker.js"></script>
-<script type="text/javascript" src="/js/JQuery/ui/ui.datepicker.js"></script>
 
-<script src="http://js.arcgis.com/3.8/"></script>
+<!-- <script src="http://js.arcgis.com/3.8/"></script> -->
 
 <script src="/gis/js/define.js"></script>
 <script src="/gis/js/common.js"></script>
-<script src="/gis/js/kecoMapSub.js"></script>
+<script src="/gis/js/new_kecoMap.js"></script>
 <script src="/gis/js/xml2json.js"></script>
-<script src="/gis/js/control.js"></script>
+<script src="/gis/js/new_control.js"></script>
+
+<script type="text/javascript" src="/gis/new_js/lib/proj4.js" ></script>
+<script type="text/javascript" src="/gis/new_js/lib/mapEventBus.js" ></script>
+<!-- <script type="text/javascript" src="/gis/new_js/lib/ol/ol.js"></script> -->
+<script type="text/javascript" src="http://tsauerwein.github.io/ol3/mapbox-gl-js/build/ol.js"></script>
+ 
+<script type="text/javascript" src="/gis/new_js/lib/jsts/jsts.min.js"></script>
+
+<script type="text/javascript" src="/gis/new_js/mapService.js"></script>
+<script type="text/javascript" src="/gis/new_js/lib/vworldLayer.js"></script>
+<script type="text/javascript" src="/gis/new_js/lib/coreMap.js"></script>
+
+
+<script>
+
+$(function() {
+	
+	_CoreMap.init('map',{
+		satellite: true,
+		measure: true
+	});
+	
+});
+
+</script>
 </head>
 
 <body>
 <div id="mapBoxBj">
 	<div id="map" class="claro"></div>
 	<!--우측 상단 버튼 Start-->
-	<div id="tool">
-		<div class="tool_bu1"><a href="javascript:$kecoMap.model.generalMap();"	onmouseout="$kecoMap.controller.MM_swapImgRestore('Image1','/gis/images/tool_1_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image1','/gis/images/tool_1_over1.gif',1)" ><img idx="0" src="/gis/images/tool_1_over1.gif" id="Image1" width="42" height="24" border="0"></a></div>
-		<div class="tool_bu1"><a href="javascript:$kecoMap.model.flightMap();"	onmouseout="$kecoMap.controller.MM_swapImgRestore('Image2','/gis/images/tool_2_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image2','/gis/images/tool_2_over1.gif',1)" ><img idx="1" src="/gis/images/tool_2_off.gif" id="Image2" width="42" height="24" border="0"></a></div>
-		<div class="tool_bu2"><a href="javascript:$kecoMap.model.distances();"	onmouseout="$kecoMap.controller.MM_swapImgRestore('Image3','/gis/images/tool_3_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image3','/gis/images/tool_3_over.gif',1)" ><img idx="2" src="/gis/images/tool_3_off.gif" id="Image3" width="58" height="24" border="0"></a></div>
-		<div class="tool_bu2"><a href="javascript:$kecoMap.model.area()"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image4','/gis/images/tool_4_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image4','/gis/images/tool_4_over.gif',1)" ><img idx="3" src="/gis/images/tool_4_off.gif" id="Image4" width="58" height="24" border="0"></a></div>
-<!-- 		<div class="tool_bu1"><a id="printBtn" href="javascript:void(0)"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image5','/gis/images/tool_5_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image5','/gis/images/tool_5_over.gif',1)" ><img idx="4" src="/gis/images/tool_5_off.gif" id="Image5" width="42" height="24" border="0"></a></div> -->
-<!-- 		<div class="tool_bu1"><a id="save" href="javascript:void(0)"			onmouseout="$kecoMap.controller.MM_swapImgRestore('Image6','/gis/images/tool_6_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image6','/gis/images/tool_6_over.gif',1)" ><img idx="5" src="/gis/images/tool_6_off.gif" id="Image6" width="42" height="24" border="0"></a></div> -->
-<!-- 		<div class="tool_bu1"><a href="javascript:void(0)"						onmouseout="$kecoMap.controller.MM_swapImgRestore('Image7','/gis/images/tool_7_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image7','/gis/images/tool_7_over.gif',1)" ><img  idx="6" src="/gis/images/tool_7_off.gif" id="Image7" width="42" height="24" border="0"></a></div> -->
-		<div class="tool_bu3"><a href="javascript:$kecoMap.model.clear()"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image8','/gis/images/tool_8_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image8','/gis/images/tool_8_over.gif',1)" ><img  idx="6" src="/gis/images/tool_8_off.gif" id="Image8" width="42" height="24" border="0"></a></div>
-	</div>
+<!-- 	<div id="tool"> -->
+<!-- 		<div class="tool_bu1"><a href="javascript:$kecoMap.model.generalMap();"	onmouseout="$kecoMap.controller.MM_swapImgRestore('Image1','/gis/images/tool_1_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image1','/gis/images/tool_1_over1.gif',1)" ><img idx="0" src="/gis/images/tool_1_over1.gif" id="Image1" width="42" height="24" border="0"></a></div> -->
+<!-- 		<div class="tool_bu1"><a href="javascript:$kecoMap.model.flightMap();"	onmouseout="$kecoMap.controller.MM_swapImgRestore('Image2','/gis/images/tool_2_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image2','/gis/images/tool_2_over1.gif',1)" ><img idx="1" src="/gis/images/tool_2_off.gif" id="Image2" width="42" height="24" border="0"></a></div> -->
+<!-- 		<div class="tool_bu2"><a href="javascript:$kecoMap.model.distances();"	onmouseout="$kecoMap.controller.MM_swapImgRestore('Image3','/gis/images/tool_3_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image3','/gis/images/tool_3_over.gif',1)" ><img idx="2" src="/gis/images/tool_3_off.gif" id="Image3" width="58" height="24" border="0"></a></div> -->
+<!-- 		<div class="tool_bu2"><a href="javascript:$kecoMap.model.area()"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image4','/gis/images/tool_4_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image4','/gis/images/tool_4_over.gif',1)" ><img idx="3" src="/gis/images/tool_4_off.gif" id="Image4" width="58" height="24" border="0"></a></div> -->
+<!-- <!-- 		<div class="tool_bu1"><a id="printBtn" href="javascript:void(0)"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image5','/gis/images/tool_5_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image5','/gis/images/tool_5_over.gif',1)" ><img idx="4" src="/gis/images/tool_5_off.gif" id="Image5" width="42" height="24" border="0"></a></div> --> -->
+<!-- <!-- 		<div class="tool_bu1"><a id="save" href="javascript:void(0)"			onmouseout="$kecoMap.controller.MM_swapImgRestore('Image6','/gis/images/tool_6_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image6','/gis/images/tool_6_over.gif',1)" ><img idx="5" src="/gis/images/tool_6_off.gif" id="Image6" width="42" height="24" border="0"></a></div> --> -->
+<!-- <!-- 		<div class="tool_bu1"><a href="javascript:void(0)"						onmouseout="$kecoMap.controller.MM_swapImgRestore('Image7','/gis/images/tool_7_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image7','/gis/images/tool_7_over.gif',1)" ><img  idx="6" src="/gis/images/tool_7_off.gif" id="Image7" width="42" height="24" border="0"></a></div> --> -->
+<!-- 		<div class="tool_bu3"><a href="javascript:$kecoMap.model.clear()"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image8','/gis/images/tool_8_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image8','/gis/images/tool_8_over.gif',1)" ><img  idx="6" src="/gis/images/tool_8_off.gif" id="Image8" width="42" height="24" border="0"></a></div> -->
+<!-- 	</div> -->
 	<% 
 	String menu = request.getParameter("menuID");
 	String display = "";

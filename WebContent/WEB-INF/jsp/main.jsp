@@ -25,6 +25,9 @@
 <link rel="stylesheet" type="text/css" href="/css/common.css"/>
 <link rel="stylesheet" type="text/css" href="/css/site.css"/>
 
+<!-- <link rel="stylesheet" type="text/css" href="/gis/new_css/BasicSet.css"/> -->
+<!-- <link rel="stylesheet" type="text/css" href="/gis/new_css/gis.css"/> -->
+
 <!-- <link rel="stylesheet" type="text/css" href="http://mleibman.github.io/SlickGrid/examples/slick-default-theme.css"/> -->
 
 <title>수질오염 방제정보 시스템</title>

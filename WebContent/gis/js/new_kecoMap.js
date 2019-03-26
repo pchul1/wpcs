@@ -1641,27 +1641,27 @@ $(function() {
 				 var featureInfo = feature.getProperties().properties;
 				 
 				 var tempTitle = '';
-				 
-				 if(featureInfo.featureType == 'AUTO'){
-					 console.log('auto on over');
-				 } else if(featureInfo.featureType == 'TMS'){
-					 console.log('tms on over');
-				 } else if(featureInfo.featureType == 'IPUSN'){
-					 console.log('ipusn on over');
-				 } else if(featureInfo.featureType == 'BO'){
-					 console.log('BO on over');
-				 } else if(featureInfo.featureType == 'DAM'){
-					 console.log('DAM on over');
-				 } else if(featureInfo.featureType == 'WTR_PRF'){
-					 console.log('WTR_PRF on over');
-				 } else if(featureInfo.featureType == 'WTR_DEPOT'){
-					 console.log('WTR_DEPOT on over');
-				 } else if(featureInfo.featureType == 'DAM_OBS'){
-					 console.log('DAM_OBS on over');
-				 } else if(featureInfo.featureType == 'BO_OBS'){
-					 console.log('BO_OBS on over');
+				 if(featureInfo){
+					 if(featureInfo.featureType == 'AUTO'){
+						 console.log('auto on over');
+					 } else if(featureInfo.featureType == 'TMS'){
+						 console.log('tms on over');
+					 } else if(featureInfo.featureType == 'IPUSN'){
+						 console.log('ipusn on over');
+					 } else if(featureInfo.featureType == 'BO'){
+						 console.log('BO on over');
+					 } else if(featureInfo.featureType == 'DAM'){
+						 console.log('DAM on over');
+					 } else if(featureInfo.featureType == 'WTR_PRF'){
+						 console.log('WTR_PRF on over');
+					 } else if(featureInfo.featureType == 'WTR_DEPOT'){
+						 console.log('WTR_DEPOT on over');
+					 } else if(featureInfo.featureType == 'DAM_OBS'){
+						 console.log('DAM_OBS on over');
+					 } else if(featureInfo.featureType == 'BO_OBS'){
+						 console.log('BO_OBS on over');
+					 } 
 				 }
-				 
 			 }else{
 			 }
 		};
@@ -1676,50 +1676,50 @@ $(function() {
 			 
 			 if(feature){
 				 var featureInfo = feature.getProperties().properties;
-				 
-				 if(featureInfo.featureType == 'AUTO'){
-					 
-					$('#system').val('A');
-					$('#system').trigger('change');
-					$kecoMap.model.baseObj.model.reloadDataForFact(featureInfo.FACT_CODE, featureInfo.RV_CD);
-					
-//					if($('#Image9').attr('class') == 'on'){
-//					}else if($('#Image10').attr('class') == 'on'){
-//						dobuffer("a",evt);
-//					}
-					
-				 } else if(featureInfo.featureType == 'TMS'){
-					 $('#system').val('W');
-					 $('#system').trigger('change');
-					 $kecoMap.model.baseObj.model.reloadDataForFact(featureInfo.FACT_CODE);
-				 } else if(featureInfo.featureType == 'IPUSN'){
-					 $('#system').val('U');
-					 $('#system').trigger('change');
-					 $kecoMap.model.baseObj.model.reloadDataForFact(featureInfo.FACT_CODE, featureInfo.RV_CD, featureInfo.BRANCH_NO);
-					 
-					 
-//					 if($('#Image9').attr('class') == 'on'){
-//					 }else if($('#Image10').attr('class') == 'on'){
-//						 dobuffer("u",evt);
-//					 }
-				 }else if(featureInfo.featureType == 'BO'){
-					 console.log('BO on click');
-				 } else if(featureInfo.featureType == 'DAM'){
-					 console.log('DAM on click');
-				 } else if(featureInfo.featureType == 'WTR_PRF'){
-					 console.log('WTR_PRF on click');
-				 } else if(featureInfo.featureType == 'WTR_DEPOT'){
-					 console.log('WTR_DEPOT on click');
-				 } else if(featureInfo.featureType == 'DAM_OBS'){
-					 console.log('DAM_OBS on click');
-				 } else if(featureInfo.featureType == 'BO_OBS'){
-					 console.log('BO_OBS on click');
-				 } else if(featureInfo.featureType == 'MARKER'){
-					 console.log('MARKER on click');
-					 if(featureInfo.datatype == 'AC'){
-						 window.open("/waterpollution/waterPollutionDetail.do?clickMenu=32120&wpCode="+featureInfo.wpcode, 
-									'wpView','width='+window.screen.width+',height='+window.screen.height+',toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,left=0,top=0');
-					 }
+				 if(featureInfo){
+					 if(featureInfo.featureType == 'AUTO'){
+						 $('#system').val('A');
+						 $('#system').trigger('change');
+						 $kecoMap.model.baseObj.model.reloadDataForFact(featureInfo.FACT_CODE, featureInfo.RV_CD);
+						
+//							if($('#Image9').attr('class') == 'on'){
+//							}else if($('#Image10').attr('class') == 'on'){
+//								dobuffer("a",evt);
+//							}
+						
+					 } else if(featureInfo.featureType == 'TMS'){
+						 $('#system').val('W');
+						 $('#system').trigger('change');
+						 $kecoMap.model.baseObj.model.reloadDataForFact(featureInfo.FACT_CODE);
+					 } else if(featureInfo.featureType == 'IPUSN'){
+						 $('#system').val('U');
+						 $('#system').trigger('change');
+						 $kecoMap.model.baseObj.model.reloadDataForFact(featureInfo.FACT_CODE, featureInfo.RV_CD, featureInfo.BRANCH_NO);
+						 
+						 
+//							 if($('#Image9').attr('class') == 'on'){
+//							 }else if($('#Image10').attr('class') == 'on'){
+//								 dobuffer("u",evt);
+//							 }
+					 }else if(featureInfo.featureType == 'BO'){
+						 console.log('BO on click');
+					 }else if(featureInfo.featureType == 'DAM'){
+						 console.log('DAM on click');
+					 }else if(featureInfo.featureType == 'WTR_PRF'){
+						 console.log('WTR_PRF on click');
+					 }else if(featureInfo.featureType == 'WTR_DEPOT'){
+						 console.log('WTR_DEPOT on click');
+					 }else if(featureInfo.featureType == 'DAM_OBS'){
+						 console.log('DAM_OBS on click');
+					 }else if(featureInfo.featureType == 'BO_OBS'){
+						 console.log('BO_OBS on click');
+					 }else if(featureInfo.featureType == 'MARKER'){
+						 console.log('MARKER on click');
+						 if(featureInfo.datatype == 'AC'){
+							 window.open("/waterpollution/waterPollutionDetail.do?clickMenu=32120&wpCode="+featureInfo.wpcode, 
+										'wpView','width='+window.screen.width+',height='+window.screen.height+',toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,left=0,top=0');
+						 }
+					 } 
 				 }
 			 } 
 		};
@@ -1988,6 +1988,20 @@ $(function() {
 		pub.autoStyleFunction = function(feature, resolution){
 			
 			var zoom = _CoreMap.getZoom()-7;
+			
+			var h = 41;
+			var w = 26;
+			var y = 13;
+			
+			if(zoom < 2) {
+				h = 22;
+				w = 13;
+				y = 6;
+			}else if(zoom < 6) {
+				h = 36;
+				w = 22;
+				y = 11;
+			}
 			
 			var symbol = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO1;
 			var symbol1 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO2;
