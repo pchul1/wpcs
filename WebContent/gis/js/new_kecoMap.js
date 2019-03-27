@@ -927,16 +927,57 @@ $(function() {
 					$('#38').attr('checked', 'true');
 					$kecoMap.model.updateLayerVisibility();
 				}
-				if($kecoMap.view.fLayer != undefined) {
-					page.view.map.removeLayer($kecoMap.view.fLayer);
-					$kecoMap.view.fLayer = undefined;
+				if(_CoreMap.getMap().getLayerForName('fLayer') != undefined) {
+					_CoreMap.getMap().getLayerForName('fLayer').getSource().clear();
 				}
 				
-				var wm = esri.geometry.geographicToWebMercator(new esri.geometry.Point(obj.longitude,obj.latitude));
+				//버퍼 레이어가 존재하면 지우기
+				if(_CoreMap.getMap().getLayerForName('bufferLayer') != undefined){
+					_CoreMap.getMap().getLayerForName('bufferLayer').getSource().clear();	
+				}
 				
-				page.view.map.centerAt(wm);
+				//센터 이동
+				$kecoMap.model.moveCenter(obj.longitude,obj.latitude);
 				
-				var params = new esri.tasks.BufferParameters();
+				//좌표 변환하여 버러 레이어 생성
+				var parser = new jsts.io.OL3Parser();
+				var tempCoord = ol.proj.transform([obj.longitude,obj.latitude], 'EPSG:4326', 'EPSG:3857');				
+				var feature = new ol.Feature({geometry:new ol.geom.Point(tempCoord)});
+				// convert the OpenLayers geometry to a JSTS geometry
+				var jstsGeom = parser.read(feature.getGeometry());
+				// create a buffer of 40 meters around each line
+				var buffered = jstsGeom.buffer(distances*10000); // 미터단위
+				// convert back from JSTS and replace the geometry on the feature
+				feature.setGeometry(parser.write(buffered));
+				
+				//버퍼 레이어 그리기
+				page.view.bufferLayer.getSource().addFeature(feature);
+				
+				// extent 변수 생성
+				var extent = feature.getGeometry().getExtent();
+				
+				// 방제업체 extent로 공간검색
+				_MapService.getRealExtentWfs(":PST_CMPNY" , "*" , extent).then(function(response) {
+					
+					if(response.features.length > 0 ){
+						for(var i = 0 ; i < response.features.length; i++){
+							
+							// 방제시설 featureLayer 그리기
+							var fFeature = new ol.Feature({geometry:new ol.geom.Point(response.features[i].geometry.coordinates)});
+							page.view.fLayer.getSource().addFeature(fFeature);
+							
+						}
+					}
+					
+				})
+				
+				
+				//return;
+				//var wm = esri.geometry.geographicToWebMercator(new esri.geometry.Point(obj.longitude,obj.latitude));
+				
+				//page.view.map.centerAt(wm);
+				
+				/*var params = new esri.tasks.BufferParameters();
 				params.geometries = [wm];
 				params.distances = [distances];
 				params.unit = esri.tasks.GeometryService.UNIT_KILOMETER;
@@ -972,7 +1013,8 @@ $(function() {
 							callback(results);
 						}
 					});
-				});
+				});*/
+				
 			} else {
 				$('#whLd').attr('checked', 'true');
 				$kecoMap.view.whLayer.show();
@@ -1171,6 +1213,38 @@ $(function() {
 			if($kecoMap.view.orderLayers == null){
 				$kecoMap.view.orderLayers = {};
 			}
+			
+			_MapService.getWfs(':NTN_RVR','*').then(function(result){
+				
+				console.info(result)
+				
+				
+				if(result == null || result.features.length <= 0){
+					return;
+				}
+				
+				var features = [];
+				
+				for(var i=0; i<result.features.length; i++){
+					
+					var featureProperties = result.features[i].properties;
+					var featureCoordinate = result.features[i].geometry.coordinates;
+					
+					featureProperties.featureType = 'NTN_RVR';
+					
+					var feature = new ol.Feature({geometry:new ol.geom.Polygon(result.features[i].geometry.coordinates[0]), properties:featureProperties});
+					features.push(feature);
+				}
+				
+				$kecoMap.view.orderLayers['ntnRvr'] = new ol.layer.Vector({ 
+						name : 'ntnRvrLayer',
+						source : new ol.source.Vector({
+							features : features
+						}),
+						visible: true
+				}); 
+				_MapEventBus.trigger(_MapEvents.map_addLayer, $kecoMap.view.orderLayers['ntnRvr']);
+			});
 			 
 			_MapService.getWfs(':BO_OBS','*').then(function(result){
 				
@@ -1660,7 +1734,33 @@ $(function() {
 						 console.log('DAM_OBS on over');
 					 } else if(featureInfo.featureType == 'BO_OBS'){
 						 console.log('BO_OBS on over');
-					 } 
+					 } else if(featureInfo.featureType == 'MARKER'){
+						 //pub.markerOverlay
+						 if(featureInfo.iconType == 0 || featureInfo.iconType >= 10 || featureInfo.iconType <= 14){
+							 //featureInfo.markerIndex
+							 //infoTemplate = new esri.InfoTemplate(EVENT_TEMP);
+							 html = EVENT_TEMP.content;
+						 }else if(featureInfo.iconType == 1){
+						 	 //infoTemplate = new esri.InfoTemplate("${지점명}","${*}");
+							 html = "${지점명}","${*}";
+						 }else if(featureInfo.iconType == 2){
+						 	 //infoTemplate = new esri.InfoTemplate("${branch_no}","${*}");
+							 html = "${branch_no}","${*}";
+						 }else if(featureInfo.iconType == 3){
+						 	 //infoTemplate = new esri.InfoTemplate(OUT_TEMP);
+							 html = OUT_TEMP.content;
+						 }else if(featureInfo.iconType == 4){
+						 	 //infoTemplate = new esri.InfoTemplate(CR_TEMP);
+							 html = CR_TEMP.content;
+						 }
+						 
+						 /*_CoreMap.getTempBranchTooltipElement().innerHTML = html;
+						 _CoreMap.getTempBranchToolTip().setPosition( feature.getGeometry().getCoordinates() );
+						 _CoreMap.getTempBranchTooltipElement().classList.remove('hidden');*/
+						 
+						
+					 }
+					 
 				 }
 			 }else{
 			 }
@@ -2331,6 +2431,28 @@ $(function() {
 			}); 
 			 
 			_MapEventBus.trigger(_MapEvents.map_addLayer, page.view.markerLayer);
+			
+			
+			page.view.bufferLayer = new ol.layer.Vector({ 
+					name : 'bufferLayer',
+					source : new ol.source.Vector({ })
+			}); 
+			 
+			_MapEventBus.trigger(_MapEvents.map_addLayer, page.view.bufferLayer);
+			
+			page.view.fLayer = new ol.layer.Vector({ 
+					name : 'fLayer',
+					source : new ol.source.Vector({ }),
+					style : [new ol.style.Style({
+						image: new ol.style.Icon({
+							opacity: 1,
+							src: '/gis/images/watereventSTA.gif', // test symbol
+							crossOrigin: 'Anonymous'
+						})
+					})]
+			}); 
+			 
+			_MapEventBus.trigger(_MapEvents.map_addLayer, page.view.fLayer);
 			
 			page.model.writeLayerLegend($define.ARC_SERVER_URL+'/rest/services/WPCS/MapServer/');
 		};

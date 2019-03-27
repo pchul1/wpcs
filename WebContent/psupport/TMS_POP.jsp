@@ -30,12 +30,6 @@
 
 <!-- <script src="http://js.arcgis.com/3.8/"></script> -->
 
-<script src="/gis/js/define.js"></script>
-<script src="/gis/js/common.js"></script>
-<!-- <script src="/gis/js/kecoMapSub.js"></script> -->
-<script src="/gis/js/new_kecoMapSub.js"></script>
-<script src="/gis/js/xml2json.js"></script>
-<script src="/gis/js/new_control.js"></script>
 <title>수질오염 방제정보 시스템</title>
 <style>
 
@@ -49,24 +43,6 @@ img{}
 
 </style>
 <script type="text/javascript">
-
-$(function () {
-	
-	var dailyWorkAppCheck = '${dailyWorkAppCheck}';
-
-	if(dailyWorkAppCheck=='Y'){
-		layerPopOpen('layerApprovalIns');
-	}
-	
-	_CoreMap.init('map',{
-		satellite: true,
-		measure:true,
-		print:true,
-		save:true,
-		search:true,
-		temp:true
-	});
-});
 
 	var Request = function()
 	{
@@ -93,19 +69,6 @@ $(function () {
 
 	var user_riverid = request.getParameter('riverid')
 </script>
-<<<<<<< HEAD
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.js"></script>
-<script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-<script type="text/javascript" src="/slickgrid/js/jquery.event.drag-2.2.js"></script>
-<script type="text/javascript" src="/slickgrid/js/slick.core.js"></script>
-<!-- <script type="text/javascript" src="/slickgrid/js/slick.grid.js"></script> -->
-<script type="text/javascript" src="/slickgrid/js/slick.grid_2.2.2.js"></script>
-<script type="text/javascript" src="/slickgrid/js/slick.dataview.js"></script>
-<script type="text/javascript" src="/slickgrid/js/slick.rowselectionmodel.js"></script>
-
-<script type="text/javascript" src="/gis/js/organictabs.jquery.js"></script>
-<script type="text/javascript" src="/gis/js/acco.js"></script>
-<script type="text/javascript" src="/gis/js/UI.js"></script>
 
 <!-- <script type="text/javascript" src="/gis/gis/jsapi_vsdoc10_v36.js"></script> -->
 

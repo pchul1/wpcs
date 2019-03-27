@@ -51,6 +51,23 @@ var _MapService = function () {
 			    	});
 	};
 	
+	var getRealExtentWfs = function(typeName, propertyName,extentPoint){
+		//var url = proxyUrl + _MapServiceInfo.serviceUrl + _MapServiceInfo.params + _MapServiceInfo.type + typeName
+		var url = _MapServiceInfo.serviceUrl + _MapServiceInfo.params + _MapServiceInfo.type + typeName 
+			+ "&bbox="+extentPoint[0]+","+extentPoint[1]+","+extentPoint[2]+","+extentPoint[3] + "&urlType=geoServer";
+		
+		
+		return $.ajax({
+			            url : url,
+			            type : 'GET',
+			            async: true,
+			            contentType : 'application/json',
+			            fauls: function(e){
+			            	console.info(e)
+			            }
+			    	});
+	};
+	
 	
     // public functions
     return {
@@ -67,6 +84,11 @@ var _MapService = function () {
 		
 		getRealPointWfs: function(typeName, propertyName,cneterPoint){
 			var respose = getRealPointWfs(typeName, propertyName,cneterPoint);
+			return respose;
+		},
+		
+		getRealExtentWfs: function(typeName, propertyName, extentPoint){
+			var respose = getRealExtentWfs(typeName, propertyName, extentPoint);
 			return respose;
 		}
     }; 
