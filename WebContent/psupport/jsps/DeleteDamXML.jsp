@@ -24,11 +24,4 @@ catch(Exception ex)
 {
  System.out.println(ex);
 }
-%><%!
- public void closeConn(ResultSet rs, Statement stmt, Connection con) throws Exception
- {
-  rs.close();
-  con.close();
-  stmt.close();
- }
 %>

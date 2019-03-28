@@ -121,7 +121,7 @@
 	 		out.println(gson.toJson(hashMap));
 		}else{
 			fileName = fileName.replaceAll("/", "");
-			fileName = fileName.replaceAll("\", "");
+			fileName = fileName.replaceAll("\"", "");
 			fileName = fileName.replaceAll(".", "");
 			fileName = fileName.replaceAll("&", "");
 			

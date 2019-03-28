@@ -29,38 +29,17 @@ try
 		sql  = "UPDATE TEMP_BRANCH SET ALL_YN = '"+allYn+"', USE_YN = '"+useYn+"',TITLE = '"+title+"',CONTENT = '"+content+"' "+
 				"WHERE OBJECTID = '"+objectId+"'"; 
 	}
-	try
- 	{
 		Statement stmt=null;
-		
-		System.out.println(sql);
-		
+	try {
 		stmt=conn.createStatement();
 		int i =stmt.executeUpdate(sql);
-		closeConn(rs,stmt,conn);
-		
 		out.println(i);
-	}
-	catch(SQLException ex)
-	{
+	} catch(SQLException ex) {
 		ex.printStackTrace();
+	}finally{
+		closeConn(rs,stmt,conn);
 	}
-}
-catch(Exception ex)
-{
+} catch(Exception ex) {
 	ex.printStackTrace();
-}
-%><%!
-public void closeConn(ResultSet rs, Statement stmt, Connection con) throws Exception
-{
-	if(rs != null){
-		rs.close();	
-	}
-	if(con != null){
-		con.close();	
-	}
-	if(stmt != null){
-		stmt.close();	
-	}
 }
 %>

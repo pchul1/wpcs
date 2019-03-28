@@ -78,11 +78,3 @@ catch(Exception ex)
 	ex.printStackTrace();
 }
 %>
-<%!
-public void closeConn(ResultSet rs, Statement stmt, Connection con) throws Exception
-{
-	rs.close();
-	con.close();
-	stmt.close();
-}
-%>

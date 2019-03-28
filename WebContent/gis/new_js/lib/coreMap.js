@@ -12,8 +12,8 @@ var _CoreMap = function() {
 	var TOOL_TYPE_SATELLITE = 1;
 	var TOOL_TYPE_DISTANCE = 2;
 	var TOOL_TYPE_AREA = 3;
-	var TOOL_TYPE_SAVE = 5;
-	var TOOL_TYPE_PRINT = 4;
+	var TOOL_TYPE_SAVE = 4;
+	var TOOL_TYPE_PRINT = 5;
 	var TOOL_TYPE_SEARCH = 6;
 	var TOOL_TYPE_TEMP_INPUT = 7;
 	var TOOL_TYPE_RESET = 8;
@@ -340,11 +340,13 @@ var _CoreMap = function() {
 				tools += '<div class="tool_bu2 toolBtn" type="2"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_3_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
 				tools += '<div class="tool_bu2 toolBtn" type="3"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_4_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
 			}
-			if(settings.print){
-				tools += '<div class="tool_bu1 toolBtn" type="4"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_5_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-			}
+			
 			if(settings.save){
-				tools += '<div class="tool_bu1 toolBtn" type="5"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_6_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
+				tools += '<div class="tool_bu1 toolBtn" type="4"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_6_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
+			}
+			
+			if(settings.print){
+				tools += '<div class="tool_bu1 toolBtn" type="5"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_5_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
 			}
 			if(settings.search){
 				tools += '<div class="tool_bu1 toolBtn" type="6""><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_13_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
@@ -378,7 +380,7 @@ var _CoreMap = function() {
 				addInteraction(toolType);
 			}else if(toolType == TOOL_TYPE_AREA){
 				addInteraction(toolType);
-			}else if(toolType == TOOL_TYPE_PRINT){
+			}else if(toolType == TOOL_TYPE_SAVE){
 				coreMap.once('postcompose', function(event) {
 					var canvas = event.context.canvas;
 					var mapImg = canvas.toDataURL('image/png'); 
@@ -395,7 +397,7 @@ var _CoreMap = function() {
 //					$('body').append('<iframe src='+url+' id="__fileDownloadIframe__" name="__fileDownloadIframe__" width="0" height="0" style="display:none;"/>');
 				}); 
 				coreMap.renderSync();
-			}else if(toolType == TOOL_TYPE_SAVE){
+			}else if(toolType == TOOL_TYPE_PRINT){
 				coreMap.once('postcompose', function(event) {
 					var canvas = event.context.canvas;
 					var mapImg = canvas.toDataURL('image/png'); 
@@ -632,13 +634,14 @@ var _CoreMap = function() {
         });
         coreMap.addOverlay(helpTooltip);
 	}
+	
 	/**
 	 * format length output
 	 * @param {ol.geom.LineString} line
 	 * @return {string}
 	 */
 	var formatLength = function(line) {
-		var length = Math .round(line.getLength() * 100) / 100;
+		var length = Math.round(line.getLength() * 100) / 100;
 		var output;
 		if (length > 100) {
 			output = (Math.round(length / 1000 * 100) / 100) +' ' + 'km';
@@ -683,6 +686,13 @@ var _CoreMap = function() {
 		_MapEventBus.on(_MapEvents.map_move , mapMove);
 		
 		_MapEventBus.on(_MapEvents.map_removeLayerByName, removeLayerByName);
+		
+		_MapEventBus.on(_MapEvents.map_addOverlay, addOverlay);
+		
+		_MapEventBus.on(_MapEvents.map_removeOverlay, removeOverlay);
+		
+		
+		
 	};
 	var setMapEvent = function() {
 
@@ -838,6 +848,18 @@ var _CoreMap = function() {
 		}
 	}
 
+	var addOverlay = function(event, overlay){
+		if(overlay){
+			coreMap.addOverlay(overlay);
+		}
+	}
+	
+	var removeOverlay = function(event, overlay){
+		if(overlay){
+			coreMap.removeOverlay(overlay);
+		}
+	}
+	
 	var addLayer = function(event, layer) {
 		if (layer == null)
 			return;

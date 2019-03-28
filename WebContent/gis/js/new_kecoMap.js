@@ -524,7 +524,14 @@ $(function() {
 			title:"${OBSNM}",
 			content: "<ul>"
 						+ "<li> ● 보명 : ${OBSNM} </li></ul>"
-					};//////////
+					};
+	
+	layerInfoDiv = null;
+	layerInfoOverlay = null;
+	
+	currentFeature = null;
+	
+	//////////
 	// MVC 설정 시작
 	// ////////////////////////////
 	
@@ -1559,13 +1566,13 @@ $(function() {
 					
 					var html = '<ul><li class="tit">수질자동측정지점</li>';
 					if(window.location.href.indexOf('goDetailFLUX') > -1 || window.location.href.indexOf('goDetailDam') > -1 || window.location.href.indexOf('psupport/list') > -1){
-						html +='<li><label><input id="autoLd" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(0);"/><img src="'+$define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO+'" alt=""/> 국가수질자동측정망 </label></li>';
-						html +='<li><label><input id="tmsLd" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(1);"/><img src="'+$define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/4/images/'+$define.ARC_SERVER_IMG_TMS+'" alt=""/> 수질TMS </label></li>';
-						html +='<li><label><input id="ipLd" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(2);"/><img src="'+$define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/2/images/'+$define.ARC_SERVER_IMG_USN+'" alt=""/> 이동형측정기기 </label></li>';
+						html +='<li><label><input id="autoLd" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(0);"/><img src="/gis/new_images/regular/auto_1.png" alt=""/> 국가수질자동측정망 </label></li>';
+						html +='<li><label><input id="tmsLd" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(1);"/><img src="/gis/new_images/regular/tms_1.png" alt=""/> 수질TMS </label></li>';
+						html +='<li><label><input id="ipLd" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(2);"/><img src="/gis/new_images/regular/usn_1.png" alt=""/> 이동형측정기기 </label></li>';
 					}else{
-						html +='<li><label><input id="autoLd" type="checkbox" checked class="" onclick="$kecoMap.model.updateLayerVisibility(0);"/><img src="'+$define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO+'" alt=""/> 국가수질자동측정망 </label></li>';
-						html +='<li><label><input id="tmsLd" type="checkbox" checked class="" onclick="$kecoMap.model.updateLayerVisibility(1);"/><img src="'+$define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/4/images/'+$define.ARC_SERVER_IMG_TMS+'" alt=""/> 수질TMS </label></li>';
-						html +='<li><label><input id="ipLd" type="checkbox" checked class="" onclick="$kecoMap.model.updateLayerVisibility(2);"/><img src="'+$define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/2/images/'+$define.ARC_SERVER_IMG_USN+'" alt=""/> 이동형측정기기 </label></li>';
+						html +='<li><label><input id="autoLd" type="checkbox" checked class="" onclick="$kecoMap.model.updateLayerVisibility(0);"/><img src="/gis/new_images/regular/auto_1.png" alt=""/> 국가수질자동측정망 </label></li>';
+						html +='<li><label><input id="tmsLd" type="checkbox" checked class="" onclick="$kecoMap.model.updateLayerVisibility(1);"/><img src="/gis/new_images/regular/tms_1.png" alt=""/> 수질TMS </label></li>';
+						html +='<li><label><input id="ipLd" type="checkbox" checked class="" onclick="$kecoMap.model.updateLayerVisibility(2);"/><img src="/gis/new_images/regular/usn_1.png" alt=""/> 이동형측정기기 </label></li>';
 					}
 					
 					html += '<ul><li class="tit">중요 시설물</li>';
@@ -1751,8 +1758,7 @@ $(function() {
 			return pictureMarkerSymbol;
 		};
 		
-		pub.getInfoTemplate = function(type)
-		{
+		pub.getInfoTemplate = function(type) {
 			var infoTemplate = undefined;
 			
 			if(type == 0 || type >= 10 || type <= 14)
@@ -1791,13 +1797,143 @@ $(function() {
 				 return feature;
 			 });
 			
+			 if(currentFeature == feature){
+				 return;
+			 }
+			 
+			 currentFeature = feature;
+			 
 			 if(feature){
-				 
 				 var featureInfo = feature.getProperties().properties;
 				 
 				 var tempTitle = '';
 				 if(featureInfo){
 					 if(featureInfo.featureType == 'AUTO'){
+						 
+						var return_flag = false;
+						try{
+							var obj = $kecoMap.model.baseObj.model.getCheckData('A', featureInfo.FACT_CODE, featureInfo.BRANCH_NO);
+							if(obj != null){
+								return_flag = $kecoMap.model.LayerAuthIn(obj.FACT_CODE,obj.BRANCH_NO,"U");
+							}
+							if(layerInfoDiv == null) {
+								layerInfoDiv = document.createElement('div');	
+							}
+							
+							if(return_flag){ 
+								
+								var themeObj = $kecoMap.model.getThemeAutoData(featureInfo.FACT_CODE, featureInfo.BRANCH_NO);
+								
+								if(obj != undefined) {
+									var alertData = $kecoMap.model.baseObj.model.getAlertData(featureInfo.FACT_CODE, featureInfo.BRANCH_NO);
+									
+									if(themeObj != undefined && $main.view.excessChk.attr('checked')) {
+										layerInfoDiv.innerHTML = AUTO_TEMP_THEME;
+									} else if( alertData != undefined) {
+										obj.ALERT_MSG = alertData.ALERT_MSG;
+										layerInfoDiv.innerHTML = AUTO_TEMP_ALERT;
+										
+									} else {
+										layerInfoDiv.innerHTML = AUTO_TEMP;
+									}
+								} else {
+									layerInfoDiv.innerHTML = NULL_TEMP;
+								}
+							}
+						}catch(e) {}
+
+						if(return_flag){ 
+							var html = '<dl class="info_box" style="">'+
+			                '<dt>가평청평하수</dt>'+
+			                '<dd>'+
+			                    '<dl class="summary">'+ 
+			                    	'<dt>수신시간</dt>'+
+			                       ' <dd class="L0">2019/00/00 00:00</dd>'+
+			                   ' </dl>'+
+			                    '<dl class="summary">'+
+			                    	'<dt>권역</dt>'+
+			                        '<dd>수도권</dd>'+
+			                    '</dl>'+
+			                    '<table class="st02 MgT10" summary="측정소 항목별 측정값">'+
+			                        '<caption></caption>'+
+			                        '<colgroup>'+
+			                        	'<col width="60" />'+
+			                            '<col width="50" />'+
+			                            '<col width="50" />'+
+			                            '<col />'+
+			                       ' </colgroup>'+
+			                       ' <thead>'+
+			                           ' <tr>'+
+			                               ' <th>항목</th>'+
+			                                '<th>측정값</th>'+
+			                                '<th>단위</th>'+
+			                                '<th>기준</th>'+
+			                         '   </tr>'+
+			                        '</thead>'+
+			                        '<tbody>'+
+			                            '<tr>'+
+			                               ' <td>pH</td>'+
+			                               ' <td>6.60</td>'+
+			                               ' <td>-</td>'+
+			                               ' <td>(5.80~8.60)</td>'+
+			                           ' </tr>'+
+			                           ' <tr>'+
+			                                '<td>BOD</td>'+
+			                               ' <td>-</td>'+
+			                                '<td>ppm</td>'+
+			                                '<td>-</td>'+
+			                           ' </tr>'+
+			                            '<tr>'+
+			                                '<td>COD</td>'+
+			                                '<td>2.80</td>'+
+			                                '<td>ppm</td>'+
+			                               ' <td>(0.00~20.00)</td>'+
+			                          '  </tr>'+
+			                           ' <tr>'+
+			                                '<td>SS</td>'+
+			                                '<td>0.86</td>'+
+			                                '<td>mg/L</td>'+
+			                                '<td>(0.00~10.00)</td>'+
+			                           ' </tr>'+
+			                           ' <tr>'+
+			                               ' <td>T-N</td>'+
+			                                '<td>4.38</td>'+
+			                               ' <td>mg/L</td>'+
+			                               ' <td>(0.00~20.00)</td>'+
+			                           ' </tr>'+
+			                           ' <tr>'+
+			                                '<td>T-P</td>'+
+			                                '<td>0.11</td>'+
+			                                '<td>mg/L</td>'+
+			                                '<td>(0.00~0.20)</td>'+
+			                            '</tr>   '+                         
+			                        '</tbody>'+
+			                    '</table>'+
+			                '</dd>'+
+			          '  </dl>';
+			            
+//							layerInfoDiv.innerHTML = html; 
+							
+							var zoom = _CoreMap.getZoom()-7;
+							var offset = [-133 , -2];
+							
+							if(zoom < 2) {
+								offset = [-137 , -2];
+							}
+							
+							if(layerInfoOverlay){
+								layerInfoOverlay.setPosition( feature.getGeometry().getCoordinates() );	
+								layerInfoOverlay.setOffset(offset);
+							}else{
+								layerInfoOverlay = new ol.Overlay({
+									element: layerInfoDiv,
+									offset: offset,
+									positioning: 'center-center'
+								}); 
+								 
+								_MapEventBus.trigger(_MapEvents.map_addOverlay, layerInfoOverlay);
+							}
+						} 
 						 console.log('auto on over');
 					 } else if(featureInfo.featureType == 'TMS'){
 						 console.log('tms on over');
@@ -1844,6 +1980,9 @@ $(function() {
 					 
 				 }
 			 }else{
+				 if(layerInfoOverlay){
+					 layerInfoOverlay.setPosition(undefined);
+				 }
 			 }
 		};
 		
@@ -1956,8 +2095,15 @@ $(function() {
 		pub.tmsStyleFunction = function(feature, resolution){
 			
 			var zoom = _CoreMap.getZoom()-7;
+			var dirNm = 'regular';
 			
-			var symbol1 = window.location.origin+'/gis/images/auticon/t_1.png';
+			if(zoom < 2) {
+				dirNm = 'small';
+			}
+			
+			var symbol1 = '/gis/new_images/'+dirNm+'/tms_1.png';
+			
+//			var symbol1 = window.location.origin+'/gis/images/auticon/t_1.png';
 			var symbol2 = window.location.origin+'/gis/images/auticon/t_2.png';
 			var symbol3 = window.location.origin+'/gis/images/auticon/t_3.png';
 			var symbol4 = window.location.origin+'/gis/images/auticon/t_4.png';
@@ -2050,8 +2196,15 @@ $(function() {
 		pub.ipusnStyleFunction = function(feature, resolution){
 			
 			var zoom = _CoreMap.getZoom()-7;
+			var dirNm = 'regular';
 			
-			var symbol  = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/2/images/'+$define.ARC_SERVER_IMG_USN1;
+			if(zoom < 2) {
+				dirNm = 'small';
+			}
+			
+			var symbol = '/gis/new_images/'+dirNm+'/usn_1.png';
+			
+//			var symbol  = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/2/images/'+$define.ARC_SERVER_IMG_USN1;
 			var symbol1 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/2/images/'+$define.ARC_SERVER_IMG_USN2;
 			var symbol2 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/2/images/'+$define.ARC_SERVER_IMG_USN3;
 			var symbol3 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/2/images/'+$define.ARC_SERVER_IMG_USN4;
@@ -2170,27 +2323,32 @@ $(function() {
 			
 			var zoom = _CoreMap.getZoom()-7;
 			
-			var h = 41;
-			var w = 26;
-			var y = 13;
+			var dirNm = 'regular';
+			var offsetX = 13;
+			var offsetY = 20;
 			
 			if(zoom < 2) {
-				h = 22;
-				w = 13;
-				y = 6;
-			}else if(zoom < 6) {
-				h = 36;
-				w = 22;
-				y = 11;
+				dirNm = 'small';
+				offsetX = 9;
+				offsetY = 15;
 			}
 			
-			var symbol = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO1;
+			var symbol = '/gis/new_images/'+dirNm+'/auto_1.png';
+			
 			var symbol1 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO2;
 			var symbol2 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO3;
 			var symbol3 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO4;
 			var symbol4 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO5;
 			var symbol5 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO6;
 			var symbol6 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO7;
+			
+			console.log(symbol);
+			console.log(symbol1);
+			console.log(symbol2);
+			console.log(symbol3);
+			console.log(symbol4);
+			console.log(symbol5);
+			console.log(symbol6);
 			
 			var autoIconUrl = symbol;
 			
@@ -2247,18 +2405,10 @@ $(function() {
 						image: new ol.style.Icon({
 							opacity: 1,
 							src: autoIconUrl,
+							anchor: [0, 1],
 							crossOrigin: 'Anonymous'
-						})
-					})];
-		}
-		
-		pub.showInfoWindow = function(graphic, evt){
-			if(graphic != null){
-				page.view.map.infoWindow.setContent(graphic.getContent());
-				page.view.map.infoWindow.setTitle(graphic.getTitle());
-			}
-			var sp = esri.geometry.toScreenPoint(page.view.map.extent, page.view.map.width, page.view.map.height, evt.graphic.geometry);
-			page.view.map.infoWindow.show(sp, page.view.map.getInfoWindowAnchor(sp));
+						}) 
+					})];  
 		}
 		
 		pub.addWhLayer = function(level) {
@@ -2307,7 +2457,14 @@ $(function() {
 			
 			var zoom = _CoreMap.getZoom()-7;
 			
-			var whIconUrl = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/5/images/'+$define.ARC_SERVER_IMG_WH;
+			var dirNm = 'regular';
+			if(zoom < 2) {
+				dirNm = 'small';
+			}
+			
+			var whIconUrl = '/gis/new_images/'+dirNm+'/wh.png';
+			
+//			var whIconUrl = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/5/images/'+$define.ARC_SERVER_IMG_WH;
 			
 			return [new ol.style.Style({
 						image: new ol.style.Icon({
@@ -2317,14 +2474,6 @@ $(function() {
 						})
 					})];
 		}
-		
-		pub.removeAllLayer = function() {
-			page.view.map.removeLayer(page.view.tmsLayer);
-			page.view.map.removeLayer(page.view.autoLayer);
-			page.view.map.removeLayer(page.view.ipusnLayer);
-			page.view.map.removeLayer(page.view.whLayer);
-			page.view.map.removeLayer(page.view.tempBLayer);
-		};
 		
 		pub.addAllLayer = function(level) {
 			this.addAutoLayer(level);
@@ -2475,7 +2624,7 @@ $(function() {
 //			pictureMarkerSymbol.setOffset(parseInt(size/2),parseInt(size/2));
 			 
 			if($kecoMap.view.markerOverlay[featureInfo.markerIndex]){
-				_CoreMap.getMap().removeOverlay($kecoMap.view.markerOverlay[featureInfo.markerIndex]);
+				_MapEventBus.trigger(_MapEvents.map_removeOverlay, $kecoMap.view.markerOverlay[featureInfo.markerIndex]);
 			}
 			
 			var img1 = document.createElement("IMG");
@@ -2490,7 +2639,9 @@ $(function() {
 				  stopEvent: false
 			});
 			
-			_CoreMap.getMap().addOverlay(marker);
+			
+			_MapEventBus.trigger(_MapEvents.map_addOverlay, marker);
+			
 			$kecoMap.view.markerOverlay[featureInfo.markerIndex] = marker;
 			
  			return [new ol.style.Style({
@@ -2603,86 +2754,6 @@ $(function() {
 			if($("#loadingDiv") != undefined)
 				$("#loadingDiv").dialog("close");
 		};
-		
-		pub.initDraw = function(){
-			page.view.tb = new esri.toolbars.Draw(page.view.map);
-			dojo.connect(page.view.tb, "onDrawEnd", page.model.drawEnded);
-		};
-		
-		pub.mainLayerLoaded = function(layer) {
-		};
-		
-		pub.handleCounties2 = function(result) {
-			if(result.features == undefined || result.features.length == 0 )
-				return;
-			
-			console.log('[RESULT]', result);
-			
-			var infoTemplate = new esri.InfoTemplate("${지점명}","${*}");
-			
-			var symbol = new esri.symbol.SimpleMarkerSymbol();
-			symbol.style = esri.symbol.SimpleMarkerSymbol.STYLE_SQUARE;
-			symbol.setSize(10);
-			symbol.setColor(new dojo.Color([255,255,0,0.5]));
-			
-			page.view.map.graphics.clear();
-			var highlightSymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255,0,0]), 3), new dojo.Color([125,125,125,0.35]));
-			
-			var countiesGraphicsLayer = new esri.layers.GraphicsLayer();
-			//QueryTask returns a featureSet.  Loop through features in the featureSet and add them to the map.
-			for (var i=0, il=result.features.length; i<il; i++) {
-			//Get the current feature from the featureSet.
-			//Feature is a graphic
-				var graphic = result.features[i];
-				graphic.setSymbol(symbol);
-				graphic.setInfoTemplate(infoTemplate);
-				
-				//Add graphic to the counties graphics layer.
-				countiesGraphicsLayer.add(graphic);
-			}
-			page.view.map.addLayer(countiesGraphicsLayer);
-			page.view.map.graphics.enableMouseEvents();
-			//listen for when the onMouseOver event fires on the countiesGraphicsLayer
-			//when fired, create a new graphic with the geometry from the event.graphic and add it to the maps graphics layer
-			dojo.connect(countiesGraphicsLayer, "onMouseOver", function(evt) {
-				page.view.map.graphics.clear();  //use the maps graphics layer as the highlight layer
-				var content = evt.graphic.getContent();
-				page.view.map.infoWindow.setContent(content);
-				var title = evt.graphic.getTitle();
-				page.view.map.infoWindow.setTitle(title);
-				var highlightGraphic = new esri.Graphic(evt.graphic.geometry,highlightSymbol);
-				page.view.map.graphics.add(highlightGraphic);
-				
-				page.model.showInfoWindow(null, evt);
-				
-//				page.view.map.infoWindow.show(evt.screenPoint,page.view.map.getInfoWindowAnchor(evt.screenPoint));
-			});
-			
-			//listen for when map.graphics onMouseOut event is fired and then clear the highlight graphic
-			//and hide the info window
-			dojo.connect(page.view.map.graphics, "onMouseOut", function(evt) {
-				page.view.map.graphics.clear();
-				page.view.map.infoWindow.hide();
-			});
-		};
-		
-//		pub.zoomEnd = function(extent, zoomFactor, anchor ,level) {
-//			page.view.map.infoWindow.hide();
-//			
-//			if($kecoMap.model.markerData.length > 0) {
-//				$kecoMap.view.markerLayer.clear();
-//				
-//				for ( var i = 0; i < $kecoMap.model.markerData.length; i++) {
-//					$kecoMap.model.addMarker($kecoMap.model.markerData[i].type, $kecoMap.model.markerData[i].x,$kecoMap.model.markerData[i].y, $kecoMap.model.markerData[i].obj, 'zoom');
-//				}
-//			}
-//			
-//			if(window.location.href.indexOf('addrMap') <= -1) {
-////				$kecoMap.model.removeAllLayer();
-//				$kecoMap.model.addAllLayer(level);
-//			}
-//			
-//		};
 		// Controller 초기화
 		pub.init = function() {
 			// Model 과 View 초기화
@@ -2714,6 +2785,7 @@ $(function() {
 			_MapEventBus.on(_MapEvents.initFeatureLayer, page.model.initFeatureLayer);
 			
 			_MapEventBus.on(_MapEvents.map_mousemove, page.model.mouseOverOnFeature); 
+			_MapEventBus.on(_MapEvents.map_mousemove, page.model.mouseOutOnFeature);
 			
 			_MapEventBus.on(_MapEvents.map_singleclick, page.model.onClickOnFeature);
 		}; 
