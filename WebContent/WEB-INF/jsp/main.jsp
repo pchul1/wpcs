@@ -329,6 +329,76 @@ response.addCookie(cookie); */
 img{}
 /* table td img{vertical-align:super;} */
 
+@font-face {
+  font-family: 'notokr-regular';
+  font-style: normal;
+  font-weight: 400;
+  src: url(/css/font/notokr-regular.eot);
+  src: url(/css/font/notokr-regular.eot?#iefix) format('embedded-opentype'),
+       url(/css/font/notokr-regular.woff2) format('woff2'),
+       url(/css/font/notokr-regular.woff) format('woff'),
+       url(/css/font/notokr-regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'notokr-bold';
+  font-style: normal;
+  font-weight: 400;
+  src: url(/css/font/notokr-bold.eot);
+  src: url(/css/font/notokr-bold.eot?#iefix) format('embedded-opentype'),
+       url(/css/font/notokr-bold.woff2) format('woff2'),
+       url(/css/font/notokr-bold.woff) format('woff'),
+       url(/css/font/notokr-bold.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'env_B';
+  font-style: normal;
+  font-weight: 400;
+  src: url(/css/font/env_B.eot);
+  src: url(/css/font/env_B.eot?#iefix) format('embedded-opentype'),
+       url(/css/font/env_B.woff) format('woff'),
+       url(/css/font/env_B.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'env_R';
+  font-style: normal;
+  font-weight: 400;
+  src: url(/css/font/env_R.eot);
+  src: url(/css/font/env_R.eot?#iefix) format('embedded-opentype'),
+       url(/css/font/env_R.woff) format('woff'),
+       url(/css/font/env_R.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'BM_JUA';
+  font-style: normal;
+  font-weight: 400;
+  src: url(/css/font/BM_JUA.eot);
+  src: url(/css/font/BM_JUA.eot?#iefix) format('embedded-opentype'),
+       url(/css/font/BM_JUA.woff) format('woff'),
+       url(/css/font/BM_JUA.ttf) format('truetype');
+}
+
+/*table-st*/
+.st01 { width: 100%; border-top: 1px solid #304564 !important; border: 0 none;}
+.st01 th {border: 0 !important;}
+.st01 thead th { padding: 8px 0; border-bottom: 1px solid #304564 !important; border-right-color: #304564 !important; background: none;}
+.st01 th span { font-size: 10px; letter-spacing: 0px; display: block; margin-top: -4px; font-family: 'notokr-regular'; }
+.st01 tbody th { background: #fafafa; letter-spacing: -1px; line-height: 16px; }
+.st01 th { letter-spacing: -1px; font-family: 'notokr-regular'; font-weight: normal; }
+.st01 td { }
+.st01 th, .st01 td { font-size: 12px; text-align: center; padding: 3px 0; border-bottom: 1px solid #ccc !important; border-right: 1px solid #ccc !important; }
+.st01 th:last-child, .st01 td:last-child { border-right: 0 !important; }
+
+.bg_c01 { background: #4c4c4c !important; color: #fff; }
+.bg_c02 { background: #00ba30 !important; color: #fff; }
+.bg_c03 { background: #1287d7 !important; color: #fff; }
+.bg_c04 { background: #ffba00 !important; color: #fff; }
+.bg_c05 { background: #ff6833 !important; color: #fff; }
+.bg_c06 { background: #e30000 !important; color: #fff; }
+.bg_c07 { background: #ececec !important; }
 </style>
 </head>
 
@@ -523,7 +593,55 @@ img{}
 						<div class="top_search">
 							<span class="title">경보발령 현황</span>
 <!-- 							<input type="button" name="" class="bt_more" value="more" onclick="javascript:admin_popup();"/> -->
-							<table summary="" class="table_info">
+							<table class="st01" summary="경보발령 현황">
+							            <caption>경보발령 현황</caption>
+							            <colgroup>
+							                <col width="60">
+							                <col width="29">
+							                <col width="29">
+							                <col width="29">
+							                <col width="29">
+							                <col width="29">
+							                <col width="29">
+							                <col>
+							            </colgroup>
+							            <thead>
+							            	<tr>
+							                	<th scope="col">구분</th>
+							                    <th scope="col" class="bg_c01">합계</th>
+							                    <th scope="col" class="bg_c02">정상</th>
+							                    <th scope="col" class="bg_c03">관심</th>
+							                    <th scope="col" class="bg_c04">주의</th>
+							                    <th scope="col" class="bg_c05">경계</th>
+							                    <th scope="col" class="bg_c06">심각</th>
+							                    <th scope="col" class="bg_c07">미수신</th>
+							                </tr>
+							            </thead>
+							            <tbody>
+							            	<tr>
+							                	<th>이동형<br>측정기기</th>
+							                    <td id="totalu"></td>
+							                    <td id="normalu"></td>
+							                    <td id="interestu"></td>
+							                    <td id="cautionu"></td>
+							                    <td id="alertu"></td>
+							                    <td id="overu"></td>
+							                    <td id="norecvu"></td>
+							                </tr>
+							                <tr>
+							                	<th>국가수질<br>자동측정망</th>
+							                    <td id="totala"></td>
+							                    <td id="normala"></td>
+							                    <td id="interesta"></td>
+							                    <td id="cautiona"></td>
+							                    <td id="alerta"></td>
+							                    <td id="overa"></td>
+							                    <td id="norecva"></td>
+							                </tr>
+							            </tbody>
+							        </table>
+							<!-- 기존 디자인 2019.03.26 ph -->
+							<!-- <table summary="" class="table_info">
 								<caption>경보발령 현황</caption>
 								<colgroup>
 								<col width="70" />
@@ -568,7 +686,7 @@ img{}
 										<td class="red" id="overa" align="center"></td>
 										<td class="gray" id="norecva" class="last" align="center"></td>
 									</tr>	
-									<!-- <tr>
+									<tr>
 										<td class="bigo" id="cntt" rowspan = 2>수질TMS<br/></td>
 										<td class="black2" id="totalt" align="center"></td>
 										<td class="green2" id="normalt" align="center"></td>
@@ -576,13 +694,49 @@ img{}
 										<td class="yellow2" id="cautiont" align="center"></td>										
 										<td class="red2" id="alertt" align="center" colspan = '2'></td>
 										<td class="gray2" id="norecvt" class="last" align="center"></td>
-									</tr> -->
+									</tr>
 										
 																		
 								</tbody>
-							</table>
+							</table> -->
 							<br/>
-							<table summary="" class="table_info">
+							<table class="st01 MgT10" summary="경보발령 현황">
+					            <caption>경보발령 현황</caption>
+					            <colgroup>
+					                <col width="60">
+					                <col width="35">
+					                <col width="35">
+					                <col width="35">
+					                <col width="35">
+					                <col width="35">
+					                <col>
+					            </colgroup>
+					            <thead>
+					            	<tr>
+					                	<th>구분</th>
+					                    <th class="bg_c01">합계</th>
+					                    <th class="bg_c02">정상</th>
+					                    <th class="bg_c03">주의<span>(70%)</span></th>
+					                    <th class="bg_c04">경보<span>(90%)</span></th>
+					                    <th class="bg_c06">심각</th>
+					                    <th class="bg_c07">미수신</th>
+					                </tr>
+					            </thead>
+					            <tbody>
+					            	<tr>
+					                	<th id="cntt">수질TMS<br/></th>
+					                    <td id="totalt"></td>
+					                    <td id="normalt"></td>
+					                    <td id="interestt"></td>
+					                    <td id="cautiont"></td>
+					                    <td id="alertt"></td>
+					                    <td id="norecvt"></td>
+					                </tr>
+					
+					            </tbody>
+					        </table>
+					        <!-- 기존 디자인 2019.03.26 ph -->
+							<!-- <table summary="" class="table_info">
 								<caption>경보발령 현황 수질 TMS</caption>
 								<colgroup>
 								<col width="70" />
@@ -617,7 +771,7 @@ img{}
 										<td class="gray" id="norecvt" class="last" align="center"></td>
 									</tr>								
 								</tbody>
-							</table>
+							</table> -->
 							 
 							<div class="divideBx" ></div>
 							<div class="searchBoxTab">
