@@ -1831,7 +1831,7 @@ $(function() {
 			                '</dd>'+
 			          '  </dl>';
 			            
-//							layerInfoDiv.innerHTML = html; 
+							layerInfoDiv.innerHTML = html; 
 							
 							var zoom = _CoreMap.getZoom()-7;
 							var offset = [-133 , -2];
