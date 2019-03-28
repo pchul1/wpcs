@@ -923,10 +923,12 @@ $(function() {
 		
 		pub.writeBuffer = function(type, obj, distances, callback) {
 			if(type == '1') {
-				if(!$('#38').attr('checked')) {
+				
+				/*if(!$('#38').attr('checked')) {
 					$('#38').attr('checked', 'true');
 					$kecoMap.model.updateLayerVisibility();
-				}
+				}*/
+				
 				if(_CoreMap.getMap().getLayerForName('fLayer') != undefined) {
 					_CoreMap.getMap().getLayerForName('fLayer').getSource().clear();
 				}
@@ -946,31 +948,42 @@ $(function() {
 				// convert the OpenLayers geometry to a JSTS geometry
 				var jstsGeom = parser.read(feature.getGeometry());
 				// create a buffer of 40 meters around each line
-				var buffered = jstsGeom.buffer(distances*10000); // 미터단위
+				var buffered = jstsGeom.buffer(distances*1000); // 미터단위 10km 10*1000
 				// convert back from JSTS and replace the geometry on the feature
 				feature.setGeometry(parser.write(buffered));
 				
 				//버퍼 레이어 그리기
 				page.view.bufferLayer.getSource().addFeature(feature);
 				
-				// extent 변수 생성
-				var extent = feature.getGeometry().getExtent();
+				// EQUALS, DISJOINT, INTERSECTS, TOUCHES, CROSSES,  WITHIN, CONTAINS, OVERLAPS, RELATE, DWITHIN, BEYOND.
+				var cqlFilter = "WITHIN(the_geom, POLYGON((";
+				for(var a = 0 ; a < feature.getGeometry().getCoordinates()[0].length ; a++){
+					if(a == feature.getGeometry().getCoordinates()[0].length-1 ){
+						cqlFilter += feature.getGeometry().getCoordinates()[0][a][0] +' '+feature.getGeometry().getCoordinates()[0][a][1] + ')))';
+					}else{
+						cqlFilter += feature.getGeometry().getCoordinates()[0][a][0] +' '+feature.getGeometry().getCoordinates()[0][a][1] + ',';	
+					}
+				}
 				
 				// 방제업체 extent로 공간검색
-				_MapService.getRealExtentWfs(":PST_CMPNY" , "*" , extent).then(function(response) {
+				_MapService.getWfs(":PST_CMPNY" , "*" , cqlFilter).then(function(response) {
 					
+					//그리드에 넣을 데이터
+					var results = [];
 					if(response.features.length > 0 ){
 						for(var i = 0 ; i < response.features.length; i++){
-							
-							// 방제시설 featureLayer 그리기
-							var fFeature = new ol.Feature({geometry:new ol.geom.Point(response.features[i].geometry.coordinates)});
-							page.view.fLayer.getSource().addFeature(fFeature);
-							
+							//방제시설 featureLayer 그리기
+							/*var fFeature = new ol.Feature({geometry:new ol.geom.Point(response.features[i].geometry.coordinates)});
+							page.view.fLayer.getSource().addFeature(fFeature);*/
+							results.push(response.features[i]);
+						}
+						
+						if(callback != undefined){
+							callback(results);
 						}
 					}
 					
 				})
-				
 				
 				//return;
 				//var wm = esri.geometry.geographicToWebMercator(new esri.geometry.Point(obj.longitude,obj.latitude));
@@ -1016,6 +1029,76 @@ $(function() {
 				});*/
 				
 			} else {
+				
+				//버퍼 레이어가 존재하면 지우기
+				if(_CoreMap.getMap().getLayerForName('bufferLayer') != undefined){
+					_CoreMap.getMap().getLayerForName('bufferLayer').getSource().clear();	
+				}
+				//_CoreMap.getMap().getLayerForName('whLayer').getSource().clear()
+				
+				
+				//page.view.bufferLayer.getSource().addFeature(feature);
+				$kecoMap.model.moveCenter(obj.longitude,obj.latitude);
+				
+				//좌표 변환하여 버러 레이어 생성
+				var parser = new jsts.io.OL3Parser();
+				var tempCoord = ol.proj.transform([obj.longitude,obj.latitude], 'EPSG:4326', 'EPSG:3857');				
+				var feature = new ol.Feature({geometry:new ol.geom.Point(tempCoord)});
+				// convert the OpenLayers geometry to a JSTS geometry
+				var jstsGeom = parser.read(feature.getGeometry());
+				// create a buffer of 40 meters around each line
+				var buffered = jstsGeom.buffer(distances*1000); // 미터단위  10km 10*1000
+				// convert back from JSTS and replace the geometry on the feature
+				feature.setGeometry(parser.write(buffered));
+				
+				//버퍼 레이어 그리기
+				page.view.bufferLayer.getSource().addFeature(feature);
+				
+				var whLayer = _CoreMap.getMap().getLayerForName('whLayer').getSource().getFeatures();
+				//whLayer에 있는지 없는지 확인
+				var results = [];
+				for(var i = 0 ; i < whLayer.length; i ++){
+					var whFeature = whLayer[i];
+					var target = parser.read(whFeature.getGeometry());
+					var interFeature = buffered.intersection(target);
+					
+					// 반경안에 feature 확인
+					if(interFeature.getCoordinate()){
+						//properties
+						results.push(whFeature.getProperties());	
+					}
+				}	
+				//그리드로 callback
+				if(callback != undefined){
+					callback(results);
+				}
+				
+				// EQUALS, DISJOINT, INTERSECTS, TOUCHES, CROSSES,  WITHIN, CONTAINS, OVERLAPS, RELATE, DWITHIN, BEYOND.
+				/*var cqlFilter = "WITHIN(the_geom, POLYGON((";
+				for(var a = 0 ; a < feature.getGeometry().getCoordinates()[0].length ; a++){console.info(a)
+					if(a == feature.getGeometry().getCoordinates()[0].length-1 ){
+						cqlFilter += feature.getGeometry().getCoordinates()[0][a][0] +' '+feature.getGeometry().getCoordinates()[0][a][1] + ')))';
+					}else{
+						cqlFilter += feature.getGeometry().getCoordinates()[0][a][0] +' '+feature.getGeometry().getCoordinates()[0][a][1] + ',';	
+					}
+				}
+				
+				// 방제업체 extent로 공간검색
+				_MapService.getWfs(":PST_CMPNY" , "*" , cqlFilter).then(function(response) {
+					
+					if(response.features.length > 0 ){
+						for(var i = 0 ; i < response.features.length; i++){
+							//방제시설 featureLayer 그리기
+							var fFeature = new ol.Feature({geometry:new ol.geom.Point(response.features[i].geometry.coordinates)});
+							page.view.fLayer.getSource().addFeature(fFeature);
+							
+						}
+					}
+					
+				}*/
+				
+				
+				/*
 				$('#whLd').attr('checked', 'true');
 				$kecoMap.view.whLayer.show();
 				
@@ -1050,7 +1133,7 @@ $(function() {
 							callback(results);
 						}
 					});
-				});
+				});*/
 			}
 		};
 		pub.drawEnded = function(geometry) {
@@ -1215,8 +1298,6 @@ $(function() {
 			}
 			
 			_MapService.getWfs(':NTN_RVR','*').then(function(result){
-				
-				console.info(result)
 				
 				
 				if(result == null || result.features.length <= 0){
@@ -2210,7 +2291,7 @@ $(function() {
 								source : new ol.source.Vector({
 									features : whFeatures
 								}),
-								visible: isVisibled,
+								visible: true,
 								style : $kecoMap.model.whStyleFunction
 						}); 
  
