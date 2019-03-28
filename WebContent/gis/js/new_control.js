@@ -1361,7 +1361,8 @@ $(function() {
 						
 						if(result != undefined) {
 							for ( var i = 0; i < result.length; i++)  {
-								var obj = result[i].attributes;
+								//var obj = result[i].attributes;
+								var obj = result[i].properties;
 								
 								html += '<tr onclick="$kecoMap.model.moveCenter(\''+obj.LONGITUDE+'\',\''+obj.LATITUDE+'\');"><td>'+obj.RIVER_NM+'</td>'+
 								'<td>'+obj.NM+'</td>'+
@@ -1382,7 +1383,8 @@ $(function() {
 						
 						if(result != undefined) {
 							for ( var i = 0; i < result.length; i++)  {
-								var obj = result[i].attributes;
+								//var obj = result[i].attributes;
+								var obj = result[i].properties;
 	//								var wh  = $control.model.getWhData(obj.WH_CODE);
 								
 								html += '<tr onclick="$kecoMap.model.moveCenter(\''+obj.LON+'\',\''+obj.LAT+'\', \'w\', \''+obj.WH_CODE+'\', \''+obj.WH_NAME+'\');">'+
