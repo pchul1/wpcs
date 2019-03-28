@@ -17,40 +17,27 @@ try
 	
 	JSONArray reJson = new JSONArray();
 
-	try
-	{
+	try {
 		stmt=conn.createStatement();
 		rs=stmt.executeQuery(sql);
 		
-		while(rs.next())
-		{
+		while(rs.next()) {
 			JSONObject jo = new JSONObject();
 			ResultSetMetaData rmd = rs.getMetaData();
 		
-			for ( int i=1; i<=rmd.getColumnCount(); i++ )
-			{
+			for ( int i=1; i<=rmd.getColumnCount(); i++ ) {
 				jo.put(rmd.getColumnName(i),rs.getString(rmd.getColumnName(i)));
 			}
 			reJson.add(jo);
 		}
 		out.println(reJson.toString());
 	
+	} catch(SQLException ex) {
+		ex.printStackTrace();
+	} finally{
 		closeConn(rs,stmt,conn);
 	}
-	catch(SQLException ex)
-	{
-		ex.printStackTrace();
-	}
-}
-catch(Exception ex)
-{
+} catch(Exception ex) {
 	ex.printStackTrace();
 }
-%><%!
- public void closeConn(ResultSet rs, Statement stmt, Connection con) throws Exception
- {
-  rs.close();
-  con.close();
-  stmt.close();
- }
 %>

@@ -49,4 +49,19 @@ try
 }catch(Exception ex){out.print("Connection error : " + ex);}
 
 
+
+%>
+
+<%!
+	public void closeConn(ResultSet rs, Statement stmt, Connection con) throws Exception  {
+		if(rs != null){
+			rs.close();
+		}
+		if(stmt != null){
+			stmt.close();
+		}
+		if(con != null){
+			con.close();
+		}
+	}
 %>

@@ -2261,8 +2261,7 @@ $(function() {
 			
 			return_value = false;
 			
-			for(var i =0; i<myAuthorSessionFactCode.length;i++)
-			{
+			for(var i =0; i<myAuthorSessionFactCode.length;i++) {
 				switch(SYS){
 				case  "W" :
 					if(FACT_CODE == myAuthorSessionFactCode[i]) return true;

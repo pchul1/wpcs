@@ -128,9 +128,15 @@ response.addCookie(cookie); */
 		  color: white;
 		  opacity: 0.7;
 		  white-space: nowrap;
-		  font: 10pt sans-serif;
+			font: 10pt sans-serif;
 		}
-   
+	   .info_box {
+			width: 274px;
+		    height: 276px;
+		    padding: 45px 10px 10px 10px;
+		    background: url(/gis/new_images/info_box.png) no-repeat;
+		    position: absolute;
+	}
 </style>
       
 <script type="text/javascript">
@@ -813,16 +819,26 @@ img{}
 <!-- 					<div id="btTabToggle"><img src="/gis/images/toggle_in.png" alt="닫기"/></div> -->
 				</div>
 				<!--우측 범례패널 Start-->
-				<div id="berm">
-					<ul>
-						<li><span class="point1"></span>&nbsp;정상</li>
-						<li><span class="point2"></span>&nbsp;관심</li>
-						<li><span class="point3"></span>&nbsp;주의</li>
-						<li><span class="point4"></span>&nbsp;경계</li>
-						<li><span class="point5"></span>&nbsp;심각</li>
-						<li><span class="point6"></span>&nbsp;미수집</li>
-						<li><span class="point7"></span>&nbsp;점검중</li>
-					</ul>
+				<div id="">
+					<ul class="item" style="width: 60px; padding: 10px 15px; border: 1px solid #0d0d0d; background: #fff; position: absolute; right: 20px; bottom: 20px;">
+		            	<li><img src="/gis/new_images/item_01.png" alt="정상" /> 정상</li>
+		                <li><img src="/gis/new_images/item_02.png" alt="관심" /> 관심</li>
+		                <li><img src="/gis/new_images/item_03.png" alt="주의" /> 주의</li>
+		                <li><img src="/gis/new_images/item_04.png" alt="경계" /> 경계</li>
+		                <li><img src="/gis/new_images/item_05.png" alt="심각" /> 심각</li>
+		                <li><img src="/gis/new_images/item_06.png" alt="미수집" /> 미수집</li>
+		                <li><img src="/gis/new_images/item_07.png" alt="점검중" /> 점검중</li>
+		            </ul>
+            
+<!-- 					<ul> -->
+<!-- 						<li><span class="point1"></span>&nbsp;정상</li> -->
+<!-- 						<li><span class="point2"></span>&nbsp;관심</li> -->
+<!-- 						<li><span class="point3"></span>&nbsp;주의</li> -->
+<!-- 						<li><span class="point4"></span>&nbsp;경계</li> -->
+<!-- 						<li><span class="point5"></span>&nbsp;심각</li> -->
+<!-- 						<li><span class="point6"></span>&nbsp;미수집</li> -->
+<!-- 						<li><span class="point7"></span>&nbsp;점검중</li> -->
+<!-- 					</ul> -->
 				</div>
 				<!--우측 범례패널 End-->
 			</div>

@@ -55,6 +55,8 @@ _MapEvents.addWriteLayerForBiz = 'addWriteLayerForBiz';
 _MapEvents.initFeatureLayer = 'initFeatureLayer';
 _MapEvents.layerLoaded = 'layerLoaded';
 
+_MapEvents.map_addOverlay = 'map_addOverlay';
+_MapEvents.map_removeOverlay = 'map_removeOverlay';
 
 
 

@@ -31,38 +31,20 @@ try
 		sql  = "DELETE FROM GIS_WAREHOUSE"+
 				"WHERE WH_CODE='"+WH_CODE+"'";
 	}
-	try
- 	{
-		Statement stmt=null;
-		
-		System.out.println(sql);
-		
+	Statement stmt=null;
+	
+	try {
 		stmt=conn.createStatement();
 		int i =stmt.executeUpdate(sql);
-		closeConn(rs,stmt,conn);
-		
 		out.println(i);
-	}
-	catch(SQLException ex)
-	{
+	} catch(SQLException ex) {
 		ex.printStackTrace();
+	} finally{
+		closeConn(rs,stmt,conn);
 	}
 }
 catch(Exception ex)
 {
 	ex.printStackTrace();
-}
-%><%!
-public void closeConn(ResultSet rs, Statement stmt, Connection con) throws Exception
-{
-	if(rs != null){
-		rs.close();	
-	}
-	if(con != null){
-		con.close();	
-	}
-	if(stmt != null){
-		stmt.close();	
-	}
 }
 %>
