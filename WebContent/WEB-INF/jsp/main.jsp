@@ -25,6 +25,10 @@
 <link rel="stylesheet" type="text/css" href="/css/common.css"/>
 <link rel="stylesheet" type="text/css" href="/css/site.css"/>
 
+<link rel="stylesheet" type="text/css" href="/gis/new_css/gis.css"/>
+
+
+
 <!-- <link rel="stylesheet" type="text/css" href="/gis/new_css/BasicSet.css"/> -->
 <!-- <link rel="stylesheet" type="text/css" href="/gis/new_css/gis.css"/> -->
 
@@ -87,58 +91,6 @@ response.addCookie(cookie); */
 <!-- <script src="/gis/js/kecoMap.js"></script> -->
 <!-- <script src="/gis/js/CustomPrintTask.js"></script> -->
 
-
-<style>
-      .tooltip {
-        position: relative;
-        background: rgba(0, 0, 0, 0.5);
-        border-radius: 4px;
-        color: white;
-        padding: 4px 8px;
-        opacity: 0.7;
-        white-space: nowrap;
-      }
-      .tooltip-measure {
-        opacity: 1;
-        font-weight: bold;
-      }
-      .tooltip-static {
-        background-color: #ffcc33;
-        color: black;
-        border: 1px solid white;
-      }
-      .tooltip-measure:before,
-      .tooltip-static:before {
-        border-top: 6px solid rgba(0, 0, 0, 0.5);
-        border-right: 6px solid transparent;
-        border-left: 6px solid transparent;
-        content: "";
-        position: absolute;
-        bottom: -6px;
-        margin-left: -7px;
-        left: 50%;
-      }
-      .tooltip-static:before {
-        border-top-color: #ffcc33;
-      } 
-      .tempTooltip {
-		  position: relative;
-		  padding: 3px;
-		  background: rgba(0, 0, 0, 0.5);
-		  color: white;
-		  opacity: 0.7;
-		  white-space: nowrap;
-			font: 10pt sans-serif;
-		}
-	   .info_box {
-			width: 274px;
-		    height: 276px;
-		    padding: 45px 10px 10px 10px;
-		    background: url(/gis/new_images/info_box.png) no-repeat;
-		    position: absolute;
-	}
-</style>
-      
 <script type="text/javascript">
 //<![CDATA[
 	$(function () {

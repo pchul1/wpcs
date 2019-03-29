@@ -35,6 +35,10 @@ function formatYMDHM(src){
 	
 }
 
+String.prototype.replaceAll = function(target, replacement) {
+	return this.split(target).join(replacement);
+};
+
 var $kecoMap;
 
 $(function() {
@@ -53,483 +57,721 @@ $(function() {
 				};
 	var TILEINFO = null; 
 	
-	var EVENT_TEMP  = {
-			title:"${wpkind}",
-			content: "<ul>"
-						+ "<li> ● 사고유형 : ${wpkind} </li>"
-						+ "<li> ● 신고일자 : ${reportdate}</li>"
-						+ "<li> ● 접수일자 : ${receivedate}</li>"
-						+ "<li> ● 수계 : ${river_name} </li>"
-						+ "<li> ● 주소 : ${address} ${addrdet}</li>"
-						+ "<li> ● 처리상태 : ${supportkind}</li></ul>"
-					};
-	var TMS_TEMP  = {
-			title:"${FACTNAME}",
-			content: "<ul>"
-						+ "<li> ● 수신시간 : ${STRDATE} ${STRTIME}</li>"
-						+ "<c:if test=\"${RIVER_NAME == ''}\"> " + "<li> ● 권역 : ${RIVER_NAME} </li>" + "</c:if>"					
-						+ "<table>"
-						+ "<thead>"
-						+ "<tr>"
-						+ "<th>항목</th>"
-						+ "<th>측정값</th>"
-						+ "<th>단위</th>"
-						+ "<th>기준</th>"
-						+ "</tr>"
-						+ "</thead>"
-						+ "<tbody>"
-						+ "<tr>"
-						+ "<td align='center'>PH</td>"
-						+ "<td align='center'>${PHY}</td>"
-						+ "<td align='center'></td>"
-						+ "<td align='center'>${PHYLAW}</td>"
-						+ "</tr>"
-						+ "<tr>"
-						+ "<td align='center'>BOD</td>"
-						+ "<td align='center'>${BOD}</td>"
-						+ "<td align='center'>(ppm)</td>"
-						+ "<td align='center'>${BODLAW}</td>"
-						+ "</tr>"
-						+ "<tr>"
-						+ "<td align='center'>COD</td>"
-						+ "<td align='center'>${COD}</td>"
-						+ "<td align='center'>(ppm)</td>"
-						+ "<td align='center'>${CODLAW}</td>"
-						+ "</tr>"
-						+ "<tr>"
-						+ "<td align='center'>SS</td>"
-						+ "<td align='center'>${SUS}</td>"
-						+ "<td align='center'>(mg/L)</td>"
-						+ "<td align='center'>${SUSLAW}</td>"
-						+ "</tr>"
-						+ "<tr>"						
-						+ "<td align='center'>T-N</td>"
-						+ "<td align='center'>${TON}</td>"
-						+ "<td align='center'>(mg/L)</td>"
-						+ "<td align='center'>${TONLAW}</td>"
-						+ "</tr>"
-						+ "<tr>"
-						+ "<td align='center'>T-P</td>"
-						+ "<td align='center'>${TOP}</td>"
-						+ "<td align='center'>(mg/L)</td>"
-						+ "<td align='center'>${TOPLAW}</td>"
-						+ "</tr>"
-						+ "</tbody>"
-						+ "<table>"
-					};
+	var EVENT_TEMP  = '<dl class="info_box" style="height:180px !important; border-bottom: solid 1px black;">'+
+					    '<dt>&nbsp; ${wpkind}</dt>'+
+					    '<dd>'+
+					        '<dl class="summary">'+  
+					        	'<dt>사고유형</dt>'+
+					           ' <dd class="L0">&nbsp; ${wpkind}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>신고일자</dt>'+
+					            '<dd class="L0">&nbsp; ${reportdate}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>접수일자</dt>'+
+					            '<dd class="L0">&nbsp; ${receivedate}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>수계</dt>'+
+					            '<dd class="L0">&nbsp; ${river_name}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>주소</dt>'+
+					            '<dd class="L0">&nbsp; ${address}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>처리상태</dt>'+
+					            '<dd class="L0">&nbsp; ${supportkind}</dd>'+
+					        '</dl>'+
+					    '</dd>'+
+					'</dl>';
 	
-	var IPUSN_TEMP = {
-			title:"${FACTNAME}"+"("+"${BRANCH_NAME}"+")",
-			content: "<ul>"
-				+ "<li> ● 수신시간 : ${STRDATE} ${STRTIME}</li>"
-				+ "<li> ● 수계 : ${RIVER_NAME} </li>"					
-				+ "<table>"
-				+ "<thead>"
-				+ "<tr>"
-				+ "<th>항목</th>"
-				+ "<th>측정값</th>"
-				+ "<th>단위</th>"
-				+ "<th>기준</th>"
-				+ "</tr>"
-				+ "</thead>"
-				+ "<tbody>"
-				+ "<tr>"
-				+ "<td align='center'>PH</td>"
-				+ "<td align='center'>${PHY}</td>"
-				+ "<td align='center'></td>"
-				+ "<td align='center'>${PHYL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>DO</td>"
-				+ "<td align='center'>${DOW}</td>"
-				+ "<td align='center'>(mS/cm)</td>"
-				+ "<td align='center'>${DOWL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>EC</td>"
-				+ "<td align='center'>${CON}</td>"
-				+ "<td align='center'>(μS/cm)</td>"
-				+ "<td align='center'>${CONL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>탁도</td>"
-				+ "<td align='center'>${TUR}</td>"
-				+ "<td align='center'>(NTU)</td>"
-				+ "<td align='center'>${TURL}</td>"
-				+ "</tr>"
-				+ "<tr>"						
-				+ "<td align='center'>수온</td>"
-				+ "<td align='center'>${TMP}</td>"
-				+ "<td align='center'>(℃)</td>"
-				+ "<td align='center'>${TMPL}</td>"
-				+ "</tr>"				
-				+ "</tbody>"
-				+ "<table>"
-					};
-	var IPUSN_TEMP_ALERT = {
-			title:"${BRANCH_NAME}",
-			content: "<ul>"
-				+ "<li> ● 수신시간 : ${STRDATE} ${STRTIME}</li>"
-				+ "<li> ● 수계 : ${RIVER_NAME} </li>"					
-				+ "<table>"
-				+ "<thead>"
-				+ "<tr>"
-				+ "<th>항목</th>"
-				+ "<th>측정값</th>"
-				+ "<th>단위</th>"
-				+ "<th>기준</th>"
-				+ "</tr>"
-				+ "</thead>"
-				+ "<tbody>"
-				+ "<tr>"
-				+ "<td align='center'>PH</td>"
-				+ "<td align='center'>${PHY}</td>"
-				+ "<td align='center'></td>"
-				+ "<td align='center'>${PHYL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>DO</td>"
-				+ "<td align='center'>${DOW}</td>"
-				+ "<td align='center'>(mS/cm)</td>"
-				+ "<td align='center'>${DOWL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>EC</td>"
-				+ "<td align='center'>${CON}</td>"
-				+ "<td align='center'>(μS/cm)</td>"
-				+ "<td align='center'>${CONL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>탁도</td>"
-				+ "<td align='center'>${TUR}</td>"
-				+ "<td align='center'>(NTU)</td>"
-				+ "<td align='center'>${TURL}</td>"
-				+ "</tr>"
-				+ "<tr>"						
-				+ "<td align='center'>수온</td>"
-				+ "<td align='center'>${TMP}</td>"
-				+ "<td align='center'>(℃)</td>"
-				+ "<td align='center'>${TMPL}</td>"
-				+ "</tr>"				
-				+ "<tr>"						
-				+ "<td colspan = 4><font color=\"#ff0000\"> ● 이상메세지 : ${ALERT_MSG}</font></td>"				
-				+ "</tr>"
-				+ "</tbody>"
-				+ "<table>"
-					};
-	var IPUSN_TEMP_THEME = {
-			title:"${FACTNAME}",
-			content: "<ul>"
-				+ "<li> ● 수신시간 : ${STRDATE} ${STRTIME}</li>"
-				+ "<li> ● 수계 : ${RIVER_NAME} </li>"					
-				+ "<table>"
-				+ "<thead>"
-				+ "<tr>"
-				+ "<th>항목</th>"
-				+ "<th>측정값</th>"
-				+ "<th>단위</th>"
-				+ "<th>기준</th>"
-				+ "</tr>"
-				+ "</thead>"
-				+ "<tbody>"
-				+ "<tr>"
-				+ "<td align='center'>PH</td>"
-				+ "<td align='center'>${PHY}</td>"
-				+ "<td align='center'></td>"
-				+ "<td align='center'>${PHYL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>DO</td>"
-				+ "<td align='center'>${DOW}</td>"
-				+ "<td align='center'>(mS/cm)</td>"
-				+ "<td align='center'>${DOWL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>EC</td>"
-				+ "<td align='center'>${CON}</td>"
-				+ "<td align='center'>(μS/cm)</td>"
-				+ "<td align='center'>${CONL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>탁도</td>"
-				+ "<td align='center'>${TUR}</td>"
-				+ "<td align='center'>(NTU)</td>"
-				+ "<td align='center'>${TURL}</td>"
-				+ "</tr>"
-				+ "<tr>"						
-				+ "<td align='center'>수온</td>"
-				+ "<td align='center'>${TMP}</td>"
-				+ "<td align='center'>(℃)</td>"
-				+ "<td align='center'>${TMPL}</td>"
-				+ "</tr>"				
-				+ "<tr>"						
-				+ "<td colspan = 4>● 기준치 알람 : ${ALAM}</td>"				
-				+ "</tr>"
-				+ "</tbody>"
-				+ "<table>"
-					};
-	var AUTO_TEMP = {
-			title:"${FACTNAME}",
-			content: "<ul>"
-				+ "<li> ● 수신시간 : ${STRDATE} ${STRTIME}</li>"
-				+ "<li> ● 수계 : ${RIVER_NAME} </li>"					
-				+ "<table>"
-				+ "<thead>"
-				+ "<tr>"
-				+ "<th>항목</th>"
-				+ "<th>측정값</th>"
-				+ "<th>단위</th>"
-				+ "<th>기준</th>"
-				+ "</tr>"
-				+ "</thead>"
-				+ "<tbody>"
-				+ "<tr>"
-				+ "<td align='center'>PH</td>"
-				+ "<td align='center'>${PHY}</td>"
-				+ "<td align='center'></td>"
-				+ "<td align='center'>${PHYL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>DO</td>"
-				+ "<td align='center'>${DOW}</td>"
-				+ "<td align='center'>(mS/cm)</td>"
-				+ "<td align='center'>${DOWL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>EC</td>"
-				+ "<td align='center'>${CON}</td>"
-				+ "<td align='center'>(μS/cm)</td>"
-				+ "<td align='center'>${CONL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>탁도</td>"
-				+ "<td align='center'>${TUR}</td>"
-				+ "<td align='center'>(NTU)</td>"
-				+ "<td align='center'>${TURL}</td>"
-				+ "</tr>"
-				+ "<tr>"						
-				+ "<td align='center'>수온</td>"
-				+ "<td align='center'>${TMP}</td>"
-				+ "<td align='center'>(℃)</td>"
-				+ "<td align='center'>${TMPL}</td>"
-				+ "</tr>"				
-				+ "</tbody>"
-				+ "<table>"
-			};
+	var TMS_TEMP  = '<dl class="info_box" style="height:340px !important; background-size: 294px 395px !important;">'+
+					    '<dt>&nbsp; ${FACTNAME}</dt>'+ 
+					    '<dd>'+ 
+					        '<dl class="summary">'+  
+					        	'<dt>수신시간</dt>'+
+					           ' <dd class="L0">&nbsp; ${STRDATE} &nbsp; ${STRTIME}</dd>'+
+					        '</dl>'+
+					        '<c:if test=\"${RIVER_NAME == \'\'}\">'+
+					        '<dl class="summary">'+ 
+					        	'<dt>권역</dt>'+
+					            '<dd>&nbsp; ${RIVER_NAME}</dd>'+
+					         '</dl> </c:if>'+	
+					        '<table class="st02 MgT10" summary="측정소 항목별 측정값">'+
+					            '<caption></caption>'+
+					            '<colgroup>'+
+					            	'<col width="60" />'+
+					                '<col width="50" />'+
+					                '<col width="50" />'+
+					                '<col />'+
+					           ' </colgroup>'+
+					           ' <thead>'+
+					               ' <tr>'+
+					                   ' <th>항목</th>'+
+					                    '<th>측정값</th>'+
+					                    '<th>단위</th>'+
+					                    '<th>기준</th>'+
+					             '   </tr>'+
+					            '</thead>'+
+					            '<tbody>'+
+					                '<tr>'+
+					                   ' <td>PH</td>'+
+					                   ' <td>&nbsp; ${PHY}</td>'+
+					                   ' <td>-</td>'+
+					                   ' <td>&nbsp; ${PHYLAW}</td>'+
+					               ' </tr>'+
+					               ' <tr>'+
+					                    '<td>BOD</td>'+
+					                   ' <td>&nbsp; ${BOD}</td>'+
+					                    '<td>(ppm)</td>'+
+					                    '<td>&nbsp; ${BODLAW}</td>'+
+					               ' </tr>'+
+					                '<tr>'+
+					                    '<td>COD</td>'+
+					                    '<td>&nbsp; ${COD}</td>'+
+					                    '<td>(ppm)</td>'+
+					                   ' <td>&nbsp; ${CODLAW}</td>'+
+					              '  </tr>'+
+					               ' <tr>'+
+					                    '<td>SS</td>'+
+					                    '<td>&nbsp; ${SUS}</td>'+
+					                    '<td>(mg/L)</td>'+
+					                    '<td>&nbsp; ${SUSLAW}</td>'+
+					               ' </tr>'+
+					               ' <tr>'+
+					                   ' <td>T-N</td>'+
+					                    '<td>&nbsp; ${TON}</td>'+
+					                   ' <td>(mg/L)</td>'+
+					                   ' <td>&nbsp; ${TONLAW}</td>'+
+					               ' </tr>'+
+					               ' <tr>'+
+					                   ' <td>T-P</td>'+
+					                    '<td>&nbsp; ${TOP}</td>'+
+					                   ' <td>(mg/L)</td>'+
+					                   ' <td>&nbsp; ${TOPLAW}</td>'+
+					               ' </tr>'+
+					            '</tbody>'+
+					        '</table>'+
+					    '</dd>'+
+					'</dl>';
 	
-	var AUTO_TEMP_ALERT = {
-			title:"${FACTNAME}",
-			content: "<ul>"
-				+ "<li> ● 수신시간 : ${STRDATE} ${STRTIME}</li>"
-				+ "<li> ● 수계 : ${RIVER_NAME} </li>"					
-				+ "<table>"
-				+ "<thead>"
-				+ "<tr>"
-				+ "<th>항목</th>"
-				+ "<th>측정값</th>"
-				+ "<th>단위</th>"
-				+ "<th>기준</th>"
-				+ "</tr>"
-				+ "</thead>"
-				+ "<tbody>"
-				+ "<tr>"
-				+ "<td align='center'>PH</td>"
-				+ "<td align='center'>${PHY}</td>"
-				+ "<td align='center'></td>"
-				+ "<td align='center'>${PHYL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>DO</td>"
-				+ "<td align='center'>${DOW}</td>"
-				+ "<td align='center'>(mS/cm)</td>"
-				+ "<td align='center'>${DOWL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>EC</td>"
-				+ "<td align='center'>${CON}</td>"
-				+ "<td align='center'>(μS/cm)</td>"
-				+ "<td align='center'>${CONL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>탁도</td>"
-				+ "<td align='center'>${TUR}</td>"
-				+ "<td align='center'>(NTU)</td>"
-				+ "<td align='center'>${TURL}</td>"
-				+ "</tr>"
-				+ "<tr>"						
-				+ "<td align='center'>수온</td>"
-				+ "<td align='center'>${TMP}</td>"
-				+ "<td align='center'>(℃)</td>"
-				+ "<td align='center'>${TMPL}</td>"
-				+ "</tr>"				
-				+ "<tr>"						
-				+ "<td colspan = 4><font color=\"#ff0000\"> ● 이상메세지 : ${ALERT_MSG}</font></td>"				
-				+ "</tr>"
-				+ "</tbody>"
-				+ "<table>"
-			};
+	var IPUSN_TEMP = '<dl class="info_box" >'+
+					    '<dt>&nbsp; ${FACTNAME} (${BRANCH_NAME})</dt>'+
+					    '<dd>'+
+					        '<dl class="summary">'+  
+					        	'<dt>수신시간</dt>'+
+					           ' <dd class="L0">&nbsp; ${STRDATE} &nbsp; ${STRTIME}</dd>'+
+					       ' </dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>수계</dt>'+
+					            '<dd>&nbsp; ${RIVER_NAME}</dd>'+
+					        '</dl>'+
+					        '<table class="st02 MgT10" summary="측정소 항목별 측정값">'+
+					            '<caption></caption>'+
+					            '<colgroup>'+
+					            	'<col width="60" />'+
+					                '<col width="50" />'+
+					                '<col width="50" />'+
+					                '<col />'+
+					           ' </colgroup>'+
+					           ' <thead>'+
+					               ' <tr>'+
+					                   ' <th>항목</th>'+
+					                    '<th>측정값</th>'+
+					                    '<th>단위</th>'+
+					                    '<th>기준</th>'+
+					             '   </tr>'+
+					            '</thead>'+
+					            '<tbody>'+
+					                '<tr>'+
+					                   ' <td>PH</td>'+
+					                   ' <td>&nbsp; ${PHY}</td>'+
+					                   ' <td>-</td>'+
+					                   ' <td>&nbsp; ${PHYL}</td>'+
+					               ' </tr>'+
+					               ' <tr>'+
+					                    '<td>DO</td>'+
+					                   ' <td>&nbsp; ${DOW}</td>'+
+					                    '<td>(mS/cm)</td>'+
+					                    '<td>&nbsp; ${DOWL}</td>'+
+					               ' </tr>'+
+					                '<tr>'+
+					                    '<td>EC</td>'+
+					                    '<td>&nbsp; ${CON}</td>'+
+					                    '<td>(μS/cm)</td>'+
+					                   ' <td>&nbsp; ${CONL}</td>'+
+					              '  </tr>'+
+					               ' <tr>'+
+					                    '<td>탁도</td>'+
+					                    '<td>&nbsp; ${TUR}</td>'+
+					                    '<td>(NTU)</td>'+
+					                    '<td>&nbsp; ${TURL}</td>'+
+					               ' </tr>'+
+					               ' <tr>'+
+					                   ' <td>수온</td>'+
+					                    '<td>&nbsp; ${TMP}</td>'+
+					                   ' <td>(℃)</td>'+
+					                   ' <td>&nbsp; ${TMPL}</td>'+
+					               ' </tr>'+
+					            '</tbody>'+
+					        '</table>'+
+					    '</dd>'+
+					'</dl>';
 	
-	var AUTO_TEMP_THEME = {
-			title:"${FACTNAME}",
-			content: "<ul>"
-				+ "<li> ● 수신시간 : ${STRDATE} ${STRTIME}</li>"
-				+ "<li> ● 수계 : ${RIVER_NAME} </li>"					
-				+ "<table>"
-				+ "<thead>"
-				+ "<tr>"
-				+ "<th>항목</th>"
-				+ "<th>측정값</th>"
-				+ "<th>단위</th>"
-				+ "<th>기준</th>"
-				+ "</tr>"
-				+ "</thead>"
-				+ "<tbody>"
-				+ "<tr>"
-				+ "<td align='center'>PH</td>"
-				+ "<td align='center'>${PHY}</td>"
-				+ "<td align='center'></td>"
-				+ "<td align='center'>${PHYL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>DO</td>"
-				+ "<td align='center'>${DOW}</td>"
-				+ "<td align='center'>(mS/cm)</td>"
-				+ "<td align='center'>${DOWL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>EC</td>"
-				+ "<td align='center'>${CON}</td>"
-				+ "<td align='center'>(μS/cm)</td>"
-				+ "<td align='center'>${CONL}</td>"
-				+ "</tr>"
-				+ "<tr>"
-				+ "<td align='center'>탁도</td>"
-				+ "<td align='center'>${TUR}</td>"
-				+ "<td align='center'>(NTU)</td>"
-				+ "<td align='center'>${TURL}</td>"
-				+ "</tr>"
-				+ "<tr>"						
-				+ "<td align='center'>수온</td>"
-				+ "<td align='center'>${TMP}</td>"
-				+ "<td align='center'>(℃)</td>"
-				+ "<td align='center'>${TMPL}</td>"
-				+ "</tr>"				
-				+ "<tr>"						
-				+ "<td colspan = 4>● 기준치 알람 : ${ALAM}</td>"				
-				+ "</tr>"
-				+ "</tbody>"
-				+ "<table>"
-			};
-	var NULL_TEMP = {
-			title:"${FACI_NM}",
-			content: "<ul>"
-						+ "<li> 정보가 없습니다. </li></ul>"
-					};
-	var OUT_TEMP = {
-			title:"${branch_name}",
-			content: "<ul>"
-						+ "<li> ● 수신시간 : ${update_time} </li>"
-						+ "<li> ● 코드 : ${fact_code} </li>"
-						+ "<li> ● 배터리 : ${battery} </li>"
-						+ "<li> ● 위도 : ${latitude} </li>"
-						+ "<li> ● 경도 : ${longitude} </li></ul>"
-					};
-	var TEMP_B_TEMP = {
-			title:"${TITLE}",
-			content: "<ul>"
-						+ "<li> ● 등록자 : ${REG_ID} </li>"
-						+ "<li> ● 등록일자 : ${REG_DATE} </li>"
-						+ "<li> ● 상세정보 : ${CONTENT} </li>"
-					};
-	var CR_TEMP  = {
-			title:"${branch_name}",
-			content: "<ul>"
-						+ "<li> ● 수신시간 : ${update_time} </li>"
-						+ "<li> ● 코드 : ${fact_code} </li>"
-						+ "<li> ● 배터리 : ${battery} </li>"
-						+ "<li> ● 위도 : ${latitude} </li>"
-						+ "<li> ● 경도 : ${longitude} </li></ul>"
-					};
+	var IPUSN_TEMP_ALERT = '<dl class="info_box" >'+
+							    '<dt>&nbsp; ${FACTNAME} (${BRANCH_NAME})</dt>'+
+							    '<dd>'+
+							        '<dl class="summary">'+  
+							        	'<dt>수신시간</dt>'+
+							           ' <dd class="L0">&nbsp; ${STRDATE} &nbsp; ${STRTIME}</dd>'+
+							       ' </dl>'+
+							        '<dl class="summary">'+
+							        	'<dt>수계</dt>'+
+							            '<dd>&nbsp; ${RIVER_NAME}</dd>'+
+							        '</dl>'+
+							        '<table class="st02 MgT10" summary="측정소 항목별 측정값">'+
+							            '<caption></caption>'+
+							            '<colgroup>'+
+							            	'<col width="60" />'+
+							                '<col width="50" />'+
+							                '<col width="50" />'+
+							                '<col />'+
+							           ' </colgroup>'+
+							           ' <thead>'+
+							               ' <tr>'+
+							                   ' <th>항목</th>'+
+							                    '<th>측정값</th>'+
+							                    '<th>단위</th>'+
+							                    '<th>기준</th>'+
+							             '   </tr>'+
+							            '</thead>'+
+							            '<tbody>'+
+							                '<tr>'+
+							                   ' <td>PH</td>'+
+							                   ' <td>&nbsp; ${PHY}</td>'+
+							                   ' <td>-</td>'+
+							                   ' <td>&nbsp; ${PHYL}</td>'+
+							               ' </tr>'+
+							               ' <tr>'+
+							                    '<td>DO</td>'+
+							                   ' <td>&nbsp; ${DOW}</td>'+
+							                    '<td>(mS/cm)</td>'+
+							                    '<td>&nbsp; ${DOWL}</td>'+
+							               ' </tr>'+
+							                '<tr>'+
+							                    '<td>EC</td>'+
+							                    '<td>&nbsp; ${CON}</td>'+
+							                    '<td>(μS/cm)</td>'+
+							                   ' <td>&nbsp; ${CONL}</td>'+
+							              '  </tr>'+
+							               ' <tr>'+
+							                    '<td>탁도</td>'+
+							                    '<td>&nbsp; ${TUR}</td>'+
+							                    '<td>(NTU)</td>'+
+							                    '<td>&nbsp; ${TURL}</td>'+
+							               ' </tr>'+
+							               ' <tr>'+
+							                   ' <td>수온</td>'+
+							                    '<td>&nbsp; ${TMP}</td>'+
+							                   ' <td>(℃)</td>'+
+							                   ' <td>&nbsp; ${TMPL}</td>'+
+							               ' </tr>'+
+							               ' <tr>'+						
+											   ' <td colspan = 4><font color=\"#ff0000\"> ● 이상메세지 : &nbsp; ${ALERT_MSG}</font></td>'+				
+										   ' </tr>'+
+							            '</tbody>'+
+							        '</table>'+
+							    '</dd>'+
+							'</dl>';
+	
+	var IPUSN_TEMP_THEME = '<dl class="info_box" >'+
+							    '<dt>&nbsp; ${FACTNAME} (${BRANCH_NAME})</dt>'+
+							    '<dd>'+
+							        '<dl class="summary">'+  
+							        	'<dt>수신시간</dt>'+
+							           ' <dd class="L0">&nbsp; ${STRDATE} &nbsp; ${STRTIME}</dd>'+
+							       ' </dl>'+
+							        '<dl class="summary">'+
+							        	'<dt>수계</dt>'+
+							            '<dd>&nbsp; ${RIVER_NAME}</dd>'+
+							        '</dl>'+
+							        '<table class="st02 MgT10" summary="측정소 항목별 측정값">'+
+							            '<caption></caption>'+
+							            '<colgroup>'+
+							            	'<col width="60" />'+
+							                '<col width="50" />'+
+							                '<col width="50" />'+
+							                '<col />'+
+							           ' </colgroup>'+
+							           ' <thead>'+
+							               ' <tr>'+
+							                   ' <th>항목</th>'+
+							                    '<th>측정값</th>'+
+							                    '<th>단위</th>'+
+							                    '<th>기준</th>'+
+							             '   </tr>'+
+							            '</thead>'+
+							            '<tbody>'+
+							                '<tr>'+
+							                   ' <td>PH</td>'+
+							                   ' <td>&nbsp; ${PHY}</td>'+
+							                   ' <td>-</td>'+
+							                   ' <td>&nbsp; ${PHYL}</td>'+
+							               ' </tr>'+
+							               ' <tr>'+
+							                    '<td>DO</td>'+
+							                   ' <td>&nbsp; ${DOW}</td>'+
+							                    '<td>(mS/cm)</td>'+
+							                    '<td>&nbsp; ${DOWL}</td>'+
+							               ' </tr>'+
+							                '<tr>'+
+							                    '<td>EC</td>'+
+							                    '<td>&nbsp; ${CON}</td>'+
+							                    '<td>(μS/cm)</td>'+
+							                   ' <td>&nbsp; ${CONL}</td>'+
+							              '  </tr>'+
+							               ' <tr>'+
+							                    '<td>탁도</td>'+
+							                    '<td>&nbsp; ${TUR}</td>'+
+							                    '<td>(NTU)</td>'+
+							                    '<td>&nbsp; ${TURL}</td>'+
+							               ' </tr>'+
+							               ' <tr>'+
+							                   ' <td>수온</td>'+
+							                    '<td>&nbsp; ${TMP}</td>'+
+							                   ' <td>(℃)</td>'+
+							                   ' <td>&nbsp; ${TMPL}</td>'+
+							               ' </tr>'+
+							               ' <tr>'+						
+											   ' <td colspan = 4><font color=\"#ff0000\"> ● 기준치 알람 : &nbsp; ${ALAM}</font></td>'+				
+										   ' </tr>'+
+							            '</tbody>'+
+							        '</table>'+
+							    '</dd>'+
+							'</dl>';
+	 
+	var AUTO_TEMP = '<dl class="info_box" >'+
+					    '<dt>&nbsp; ${FACTNAME}</dt>'+
+					    '<dd>'+
+					        '<dl class="summary">'+  
+					        	'<dt>수신시간</dt>'+
+					           ' <dd class="L0">&nbsp; ${STRDATE} &nbsp; ${STRTIME}</dd>'+
+					       ' </dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>수계</dt>'+
+					            '<dd>&nbsp; ${RIVER_NAME}</dd>'+
+					        '</dl>'+
+					        '<table class="st02 MgT10" summary="측정소 항목별 측정값">'+
+					            '<caption></caption>'+
+					            '<colgroup>'+
+					            	'<col width="60" />'+
+					                '<col width="50" />'+
+					                '<col width="50" />'+
+					                '<col />'+
+					           ' </colgroup>'+
+					           ' <thead>'+
+					               ' <tr>'+
+					                   ' <th>항목</th>'+
+					                    '<th>측정값</th>'+
+					                    '<th>단위</th>'+
+					                    '<th>기준</th>'+
+					             '   </tr>'+
+					            '</thead>'+
+					            '<tbody>'+
+					                '<tr>'+
+					                   ' <td>PH</td>'+
+					                   ' <td>&nbsp; ${PHY}</td>'+
+					                   ' <td>-</td>'+
+					                   ' <td>&nbsp; ${PHYL}</td>'+
+					               ' </tr>'+
+					               ' <tr>'+
+					                    '<td>DO</td>'+
+					                   ' <td>&nbsp; ${DOW}</td>'+
+					                    '<td>(mS/cm)</td>'+
+					                    '<td>&nbsp; ${DOWL}</td>'+
+					               ' </tr>'+
+					                '<tr>'+
+					                    '<td>EC</td>'+
+					                    '<td>&nbsp; ${CON}</td>'+
+					                    '<td>(μS/cm)</td>'+
+					                   ' <td>&nbsp; ${CONL}</td>'+
+					              '  </tr>'+
+					               ' <tr>'+
+					                    '<td>탁도</td>'+
+					                    '<td>&nbsp; ${TUR}</td>'+
+					                    '<td>(NTU)</td>'+
+					                    '<td>&nbsp; ${TURL}</td>'+
+					               ' </tr>'+
+					               ' <tr>'+
+					                   ' <td>수온</td>'+
+					                    '<td>&nbsp; ${TMP}</td>'+
+					                   ' <td>(℃)</td>'+
+					                   ' <td>&nbsp; ${TMPL}</td>'+
+					               ' </tr>'+
+					            '</tbody>'+
+					        '</table>'+
+					    '</dd>'+
+					'</dl>';
+	 
+	var AUTO_TEMP_ALERT = '<dl class="info_box" style="height:348px !important; background-size: 294px 405px !important;">'+
+						    '<dt>&nbsp; ${FACTNAME}</dt>'+
+						    '<dd>'+
+						        '<dl class="summary">'+ 
+						        	'<dt>수신시간</dt>'+
+						           ' <dd class="L0">&nbsp; ${STRDATE} &nbsp; ${STRTIME}</dd>'+
+						       ' </dl>'+
+						        '<dl class="summary">'+
+						        	'<dt>수계</dt>'+
+						            '<dd>&nbsp; ${RIVER_NAME}</dd>'+
+						        '</dl>'+
+						        '<table class="st02 MgT10" summary="측정소 항목별 측정값">'+
+						            '<caption></caption>'+
+						            '<colgroup>'+
+						            	'<col width="60" />'+
+						                '<col width="50" />'+
+						                '<col width="50" />'+
+						                '<col />'+
+						           ' </colgroup>'+
+						           ' <thead>'+
+						               ' <tr>'+
+						                   ' <th>항목</th>'+
+						                    '<th>측정값</th>'+
+						                    '<th>단위</th>'+
+						                    '<th>기준</th>'+
+						             '   </tr>'+
+						            '</thead>'+
+						            '<tbody>'+
+						                '<tr>'+
+						                   ' <td>PH</td>'+
+						                   ' <td>&nbsp; ${PHY}</td>'+
+						                   ' <td>-</td>'+
+						                   ' <td>&nbsp; ${PHYL}</td>'+
+						               ' </tr>'+
+						               ' <tr>'+
+						                    '<td>DO</td>'+
+						                   ' <td>&nbsp; ${DOW}</td>'+
+						                    '<td>(mS/cm)</td>'+
+						                    '<td>&nbsp; ${DOWL}</td>'+
+						               ' </tr>'+
+						                '<tr>'+
+						                    '<td>EC</td>'+
+						                    '<td>&nbsp; ${CON}</td>'+
+						                    '<td>(μS/cm)</td>'+
+						                   ' <td>&nbsp; ${CONL}</td>'+
+						              '  </tr>'+
+						               ' <tr>'+
+						                    '<td>탁도</td>'+
+						                    '<td>&nbsp; ${TUR}</td>'+
+						                    '<td>(NTU)</td>'+
+						                    '<td>&nbsp; ${TURL}</td>'+
+						               ' </tr>'+
+						               ' <tr>'+
+						                   ' <td>수온</td>'+
+						                   ' <td>&nbsp; ${TMP}</td>'+
+						                   ' <td>(℃)</td>'+
+						                   ' <td>&nbsp; ${TMPL}</td>'+
+						               ' </tr>'+
+						               ' <tr>'+						
+										   ' <td colspan = 4><font color=\"#ff0000\"> ● 이상메세지 : &nbsp; ${ALERT_MSG}</font></td>'+				
+									   ' </tr>'+
+						            '</tbody>'+
+						        '</table>'+
+						    '</dd>'+
+						'</dl>';
+	
+	var AUTO_TEMP_THEME = '<dl class="info_box" style="height:348px !important; background-size: 294px 405px !important;">'+
+						    '<dt>&nbsp; ${FACTNAME}</dt>'+
+						    '<dd>'+
+						        '<dl class="summary">'+ 
+						        	'<dt>수신시간</dt>'+
+						           ' <dd class="L0">&nbsp; ${STRDATE} &nbsp; ${STRTIME}</dd>'+
+						       ' </dl>'+
+						        '<dl class="summary">'+
+						        	'<dt>수계</dt>'+
+						            '<dd>&nbsp; ${RIVER_NAME}</dd>'+
+						        '</dl>'+
+						        '<table class="st02 MgT10" summary="측정소 항목별 측정값">'+
+						            '<caption></caption>'+
+						            '<colgroup>'+
+						            	'<col width="60" />'+
+						                '<col width="50" />'+
+						                '<col width="50" />'+
+						                '<col />'+
+						           ' </colgroup>'+
+						           ' <thead>'+
+						               ' <tr>'+
+						                   ' <th>항목</th>'+
+						                    '<th>측정값</th>'+
+						                    '<th>단위</th>'+
+						                    '<th>기준</th>'+
+						             '   </tr>'+
+						            '</thead>'+
+						            '<tbody>'+
+						                '<tr>'+
+						                   ' <td>PH</td>'+
+						                   ' <td>&nbsp; ${PHY}</td>'+
+						                   ' <td>-</td>'+
+						                   ' <td>&nbsp; ${PHYL}</td>'+
+						               ' </tr>'+
+						               ' <tr>'+
+						                    '<td>DO</td>'+
+						                   ' <td>&nbsp; ${DOW}</td>'+
+						                    '<td>(mS/cm)</td>'+
+						                    '<td>&nbsp; ${DOWL}</td>'+
+						               ' </tr>'+
+						                '<tr>'+
+						                    '<td>EC</td>'+
+						                    '<td>&nbsp; ${CON}</td>'+
+						                    '<td>(μS/cm)</td>'+
+						                   ' <td>&nbsp; ${CONL}</td>'+
+						              '  </tr>'+
+						               ' <tr>'+
+						                    '<td>탁도</td>'+
+						                    '<td>&nbsp; ${TUR}</td>'+
+						                    '<td>(NTU)</td>'+
+						                    '<td>&nbsp; ${TURL}</td>'+
+						               ' </tr>'+
+						               ' <tr>'+
+						                   ' <td>수온</td>'+
+						                   ' <td>&nbsp; ${TMP}</td>'+
+						                   ' <td>(℃)</td>'+
+						                   ' <td>&nbsp; ${TMPL}</td>'+
+						               ' </tr>'+
+						               ' <tr>'+						
+										   ' <td colspan = 4><font color=\"#ff0000\"> ● 기준치 알람 : &nbsp; ${ALAM}</font></td>'+				
+									   ' </tr>'+
+						            '</tbody>'+
+						        '</table>'+
+						    '</dd>'+
+						'</dl>'; 
+	
+	var NULL_TEMP = '<dl class="info_box" style="height:66px !important; background-size: 294px 120px !important;">'+
+					    '<dt>&nbsp; ${FACI_NM}</dt>'+
+					    '<dd>'+
+					        '<dl class="summary">'+ 
+					        	'<dt>정보가 없습니다.</dt>'+
+					       ' </dl>'+
+					    '</dd>'+
+					'</dl>';
+	
+	var OUT_TEMP = '<dl class="info_box" style="height:160px !important; border-bottom: solid 1px black;">'+
+					    '<dt>&nbsp; ${branch_name}</dt>'+
+					    '<dd>'+
+					        '<dl class="summary">'+  
+					        	'<dt>수신시간</dt>'+
+					           ' <dd class="L0">&nbsp; ${update_time}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>코드</dt>'+
+					            '<dd class="L0">&nbsp; ${fact_code}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>배터리</dt>'+
+					            '<dd class="L0">&nbsp; ${battery}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>위도</dt>'+
+					            '<dd class="L0">&nbsp; ${latitude}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>경도</dt>'+
+					            '<dd class="L0">&nbsp; ${longitude}</dd>'+
+					        '</dl>'+
+					    '</dd>'+
+					'</dl>';
+	
+	
+	
+	var CR_TEMP  = '<dl class="info_box" style="height:160px !important; border-bottom: solid 1px black;">'+
+					    '<dt>&nbsp; ${branch_name}</dt>'+
+					    '<dd>'+
+					        '<dl class="summary">'+  
+					        	'<dt>수신시간</dt>'+
+					           ' <dd class="L0">&nbsp; ${update_time}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>코드</dt>'+
+					            '<dd class="L0">&nbsp; ${fact_code}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>배터리</dt>'+
+					            '<dd class="L0">&nbsp; ${battery}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>위도</dt>'+
+					            '<dd class="L0">&nbsp; ${latitude}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>경도</dt>'+
+					            '<dd class="L0">&nbsp; ${longitude}</dd>'+
+					        '</dl>'+
+					    '</dd>'+
+					'</dl>';
+	
 	var TEMP_DE = {};
-	TEMP_DE['de4'] = {
-			title:"${보명}",
-			content: "<ul>"
-						+ "<li> ● 관측소명 : ${보명} </li>"
-						+ "<li> ● 수계 : ${수계} </li></ul>"
-					};
-	TEMP_DE['de5'] = {
-			title:"${관측소명}",
-			content: "<ul>"
-						+ "<li> ● 관측소명 : ${관측소명} </li>"
-						+ "<li> ● 관측소코드 : ${관측소코드} </li>"
-						+ "<li> ● 댐종류 : ${댐종류} </li>"
-						+ "<li> ● 법정동코드 : ${법정동코드} </li>"
-						+ "<li> ● 관할기관 : ${관할기관} </li>"
-						+ "<li> ● 주소 : ${주소} </li></ul>"
-					};
-	TEMP_DE['de6'] = {
-			title:"${취수장명}",
-			content: "<ul>"
-						+ "<li> ● 취수장명 : ${취수장명} </li>"
-						+ "<li> ● 주소 : ${주소} </li>"
-						+ "<li> ● 대책수계 : ${대책수계} </li>"
-						+ "<li> ● 대책권역 : ${대책권역} </li>"
-						+ "<li> ● 대책유역 : ${대책유역} </li>"
-						+ "<li> ● 시설용량 : ${시설용량} </li>"
-						+ "<li> ● 수원_표류 : ${수원_표류} </li>"
-						+ "<li> ● 수원_복류 : ${수원_복류} </li>"
-						+ "<li> ● 수원_댐 : ${수원_댐} </li>"
-						+ "<li> ● 수원_기타 : ${수원_기타} </li>"
-						+ "<li> ● 수원_지하 : ${수원_지하} </li>"
-						+ "<li> ● 일평균취수 : ${일평균취수} </li>"
-						+ "<li> ● 공급량 : ${공급량} </li>"
-						+ "<li> ● 수원_복류 : ${수원_복류} </li>"
-						+ "<li> ● 정수장 : ${정수장} </li>"
-						+ "<li> ● 비고 : ${비고} </li>"
-						+ "<li> ● 조인여부 : ${조인여부} </li></ul>"
-					};
-	TEMP_DE['de7'] = {
-			title:"${정수장명}",
-			content: "<ul>"
-						+ "<li> ● 정수장명 : ${정수장명} </li>"
-						+ "<li> ● 배수코드 : ${배수코드} </li>"
-						+ "<li> ● 배수구역 : ${배수구역} </li>"
-						+ "<li> ● 대책수계 : ${대책수계} </li>"
-						+ "<li> ● 대책권역 : ${대책권역} </li>"
-						+ "<li> ● 대책유역 : ${대책유역} </li>"
-						+ "<li> ● 시설용량 : ${시설용량} </li>"
-						+ "<li> ● 간이처리 : ${간이처리} </li>"
-						+ "<li> ● 완속여과 : ${완속여과} </li>"
-						+ "<li> ● 급속여과 : ${급속여과} </li>"
-						+ "<li> ● 고도처리 : ${고도처리} </li>"
-						+ "<li> ● 일최대급수 : ${일최대급수} </li>"
-						+ "<li> ● 일평균급수 : ${일평균급수} </li>"
-						+ "<li> ● 급수구역 : ${급수구역} </li>"
-						+ "<li> ● 급수인구 : ${급수인구} </li>"
-						+ "<li> ● 정수장 : ${정수장} </li>"
-						+ "<li> ● 비고 : ${비고} </li>"
-						+ "<li> ● 주소 : ${주소} </li></ul>"
-					};
-	TEMP_DE['de8'] = {
-			title:"${NAME}",
-			content: "<ul>"
-						+ "<li> ● 댐명 : ${NAME} </li>"
-						+ "<li> ● 주소 : ${ADDRESS} </li>"
-						+ "<li> ● 수계 : ${RIVER_NM} </li>"
-						+ "<li> ● 관리과 : ${NGI_MANAGE} </li>"
-						+ "<li> ● 대책권역 : ${NGI_MANAGE} </li></ul>"
-					};
-	// //////////////////
-	TEMP_DE['de9'] = {
-			title:"${OBSNM}",
-			content: "<ul>"
-						+ "<li> ● 보명 : ${OBSNM} </li></ul>"
-					};
+	TEMP_DE['de4'] = '<dl class="info_box" style="height:95px !important; border-bottom: solid 1px black;">'+
+					    '<dt>&nbsp; ${BO_NM}</dt>'+
+					    '<dd>'+
+					        '<dl class="summary">'+  
+					        	'<dt>관측소명</dt>'+ 
+					           ' <dd class="L0">&nbsp; ${BO_NM}</dd>'+ 
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>수계</dt>'+
+					            '<dd class="L0">&nbsp; ${WTR_SYS}</dd>'+
+					        '</dl>'+
+					    '</dd>'+
+					'</dl>';
 	
-	layerInfoDiv = null;
+	
+	TEMP_DE['de5'] = '<dl class="info_box" style="height:180px !important; border-bottom: solid 1px black;">'+
+					    '<dt>&nbsp; ${OBS_NM}</dt>'+
+					    '<dd>'+
+					        '<dl class="summary">'+  
+					        	'<dt>관측소명</dt>'+
+					           ' <dd class="L0">&nbsp; ${OBS_NM}</dd>'+
+					        '</dl>'+ 
+					        '<dl class="summary">'+
+					        	'<dt>관측소코드</dt>'+
+					            '<dd class="L0">&nbsp; ${OBS_CD}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+  
+					        	'<dt>댐종류</dt>'+
+					           ' <dd class="L0">&nbsp; ${DAM_TYP}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>법정동코드</dt>'+
+					            '<dd class="L0">&nbsp; ${LGL_CD}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+  
+					        	'<dt>관할기관</dt>'+
+					           ' <dd class="L0">&nbsp; ${CMPTN}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>주소</dt>'+
+					            '<dd class="L0">&nbsp; ${ADRES}</dd>'+
+					        '</dl>'+
+					    '</dd>'+ 
+					'</dl>';
+	
+	TEMP_DE['de6'] = '<dl class="info_box" style="height:150px !important; border-bottom: solid 1px black;">'+
+					    '<dt>&nbsp; ${FCLTY_NM}</dt>'+
+					    '<dd>'+
+					        '<dl class="summary">'+  
+					        	'<dt>취수장명</dt>'+
+					           ' <dd class="L0">&nbsp; ${FCLTY_NM}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>취수장코드</dt>'+
+					            '<dd class="L0">&nbsp; ${FCLTS_NO}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+  
+					        	'<dt>종류</dt>'+
+					           ' <dd class="L0">&nbsp; ${FCLTY_SE_C}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>상태</dt>'+
+					            '<dd class="L0">&nbsp; ${STTUS_SE_C}</dd>'+
+					        '</dl>'+
+					    '</dd>'+
+					'</dl>';
+	
+	TEMP_DE['de7'] = '<dl class="info_box" style="height:150px !important; border-bottom: solid 1px black;">'+
+					    '<dt>&nbsp; ${FCLTS_NO}</dt>'+
+					    '<dd>'+
+					        '<dl class="summary">'+  
+					        	'<dt>정수장명</dt>'+
+					           ' <dd class="L0">&nbsp; ${FCLTS_NO}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+  
+					        	'<dt>정수장코드</dt>'+
+					           ' <dd class="L0">&nbsp; ${FCLTS_NO}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+  
+					        	'<dt>종류</dt>'+
+					           ' <dd class="L0">&nbsp; ${FCLTY_SE_C}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+  
+					        	'<dt>상태</dt>'+
+					           ' <dd class="L0">&nbsp; ${STTUS_SE_C}</dd>'+
+					        '</dl>'+
+					    '</dd>'+
+					'</dl>'; 
+	
+	TEMP_DE['de8'] = '<dl class="info_box" style="height:180px !important; border-bottom: solid 1px black;">'+
+					    '<dt>&nbsp; ${NAME}</dt>'+
+					    '<dd>'+
+					        '<dl class="summary">'+  
+					        	'<dt>댐명</dt>'+
+					           ' <dd class="L0">&nbsp; ${NAME}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>주소</dt>'+
+					            '<dd class="L0">&nbsp; ${ADDRESS}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+  
+					        	'<dt>수계</dt>'+
+					           ' <dd class="L0">&nbsp; ${RIVER_NM}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>관리과</dt>'+
+					            '<dd class="L0">&nbsp; ${NGI_MNG}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>Tel</dt>'+
+					            '<dd class="L0">&nbsp; ${NGI_PHONE}</dd>'+
+					        '</dl>'+
+					    '</dd>'+
+					'</dl>';
+	
+	// //////////////////
+	TEMP_DE['de9'] = '<dl class="info_box" style="height:66px !important; border-bottom: solid 1px black;">'+
+					    '<dt>&nbsp; ${OBSNM}</dt>'+
+					    '<dl class="summary">'+
+				        	'<dt>보명</dt>'+
+				            '<dd class="L0">&nbsp; ${OBSNM}</dd>'+
+				        '</dl>'+
+					'</dl>';
+	
+	layerInfoDiv = null; 
 	layerInfoOverlay = null;
 	
 	currentFeature = null;
+	
+	var fillToValue = function(temp, val){
+		
+		if(temp == null){
+			return '';
+		}
+		if(val == null){
+			return temp;
+		}
+		
+		for(var key in val){
+			temp = temp.replaceAll('${'+key+'}', val[key]);
+		}
+		
+		var j = 0;
+		while(true){
+			var i = temp.indexOf('${');
+			if(i<0){
+				break;
+			}else{
+				var nullField = temp.substring(i, temp.indexOf('}')+1);
+				temp = temp.replaceAll(nullField, '&nbsp;');
+			}
+			j++; 
+			 
+			if(j > 20){
+				console.log('[ERROD] Fill To Values');
+				break;
+			}
+		}
+		
+		return temp;
+	}
 	
 	//////////
 	// MVC 설정 시작
@@ -1304,35 +1546,35 @@ $(function() {
 				$kecoMap.view.orderLayers = {};
 			}
 			
-			_MapService.getWfs(':NTN_RVR','*').then(function(result){
-				
-				
-				if(result == null || result.features.length <= 0){
-					return;
-				}
-				
-				var features = [];
-				
-				for(var i=0; i<result.features.length; i++){
-					
-					var featureProperties = result.features[i].properties;
-					var featureCoordinate = result.features[i].geometry.coordinates;
-					
-					featureProperties.featureType = 'NTN_RVR';
-					
-					var feature = new ol.Feature({geometry:new ol.geom.Polygon(result.features[i].geometry.coordinates[0]), properties:featureProperties});
-					features.push(feature);
-				}
-				
-				$kecoMap.view.orderLayers['ntnRvr'] = new ol.layer.Vector({ 
-						name : 'ntnRvrLayer',
-						source : new ol.source.Vector({
-							features : features
-						}),
-						visible: true
-				}); 
-				_MapEventBus.trigger(_MapEvents.map_addLayer, $kecoMap.view.orderLayers['ntnRvr']);
-			});
+//			_MapService.getWfs(':NTN_RVR','*').then(function(result){
+//				
+//				
+//				if(result == null || result.features.length <= 0){
+//					return;
+//				}
+//				
+//				var features = [];
+//				
+//				for(var i=0; i<result.features.length; i++){
+//					
+//					var featureProperties = result.features[i].properties;
+//					var featureCoordinate = result.features[i].geometry.coordinates;
+//					
+//					featureProperties.featureType = 'NTN_RVR';
+//					
+//					var feature = new ol.Feature({geometry:new ol.geom.Polygon(result.features[i].geometry.coordinates[0]), properties:featureProperties});
+//					features.push(feature);
+//				}
+//				
+//				$kecoMap.view.orderLayers['ntnRvr'] = new ol.layer.Vector({ 
+//						name : 'ntnRvrLayer',
+//						source : new ol.source.Vector({
+//							features : features
+//						}),
+//						visible: true
+//				}); 
+//				_MapEventBus.trigger(_MapEvents.map_addLayer, $kecoMap.view.orderLayers['ntnRvr']);
+//			}); 
 			 
 			_MapService.getWfs(':BO_OBS','*').then(function(result){
 				
@@ -1347,7 +1589,7 @@ $(function() {
 					var featureProperties = result.features[i].properties;
 					var featureCoordinate = result.features[i].geometry.coordinates;
 					
-					featureProperties.featureType = 'BO_BOS';
+					featureProperties.featureType = 'BO_OBS';
 					
 					var feature = new ol.Feature({geometry:new ol.geom.Point(featureCoordinate), properties: featureProperties});
 					features.push(feature);
@@ -1364,6 +1606,7 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[12].layerId+'/images/'+layers[12].url,
+									anchor: [0, 1],
 									crossOrigin: 'Anonymous'
 								})
 							})];
@@ -1401,6 +1644,7 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[13].layerId+'/images/'+layers[13].url,
+									anchor: [0, 1],
 									crossOrigin: 'Anonymous'
 								})
 							})];
@@ -1438,6 +1682,7 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[29].layerId+'/images/'+layers[29].url,
+									anchor: [0, 1],
 									crossOrigin: 'Anonymous'
 								})
 							})];
@@ -1473,6 +1718,7 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[30].layerId+'/images/'+layers[30].url,
+									anchor: [0, 1],
 									crossOrigin: 'Anonymous'
 								})
 							})];
@@ -1508,6 +1754,7 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[31].layerId+'/images/'+layers[31].url,
+									anchor: [0, 1],
 									crossOrigin: 'Anonymous'
 								})
 							})];
@@ -1521,7 +1768,7 @@ $(function() {
 					return;
 				}
 				var features = [];
-				
+				 
 				for(var i=0; i<result.features.length; i++){
 					
 					var featureProperties = result.features[i].properties;
@@ -1543,6 +1790,7 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[32].layerId+'/images/'+layers[32].url,
+									anchor: [0, 1],
 									crossOrigin: 'Anonymous'
 								})
 							})];
@@ -1805,151 +2053,111 @@ $(function() {
 			 
 			 if(feature){
 				 var featureInfo = feature.getProperties().properties;
-				 
-				 var tempTitle = '';
 				 if(featureInfo){
+					 var zoom = _CoreMap.getZoom()-7;
+					 var offset = [-133 , -2]; 
+					
+					 if(zoom < 2) {
+						 offset = [-137 , -2];
+					 }
+					 
+					 var position = feature.getGeometry().getCoordinates();
+					 
+					 var return_flag = true;
+					 var tempText = null;
+					 
 					 if(featureInfo.featureType == 'AUTO'){
-						 
-						var return_flag = false;
-						try{
-							var obj = $kecoMap.model.baseObj.model.getCheckData('A', featureInfo.FACT_CODE, featureInfo.BRANCH_NO);
-							if(obj != null){
-								return_flag = $kecoMap.model.LayerAuthIn(obj.FACT_CODE,obj.BRANCH_NO,"U");
-							}
-							if(layerInfoDiv == null) {
-								layerInfoDiv = document.createElement('div');	
-							}
+						 return_flag = false;
+						
+						 try{
+							 var obj = $kecoMap.model.baseObj.model.getCheckData('A', featureInfo.FACT_CODE, featureInfo.BRANCH_NO);
+							 if(obj != null){
+								 return_flag = $kecoMap.model.LayerAuthIn(obj.FACT_CODE,obj.BRANCH_NO,"U");
+							 }
 							
-							if(return_flag){ 
+							 if(return_flag){ 
+								 var themeObj = $kecoMap.model.getThemeAutoData(featureInfo.FACT_CODE, featureInfo.BRANCH_NO);
 								
-								var themeObj = $kecoMap.model.getThemeAutoData(featureInfo.FACT_CODE, featureInfo.BRANCH_NO);
-								
-								if(obj != undefined) {
-									var alertData = $kecoMap.model.baseObj.model.getAlertData(featureInfo.FACT_CODE, featureInfo.BRANCH_NO);
+								 if(obj != undefined) {
+									 var alertData = $kecoMap.model.baseObj.model.getAlertData(featureInfo.FACT_CODE, featureInfo.BRANCH_NO);
 									
-									if(themeObj != undefined && $main.view.excessChk.attr('checked')) {
-										layerInfoDiv.innerHTML = AUTO_TEMP_THEME;
-									} else if( alertData != undefined) {
-										obj.ALERT_MSG = alertData.ALERT_MSG;
-										layerInfoDiv.innerHTML = AUTO_TEMP_ALERT;
-										
-									} else {
-										layerInfoDiv.innerHTML = AUTO_TEMP;
-									}
-								} else {
-									layerInfoDiv.innerHTML = NULL_TEMP;
-								}
-							}
-						}catch(e) {}
-
-						if(return_flag){ 
-							var html = '<dl class="info_box" style="">'+
-			                '<dt>가평청평하수</dt>'+
-			                '<dd>'+
-			                    '<dl class="summary">'+ 
-			                    	'<dt>수신시간</dt>'+
-			                       ' <dd class="L0">2019/00/00 00:00</dd>'+
-			                   ' </dl>'+
-			                    '<dl class="summary">'+
-			                    	'<dt>권역</dt>'+
-			                        '<dd>수도권</dd>'+
-			                    '</dl>'+
-			                    '<table class="st02 MgT10" summary="측정소 항목별 측정값">'+
-			                        '<caption></caption>'+
-			                        '<colgroup>'+
-			                        	'<col width="60" />'+
-			                            '<col width="50" />'+
-			                            '<col width="50" />'+
-			                            '<col />'+
-			                       ' </colgroup>'+
-			                       ' <thead>'+
-			                           ' <tr>'+
-			                               ' <th>항목</th>'+
-			                                '<th>측정값</th>'+
-			                                '<th>단위</th>'+
-			                                '<th>기준</th>'+
-			                         '   </tr>'+
-			                        '</thead>'+
-			                        '<tbody>'+
-			                            '<tr>'+
-			                               ' <td>pH</td>'+
-			                               ' <td>6.60</td>'+
-			                               ' <td>-</td>'+
-			                               ' <td>(5.80~8.60)</td>'+
-			                           ' </tr>'+
-			                           ' <tr>'+
-			                                '<td>BOD</td>'+
-			                               ' <td>-</td>'+
-			                                '<td>ppm</td>'+
-			                                '<td>-</td>'+
-			                           ' </tr>'+
-			                            '<tr>'+
-			                                '<td>COD</td>'+
-			                                '<td>2.80</td>'+
-			                                '<td>ppm</td>'+
-			                               ' <td>(0.00~20.00)</td>'+
-			                          '  </tr>'+
-			                           ' <tr>'+
-			                                '<td>SS</td>'+
-			                                '<td>0.86</td>'+
-			                                '<td>mg/L</td>'+
-			                                '<td>(0.00~10.00)</td>'+
-			                           ' </tr>'+
-			                           ' <tr>'+
-			                               ' <td>T-N</td>'+
-			                                '<td>4.38</td>'+
-			                               ' <td>mg/L</td>'+
-			                               ' <td>(0.00~20.00)</td>'+
-			                           ' </tr>'+
-			                           ' <tr>'+
-			                                '<td>T-P</td>'+
-			                                '<td>0.11</td>'+
-			                                '<td>mg/L</td>'+
-			                                '<td>(0.00~0.20)</td>'+
-			                            '</tr>   '+                         
-			                        '</tbody>'+
-			                    '</table>'+
-			                '</dd>'+
-			          '  </dl>';
-			            
-							layerInfoDiv.innerHTML = html; 
-							
-							var zoom = _CoreMap.getZoom()-7;
-							var offset = [-133 , -2];
-							
-							if(zoom < 2) {
-								offset = [-137 , -2];
-							}
-							
-							if(layerInfoOverlay){
-								layerInfoOverlay.setPosition( feature.getGeometry().getCoordinates() );	
-								layerInfoOverlay.setOffset(offset);
-							}else{
-								layerInfoOverlay = new ol.Overlay({
-									element: layerInfoDiv,
-									offset: offset,
-									positioning: 'center-center'
-								}); 
-								 
-								_MapEventBus.trigger(_MapEvents.map_addOverlay, layerInfoOverlay);
-							}
-						} 
+									 if(themeObj != undefined && $main.view.excessChk.attr('checked')) {
+										 tempText = AUTO_TEMP_THEME;
+									 } else if( alertData != undefined) {
+										 obj.ALERT_MSG = alertData.ALERT_MSG;
+										 tempText = AUTO_TEMP_ALERT;
+										 
+									 } else {
+										 tempText = AUTO_TEMP;
+									 }
+								 } else {
+									 obj = featureInfo;
+									 tempText = NULL_TEMP;
+								 }
+								 tempText = fillToValue(tempText, obj);
+							 }
+						 }catch(e) {}
 						 console.log('auto on over');
 					 } else if(featureInfo.featureType == 'TMS'){
+						 return_flag = false;
+						 var obj = $kecoMap.model.baseObj.model.getCheckData('W', featureInfo.FACT_CODE, featureInfo.BRANCH_NO);
+						 if(obj != null){
+							 return_flag = $kecoMap.model.LayerAuthIn(obj.FACT_CODE,obj.BRANCH_NO,"W") 
+						 }
+						 if(return_flag) {
+							 if(obj != undefined) {
+								 tempText = TMS_TEMP;
+							 } else {
+								 obj = featureInfo;
+								 tempText = NULL_TEMP;
+							 }
+							 tempText = fillToValue(tempText, obj);
+						 }
 						 console.log('tms on over');
 					 } else if(featureInfo.featureType == 'IPUSN'){
+						 return_flag = false;
+						 var obj = $kecoMap.model.baseObj.model.getCheckData('U', featureInfo.FACT_CODE, featureInfo.BRANCH_NO);
+						 if(obj != null){
+							 return_flag = $kecoMap.model.LayerAuthIn(obj.FACT_CODE,obj.BRANCH_NO,"U");
+						 }
+						 if(return_flag){
+							 var themeObj = $kecoMap.model.getThemeIpusnData(featureInfo.FACT_CODE, featureInfo.BRANCH_NO);	//추가하려고 구상중
+						
+							 if(obj != undefined) {
+								 var alertData = $kecoMap.model.baseObj.model.getAlertData(featureInfo.FACT_CODE, featureInfo.BRANCH_NO);
+							
+								 if(themeObj != undefined && $main.view.excessChk.attr('checked')) {
+									 tempText = IPUSN_TEMP_THEME;
+								 } else if( alertData != undefined) {
+									 obj.ALERT_MSG = alertData.ALERT_MSG;
+									 tempText = IPUSN_TEMP_ALERT;
+								 } else {
+									 tempText = IPUSN_TEMP;
+								 }
+							 } else {
+								 obj = featureInfo;
+								 tempText = NULL_TEMP;
+							 }
+							 tempText = fillToValue(tempText, obj);
+						 }
 						 console.log('ipusn on over');
 					 } else if(featureInfo.featureType == 'BO'){
+						 tempText = fillToValue( TEMP_DE['de9'], featureInfo);
 						 console.log('BO on over');
 					 } else if(featureInfo.featureType == 'DAM'){
+						 tempText = fillToValue( TEMP_DE['de8'], featureInfo);
 						 console.log('DAM on over');
 					 } else if(featureInfo.featureType == 'WTR_PRF'){
+						 tempText = fillToValue( TEMP_DE['de7'], featureInfo);
 						 console.log('WTR_PRF on over');
 					 } else if(featureInfo.featureType == 'WTR_DEPOT'){
+						 tempText = fillToValue( TEMP_DE['de6'], featureInfo);
 						 console.log('WTR_DEPOT on over');
 					 } else if(featureInfo.featureType == 'DAM_OBS'){
+						 tempText = fillToValue( TEMP_DE['de5'], featureInfo);
 						 console.log('DAM_OBS on over');
 					 } else if(featureInfo.featureType == 'BO_OBS'){
+						 tempText = fillToValue( TEMP_DE['de4'], featureInfo);
 						 console.log('BO_OBS on over');
 					 } else if(featureInfo.featureType == 'MARKER'){
 						 //pub.markerOverlay
@@ -1971,10 +2179,22 @@ $(function() {
 							 html = CR_TEMP.content;
 						 }
 					 }
+					 
+					 
+					 if(return_flag && tempText){  
+						 layerInfoDiv.innerHTML = tempText;
+						
+						 if(layerInfoOverlay){
+							 layerInfoOverlay.setPosition( position );	
+							 layerInfoOverlay.setOffset(offset);
+						 }
+					 }else{
+						 layerInfoOverlay.setPosition(undefined);
+					 }
 				 }
 			 }else{
 				 if(layerInfoOverlay){
-					 layerInfoOverlay.setPosition(undefined);
+//					 layerInfoOverlay.setPosition(undefined);
 				 }
 			 }
 		};
@@ -2073,6 +2293,7 @@ $(function() {
 								source : new ol.source.Vector({
 									features : tmsFeatures
 								}),
+								anchor: [0, 1],
 								visible: isVisibled,
 								style : $kecoMap.model.tmsStyleFunction
 						}); 
@@ -2434,9 +2655,9 @@ $(function() {
 								source : new ol.source.Vector({
 									features : whFeatures
 								}),
-								visible: true,
+								visible: false, 
 								style : $kecoMap.model.whStyleFunction
-						}); 
+						});  
  
 						_MapEventBus.trigger(_MapEvents.map_addLayer, $kecoMap.view.whLayer);
 					}, 
@@ -2476,7 +2697,15 @@ $(function() {
 		};
 		
 		pub.init = function() {
+			layerInfoDiv = document.createElement('div');
 			
+			layerInfoOverlay = new ol.Overlay({
+				element: layerInfoDiv,
+				offset: [-133 , -2],
+				positioning: 'center-center'
+			}); 
+			 
+			_MapEventBus.trigger(_MapEvents.map_addOverlay, layerInfoOverlay);
 		};
 		return pub;
 	}());

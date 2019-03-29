@@ -258,62 +258,65 @@ $(function() {
 					
 					$main.model.accidentData = [];
 					
-					for ( var i = 0; i < data.accidents.accident.length; i++)  {
-						if(data.accidents.accident[i].wpsstep != 'END' ) {
-							var obj = data.accidents.accident[i];
-							
-							if(obj.river_div == 'R01'){
-								obj.river_name = '한강';
-							}else if(obj.river_div == 'R02'){
-								obj.river_name = '낙동강';
-							}else if(obj.river_div == 'R03'){
-								obj.river_name = '금강';
-							}else if(obj.river_div == 'R04'){
-								obj.river_name = '영산강';
-							}
-							
-							if(obj.wpkind == 'PA'){
-								obj.wpkind = '유류유출';
-								type = 11;
-							}else if(obj.wpkind == 'PB'){
-								obj.wpkind = '물고기폐사';
-								type = 12;
-							}else if(obj.wpkind == 'PC'){
-								obj.wpkind = '화학물질';
-								type = 13;
-							}else if(obj.wpkind == 'PD'){
-								obj.wpkind = '기타';
-								type = 14;
-							}else if(obj.wpkind == 'PT'){
-								obj.wpkind = '테스트';
-							}
-							
-							if(obj.wpsstep == 'RCV'){
-								obj.wpsstep = '접수';
-							}else if(obj.wpsstep == 'ING'){
-								obj.wpsstep = '수습중';
-							}else if(obj.wpsstep == 'END'){
-								obj.wpsstep = '조치완료';
-							}else if(obj.wpsstep == 'STA'){
-								obj.wpsstep = '신고';
-								type = 10;
-							}
+					if(data.accidents){
+						for ( var i = 0; i < data.accidents.accident.length; i++)  {
+							if(data.accidents.accident[i].wpsstep != 'END' ) {
+								var obj = data.accidents.accident[i];
 								
-							if(obj.supportkind == 'Y'){
-								obj.supportkind = '지원';
-							}else if(obj.supportkind == 'N'){
-								obj.supportkind = '접수';
-							}else{
-								obj.supportkind = '미정';
+								if(obj.river_div == 'R01'){
+									obj.river_name = '한강';
+								}else if(obj.river_div == 'R02'){
+									obj.river_name = '낙동강';
+								}else if(obj.river_div == 'R03'){
+									obj.river_name = '금강';
+								}else if(obj.river_div == 'R04'){
+									obj.river_name = '영산강';
+								}
+								
+								if(obj.wpkind == 'PA'){
+									obj.wpkind = '유류유출';
+									type = 11;
+								}else if(obj.wpkind == 'PB'){
+									obj.wpkind = '물고기폐사';
+									type = 12;
+								}else if(obj.wpkind == 'PC'){
+									obj.wpkind = '화학물질';
+									type = 13;
+								}else if(obj.wpkind == 'PD'){
+									obj.wpkind = '기타';
+									type = 14;
+								}else if(obj.wpkind == 'PT'){
+									obj.wpkind = '테스트';
+								}
+								
+								if(obj.wpsstep == 'RCV'){
+									obj.wpsstep = '접수';
+								}else if(obj.wpsstep == 'ING'){
+									obj.wpsstep = '수습중';
+								}else if(obj.wpsstep == 'END'){
+									obj.wpsstep = '조치완료';
+								}else if(obj.wpsstep == 'STA'){
+									obj.wpsstep = '신고';
+									type = 10;
+								}
+									
+								if(obj.supportkind == 'Y'){
+									obj.supportkind = '지원';
+								}else if(obj.supportkind == 'N'){
+									obj.supportkind = '접수';
+								}else{
+									obj.supportkind = '미정';
+								}
+								if(obj.addrdet == 'null')
+									obj.addrdet = '';
+								
+								obj.datatype = 'AC';
+								
+								$main.model.accidentData.push(obj);
+								
+								if(obj.longitude != undefined && obj.latitude != undefined)
+									$kecoMap.model.addMarker(type, obj.longitude, obj.latitude, obj);
 							}
-							if(obj.addrdet == 'null')
-								obj.addrdet = '';
-							obj.datatype = 'AC';
-							
-							$main.model.accidentData.push(obj);
-							
-							if(obj.longitude != undefined && obj.latitude != undefined)
-								$kecoMap.model.addMarker(type, obj.longitude, obj.latitude, obj);
 						}
 					}
 				}
