@@ -930,11 +930,11 @@ $(function() {
 		
 		pub.writeBuffer = function(type, obj, distances, callback) {
 			if(type == '1') {
-				
-				/*if(!$('#38').attr('checked')) {
-					$('#38').attr('checked', 'true');
+				//주제도에서 레이어 키기
+				if(!$('input:checkbox[id="PST_CMPNY"]').is(":checked")) {
+					$("input:checkbox[id='PST_CMPNY']").prop("checked", true);
 					$kecoMap.model.updateLayerVisibility();
-				}*/
+				}
 				
 				if(_CoreMap.getMap().getLayerForName('fLayer') != undefined) {
 					_CoreMap.getMap().getLayerForName('fLayer').getSource().clear();
@@ -950,14 +950,26 @@ $(function() {
 				
 				//좌표 변환하여 버러 레이어 생성
 				var parser = new jsts.io.OL3Parser();
-				var tempCoord = ol.proj.transform([obj.longitude,obj.latitude], 'EPSG:4326', 'EPSG:3857');				
-				var feature = new ol.Feature({geometry:new ol.geom.Point(tempCoord)});
+				//proj4.defs('EPSG:5179','+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs');
+				
+				var ep1 = new proj4.Proj('EPSG:5179');
+				var ep2 = new proj4.Proj('EPSG:4326');
+				var p = new proj4.Point(obj.longitude,obj.latitude);
+				
+				// 미터좌표계변환
+				var trans = proj4.transform(ep2,ep1,p);
+				
+				//미터좌표계로 변환하여 feature를 만든다
+				var feature = new ol.Feature({geometry:new ol.geom.Point([trans.x,trans.y])});
 				// convert the OpenLayers geometry to a JSTS geometry
 				var jstsGeom = parser.read(feature.getGeometry());
 				// create a buffer of 40 meters around each line
-				var buffered = jstsGeom.buffer(distances*1000); // 미터단위 10km 10*1000
+				var buffered = jstsGeom.buffer(distances*1000); // 미터단위  10km 10*1000
 				// convert back from JSTS and replace the geometry on the feature
 				feature.setGeometry(parser.write(buffered));
+				
+				//미터좌표계로 변환한 (5179)를 다시 3857로 변경해서 buffer 그리기
+				feature.getGeometry().transform('EPSG:5179', 'EPSG:3857');
 				
 				//버퍼 레이어 그리기
 				page.view.bufferLayer.getSource().addFeature(feature);
@@ -1037,6 +1049,12 @@ $(function() {
 				
 			} else {
 				
+				//측정조 주제도에서 키기
+				if(!$('input:checkbox[id="whLd"]').is(":checked")) {
+					$("input:checkbox[id='whLd']").prop("checked", true);
+					$kecoMap.model.updateLayerVisibility();
+				}
+				
 				//버퍼 레이어가 존재하면 지우기
 				if(_CoreMap.getMap().getLayerForName('bufferLayer') != undefined){
 					_CoreMap.getMap().getLayerForName('bufferLayer').getSource().clear();	
@@ -1049,8 +1067,17 @@ $(function() {
 				
 				//좌표 변환하여 버러 레이어 생성
 				var parser = new jsts.io.OL3Parser();
-				var tempCoord = ol.proj.transform([obj.longitude,obj.latitude], 'EPSG:4326', 'EPSG:3857');				
-				var feature = new ol.Feature({geometry:new ol.geom.Point(tempCoord)});
+				//proj4.defs('EPSG:5179','+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs');
+				
+				var ep1 = new proj4.Proj('EPSG:5179');
+				var ep2 = new proj4.Proj('EPSG:4326');
+				var p = new proj4.Point(obj.longitude,obj.latitude);
+				
+				// 미터좌표계변환
+				var trans = proj4.transform(ep2,ep1,p);
+				
+				//미터좌표계로 변환하여 feature를 만든다
+				var feature = new ol.Feature({geometry:new ol.geom.Point([trans.x,trans.y])});
 				// convert the OpenLayers geometry to a JSTS geometry
 				var jstsGeom = parser.read(feature.getGeometry());
 				// create a buffer of 40 meters around each line
@@ -1058,8 +1085,16 @@ $(function() {
 				// convert back from JSTS and replace the geometry on the feature
 				feature.setGeometry(parser.write(buffered));
 				
+				//미터좌표계로 변환한 (5179)를 다시 3857로 변경해서 buffer 그리기
+				feature.getGeometry().transform('EPSG:5179', 'EPSG:3857');
+				
+				
 				//버퍼 레이어 그리기
 				page.view.bufferLayer.getSource().addFeature(feature);
+				
+				// 좌표변환된 버퍼를 다시 파싱
+				var bufferParser = parser.read(feature.getGeometry());
+				
 				
 				var whLayer = _CoreMap.getMap().getLayerForName('whLayer').getSource().getFeatures();
 				//whLayer에 있는지 없는지 확인
@@ -1067,7 +1102,7 @@ $(function() {
 				for(var i = 0 ; i < whLayer.length; i ++){
 					var whFeature = whLayer[i];
 					var target = parser.read(whFeature.getGeometry());
-					var interFeature = buffered.intersection(target);
+					var interFeature = bufferParser.intersection(target);
 					
 					// 반경안에 feature 확인
 					if(interFeature.getCoordinate()){
@@ -1304,7 +1339,7 @@ $(function() {
 				$kecoMap.view.orderLayers = {};
 			}
 			
-			_MapService.getWfs(':NTN_RVR','*').then(function(result){
+			/*_MapService.getWfs(':NTN_RVR','*').then(function(result){
 				
 				
 				if(result == null || result.features.length <= 0){
@@ -1332,7 +1367,7 @@ $(function() {
 						visible: true
 				}); 
 				_MapEventBus.trigger(_MapEvents.map_addLayer, $kecoMap.view.orderLayers['ntnRvr']);
-			});
+			});*/
 			 
 			_MapService.getWfs(':BO_OBS','*').then(function(result){
 				
