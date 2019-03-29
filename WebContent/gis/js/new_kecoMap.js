@@ -1947,7 +1947,7 @@ $(function() {
 			                '</dd>'+
 			          '  </dl>';
 			            
-//							layerInfoDiv.innerHTML = html; 
+							layerInfoDiv.innerHTML = html; 
 							
 							var zoom = _CoreMap.getZoom()-7;
 							var offset = [-133 , -2];
@@ -2005,14 +2005,7 @@ $(function() {
 						 	 //infoTemplate = new esri.InfoTemplate(CR_TEMP);
 							 html = CR_TEMP.content;
 						 }
-						 
-						 /*_CoreMap.getTempBranchTooltipElement().innerHTML = html;
-						 _CoreMap.getTempBranchToolTip().setPosition( feature.getGeometry().getCoordinates() );
-						 _CoreMap.getTempBranchTooltipElement().classList.remove('hidden');*/
-						 
-						
 					 }
-					 
 				 }
 			 }else{
 				 if(layerInfoOverlay){
