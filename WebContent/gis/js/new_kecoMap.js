@@ -1088,7 +1088,7 @@ $(function() {
 				//미터좌표계로 변환한 (5179)를 다시 3857로 변경해서 buffer 그리기
 				feature.getGeometry().transform('EPSG:5179', 'EPSG:3857');
 				
-				
+				 
 				//버퍼 레이어 그리기
 				page.view.bufferLayer.getSource().addFeature(feature);
 				
