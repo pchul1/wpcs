@@ -66,13 +66,24 @@ var _CoreMap = function() {
 	var tempBranchLayer;
 	var tempBranchToolTip;
 	var tempBranchTooltipElement;
-	var TEMP_B_TEMP = {
-			title:  "${TITLE}",
-			content: "<ul>"
-						+ "<li> ● 등록자 : ${REG_ID} </li>"
-						+ "<li> ● 등록일자 : ${REG_DATE} </li>"
-						+ "<li> ● 상세정보 : ${CONTENT} </li>"
-					};
+	var TEMP_B_TEMP =  '<dl class="info_box" >'+
+						    '<dt>&nbsp; ${TITLE}</dt>'+
+						    '<dd>'+
+						        '<dl class="summary">'+  
+						        	'<dt>등록자</dt>'+
+						           ' <dd class="L0">&nbsp; ${REG_ID}</dd>'+
+						        '</dl>'+
+						        '<dl class="summary">'+
+						        	'<dt>등록일자</dt>'+
+						            '<dd class="L0">&nbsp; ${REG_DATE}</dd>'+
+						        '</dl>'+
+						        '<dl class="summary">'+
+						        	'<dt>상세정보</dt>'+
+						            '<dd class="L0"><textarea rows="11" cols="25" readonly >${CONTENT}"  </textarea> </dd>'+
+						        '</dl>'+
+						    '</dd>'+ 
+						'</dl>'; 
+	
 	var selectedTempBranchFeature;
 	
 	var isIE = false;
@@ -227,6 +238,39 @@ var _CoreMap = function() {
 	    //setTempBranchLayer();
 	}
 	
+	var fillToValue = function(temp, val){
+		
+		if(temp == null){
+			return '';
+		}
+		if(val == null){
+			return temp;
+		}
+		
+		for(var key in val){
+			temp = temp.replaceAll('${'+key+'}', val[key]);
+		}
+		
+		var j = 0;
+		while(true){
+			var i = temp.indexOf('${');
+			if(i<0){
+				break;
+			}else{
+				var nullField = temp.substring(i, temp.indexOf('}')+1);
+				temp = temp.replaceAll(nullField, '');
+			}
+			j++;
+			
+			if(j > 20){
+				console.log('[ERROD] Fill To Values');
+				break;
+			}
+		}
+		
+		return temp;
+	}
+
 	var setTempBranchLayer = function(){
 		
 		drawTempBranchLayer();
@@ -239,9 +283,17 @@ var _CoreMap = function() {
 			 });
 			
 			 if(feature && feature.getProperties().properties.featureType == 'TEMP'){
-				 tempBranchTooltipElement.innerHTML = feature.getProperties().properties.TITLE;
+				 tempBranchTooltipElement.innerHTML =  fillToValue(TEMP_B_TEMP, feature.getProperties().properties);
+				 var zoom = _CoreMap.getZoom()-7;
+				 var offset = [-133 , -2]; 
+				
+				 if(zoom < 2) {
+					 offset = [-137 , -2];
+				 }
+				  
+				 tempBranchToolTip.setOffset(offset);
+				 
 				 tempBranchToolTip.setPosition( feature.getGeometry().getCoordinates() );
-				 tempBranchTooltipElement.classList.remove('hidden');
 			 }else{
 				 tempBranchToolTip.setPosition(undefined);
 			 }
@@ -290,10 +342,11 @@ var _CoreMap = function() {
 							image: new ol.style.Icon({
 								opacity: 1,
 								src: '/gis/new_images/post-it.png',
+								anchor: [0, 1],
 								crossOrigin: 'Anonymous'
 							})
 						}) 
-				}); 
+				});  
 
 				coreMap.addLayer(tempBranchLayer);
 			}, 
@@ -612,12 +665,14 @@ var _CoreMap = function() {
 			tempBranchTooltipElement.parentNode.removeChild(tempBranchTooltipElement);
 		}
 		tempBranchTooltipElement = document.createElement('div');
-		tempBranchTooltipElement.className = 'tooltip hidden';
+		
 		tempBranchToolTip = new ol.Overlay({
         	element: tempBranchTooltipElement,
         	offset: [15, 0],
         	positioning: 'center-left'
         });
+		tempBranchToolTip.setPosition(undefined);
+		
         coreMap.addOverlay(tempBranchToolTip);
 	}
 	

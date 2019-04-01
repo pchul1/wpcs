@@ -135,7 +135,7 @@ select { padding: 3px 4px; font-size: 13px; color: #282828; border: 1px solid #c
 
 
 /*측정소 정보*/
-.info_box { width: 274px; height: 276px; padding: 45px 10px 10px 10px;  background: url(../new_images/info_box.png) no-repeat; position: absolute; }
+.info_box { width: 274px; height: 295px; padding: 45px 10px 10px 10px;  background: url(../new_images/info_box.png); position: absolute; background-size: 294px 350px;}
 .info_box> dt { border-bottom: 2px solid #4e4040; padding: 0 0 7px 15px; background: url(../new_images/blit_05.gif) left 6px no-repeat; font-size: 16px; letter-spacing: -1px; }
 
 .summary { }
