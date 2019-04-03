@@ -10,7 +10,7 @@ try
 	String rvCd = (String) request.getParameter("rvCd");
 	 
 	Statement stmt=null;
-	sql  = "SELECT OBJECTID, X, Y, FACI_NM, FACI_ADDR, RV_CD, FACT_CODE, BRANCH_NO FROM GIS_TMS WHERE 1=1";
+	sql  = "SELECT OBJECTID, X, Y, FACI_NM, FACI_ADDR, RV_CD, FACT_CODE, BRANCH_NO FROM T_GIS_TMS WHERE 1=1";
 	if(!"A".equals(rvCd)){
 		sql += " AND RV_CD = '"+rvCd+"'";
 	}

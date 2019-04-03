@@ -21,14 +21,14 @@ try
 	String HOUSE_TYPE = (String)request.getParameter("HOUSE_TYPE");
 
 	if("I".equals(flag)){
-		sql  = "INSERT INTO GIS_WAREHOUSE(OBJECTID, LON, LAT, WH_CODE, WH_NAME, ADMIN_MGR, ADMIN_SUB_, ADMIN_TELN, USE_FLAG, HOUSE_TYPE)"+ 
-				   "VALUES((SELECT MAX(OBJECTID)+1 FROM GIS_WAREHOUSE), '"+LON+"', '"+LAT+"',"+
+		sql  = "INSERT INTO T_GIS_WAREHOUSE(OBJECTID, LON, LAT, WH_CODE, WH_NAME, ADMIN_MGR, ADMIN_SUB_, ADMIN_TELN, USE_FLAG, HOUSE_TYPE)"+ 
+				   "VALUES((SELECT MAX(OBJECTID)+1 FROM T_GIS_WAREHOUSE), '"+LON+"', '"+LAT+"',"+
 				   "'"+WH_CODE+"', '"+WH_CODE+"', '"+WH_CODE+"', '"+WH_CODE+"', '"+WH_CODE+"', '"+USE_FLAG+"', '"+HOUSE_TYPE+"')";			                                                                    
 	}else if("U".equals(flag)){
-		sql  = "UPDATE GIS_WAREHOUSE SET LON = '"+LON+"', LAT = '"+LAT+"',WH_NAME = '"+WH_NAME+"',ADMIN_MGR = '"+ADMIN_MGR+"', ADMIN_SUB_='"+ADMIN_SUB_+", ADMIN_TELN='"+ADMIN_TELN+"', USE_FLAG='"+USE_FLAG+"', HOUSE_TYPE='"+HOUSE_TYPE+"'"+
+		sql  = "UPDATE T_GIS_WAREHOUSE SET LON = '"+LON+"', LAT = '"+LAT+"',WH_NAME = '"+WH_NAME+"',ADMIN_MGR = '"+ADMIN_MGR+"', ADMIN_SUB_='"+ADMIN_SUB_+", ADMIN_TELN='"+ADMIN_TELN+"', USE_FLAG='"+USE_FLAG+"', HOUSE_TYPE='"+HOUSE_TYPE+"'"+
 				"WHERE WH_CODE='"+WH_CODE+"'"; 
 	}else if("D".equals(flag)) {
-		sql  = "DELETE FROM GIS_WAREHOUSE"+
+		sql  = "DELETE FROM T_GIS_WAREHOUSE"+
 				"WHERE WH_CODE='"+WH_CODE+"'";
 	}
 	Statement stmt=null;
