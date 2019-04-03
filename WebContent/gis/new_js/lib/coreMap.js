@@ -284,15 +284,6 @@ var _CoreMap = function() {
 			
 			 if(feature && feature.getProperties().properties.featureType == 'TEMP'){
 				 tempBranchTooltipElement.innerHTML =  fillToValue(TEMP_B_TEMP, feature.getProperties().properties);
-				 var zoom = _CoreMap.getZoom()-7;
-				 var offset = [-133 , -2]; 
-				
-				 if(zoom < 2) {
-					 offset = [-137 , -2];
-				 }
-				  
-				 tempBranchToolTip.setOffset(offset);
-				 
 				 tempBranchToolTip.setPosition( feature.getGeometry().getCoordinates() );
 			 }else{
 				 tempBranchToolTip.setPosition(undefined);
@@ -341,9 +332,11 @@ var _CoreMap = function() {
 						style : new ol.style.Style({
 							image: new ol.style.Icon({
 								opacity: 1,
-								src: '/gis/new_images/post-it.png',
-								anchor: [0, 1],
-								crossOrigin: 'Anonymous'
+								src: '/gis/new_images/message.png',
+								anchor: [0.5, 0.5],
+						        anchorXUnits: 'fraction',
+						        anchorYUnits: 'fraction',
+								crossOrigin: 'Anonymous'	
 							})
 						}) 
 				});  
@@ -665,15 +658,16 @@ var _CoreMap = function() {
 			tempBranchTooltipElement.parentNode.removeChild(tempBranchTooltipElement);
 		}
 		tempBranchTooltipElement = document.createElement('div');
+		tempBranchTooltipElement.style.width = '294px';
 		
 		tempBranchToolTip = new ol.Overlay({
         	element: tempBranchTooltipElement,
-        	offset: [15, 0],
-        	positioning: 'center-left'
+        	offset: [0 , 0],
+        	positioning: 'center-center'
         });
 		tempBranchToolTip.setPosition(undefined);
 		
-        coreMap.addOverlay(tempBranchToolTip);
+		_MapEventBus.trigger(_MapEvents.map_addOverlay, tempBranchToolTip);
 	}
 	
 	function createHelpTooltip() {

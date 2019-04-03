@@ -1641,7 +1641,9 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[12].layerId+'.png',
-									anchor: [0, 1],
+									anchor: [0.5, 0.5],
+							        anchorXUnits: 'fraction',
+							        anchorYUnits: 'fraction',
 									crossOrigin: 'Anonymous'
 								})
 							})];
@@ -1679,7 +1681,9 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[13].layerId+'.png',
-									anchor: [0, 1],
+									anchor: [0.5, 0.5],
+							        anchorXUnits: 'fraction',
+							        anchorYUnits: 'fraction',
 									crossOrigin: 'Anonymous'
 								})
 							})];
@@ -1717,7 +1721,9 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[29].layerId+'.png',
-									anchor: [0, 1],
+									anchor: [0.5, 0.5],
+							        anchorXUnits: 'fraction',
+							        anchorYUnits: 'fraction',
 									crossOrigin: 'Anonymous'
 								})
 							})];
@@ -1753,7 +1759,9 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[30].layerId+'.png',
-									anchor: [0, 1],
+									anchor: [0.5, 0.5],
+							        anchorXUnits: 'fraction',
+							        anchorYUnits: 'fraction',
 									crossOrigin: 'Anonymous'
 								})
 							})];
@@ -1789,7 +1797,9 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[31].layerId+'.png',
-									anchor: [0, 1],
+									anchor: [0.5, 0.5],
+							        anchorXUnits: 'fraction',
+							        anchorYUnits: 'fraction',
 									crossOrigin: 'Anonymous'
 								})
 							})];
@@ -1825,7 +1835,9 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[32].layerId+'.png',
-									anchor: [0, 1],
+									anchor: [0.5, 0.5],
+							        anchorXUnits: 'fraction',
+							        anchorYUnits: 'fraction',
 									crossOrigin: 'Anonymous'
 								})
 							})];
@@ -1838,7 +1850,7 @@ $(function() {
 		pub.layerList ;
 		// 레이어의 범례정보를 읽어와 레이어 on/off html 만듬
 		pub.writeLayerLegend = function (url) {
-			$.ajax({
+			$.ajax({ 
 				url: "/gis/js/layer.legend" ,
 				dataType: 'text',
 				success: function(data) {
@@ -2089,13 +2101,6 @@ $(function() {
 			 if(feature){
 				 var featureInfo = feature.getProperties().properties;
 				 if(featureInfo){
-					 var zoom = _CoreMap.getZoom()-7;
-					 var offset = [-133 , -2]; 
-					
-					 if(zoom < 2) {
-						 offset = [-137 , -2];
-					 }
-					 
 					 var position = feature.getGeometry().getCoordinates();
 					 
 					 var return_flag = true;
@@ -2182,7 +2187,8 @@ $(function() {
 						 if(obj != undefined){
 							 obj.WH_NAME = featureInfo.WH_NAME;
 							 
-							 var h = '66'
+							 var h = 66;
+							 
 							 tempText = '<dl class="info_box" style="height:${height}px !important; border-bottom: solid 1px black;">'+
 										    '<dt>&nbsp; ${WH_NAME}</dt>'+
 										    '<dd>';
@@ -2190,19 +2196,26 @@ $(function() {
 							 for ( var i = 0; i < obj.msgs.length; i++){
 								 var msgs = obj.msgs[i].split(':');
 								 
+								 tempText += '<dl class="summary">';
+								 
+						        
 								 if(msgs.length == 2){
-									 tempText += '<dt>'+obj.msgs[i][0]+'</dt>';
-									 tempText += '<dd class="L0">&nbsp; '+obj.msgs[i][1]+'</dd>';
+									 tempText += '<dt style="width:120px">'+msgs[0]+'</dt>';
+									 tempText += '<dd class="L0" style="width:120px !important;">&nbsp; '+msgs[1]+'</dd>';
 								 }else{
-									 tempText += '<dt style="width:260px;">&nbsp; '+obj.msgs[i][1]+'</dt>';
-								 }
+									 tempText += '<dt style="width:260px;">&nbsp; '+obj.msgs[i]+'</dt>';
+								 } 
 								 
 								 tempText += '</dl>';
+								  
 								 if(i>2){
-									 h = h + 25;
-								 }
-							 } 
-							        
+									 h = h + 40;
+								 } 
+							 }
+							 
+							 if(h > 290){
+								 h = 290;
+							 }
 							 tempText += '</dd></dl>';
 							 
 							 obj.height = h;
@@ -2259,15 +2272,14 @@ $(function() {
 						
 						 if(layerInfoOverlay){
 							 layerInfoOverlay.setPosition( position );	
-							 layerInfoOverlay.setOffset(offset);
 						 }
 					 }else{
 						 layerInfoOverlay.setPosition(undefined);
 					 }
 				 }
 			 }else{
-				 if(layerInfoOverlay){
-//					 layerInfoOverlay.setPosition(undefined);
+				 if(layerInfoOverlay){ 
+					 layerInfoOverlay.setPosition(undefined);
 				 }
 			 }
 		};
@@ -2428,6 +2440,9 @@ $(function() {
 						image: new ol.style.Icon({
 							opacity: 1,
 							src: tmsIconUrl,
+							anchor: [0.5, 0.5],
+					        anchorXUnits: 'fraction',
+					        anchorYUnits: 'fraction',
 							crossOrigin: 'Anonymous'
 						})
 					})];
@@ -2553,6 +2568,9 @@ $(function() {
 						image: new ol.style.Icon({
 							opacity: 1,
 							src: ipusnIconUrl,
+							anchor: [0.5, 0.5],
+					        anchorXUnits: 'fraction',
+					        anchorYUnits: 'fraction',
 							crossOrigin: 'Anonymous'
 						})
 					})];
@@ -2684,8 +2702,10 @@ $(function() {
 						image: new ol.style.Icon({
 							opacity: 1,
 							src: autoIconUrl,
-							anchor: [0, 1],
-							crossOrigin: 'Anonymous'
+							anchor: [0.5, 0.5],
+					        anchorXUnits: 'fraction',
+					        anchorYUnits: 'fraction',
+							crossOrigin: 'Anonymous' 
 						}) 
 					})];  
 		}
@@ -2750,6 +2770,9 @@ $(function() {
 						image: new ol.style.Icon({
 							opacity: 1,
 							src: whIconUrl,
+							anchor: [0.5, 0.5],
+					        anchorXUnits: 'fraction',
+					        anchorYUnits: 'fraction',
 							crossOrigin: 'Anonymous'
 						})
 					})];
@@ -2764,10 +2787,11 @@ $(function() {
 		
 		pub.init = function() {
 			layerInfoDiv = document.createElement('div');
+			layerInfoDiv.style.width = '294px';
 			
 			layerInfoOverlay = new ol.Overlay({
-				element: layerInfoDiv,
-				offset: [-133 , -2],
+				element: layerInfoDiv, 
+				offset: [0 , 0],
 				positioning: 'center-center'
 			}); 
 			 
@@ -2778,7 +2802,7 @@ $(function() {
 
 	// TODO MVC::view 관련 코드 작성
 	page.view = ( function() {
-		// ////////////////////////////
+		// //////////////////////////// 
 		// private variables
 		// ////////////////////////////
 		
@@ -2936,6 +2960,9 @@ $(function() {
 				image: new ol.style.Icon({
 					opacity: 1,
 					src: img,
+					anchor: [0.5, 0.5],
+			        anchorXUnits: 'fraction',
+			        anchorYUnits: 'fraction',
 					crossOrigin: 'Anonymous'
 				})
 			})];
