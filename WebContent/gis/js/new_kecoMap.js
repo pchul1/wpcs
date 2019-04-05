@@ -57,7 +57,7 @@ $(function() {
 				};
 	var TILEINFO = null; 
 	
-	var EVENT_TEMP  = '<dl class="info_box" style="height:180px !important; border-bottom: solid 1px black;">'+
+	var EVENT_TEMP  = '<dl class="info_box" style="height:200px !important; border-bottom: solid 1px black;">'+
 					    '<dt>&nbsp; ${wpkind}</dt>'+
 					    '<dd>'+
 					        '<dl class="summary">'+  
@@ -924,7 +924,9 @@ $(function() {
 						isOption = "<option value='null'>지점선택필요</option>";
 				}
 				
-				$kecoMap.model.baseObj.view.roopSysKindSel.html(isOption);
+				if($kecoMap.model.baseObj.view.roopSysKindSel){
+					$kecoMap.model.baseObj.view.roopSysKindSel.html(isOption);
+				}
 			} else if( idx == 1) {
 				if($('#tmsLd').attr('checked'))
 					$kecoMap.view.tmsLayer.setVisible(true);
@@ -952,7 +954,9 @@ $(function() {
 						isOption = "<option value='null'>지점선택필요</option>";
 				}
 				
-				$kecoMap.model.baseObj.view.roopSysKindSel.html(isOption);
+				if($kecoMap.model.baseObj.view.roopSysKindSel){
+					$kecoMap.model.baseObj.view.roopSysKindSel.html(isOption);
+				}
 			} else if( idx == 3) {
 				if($('#whLd').attr('checked'))
 						$kecoMap.view.whLayer.setVisible(true);
@@ -1859,26 +1863,28 @@ $(function() {
 					
 					pub.setOrderLayers(data.layers, url);
 					
-					var html = '<ul><li class="tit">수질자동측정지점</li>';
-					if(window.location.href.indexOf('goDetailFLUX') > -1 || window.location.href.indexOf('goDetailDam') > -1 || window.location.href.indexOf('psupport/list') > -1){
-						html +='<li><label><input id="autoLd" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(0);"/><img src="/gis/new_images/regular/auto_1.png" alt=""/> 국가수질자동측정망 </label></li>';
-						html +='<li><label><input id="tmsLd" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(1);"/><img src="/gis/new_images/regular/tms_1.png" alt=""/> 수질TMS </label></li>';
-						html +='<li><label><input id="ipLd" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(2);"/><img src="/gis/new_images/regular/usn_1.png" alt=""/> 이동형측정기기 </label></li>';
-					}else{
-						html +='<li><label><input id="autoLd" type="checkbox" checked class="" onclick="$kecoMap.model.updateLayerVisibility(0);"/><img src="/gis/new_images/regular/auto_1.png" alt=""/> 국가수질자동측정망 </label></li>';
-						html +='<li><label><input id="tmsLd" type="checkbox" checked class="" onclick="$kecoMap.model.updateLayerVisibility(1);"/><img src="/gis/new_images/regular/tms_1.png" alt=""/> 수질TMS </label></li>';
-						html +='<li><label><input id="ipLd" type="checkbox" checked class="" onclick="$kecoMap.model.updateLayerVisibility(2);"/><img src="/gis/new_images/regular/usn_1.png" alt=""/> 이동형측정기기 </label></li>';
+					var html = '<div><h4 class="layerHeader" >수질자동측정지점</h4><ul class="depth">';
+					var checked = '';
+					if(window.location.href.indexOf('goDetailFLUX') > -1 || window.location.href.indexOf('goDetailDam') > -1 || window.location.href.indexOf('psupport') > -1){
+						
+					}else{ 
+						checked = 'checked';
 					}
 					
-					html += '<ul><li class="tit">중요 시설물</li>';
-					html +='<li><label><input id="de4" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(4);"/><img src="'+url+data.layers[12].layerId+'.png" alt=""/> '+data.layers[12].layerName+' </label></li>';
-					html +='<li><label><input id="de5" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(5);"/><img src="'+url+data.layers[13].layerId+'.png" alt=""/> '+data.layers[13].layerName+' </label></li>';
-					html +='<li><label><input id="de6" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(6);"/><img src="'+url+data.layers[29].layerId+'.png" alt=""/> '+data.layers[29].layerName+' </label></li>';
-					html +='<li><label><input id="de7" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(7);"/><img src="'+url+data.layers[30].layerId+'.png" alt=""/> '+data.layers[30].layerName+' </label></li>';
-					html +='<li><label><input id="de8" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(8);"/><img src="'+url+data.layers[31].layerId+'.png" alt=""/> '+data.layers[31].layerName+' </label></li>';
-					html +='<li><label><input id="de9" type="checkbox" class="" onclick="$kecoMap.model.updateLayerVisibility(9);"/><img src="'+url+data.layers[32].layerId+'.png" alt=""/> '+data.layers[32].layerName+' </label></li>';
+					html +='<li><input id="autoLd" '+checked+' type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(0);"/><label for="autoLd"><em><img src="/gis/new_images/regular/auto_1.png" /></em>국가수질자동측정망</label></li> ';
+					html +='<li><input id="tmsLd" '+checked+' type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(1);"/><label for="tmsLd"><em><img src="/gis/new_images/regular/tms_1.png" alt=""/></em>수질TMS </label></li>';
+					html +='<li><input id="ipLd" '+checked+' type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(2);"/><label for="ipLd"><em><img src="/gis/new_images/regular/usn_1.png" alt=""/></em>이동형측정기기 </label></li>';
 					
-					html += '</ul><ul><li class="tit">수질측정지점</li>';
+					
+					html += '</ul></div><div><h4 class="layerHeader">중요 시설물</h4> <ul class="depth">';
+					html +='<li><input id="de4" type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(4);"/><label for="de4"><em><img src="'+url+data.layers[12].layerId+'.png" alt=""/></em> '+data.layers[12].layerName+' </label></li>';
+					html +='<li><input id="de5" type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(5);"/><label for="de5"><em><img src="'+url+data.layers[13].layerId+'.png" alt=""/></em> '+data.layers[13].layerName+' </label></li>';
+					html +='<li><input id="de6" type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(6);"/><label for="de6"><em><img src="'+url+data.layers[29].layerId+'.png" alt=""/></em> '+data.layers[29].layerName+' </label></li>';
+					html +='<li><input id="de7" type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(7);"/><label for="de7"><em><img src="'+url+data.layers[30].layerId+'.png" alt=""/></em> '+data.layers[30].layerName+' </label></li>';
+					html +='<li><input id="de8" type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(8);"/><label for="de8"><em><img src="'+url+data.layers[31].layerId+'.png" alt=""/></em> '+data.layers[31].layerName+' </label></li>';
+					html +='<li><input id="de9" type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(9);"/><label for="de9"><em><img src="'+url+data.layers[32].layerId+'.png" alt=""/></em> '+data.layers[32].layerName+' </label></li>';
+					
+					html += '</ul></div><div><h4 class="layerHeader off">수질측정지점</h4> <ul class="depth" style="display:none;">';
 					
 					for ( var i = 0; i < data.layers.length; i++) {
 						var l = data.layers[i];
@@ -1888,35 +1894,35 @@ $(function() {
 						}
 						
 						html += '<li>'+
-									'<label><input type="checkbox" class="list_item '+l.layerId+'" id="'+l.geoLayerId+'" onclick="$kecoMap.model.updateLayerVisibility();"/><img src="'+url+l.layerId+'.png" alt=""/> '+l.layerName+'</label>'+
+									'<input type="checkbox" class="list_item '+l.layerId+'" id="'+l.geoLayerId+'" onclick="$kecoMap.model.updateLayerVisibility();"/><label for="'+l.geoLayerId+'"><em><img src="'+url+l.layerId+'.png" alt=""/> </em>'+l.layerName+'</label>'+
 								'</li>';
 						
 						if(l.layerId == '7') {
-							html += '</ul>';
-							html += '<ul><li class="tit">퇴적물조사지점</li>';
+							html += '</ul></div>';
+							html += '<div><h4 class="layerHeader off">퇴적물조사지점</h4><ul class="depth" style="display:none;">';
 						} else if(l.layerId == '9') {
-							html += '</ul>';
-							html += '<ul><li class="tit">기타측정지점</li>';
+							html += '</ul></div>';
+							html += '<div><h4 class="layerHeader off">기타측정지점</h4><ul class="depth" style="display:none;">';
 						} else if(l.layerId == '18') {
-							html += '</ul>';
-							html += '<ul><li class="tit">환경기초시설</li>';
+							html += '</ul></div>';
+							html += '<div><h4 class="layerHeader off">환경기초시설</h4><ul class="depth" style="display:none;">';
 						} else if(l.layerId == '27') {
-							html += '</ul>';
-							html += '<ul><li class="tit">시설물</li>';
+							html += '</ul></div>';
+							html += '<div><h4 class="layerHeader off">시설물</h4><ul class="depth" style="display:none;">';
 						} else if(l.layerId == '38') {
-							html +='<li><label><input id="whLd" type="checkbox" class=""  onclick="$kecoMap.model.updateLayerVisibility(3);"/><img src="'+url+'wh.png" alt=""/> 방제창고 </label></li>';
-							html += '</ul>';
-							html += '<ul><li class="tit">하천</li>';
+							html +='<li><input id="whLd" type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(3);"/><label for="whLd"><em><img src="'+url+'wh.png" alt=""/> </em>방제창고 </label></li>';
+							html += '</ul></div>';
+							html += '<div><h4 class="layerHeader off">하천</h4><ul class="depth" style="display:none;">';
 						} else if(l.layerId == '41') {
-							html += '</ul>';
-							html += '<ul><li class="tit">수질영향권역</li>';
+							html += '</ul></div>';
+							html += '<div><h4 class="layerHeader off">수질영향권역</h4><ul class="depth" style="display:none;">';
 						} else if(l.layerId == '45') {
-							html += '</ul>';
-							html += '<ul><li class="tit">행정구역</li>';
+							html += '</ul></div>';
+							html += '<div><h4 class="layerHeader off">행정구역</h4><ul class="depth" style="display:none;">';
 						}
 					}
 					
-					html += '</ul>';
+					html += '</ul></div>';
 					
 					$('#chkInfoBx').html(html);
 					
@@ -1935,6 +1941,11 @@ $(function() {
 						_MapEventBus.trigger(_MapEvents.layerLoaded, {});
 						
 					}, 500);
+					
+					$(".layerHeader").click(function () {
+						$(this).toggleClass("off");
+						$(this).siblings("ul").slideToggle("fast");
+					})
 				}
 			});
 		};
@@ -2111,8 +2122,13 @@ $(function() {
 						
 						 try{
 							 var obj = $kecoMap.model.baseObj.model.getCheckData('A', featureInfo.FACT_CODE, featureInfo.BRANCH_NO);
-							 if(obj != null){
-								 return_flag = $kecoMap.model.LayerAuthIn(obj.FACT_CODE,obj.BRANCH_NO,"U");
+							 
+							 if(obj && window.location.href.indexOf('psupport') > -1){
+								 return_flag = true;
+							 }else{
+								 if(obj != null){
+									 return_flag = $kecoMap.model.LayerAuthIn(obj.FACT_CODE,obj.BRANCH_NO,"U");
+								 }	 
 							 }
 							
 							 if(return_flag){ 
@@ -2141,8 +2157,13 @@ $(function() {
 					 } else if(featureInfo.featureType == 'TMS'){
 						 return_flag = false;
 						 var obj = $kecoMap.model.baseObj.model.getCheckData('W', featureInfo.FACT_CODE, featureInfo.BRANCH_NO);
-						 if(obj != null){
-							 return_flag = $kecoMap.model.LayerAuthIn(obj.FACT_CODE,obj.BRANCH_NO,"W") 
+						 
+						 if(obj && window.location.href.indexOf('psupport') > -1){
+							 return_flag = true;
+						 }else{
+							 if(obj != null){
+								 return_flag = $kecoMap.model.LayerAuthIn(obj.FACT_CODE,obj.BRANCH_NO,"W") 
+							 }
 						 }
 						 if(return_flag) {
 							 if(obj != undefined) {
@@ -2157,8 +2178,13 @@ $(function() {
 					 } else if(featureInfo.featureType == 'IPUSN'){
 						 return_flag = false;
 						 var obj = $kecoMap.model.baseObj.model.getCheckData('U', featureInfo.FACT_CODE, featureInfo.BRANCH_NO);
-						 if(obj != null){
-							 return_flag = $kecoMap.model.LayerAuthIn(obj.FACT_CODE,obj.BRANCH_NO,"U");
+						 
+						 if(obj && window.location.href.indexOf('psupport') > -1){
+							 return_flag = true;
+						 }else{
+							 if(obj != null){
+								 return_flag = $kecoMap.model.LayerAuthIn(obj.FACT_CODE,obj.BRANCH_NO,"U");
+							 }
 						 }
 						 if(return_flag){
 							 var themeObj = $kecoMap.model.getThemeIpusnData(featureInfo.FACT_CODE, featureInfo.BRANCH_NO);	//추가하려고 구상중
@@ -2250,20 +2276,22 @@ $(function() {
 						 if(featureInfo.iconType == 0 || featureInfo.iconType >= 10 || featureInfo.iconType <= 14){
 							 //featureInfo.markerIndex
 							 //infoTemplate = new esri.InfoTemplate(EVENT_TEMP);
-							 html = EVENT_TEMP.content;
+							 tempText = EVENT_TEMP;
 						 }else if(featureInfo.iconType == 1){
 						 	 //infoTemplate = new esri.InfoTemplate("${지점명}","${*}");
-							 html = "${지점명}","${*}";
+							 tempText = "${지점명}","${*}";
 						 }else if(featureInfo.iconType == 2){
 						 	 //infoTemplate = new esri.InfoTemplate("${branch_no}","${*}");
-							 html = "${branch_no}","${*}";
+							 tempText = "${branch_no}","${*}";
 						 }else if(featureInfo.iconType == 3){
 						 	 //infoTemplate = new esri.InfoTemplate(OUT_TEMP);
-							 html = OUT_TEMP.content;
+							 tempText = OUT_TEMP;
 						 }else if(featureInfo.iconType == 4){
 						 	 //infoTemplate = new esri.InfoTemplate(CR_TEMP);
-							 html = CR_TEMP.content;
+							 tempText = CR_TEMP;
 						 }
+						 
+						 tempText = fillToValue( tempText, featureInfo);
 					 }
 					 
 					 

@@ -90,6 +90,40 @@ response.addCookie(cookie); */
 
 <!-- <script src="/gis/js/kecoMap.js"></script> -->
 <!-- <script src="/gis/js/CustomPrintTask.js"></script> -->
+<style>
+      .tooltipOverlay {
+        position: relative;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 4px;
+        color: white;
+        padding: 4px 8px;
+        opacity: 0.7;
+        white-space: nowrap;
+      }
+      .tooltipOverlay-measure {
+        opacity: 1;
+        font-weight: bold;
+      }
+      .tooltipOverlay-static {
+        background-color: #ffcc33;
+        color: black;
+        border: 1px solid white;
+      }
+      .tooltipOverlay-measure:before,
+      .tooltipOverlay-static:before {
+        border-top: 6px solid rgba(0, 0, 0, 0.5);
+        border-right: 6px solid transparent;
+        border-left: 6px solid transparent;
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        margin-left: -7px;
+        left: 50%;
+      }
+      .tooltipOverlay-static:before {
+        border-top-color: #ffcc33;
+      } 
+</style>
 
 <script type="text/javascript">
 //<![CDATA[
@@ -507,38 +541,7 @@ img{}
 						</div>
 					</div>
 				</div>
-<!-- 				<div id="mapInfo"><img src="/gis/images/navi_icon.png" alt=""/>4대강 유역 사고 발생 모니터링</div> -->
-				<!--우측 상단 버튼 Start-->
-<!-- 				<div id="tool" style="width: 630px;"> -->
-<!-- 					<div class="tool_bu1"><a href="javascript:$kecoMap.model.generalMap();" onmouseout="$kecoMap.controller.MM_swapImgRestore('Image1','/gis/images/new_tool_1_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image1','/gis/images/new_tool_1_over1.gif',1)" ><img idx="0" src="/gis/images/new_tool_1_over1.gif" id="Image1" width="42" height="30" border="0" /></a></div>
-<!-- 					<div class="tool_bu1"><a href="javascript:$kecoMap.model.flightMap();"	onmouseout="$kecoMap.controller.MM_swapImgRestore('Image2','/gis/images/new_tool_2_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image2','/gis/images/new_tool_2_over1.gif',1)" ><img idx="1" src="/gis/images/new_tool_2_off.gif" id="Image2" width="42" height="30" border="0" /></a></div> --> -->
-<!-- 					<div class="tool_bu1" style="width:42px;"><a href="javascript:$kecoMap.model.generalMap();" onmouseout="$kecoMap.controller.MM_swapImgRestore('Image1','/gis/images/new_tool_1_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image1','/gis/images/new_tool_1_over1.gif',1)" ><img idx="0" src="/gis/images/new_tool_1_over1.gif" id="Image1" width="42" height="30" border="0" /></a></div> -->
-<!-- 					<div class="tool_bu1" style="width:42px;"><a href="javascript:$kecoMap.model.flightMap();"	onmouseout="$kecoMap.controller.MM_swapImgRestore('Image2','/gis/images/new_tool_2_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image2','/gis/images/new_tool_2_over1.gif',1)" ><img idx="1" src="/gis/images/new_tool_2_off.gif" id="Image2" width="42" height="30" border="0" /></a></div> -->
-<!-- 					<div class="tool_bu2"><a href="javascript:$kecoMap.model.distances();"	onmouseout="$kecoMap.controller.MM_swapImgRestore('Image3','/gis/images/new_tool_3_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image3','/gis/images/new_tool_3_over.gif',1)" ><img idx="2" src="/gis/images/new_tool_3_off.gif" id="Image3" width="58" height="30" border="0" /></a></div> -->
-<!-- 					<div class="tool_bu2"><a href="javascript:$kecoMap.model.area()"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image4','/gis/images/new_tool_4_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image4','/gis/images/new_tool_4_over.gif',1)" ><img idx="3" src="/gis/images/new_tool_4_off.gif" id="Image4" width="58" height="30" border="0" /></a></div> -->
-<!-- 					<div class="tool_bu1"><a id="printBtn" href="javascript:void(0)"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image5','/gis/images/tool_5_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image5','/gis/images/tool_5_over.gif',1)" ><img idx="4" src="/gis/images/tool_5_off.gif" id="Image5" width="42" height="30" border="0" /></a></div> -->
-<!-- 					<div class="tool_bu1"><a id="saveBtn" href="javascript:void(0)"			onmouseout="$kecoMap.controller.MM_swapImgRestore('Image6','/gis/images/tool_6_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image6','/gis/images/tool_6_over.gif',1)" ><img idx="5" src="/gis/images/tool_6_off.gif" id="Image6" width="42" height="30" border="0" /></a></div> -->
-<!-- <!-- 					<div class="tool_bu1"><a href="javascript:void(0)"						onmouseout="$kecoMap.controller.MM_swapImgRestore('Image7','/gis/images/tool_7_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image7','/gis/images/tool_7_over.gif',1)" ><img  idx="6" src="/gis/images/tool_7_off.gif" id="Image7" width="42" height="30" border="0" /></a></div> -->						 -->
-<!-- 					<div class="tool_bu3"><a href="javascript:$kecoMap.model.info()"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image9','/gis/images/tool_8_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image9','/gis/images/tool_8_over.gif',1)" ><img idx="7" src="/gis/images/tool_8_off.gif" id="Image9" width="42" height="30" border="0" class="off"/></a></div> -->
-<!-- 					<div class="tool_bu3"><a href="javascript:$kecoMap.model.buffer()"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image10','/gis/images/tool_8_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image10','/gis/images/tool_8_over.gif',1)" ><img idx="8" src="/gis/images/tool_8_off.gif" id="Image10" width="42" height="30" border="0"/></a></div>
-<!-- 					<div class="tool_bu3"><a href="javascript:$kecoMap.model.buffer_all()"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image11','/gis/images/tool_8_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image11','/gis/images/tool_8_over.gif',1)" ><img idx="9" src="/gis/images/tool_8_off.gif" id="Image11" width="42" height="30" border="0"/></a></div> -->
-<!-- 					<div class="tool_bu3"><a href="javascript:$kecoMap.model.buffer_drag()"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image12','/gis/images/tool_8_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image12','/gis/images/tool_8_over.gif',1)" ><img idx="10" src="/gis/images/tool_8_off.gif" id="Image12" width="42" height="30" border="0"/></a></div> --> -->
-<!-- 					<div class="tool_bu2"><a href="javascript:$kecoMap.model.buffer()"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image10','/gis/images/new_tool_10_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image10','/gis/images/new_tool_10_over.gif',1)" ><img idx="8" src="/gis/images/new_tool_10_off.gif" id="Image10" width="58" height="30" border="0"/></a></div> -->
-<!-- 					<div class="tool_bu2"><a href="javascript:$kecoMap.model.buffer_all()"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image11','/gis/images/new_tool_11_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image11','/gis/images/new_tool_11_over.gif',1)" ><img idx="9" src="/gis/images/new_tool_11_off.gif" id="Image11" width="58" height="30" border="0"/></a></div> -->
-<!-- 					<div class="tool_bu2"><a href="javascript:$kecoMap.model.buffer_drag()"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image12','/gis/images/new_tool_12_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image12','/gis/images/new_tool_12_over.gif',1)" ><img idx="10" src="/gis/images/new_tool_12_off.gif" id="Image12" width="58" height="30" border="0"/></a></div> -->
-<!-- 					<div class="tool_bu2"><a id="vworldBtn" href="javascript:void(0)"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image13','/gis/images/new_tool_13_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image13','/gis/images/new_tool_13_over.gif',1)" ><img idx="10" src="/gis/images/new_tool_13_off.gif" id="Image13" width="58" height="30" border="0"/></a></div> -->
-<!-- 					<div class="tool_bu2"><a id="tempBBtn" href="javascript:void(0)"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image14','/gis/images/new_tool_14_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image14','/gis/images/new_tool_14_over.gif',1)" ><img idx="10" src="/gis/images/new_tool_14_off.gif" id="Image14" width="58" height="30" border="0"/></a></div> -->
-<!-- 					<div class="tool_bu3"><a href="javascript:$kecoMap.model.clear()"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image8','/gis/images/new_tool_8_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image8','/gis/images/new_tool_8_over.gif',1)" ><img idx="6" src="/gis/images/new_tool_8_off.gif" id="Image8" width="42" height="30" border="0" /></a></div> -->
-<!-- 					<div class="tool_bu3" style="width:50px;"><a href="javascript:$kecoMap.model.clear()"		onmouseout="$kecoMap.controller.MM_swapImgRestore('Image8','/gis/images/new_tool_8_off.gif')" onmouseover="$kecoMap.controller.MM_swapImage('Image8','/gis/images/new_tool_8_over.gif',1)" ><img idx="6" src="/gis/images/new_tool_8_off.gif" id="Image8" width="50" height="30" border="0" /></a></div> -->
-					
-<!-- 					<div id="tool_buffer" style="display:none;"> -->
-<!-- 						<ul> -->
-<!-- 							<li>&nbsp;&nbsp;반경 &nbsp;<input type="text" id="tool_buffer_txt" value="5" style="width: 50px;"/> &nbsp;km</li> -->
-<!-- 						</ul> -->
-<!-- 					</div> -->
-<!-- 				</div> -->
-				<!--우측 상단 버튼 End-->
-
+			
 				<!--좌측 검색패널 Start-->
 				<div id="leftSearchBx">
 					<div id="leftSearch">
@@ -803,7 +806,7 @@ img{}
 								
 								<div id="chk">	
 									<span class="title">측정소 범례</span>
-									<div id="chkInfoBx" style="overflow: auto;">
+									<div id="chkInfoBx" class="remarks" >
 									</div>
 								</div>
 							</div>

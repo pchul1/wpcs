@@ -27,6 +27,31 @@
 <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
 <title>한국환경공단 수질오염 방제정보 시스템</title>
 <c:import url="/WEB-INF/jsp/include/common/include_commonjs.jsp" />
+<style>
+
+
+
+.remarks {height: 265px !important; 
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 283px;
+    border: 1px solid #ccc;}
+h4 { height: 22px; padding-top: 10px; padding-left: 47px; border-bottom: 1px solid #ccc; background: url(/gis/new_images/folder_close.gif) 10px 10px no-repeat, #f5f5f5; font-family: 'Dotum'; font-size: 12px; letter-spacing: -1px; font-weight: bold; cursor: pointer; }
+h4.off { background: url(/gis/new_images/folder_open.gif) 10px 10px no-repeat, #f5f5f5; }
+
+.depth {   width: 100%;}
+.depth> li { padding: 5px 0 5px 25px; border-bottom: 1px solid #ccc; }
+.depth> li label { font-family: 'Dotum'; font-size: 12px; letter-spacing: -1px; }
+.depth> li label em { width: 18px; height: 30px; vertical-align: middle; display: inline-block; margin: 0px 10px; }
+.depth input { width: 12px; height: 12px; }
+
+.remarks> div:last-child> ul> li:last-child { border-bottom: 0; }
+
+
+
+
+</style>
+
 <script type="text/javascript">
 //<![CDATA[
 	var frDate = "<c:out value='${searchTaksuVO.frDate}'/>";
@@ -746,9 +771,9 @@
 										<div id="layerTool" style="right: 1px; top: 10px; width:150px; height:24px;  position: absolute;  z-index: 1000;"> 
 											<div class="tool_bu2"><a href="javascript:showLayerDiv();" onmouseout="$kecoMap.controller.MM_swapImgRestore('Image3','/gis/images/btn_smapLegend_off.png')" onMouseOver="$kecoMap.controller.MM_swapImage('Image3','/gis/images/btn_smapLegend_over.png',1)" ><img idx="3" src="/gis/images/btn_smapLegend_off.png" id="Image3" border="0" /></a></div>
 										</div>
-										<div id="layerDiv"style="position:absolute; bottom:-130px;right:1px;border:1px solid #0066cc; text-align:left;  width:180px;height:100px;background:#fff;overflow-y:auto;padding:10px;  z-index: 1000; display: none;}">
+										<div id="layerDiv"style="position:absolute; bottom:-130px;right:1px;border:1px solid #0066cc; text-align:left;  width:292px;height:100px;background:#fff;overflow-y:auto;padding:10px;  z-index: 1000; display: none;}">
 											<span class="title" style="font-size:14px;text-align:left;font-weight:600;height:32px;display:inline-block;">측정소 정보</span>
-											<div id="chkInfoBx">
+											<div id="chkInfoBx" class="remarks">
 											</div>
 										</div>
 									</div>

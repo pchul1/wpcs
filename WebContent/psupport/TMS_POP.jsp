@@ -7,6 +7,9 @@
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="/gis/css/common.css"/>
 <link rel="stylesheet" type="text/css" href="/gis/css/gis_bj.css"/>
+
+<c:import url="/WEB-INF/jsp/include/common/include_authUser.jsp" />	<!-- 로그인 여부 -->
+
 <!-- <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css"/> -->
 <!-- <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css"/> -->
 
@@ -26,6 +29,8 @@
 <script type="text/javascript" src="/gis/js/acco.js"></script>
 <script type="text/javascript" src="/gis/js/UI.js"></script>
 
+
+<link rel="stylesheet" type="text/css" href="/gis/new_css/gis.css"/>
 
 
 <!-- <script src="http://js.arcgis.com/3.8/"></script> -->
@@ -601,7 +606,7 @@ $(function() {
 				</div>
 				<div id="chk" class="hide">	
 					<span class="title">측정소 정보</span>
-					<div id="chkInfoBx" style="overflow: auto; height: 800px;"></div>
+					<div id="chkInfoBx" class="remarks" style="height: 800px !important;"></div>
 				</div>
 			</div>
 			<ul class="nav">

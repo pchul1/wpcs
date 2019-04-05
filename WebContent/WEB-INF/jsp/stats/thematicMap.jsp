@@ -1002,7 +1002,7 @@
 					<div class="tab_container">
 						<form name="frm" action="" method="post">
 						<div class="mapBxTm" style=height:600px;>
-							<div id="map" class="claro" style="width:100%; height:100%; border:1px solid #000; position:relative;">
+							<div id="map" class="claro" style="width:100%; height:100%; border:1px solid #000; position:relative;    overflow: hidden;">
 <!-- 								<div id="tool" style="right:1px; top:10px; position:absolute; width:100px; height:24px; z-index:10;"> -->
 <!-- 									<div class="tool_bu1"><a href="javascript:$kecoMap.model.generalMap();" onMouseOut="$kecoMap.controller.MM_swapImgRestore('Image1','/gis/images/tool_1_off.gif')" onMouseOver="$kecoMap.controller.MM_swapImage('Image1','/gis/images/tool_1_over1.gif',1)" ><img idx="0" src="/gis/images/tool_1_over1.gif" id="Image1" width="42" height="24" border="0"></a></div> -->
 <!-- 									<div class="tool_bu1"><a href="javascript:$kecoMap.model.flightMap();" onMouseOut="$kecoMap.controller.MM_swapImgRestore('Image2','/gis/images/tool_2_off.gif')" onMouseOver="$kecoMap.controller.MM_swapImage('Image2','/gis/images/tool_2_over1.gif',1)" ><img idx="1" src="/gis/images/tool_2_off.gif" id="Image2" width="42" height="24" border="0"></a></div> -->

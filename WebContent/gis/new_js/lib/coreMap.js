@@ -371,62 +371,105 @@ var _CoreMap = function() {
 
 		var toolNoneFlag = false;
 		for(var key in settings){
+			if(key == 'satellite'){
+				continue;
+			}
+			
 			if(settings[key]){
 				toolNoneFlag = true;
 				break;
 			}
 		}
-		if(toolNoneFlag){
-			var tools = '<div id="tool" style="position: absolute; right: 10px; top: 2px; background-color: #000; z-index: 10000; ">';
-			if(settings.satellite){
-				tools += '<div class="tool_bu1 toolBtn" type="0" ><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_1_over1.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-				tools += '<div class="tool_bu1 toolBtn" type="1"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_2_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-			}
-			if(settings.measure){
-				tools += '<div class="tool_bu2 toolBtn" type="2"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_3_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-				tools += '<div class="tool_bu2 toolBtn" type="3"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_4_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
+		
+		if(settings.satellite){
+			var defaultMapHtml = '<ul class="mapst" style="top: 5px !important;">';
+			
+			if(toolNoneFlag){
+				defaultMapHtml = '<ul class="mapst" style="top: 50px !important;">';
 			}
 			
-			if(settings.save){
-				tools += '<div class="tool_bu1 toolBtn" type="4"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_6_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
+			defaultMapHtml += '<li><a href="javascript:;" id="default" class="basic on">일반</a></li>';
+			defaultMapHtml += '<li><a href="javascript:;" id="stellite" class="stellite">위성</a></li>';
+			defaultMapHtml += '</ul>';
+			
+			$('#'+mapDiv).parent().append(defaultMapHtml); 
+			
+			$(".mapst> li> a").click(function () {
+				var type = $(this).attr('id');
+				if(type == 'default'){
+					showDefautMap()
+				}else{
+					showAirMap()
+				}
+				$(".mapst> li> a").removeClass("on")
+				$(this).addClass("on")
+			});
+		}
+		
+		if(toolNoneFlag){
+			var tools = '<ul class="tooltip">';
+			
+			if(settings.measure){
+				tools += '<li class="tools" type="2"><span class="tt01" ></span>거리측정</li>';
+				tools += '<li class="tools" type="3"><span class="tt02" ></span>면적측정</li>';
 			}
 			
 			if(settings.print){
-				tools += '<div class="tool_bu1 toolBtn" type="5"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_5_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-			}
-			if(settings.search){
-				tools += '<div class="tool_bu1 toolBtn" type="6""><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_13_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-			}
-			if(settings.temp){
-				tools += '<div class="tool_bu1 toolBtn" type="7""><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_14_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
-				
-				setTempBranchLayer();
-				
-			}
-			if(settings.measure){
-				tools += '<div class="tool_bu2 toolBtn" type="8"><a href="javascript:;" ><img idx="0" src="/gis/images/new_tool_8_off.gif" id="Image1" width="42" height="30" border="0" /></a></div>';
+				tools += '<li class="tools" type="5"><span class="tt03" ></span>인쇄</li>';
 			}
 			
-			tools += '</div>'; 
+			if(settings.save){
+				tools += '<li class="tools" type="4"><span class="tt04" ></span>저장</li>';
+			}
+			if(settings.search){
+				tools += '<li class="tools" type="6"><span class="tt05" ></span>장소검색</li>';
+			}
+			
+			if(settings.temp){
+				
+				tools += '<li class="tools" type="7"><span class="tt06" ></span>지점등록</li>';
+				
+				setTempBranchLayer();
+			}
+			if(settings.measure){
+				tools += '<li class="tools" type="8"><span class="tt07" ></span>초기화</li>';
+			}
+			
+			tools += '</ul>'; 
 			
 			$('#'+mapDiv).parent().append(tools); 
 		}
 		
+		$('.tools').hover(function(){
+					$(this).addClass('on');
+			  }, function(){
+				  	var toolType = $(this).attr('type');
+					if(currentToolType != toolType){
+						$(this).removeClass('on');
+					}
+					
+					if(currentToolType == TOOL_TYPE_SAVE || currentToolType == TOOL_TYPE_PRINT || currentToolType == TOOL_TYPE_SEARCH){
+						$(this).removeClass('on');
+					}
+			}); 
 		
-		$('.toolBtn').on('click', function(event){
+		$('.tools').on('click', function(event){
 			var target = $(this);
 			
 			var toolType = target.attr('type');
 			
-			if(toolType == TOOL_TYPE_DEFAULT){
-				showDefautMap()
-			}else if(toolType == TOOL_TYPE_SATELLITE){
-				showAirMap()
-			}else if(toolType == TOOL_TYPE_DISTANCE){
+			$('.tools').removeClass('on');
+			
+			if(toolType == TOOL_TYPE_DISTANCE){
 				addInteraction(toolType);
+				$(this).addClass('on');
 			}else if(toolType == TOOL_TYPE_AREA){
 				addInteraction(toolType);
+				$(this).addClass('on');
 			}else if(toolType == TOOL_TYPE_SAVE){
+				if(draw){
+					coreMap.removeInteraction(draw);
+				}
 				coreMap.once('postcompose', function(event) {
 					var canvas = event.context.canvas;
 					var mapImg = canvas.toDataURL('image/png'); 
@@ -444,6 +487,10 @@ var _CoreMap = function() {
 				}); 
 				coreMap.renderSync();
 			}else if(toolType == TOOL_TYPE_PRINT){
+				if(draw){
+					coreMap.removeInteraction(draw);
+				}
+				
 				coreMap.once('postcompose', function(event) {
 					var canvas = event.context.canvas;
 					var mapImg = canvas.toDataURL('image/png'); 
@@ -456,8 +503,17 @@ var _CoreMap = function() {
 				}); 
 				coreMap.renderSync();
 			}else if(toolType == TOOL_TYPE_SEARCH){
+				if(draw){
+					coreMap.removeInteraction(draw);
+				}
 				window.open("/vworldSearchPop.jsp",'vworldSearchPop','width=750,height=410,toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=no,left=100,top=50');
 			}else if(toolType == TOOL_TYPE_TEMP_INPUT){
+				
+				if(draw){
+					coreMap.removeInteraction(draw);
+				}
+				
+				$(this).addClass('on');
 				
 				if(currentToolType == TOOL_TYPE_DISTANCE || currentToolType == TOOL_TYPE_AREA){
 					clearMap();
@@ -468,9 +524,12 @@ var _CoreMap = function() {
 				
 			}else if(toolType == TOOL_TYPE_RESET){
 				clearMap();
+				currentToolType = -1;
 			}
 			
-			currentToolType = toolType;
+			if(toolType != TOOL_TYPE_RESET){
+				currentToolType = toolType;
+			}
 		});
 	} 
 	 
@@ -480,6 +539,8 @@ var _CoreMap = function() {
 			var tempCoord = ol.proj.transform([data.result.coordinate[0], data.result.coordinate[1]], 'EPSG:3857', 'EPSG:4326');
 			window.open("/tempBRegPop.jsp?regId="+$('#userId').val()+"&type=0&X="+tempCoord[0]+"&Y="+tempCoord[1],'tempBRegPop','width=550,height=430,toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=no,left=100,top=50');
 		}
+		
+		$('.tools').removeClass('on'); 
 		currentToolType = -1;
 	}
 	
@@ -493,6 +554,9 @@ var _CoreMap = function() {
 		if(measureTextLayer){
 			coreMap.removeLayer(measureTextLayer);	
 		}
+		if(helpTooltip){
+			helpTooltip.setPosition( undefined );
+		}
 		_MapEventBus.off(_MapEvents.map_pointermove, drawToolTip);
 	} 
 	
@@ -504,6 +568,7 @@ var _CoreMap = function() {
 			coreMap.removeLayer(drawVectorLayer);
 			coreMap.removeLayer(measureTextLayer);
 		}
+		
 		drawSource = new ol.source.Vector();
 		drawVectorLayer = new ol.layer.Vector({
 			name:'drawVectorLayer',
@@ -511,16 +576,16 @@ var _CoreMap = function() {
 			zIndex: 9999,
 			style: new ol.style.Style({ 
 					fill: new ol.style.Fill({
-						color: 'rgba(255, 255, 255, 0.2)'
+						color: 'rgba(24, 51, 229, 0.2)'
 					}),
 					stroke: new ol.style.Stroke({
-						color: '#ffcc33',
+						color: 'rgb(24, 51, 229)',
 						width: 2
 					}),
 					image: new ol.style.Circle({
 						radius: 7,
 						fill: new ol.style.Fill({
-							color: '#ffcc33'
+							color: 'rgb(24, 51, 229)'
 						})
 					})
 				})
@@ -675,7 +740,7 @@ var _CoreMap = function() {
 			helpTooltipElement.parentNode.removeChild(helpTooltipElement);
 		}
 		helpTooltipElement = document.createElement('div');
-        helpTooltipElement.className = 'tooltip hidden';
+        helpTooltipElement.className = 'tooltipOverlay hidden';
         helpTooltip = new ol.Overlay({
         	element: helpTooltipElement,
         	offset: [15, 0],

@@ -224,7 +224,7 @@ display:inline-block;height:190px;width: 100%;}
 .rightIn .stabMenu .scnt{width: 308px;height: 384px;position: absolute;left:0;top:24px;z-index:1;border:1px solid #ccc;background: #fff;display:none;}
 .rightIn .stabMenu .h130{height: 130px}
 
-#rightBx{position:absolute;top:35px;right:5px;border:1px solid #999; height:464px ;text-align:left; z-index:1;background: #fff;}
+#rightBx{position:absolute;top:105px;right:5px;border:1px solid #999; height:464px ;text-align:left; z-index:1;background: #fff;}
 #rightToggle{left:-14px;bottom:15px;position:absolute;}
 .rightIn {height:100% ;width:320px;float:left; }
 .tleft{text-align:left}
