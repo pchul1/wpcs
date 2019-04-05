@@ -68,6 +68,19 @@ String menuID = (String)request.getSession().getAttribute("clickMenu");
 <script type="text/javascript" src="/gis/new_js/lib/vworldLayer.js"></script>
 <script type="text/javascript" src="/gis/new_js/lib/coreMap.js"></script>
 
+<style>
+
+	/*20190403추가*/
+.tooltip { position: absolute; right: 20px; top: 10px; background: #fff; }
+.tooltip:after { display: block; clear: both; content: ''; }
+.tooltip li { padding: 4px 8px 5px 6px; display: block; float: left; font-size: 11px; color: #434548; letter-spacing: -1px;border-left: 1px solid #0d0d0d; border-top: 1px solid #0d0d0d; border-bottom: 1px solid #0d0d0d; font-family: 'notokr-bold'; cursor: pointer; }
+.tooltip li:last-child { border-right: 1px solid #0d0d0d; }
+.tooltip li.on {background: #1388e6;color: #fff;}
+.tooltip li> span { width: 21px; height: 16px; display: inline-block; margin-right: 3px; margin-bottom: -4px; background-position: 0 0; background-repeat: no-repeat; }
+.tooltip li.on> span { background-position: -21px 0px; }
+	
+	
+</style>
 <script type="text/javascript">
 	var MENU_ID = request.getParameter('menuID');
 	
