@@ -8,7 +8,7 @@ try {
 	String userId = (String) request.getSession().getAttribute("userId");
 	 
 	Statement stmt=null;
-	sql  = "SELECT OBJECTID, TEMP_SRNO, TITLE, CONTENT, REG_ID, REG_DATE, X, Y, ALL_YN, USE_YN FROM TEMP_BRANCH WHERE (USE_YN = '0' AND ALL_YN = '1') OR (REG_ID = '"+userId+"' AND USE_YN = '0')"; 
+	sql  = "SELECT OBJECTID, TEMP_SRNO, TITLE, CONTENT, REG_ID, REG_DATE, X, Y, ALL_YN, USE_YN FROM T_GIS_TEMP_BRANCH WHERE (USE_YN = '0' AND ALL_YN = '1') OR (REG_ID = '"+userId+"' AND USE_YN = '0')"; 
 	
 	JSONArray reJson = new JSONArray();
 

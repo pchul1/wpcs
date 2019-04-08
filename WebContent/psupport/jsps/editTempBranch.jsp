@@ -22,11 +22,11 @@ try
 	String objectId = (String)request.getParameter("objectId");
 
 	if("I".equals(type)){
-		sql  = "INSERT INTO TEMP_BRANCH (OBJECTID,TEMP_SRNO,TITLE,CONTENT,REG_ID,REG_DATE,USE_YN,ALL_YN,X,Y)"+ 
-				   "VALUES ((SELECT MAX(OBJECTID)+1 FROM TEMP_BRANCH),(SELECT MAX(TEMP_SRNO)+1 FROM TEMP_BRANCH),"+
+		sql  = "INSERT INTO T_GIS_TEMP_BRANCH (OBJECTID,TEMP_SRNO,TITLE,CONTENT,REG_ID,REG_DATE,USE_YN,ALL_YN,X,Y)"+ 
+				   "VALUES ((SELECT MAX(OBJECTID)+1 FROM T_GIS_TEMP_BRANCH),(SELECT MAX(TEMP_SRNO)+1 FROM T_GIS_TEMP_BRANCH),"+
 							"'"+title+"','"+content+"','"+userId+"',(TO_CHAR(sysdate,'YYYYMMDDHH24MI')),'"+useYn+"','"+allYn+"',"+x+","+y+")";                                                                    
 	}else{
-		sql  = "UPDATE TEMP_BRANCH SET ALL_YN = '"+allYn+"', USE_YN = '"+useYn+"',TITLE = '"+title+"',CONTENT = '"+content+"' "+
+		sql  = "UPDATE T_GIS_TEMP_BRANCH SET ALL_YN = '"+allYn+"', USE_YN = '"+useYn+"',TITLE = '"+title+"',CONTENT = '"+content+"' "+
 				"WHERE OBJECTID = '"+objectId+"'"; 
 	}
 		Statement stmt=null;
