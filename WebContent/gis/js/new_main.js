@@ -8,47 +8,269 @@ $(function() {
 	
 	var TAG = page.id;
 	
-	var EVENT_TEMP = {
-			title:"${wpkind}",
-			content: "<ul>"
-						+ "<li> ● 사고유형 : ${wpkind} </li>"
-						+ "<li> ● 신고일자 : ${reportdate}</li>"
-						+ "<li> ● 접수일자 : ${receivedate}</li>"
-						+ "<li> ● 수계 : ${river_name} </li>"
-						+ "<li> ● 주소 : ${address} ${addrdet}</li>"
-						+ "<li> ● 처리상태 : ${supportkind}</li></ul>"
-					};
+	var EVENT_TEMP  = '<dl class="info_box" style="height:200px !important; border-bottom: solid 1px black;">'+
+					    '<dt>&nbsp; ${wpkind}</dt>'+
+					    '<dd>'+
+					        '<dl class="summary">'+  
+					        	'<dt>사고유형</dt>'+
+					           ' <dd class="L0">&nbsp; ${wpkind}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>신고일자</dt>'+
+					            '<dd class="L0">&nbsp; ${reportdate}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>접수일자</dt>'+
+					            '<dd class="L0">&nbsp; ${receivedate}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>수계</dt>'+
+					            '<dd class="L0">&nbsp; ${river_name}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>주소</dt>'+
+					            '<dd class="L0">&nbsp; ${address}</dd>'+
+					        '</dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>처리상태</dt>'+
+					            '<dd class="L0">&nbsp; ${supportkind}</dd>'+
+					        '</dl>'+
+					    '</dd>'+
+					'</dl>';
 	
-	var AUTO_TEMP = {
-			title:"${FACTNAME}"+"("+"${BRANCH_NAME}"+")",
-			content: "<ul>"
-						+ "<li> ● 수신시간 : ${STRDATE} ${STRTIME} </li>"
-						+ "<li> ● 수계 : ${RIVER_NAME} </li>"
-						+ "<li> ● PH : ${PHY} </li>"
-						+ "<li> ● DO : ${DOW} (mS/cm)</li>"
-						+ "<li> ● EC : ${CON} (mS/cm)</li>"
-						+ "<li> ● 탁도 : ${TUR} (NTU)</li>"
-						+ "<li> ● 수온 : ${TMP} (℃)</li></ul>"
-					};
+	var AUTO_TEMP = '<dl class="info_box" >'+
+					    '<dt>&nbsp; ${FACTNAME}</dt>'+
+					    '<dd>'+
+					        '<dl class="summary">'+  
+					        	'<dt>수신시간</dt>'+
+					           ' <dd class="L0">&nbsp; ${STRDATE} &nbsp; ${STRTIME}</dd>'+
+					       ' </dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>수계</dt>'+
+					            '<dd>&nbsp; ${RIVER_NAME}</dd>'+
+					        '</dl>'+
+					        '<table class="st02 MgT10" summary="측정소 항목별 측정값">'+
+					            '<caption></caption>'+
+					            '<colgroup>'+
+					            	'<col width="60" />'+
+					                '<col width="50" />'+
+					                '<col width="50" />'+
+					                '<col />'+
+					           ' </colgroup>'+
+					           ' <thead>'+
+					               ' <tr>'+
+					                   ' <th>항목</th>'+
+					                    '<th>측정값</th>'+
+					                    '<th>단위</th>'+
+					                    '<th>기준</th>'+
+					             '   </tr>'+
+					            '</thead>'+
+					            '<tbody>'+
+					                '<tr>'+
+					                   ' <td>PH</td>'+
+					                   ' <td>&nbsp; ${PHY}</td>'+
+					                   ' <td>-</td>'+
+					                   ' <td>&nbsp; ${PHYL}</td>'+
+					               ' </tr>'+
+					               ' <tr>'+
+					                    '<td>DO</td>'+
+					                   ' <td>&nbsp; ${DOW}</td>'+
+					                    '<td>(mS/cm)</td>'+
+					                    '<td>&nbsp; ${DOWL}</td>'+
+					               ' </tr>'+
+					                '<tr>'+
+					                    '<td>EC</td>'+
+					                    '<td>&nbsp; ${CON}</td>'+
+					                    '<td>(μS/cm)</td>'+
+					                   ' <td>&nbsp; ${CONL}</td>'+
+					              '  </tr>'+
+					               ' <tr>'+
+					                    '<td>탁도</td>'+
+					                    '<td>&nbsp; ${TUR}</td>'+
+					                    '<td>(NTU)</td>'+
+					                    '<td>&nbsp; ${TURL}</td>'+
+					               ' </tr>'+
+					               ' <tr>'+
+					                   ' <td>수온</td>'+
+					                    '<td>&nbsp; ${TMP}</td>'+
+					                   ' <td>(℃)</td>'+
+					                   ' <td>&nbsp; ${TMPL}</td>'+
+					               ' </tr>'+
+					            '</tbody>'+
+					        '</table>'+
+					    '</dd>'+
+					'</dl>';
 	
-	var AUTO_TEMP_ALERT = {
-			title:"${FACTNAME}"+"("+"${BRANCH_NAME}"+")",
-			content: "<ul>"
-						+ "<li> ● 수신시간 : ${STRDATE} ${STRTIME} </li>"
-						+ "<li> ● 수계 : ${RIVER_NAME} </li>"
-						+ "<li> ● PH : ${PHY} </li>"
-						+ "<li> ● DO : ${DOW} (mS/cm)</li>"
-						+ "<li> ● EC : ${CON} (mS/cm)</li>"
-						+ "<li> ● 탁도 : ${TUR} (NTU)</li>"
-						+ "<li> ● 수온 : ${TMP} (℃)</li></ul>"
-						+ "<li><font color=\"#ff0000\"> ● 이상메세지 : ${ALERT_MSG}</font></li></ul>"
-					};
+	var AUTO_TEMP_ALERT = '<dl class="info_box" style="height:348px !important; background-size: 294px 405px !important;">'+
+						    '<dt>&nbsp; ${FACTNAME}</dt>'+
+						    '<dd>'+
+						        '<dl class="summary">'+ 
+						        	'<dt>수신시간</dt>'+
+						           ' <dd class="L0">&nbsp; ${STRDATE} &nbsp; ${STRTIME}</dd>'+
+						       ' </dl>'+
+						        '<dl class="summary">'+
+						        	'<dt>수계</dt>'+
+						            '<dd>&nbsp; ${RIVER_NAME}</dd>'+
+						        '</dl>'+
+						        '<table class="st02 MgT10" summary="측정소 항목별 측정값">'+
+						            '<caption></caption>'+
+						            '<colgroup>'+
+						            	'<col width="60" />'+
+						                '<col width="50" />'+
+						                '<col width="50" />'+
+						                '<col />'+
+						           ' </colgroup>'+
+						           ' <thead>'+
+						               ' <tr>'+
+						                   ' <th>항목</th>'+
+						                    '<th>측정값</th>'+
+						                    '<th>단위</th>'+
+						                    '<th>기준</th>'+
+						             '   </tr>'+
+						            '</thead>'+
+						            '<tbody>'+
+						                '<tr>'+
+						                   ' <td>PH</td>'+
+						                   ' <td>&nbsp; ${PHY}</td>'+
+						                   ' <td>-</td>'+
+						                   ' <td>&nbsp; ${PHYL}</td>'+
+						               ' </tr>'+
+						               ' <tr>'+
+						                    '<td>DO</td>'+
+						                   ' <td>&nbsp; ${DOW}</td>'+
+						                    '<td>(mS/cm)</td>'+
+						                    '<td>&nbsp; ${DOWL}</td>'+
+						               ' </tr>'+
+						                '<tr>'+
+						                    '<td>EC</td>'+
+						                    '<td>&nbsp; ${CON}</td>'+
+						                    '<td>(μS/cm)</td>'+
+						                   ' <td>&nbsp; ${CONL}</td>'+
+						              '  </tr>'+
+						               ' <tr>'+
+						                    '<td>탁도</td>'+
+						                    '<td>&nbsp; ${TUR}</td>'+
+						                    '<td>(NTU)</td>'+
+						                    '<td>&nbsp; ${TURL}</td>'+
+						               ' </tr>'+
+						               ' <tr>'+
+						                   ' <td>수온</td>'+
+						                   ' <td>&nbsp; ${TMP}</td>'+
+						                   ' <td>(℃)</td>'+
+						                   ' <td>&nbsp; ${TMPL}</td>'+
+						               ' </tr>'+
+						               ' <tr>'+						
+										   ' <td colspan = 4><font color=\"#ff0000\"> ● 이상메세지 : &nbsp; ${ALERT_MSG}</font></td>'+				
+									   ' </tr>'+
+						            '</tbody>'+
+						        '</table>'+
+						    '</dd>'+
+						'</dl>';
+	var IPUSN_TEMP = '<dl class="info_box" >'+
+					    '<dt>&nbsp; ${FACTNAME} (${BRANCH_NAME})</dt>'+
+					    '<dd>'+
+					        '<dl class="summary">'+  
+					        	'<dt>수신시간</dt>'+
+					        	'<dd class="L0">&nbsp; ${STRDATE} &nbsp; ${STRTIME}</dd>'+
+					       ' </dl>'+
+					        '<dl class="summary">'+
+					        	'<dt>수계</dt>'+
+					            '<dd>&nbsp; ${RIVER_NAME}</dd>'+
+					        '</dl>'+
+					        '<table class="st02 MgT10" summary="측정소 항목별 측정값">'+
+					            '<caption></caption>'+
+					            '<colgroup>'+
+					            	'<col width="60" />'+
+					                '<col width="50" />'+
+					                '<col width="50" />'+
+					                '<col />'+
+					           ' </colgroup>'+
+					           ' <thead>'+
+					               ' <tr>'+
+					                   ' <th>항목</th>'+
+					                    '<th>측정값</th>'+
+					                    '<th>단위</th>'+
+					                    '<th>기준</th>'+
+					             '   </tr>'+
+					            '</thead>'+
+					            '<tbody>'+
+					                '<tr>'+
+					                   ' <td>PH</td>'+
+					                   ' <td>&nbsp; ${PHY}</td>'+
+					                   ' <td>-</td>'+
+					                   ' <td>&nbsp; ${PHYL}</td>'+
+					               ' </tr>'+
+					               ' <tr>'+
+					                    '<td>DO</td>'+
+					                   ' <td>&nbsp; ${DOW}</td>'+
+					                    '<td>(mS/cm)</td>'+
+					                    '<td>&nbsp; ${DOWL}</td>'+
+					               ' </tr>'+
+					                '<tr>'+
+					                    '<td>EC</td>'+
+					                    '<td>&nbsp; ${CON}</td>'+
+					                    '<td>(μS/cm)</td>'+
+					                   ' <td>&nbsp; ${CONL}</td>'+
+					              '  </tr>'+
+					               ' <tr>'+
+					                    '<td>탁도</td>'+
+					                    '<td>&nbsp; ${TUR}</td>'+
+					                    '<td>(NTU)</td>'+
+					                    '<td>&nbsp; ${TURL}</td>'+
+					               ' </tr>'+
+					               ' <tr>'+
+					                   ' <td>수온</td>'+
+					                    '<td>&nbsp; ${TMP}</td>'+
+					                   ' <td>(℃)</td>'+
+					                   ' <td>&nbsp; ${TMPL}</td>'+
+					               ' </tr>'+
+					            '</tbody>'+
+					        '</table>'+
+					    '</dd>'+
+					'</dl>';
+						
+	var NULL_TEMP = '<dl class="info_box" style="height:66px !important; border-bottom: solid 1px black;">'+
+					    '<dt>&nbsp; ${FACI_NM}</dt>'+
+					    '<dd>'+
+					        '<dl class="summary">'+  
+					        	'<dt style="width:260px;">정보가 없습니다.</dt>'+
+					       ' </dl>'+
+					    '</dd>'+
+					'</dl>';
 	
-	var NULL_TEMP = {
-			title:"${FACI_NM}",
-			content: "<ul>"+
-						"<li> 정보가 없습니다. </li></ul>"
-					};
+	var fillToValue = function(temp, val){
+		
+		if(temp == null){
+			return '';
+		}
+		if(val == null){
+			return temp;
+		}
+		
+		for(var key in val){
+			temp = temp.replaceAll('${'+key+'}', val[key]);
+		}
+		
+		var j = 0;
+		while(true){
+			var i = temp.indexOf('${');
+			if(i<0){
+				break;
+			}else{
+				var nullField = temp.substring(i, temp.indexOf('}')+1);
+				temp = temp.replaceAll(nullField, '&nbsp;');
+			}
+			j++; 
+			 
+			if(j > 20){
+				console.log('[ERROD] Fill To Values');
+				break;
+			}
+		}
+		
+		return temp;
+	}
+
 	
 	// MVC 설정 시작
 	// ////////////////////////////
@@ -1001,7 +1223,7 @@ $(function() {
 				}
 				
 				$kecoMap.view.map.setLevel(6);
-				$kecoMap.model.moveCenter(data.geometry.x, data.geometry.y);
+				$kecoMap.model.moveCenter(data.X, data.Y);
 				
 			});
 			
@@ -1091,7 +1313,7 @@ $(function() {
 				return;
 			
 			for ( var i = 0; i < $main.model.autoList.length; i++) {
-				var adata = $main.model.autoList[i].attributes;
+				var adata = $main.model.autoList[i];
 				
 				if(adata.FACT_CODE == obj.FACT_CODE && adata.BRANCH_NO == obj.BRANCH_NO)
 					return $main.model.autoList[i];
@@ -1103,7 +1325,7 @@ $(function() {
 				return;
 			
 			for ( var i = 0; i < $main.model.usnList.length; i++) {
-				var adata = $main.model.usnList[i].attributes;
+				var adata = $main.model.usnList[i];
 				if(adata.FACT_CODE == obj.FACT_CODE && adata.BRANCH_NO == obj.BRANCH_NO)
 					return $main.model.usnList[i];
 			}
@@ -1114,7 +1336,7 @@ $(function() {
 				return;
 			
 			for ( var i = 0; i < $main.model.tmsList.length; i++) {
-				var adata = $main.model.tmsList[i].attributes;
+				var adata = $main.model.tmsList[i];
 				
 				if(adata.FACT_CODE == obj.FACT_CODE && adata.BRANCH_NO == obj.BRANCH_NO)
 					return $main.model.tmsList[i];
@@ -1157,7 +1379,9 @@ $(function() {
 		pub.stop = function() {
 			this.isPlay = false;
 			clearInterval(this.timer);
-			$kecoMap.view.map.infoWindow.hide();
+			if($kecoMap.model.layerInfoOverlay){
+				$kecoMap.model.layerInfoOverlay.setPosition(undefined);
+			}
 		};
 		pub.next = function() {
 			this.stop();
@@ -1181,31 +1405,33 @@ $(function() {
 			this.intervalEvent();
 		};
 		pub.roopMonitor = function(prevFlag) {
-			$kecoMap.view.map.infoWindow.hide();
+
+			if($kecoMap.model.layerInfoOverlay){
+				$kecoMap.model.layerInfoOverlay.setPosition(undefined);
+			}
 
 			var return_flag = false;
 			if($main.model.roopType == 5) {
 				if($main.model.cuIndex+1 >= $main.model.accidentData.length) $main.model.cuIndex = -1;
 				
 				for ( var i = $main.model.cuIndex+1; i < $main.model.accidentData.length; i++)  {
-					var wm = esri.geometry.geographicToWebMercator(new esri.geometry.Point($main.model.accidentData[i].longitude , $main.model.accidentData[i].latitude));
 					
-					$kecoMap.view.map.centerAt(wm);
+					var targetData = $main.model.accidentData[i];
+					
+					_MapEventBus.trigger(_MapEvents.map_move , {x:targetData.longitude, y:targetData.latitude});
 					
 					$main.model.cuIndex = i;
 					
 					setTimeout(function(){
-						var point = new esri.geometry.ScreenPoint($kecoMap.view.map.width/2, $kecoMap.view.map.height/2);
-						var graphic = new esri.Graphic(undefined, undefined);
-						graphic.setAttributes($main.model.accidentData[i]);
 						
-						graphic.setInfoTemplate(new esri.InfoTemplate(EVENT_TEMP));
+						var position = ol.proj.transform([parseFloat(x), parseFloat(y)], 'EPSG:4326', 'EPSG:3857');
+						if($kecoMap.model.layerInfoDiv){
+							$kecoMap.model.layerInfoDiv.innerHTML = fillToValue(EVENT_TEMP, targetData);
+						}
 						
-						$kecoMap.view.map.infoWindow.setContent(graphic.getContent());
-						$kecoMap.view.map.infoWindow.setTitle(graphic.getTitle());
-						$kecoMap.view.map.infoWindow.resize(250,200);
-						$kecoMap.view.map.infoWindow.show(point,$kecoMap.view.map.getInfoWindowAnchor(point));
-						
+						if($kecoMap.model.layerInfoOverlay){
+							$kecoMap.model.layerInfoOverlay.setPosition( position );	
+						}
 					}, 1000);
 					
 					if(!prevFlag) {
@@ -1250,28 +1476,25 @@ $(function() {
 						
 						if(aChkData != undefined){
 							if(aChkData.LONGITUDE != undefined){
-								var wm = esri.geometry.geographicToWebMercator(new esri.geometry.Point(aChkData.LONGITUDE , aChkData.LATITUDE) );
+								_MapEventBus.trigger(_MapEvents.map_move , {x:aChkData.LONGITUDE, y:aChkData.LATITUDE});
 							}
 						}
-						
-						$kecoMap.view.map.centerAt(wm);
 						
 						$main.model.cuIndex = i;
 						
 						setTimeout(function(){
-							var point = new esri.geometry.ScreenPoint($kecoMap.view.map.width/2, $kecoMap.view.map.height/2);
-							var graphic = new esri.Graphic(undefined, undefined);
 							
-							if(aChkData != undefined)
-							{
+							if(aChkData != undefined) {
 								aChkData.ALERT_MSG = alertData.ALERT_MSG;
-								graphic.setAttributes(aChkData);
-								graphic.setInfoTemplate(new esri.InfoTemplate(AUTO_TEMP_ALERT));
-								$kecoMap.view.map.infoWindow.resize(250,230);
-								$kecoMap.view.map.infoWindow.setContent(graphic.getContent());
-								$kecoMap.view.map.infoWindow.setTitle(graphic.getTitle());
 								
-								$kecoMap.view.map.infoWindow.show(point,$kecoMap.view.map.getInfoWindowAnchor(point));
+								var position = ol.proj.transform([parseFloat(aChkData.LONGITUDE), parseFloat(aChkData.LATITUDE)], 'EPSG:4326', 'EPSG:3857');
+								if($kecoMap.model.layerInfoDiv){
+									$kecoMap.model.layerInfoDiv.innerHTML = fillToValue(AUTO_TEMP_ALERT, adata);
+								}
+								
+								if($kecoMap.model.layerInfoOverlay){
+									$kecoMap.model.layerInfoOverlay.setPosition( position );	
+								}
 							}
 						}, 1000);
 						
@@ -1302,26 +1525,22 @@ $(function() {
 	
 							if(aChkData != undefined){
 								if(aChkData.LONGITUDE != undefined){
-									var wm = esri.geometry.geographicToWebMercator(new esri.geometry.Point(aChkData.LONGITUDE , aChkData.LATITUDE) );
+									_MapEventBus.trigger(_MapEvents.map_move , {x:aChkData.LONGITUDE, y:aChkData.LATITUDE});
 								}
 							}
-							
-							$kecoMap.view.map.centerAt(wm);
 							
 							$main.model.cuIndex = i;
 							
 							setTimeout(function(){
-								var point = new esri.geometry.ScreenPoint($kecoMap.view.map.width/2, $kecoMap.view.map.height/2);
-								var graphic = new esri.Graphic(undefined, undefined);
-								graphic.setAttributes(aChkData);
-								
 								if(aChkData != undefined) {
-									graphic.setInfoTemplate(new esri.InfoTemplate(AUTO_TEMP));
-									$kecoMap.view.map.infoWindow.resize(250,210);
-									$kecoMap.view.map.infoWindow.setContent(graphic.getContent());
-									$kecoMap.view.map.infoWindow.setTitle(graphic.getTitle());
+									var position = ol.proj.transform([parseFloat(aChkData.LONGITUDE), parseFloat(aChkData.LATITUDE)], 'EPSG:4326', 'EPSG:3857');
+									if($kecoMap.model.layerInfoDiv){
+										$kecoMap.model.layerInfoDiv.innerHTML = fillToValue(AUTO_TEMP, adata);
+									}
 									
-									$kecoMap.view.map.infoWindow.show(point,$kecoMap.view.map.getInfoWindowAnchor(point));
+									if($kecoMap.model.layerInfoOverlay){
+										$kecoMap.model.layerInfoOverlay.setPosition( position );	
+									}
 								}
 							}, 1000);
 							
@@ -1348,28 +1567,23 @@ $(function() {
 							
 							if(aChkData != undefined){
 								if(aChkData.LONGITUDE != undefined){
-									var wm = esri.geometry.geographicToWebMercator(new esri.geometry.Point(aChkData.LONGITUDE , aChkData.LATITUDE) );
+									_MapEventBus.trigger(_MapEvents.map_move , {x:aChkData.LONGITUDE, y:aChkData.LATITUDE});
 								}
 							}
-							
-							$kecoMap.view.map.centerAt(wm);
 							
 							$main.model.cuIndex = i;
 							
 							setTimeout(function(){
-								var point = new esri.geometry.ScreenPoint($kecoMap.view.map.width/2, $kecoMap.view.map.height/2);
-								var graphic = new esri.Graphic(undefined, undefined);
-								graphic.setAttributes(aChkData);
-								
 								if(aChkData != undefined) {
-									graphic.setInfoTemplate(new esri.InfoTemplate(AUTO_TEMP));
-									$kecoMap.view.map.infoWindow.resize(250,210);
-									$kecoMap.view.map.infoWindow.setContent(graphic.getContent());
-									$kecoMap.view.map.infoWindow.setTitle(graphic.getTitle());
+									var position = ol.proj.transform([parseFloat(aChkData.LONGITUDE), parseFloat(aChkData.LATITUDE)], 'EPSG:4326', 'EPSG:3857');
+									if($kecoMap.model.layerInfoDiv){
+										$kecoMap.model.layerInfoDiv.innerHTML = fillToValue(IPUSN_TEMP, aChkData);
+									}
 									
-									$kecoMap.view.map.infoWindow.show(point,$kecoMap.view.map.getInfoWindowAnchor(point));
+									if($kecoMap.model.layerInfoOverlay){
+										$kecoMap.model.layerInfoOverlay.setPosition( position );	
+									}
 								}
-								
 							}, 1000);
 							
 							if(!prevFlag) {
@@ -1394,24 +1608,24 @@ $(function() {
 							return_flag = $kecoMap.model.LayerAuthIn(sereneData.FACT_CODE, sereneData.BRANCH_NO,sereneData.SYS_KIND);
 							if(return_flag){
 								var aChkData = $main.model.getCheckData(sereneData.SYS_KIND, sereneData.FACT_CODE, sereneData.BRANCH_NO);
-								var wm = esri.geometry.geographicToWebMercator(new esri.geometry.Point(adata.geometry.x , adata.geometry.y) );
+								_MapEventBus.trigger(_MapEvents.map_move , {x:adata.X, y:adata.Y});
 								
 								$kecoMap.view.map.centerAt(wm);
 								
 								$main.model.cuIndex = $main.model.autoData.length + i;
 								
 								setTimeout(function(){
-									var point = new esri.geometry.ScreenPoint($kecoMap.view.map.width/2, $kecoMap.view.map.height/2);
-									var graphic = new esri.Graphic(undefined, undefined);
-									graphic.setAttributes(aChkData);
-									
 									if(aChkData != undefined) {
-										graphic.setInfoTemplate(new esri.InfoTemplate(AUTO_TEMP));
-										$kecoMap.view.map.infoWindow.resize(250,210);
-										$kecoMap.view.map.infoWindow.setContent(graphic.getContent());
-										$kecoMap.view.map.infoWindow.setTitle(graphic.getTitle());
 										
-										$kecoMap.view.map.infoWindow.show(point,$kecoMap.view.map.getInfoWindowAnchor(point));
+										var position = ol.proj.transform([parseFloat(aChkData.LONGITUDE), parseFloat(aChkData.LATITUDE)], 'EPSG:4326', 'EPSG:3857');
+										
+										if($kecoMap.model.layerInfoDiv){
+											$kecoMap.model.layerInfoDiv.innerHTML = fillToValue(IPUSN_TEMP, aChkData);
+										}
+										
+										if($kecoMap.model.layerInfoOverlay){
+											$kecoMap.model.layerInfoOverlay.setPosition( position );	
+										}
 									}
 								}, 1000);
 								
@@ -1431,28 +1645,35 @@ $(function() {
 							if(return_flag){
 								var aChkData = $main.model.getCheckData(sereneData.SYS_KIND, sereneData.FACT_CODE, sereneData.BRANCH_NO);
 								
-								if(adata.geometry != null){
-									var wm = esri.geometry.geographicToWebMercator(new esri.geometry.Point(adata.geometry.x , adata.geometry.y) );
+								if(adata != null){
+									_MapEventBus.trigger(_MapEvents.map_move , {x:adata.X, y:adata.Y});
 									
-									$kecoMap.view.map.centerAt(wm);
 									$main.model.cuIndex = i;
 									
 									setTimeout(function(){
-										var point = new esri.geometry.ScreenPoint($kecoMap.view.map.width/2, $kecoMap.view.map.height/2);
-										var graphic = new esri.Graphic(undefined, undefined);
-										graphic.setAttributes(aChkData);
+										
 										
 										if(aChkData != undefined) {
-											graphic.setInfoTemplate(new esri.InfoTemplate(AUTO_TEMP));
-											$kecoMap.view.map.infoWindow.resize(250,210);
-											$kecoMap.view.map.infoWindow.setContent(graphic.getContent());
-											$kecoMap.view.map.infoWindow.setTitle(graphic.getTitle());
+											var position = ol.proj.transform([parseFloat(aChkData.LONGITUDE), parseFloat(aChkData.LATITUDE)], 'EPSG:4326', 'EPSG:3857');
 											
-											$kecoMap.view.map.infoWindow.show(point,$kecoMap.view.map.getInfoWindowAnchor(point));
+											if($kecoMap.model.layerInfoDiv){
+												$kecoMap.model.layerInfoDiv.innerHTML = fillToValue(AUTO_TEMP, aChkData);
+											}
+											
+											if($kecoMap.model.layerInfoOverlay){
+												$kecoMap.model.layerInfoOverlay.setPosition( position );	
+											}
 										} else {
-											graphic.setAttributes(adata);
-											graphic.setInfoTemplate(new esri.InfoTemplate(NULL_TEMP));
-											$kecoMap.view.map.infoWindow.resize(250,100);
+											var position = ol.proj.transform([parseFloat(adata.X), parseFloat(adata.Y)], 'EPSG:4326', 'EPSG:3857');
+											
+											if($kecoMap.model.layerInfoDiv){
+												$kecoMap.model.layerInfoDiv.innerHTML = fillToValue(NULL_TEMP, adata);
+											}
+											
+											if($kecoMap.model.layerInfoOverlay){
+												$kecoMap.model.layerInfoOverlay.setPosition( position );	
+											}
+											
 										}
 									}, 1000);
 									if(!prevFlag) {
@@ -1527,8 +1748,7 @@ $(function() {
 		pub.roopMonitorPlay = function () {
 			if($main.model.accidentData.length > 0) {
 				page.view.radiobutton3.attr('checked',true);
-				if(page.model.roopType != 5)
-				{
+				if(page.model.roopType != 5) {
 					page.model.cuIndex = -1;
 					page.model.cuidxArr = [];
 					page.model.prevCnt = 2;

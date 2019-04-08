@@ -895,7 +895,7 @@ img{}
 									</select>
 								</li>
 								<li><label><input type="radio" id="radiobutton2" name="radiobutton" value="radiobutton" /> 이상</label></li>
-								<li><label><input type="radio" id="radiobutton3" name="radiobutton" value="radiobutton" /> 사고발생</label></li>
+								<li><label><input type="radio" id="radiobutton3" name="radiobutton" value="radiobutton" checked/> 사고발생</label></li>
 								<li>
 									<input onclick="javascript:$main.model.prev()" type="button" name="" value="뒤로" class="autobtn" id="autobt01"/>
 									<input onclick="javascript:$main.model.stop()" type="button" name="" value="일시정지" class="autobtn" id="autobt02"/>
