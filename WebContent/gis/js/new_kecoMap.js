@@ -2987,7 +2987,7 @@ $(function() {
 				image: new ol.style.Icon({
 					opacity: 1,
 					src: img,
-					anchor: [0.5, 1.0],
+					anchor: [0.5, 0.5], 
 			        anchorXUnits: 'fraction',
 			        anchorYUnits: 'fraction',
 					crossOrigin: 'Anonymous'
