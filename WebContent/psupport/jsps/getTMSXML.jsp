@@ -333,34 +333,34 @@ try
 	/* System.out.println("<script>");
 	System.out.println("alert('" + sql + "');");
 	System.out.println("</script>"); */
-	System.out.println("getTMSXML >>>>>>>>>> " + sql);
+// 	System.out.println("getTMSXML >>>>>>>>>> " + sql);
 	
-	out.println("[]");
+// 	out.println("[]");
 	
 	JSONArray reJson = new JSONArray();
 	
-// 	try
-// 	{
-// 		stmt=conn.createStatement();
-// 		rs=stmt.executeQuery(sql);
-// 		while(rs.next())
-// 		{
-// 		JSONObject jo = new JSONObject();
-// 			ResultSetMetaData rmd = rs.getMetaData();
+	try
+	{
+		stmt=conn.createStatement();
+		rs=stmt.executeQuery(sql);
+		while(rs.next())
+		{
+		JSONObject jo = new JSONObject();
+			ResultSetMetaData rmd = rs.getMetaData();
 		
-// 			for ( int i=1; i<=rmd.getColumnCount(); i++ )
-// 			{
-// 				jo.put(rmd.getColumnName(i),rs.getString(rmd.getColumnName(i)));
-// 			}
-// 			reJson.add(jo);
-// 		}
-// 		out.println(reJson.toString());
-// 		closeConn(rs,stmt,conn);
-// 	}
-// 	catch(SQLException ex)
-// 	{
-// 		ex.printStackTrace();
-// 	}
+			for ( int i=1; i<=rmd.getColumnCount(); i++ )
+			{
+				jo.put(rmd.getColumnName(i),rs.getString(rmd.getColumnName(i)));
+			}
+			reJson.add(jo);
+		}
+		out.println(reJson.toString());
+		closeConn(rs,stmt,conn);
+	}
+	catch(SQLException ex)
+	{
+		ex.printStackTrace();
+	}
 }
 catch(Exception ex)
 {

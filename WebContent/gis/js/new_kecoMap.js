@@ -2429,14 +2429,12 @@ $(function() {
 			}
 			
 			var symbol1 = '/gis/new_images/'+dirNm+'/tms_1.png';
-			
-//			var symbol1 = window.location.origin+'/gis/images/auticon/t_1.png';
-			var symbol2 = window.location.origin+'/gis/images/auticon/t_2.png';
-			var symbol3 = window.location.origin+'/gis/images/auticon/t_3.png';
-			var symbol4 = window.location.origin+'/gis/images/auticon/t_4.png';
-			var symbol5 = window.location.origin+'/gis/images/auticon/t_5.png';
-			var symbol6 = window.location.origin+'/gis/images/auticon/t_6.png';
-			var symbol7 = window.location.origin+'/gis/images/auticon/t_7.png';
+			var symbol2 = '/gis/new_images/'+dirNm+'/tms_2.png';
+			var symbol3 = '/gis/new_images/'+dirNm+'/tms_3.png';
+			var symbol4 = '/gis/new_images/'+dirNm+'/tms_4.png';
+			var symbol5 = '/gis/new_images/'+dirNm+'/tms_5.png';
+			var symbol6 = '/gis/new_images/'+dirNm+'/tms_6.png';
+			var symbol7 = '/gis/new_images/'+dirNm+'/tms_7.png';
 			
 			var tmsIconUrl = symbol1;
 			
@@ -2533,14 +2531,12 @@ $(function() {
 			}
 			
 			var symbol = '/gis/new_images/'+dirNm+'/usn_1.png';
-			
-//			var symbol  = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/2/images/'+$define.ARC_SERVER_IMG_USN1;
-			var symbol1 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/2/images/'+$define.ARC_SERVER_IMG_USN2;
-			var symbol2 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/2/images/'+$define.ARC_SERVER_IMG_USN3;
-			var symbol3 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/2/images/'+$define.ARC_SERVER_IMG_USN4;
-			var symbol4 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/2/images/'+$define.ARC_SERVER_IMG_USN5;
-			var symbol5 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/2/images/'+$define.ARC_SERVER_IMG_USN6;
-			var symbol6 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/2/images/'+$define.ARC_SERVER_IMG_USN7;
+			var symbol1 = '/gis/new_images/'+dirNm+'/usn_2.png';
+			var symbol2 = '/gis/new_images/'+dirNm+'/usn_3.png';
+			var symbol3 = '/gis/new_images/'+dirNm+'/usn_4.png';
+			var symbol4 = '/gis/new_images/'+dirNm+'/usn_5.png';
+			var symbol5 = '/gis/new_images/'+dirNm+'/usn_6.png';
+			var symbol6 = '/gis/new_images/'+dirNm+'/usn_7.png';
 			
 			var ipusnIconUrl = symbol;
 			
@@ -2653,27 +2649,19 @@ $(function() {
 			}
 		};
 		pub.autoStyleFunction = function(feature, resolution){
-			
 			var zoom = _CoreMap.getZoom()-7;
-			
 			var dirNm = 'regular';
-			var offsetX = 13;
-			var offsetY = 20;
-			
 			if(zoom < 2) {
 				dirNm = 'small';
-				offsetX = 9;
-				offsetY = 15;
 			}
 			
 			var symbol = '/gis/new_images/'+dirNm+'/auto_1.png';
-			
-			var symbol1 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO2;
-			var symbol2 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO3;
-			var symbol3 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO4;
-			var symbol4 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO5;
-			var symbol5 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO6;
-			var symbol6 = $define.ARC_SERVER_URL+'/rest/services/WPCS_EDIT/MapServer/1/images/'+$define.ARC_SERVER_IMG_AUTO7;
+			var symbol1 = '/gis/new_images/'+dirNm+'/auto_2.png';
+			var symbol2 = '/gis/new_images/'+dirNm+'/auto_3.png';
+			var symbol3 = '/gis/new_images/'+dirNm+'/auto_4.png';
+			var symbol4 = '/gis/new_images/'+dirNm+'/auto_5.png';
+			var symbol5 = '/gis/new_images/'+dirNm+'/auto_6.png';
+			var symbol6 = '/gis/new_images/'+dirNm+'/auto_7.png';
 			
 			var autoIconUrl = symbol;
 			
@@ -2685,7 +2673,6 @@ $(function() {
 				if(featureInfo.FACT_CODE == a.FACT_CODE){
 					if(a.VALUE == "1") {
 						autoIconUrl =  symbol1;
-						
 					} else if(a.VALUE == "2"){
 						autoIconUrl =  symbol2;
 					} else if(a.VALUE == "3"){
