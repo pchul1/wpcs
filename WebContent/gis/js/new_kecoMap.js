@@ -897,12 +897,26 @@ $(function() {
 					if($kecoMap.model.wmsLayers[visibleLayers[i]]){
 						$kecoMap.model.wmsLayers[visibleLayers[i]].setVisible(true);	
 					}else{
-						var layerInfo = [{layerNm:'wpcs:'+visibleLayers[i],isVisible:true,isTiled:true,cql:null,opacity:1}];
+						var layerInfo = [{layerNm:'wpcs:'+visibleLayers[i],layerId:visibleLayers[i], isVisible:true,isTiled:true,cql:null,opacity:1}];
 						$kecoMap.model.wmsLayers[visibleLayers[i]] = _CoreMap.createTileLayer(layerInfo)[0];
 						
 						_MapEventBus.trigger(_MapEvents.map_addLayer, $kecoMap.model.wmsLayers[visibleLayers[i]]);
 					}
-				} 
+				}
+				setTimeout(function(){
+					var layers = _CoreMap.getMap().getLayers();
+					
+					for(var i=0; i<layers.getLength(); i++){
+						if(layers.getArray()[i].get('name') == 'NTN_RVR'){
+							var ntnRvrLayer = layers.removeAt(i);
+							layers.insertAt(4, ntnRvrLayer);
+						}
+						if(layers.getArray()[i].get('name') == 'LCL_RVR'){
+							var ntnRvrLayer = layers.removeAt(i);
+							layers.insertAt(4, ntnRvrLayer);
+						} 
+					}
+				}, 500);
 				
 			} else if(idx == 0) {
 				if($('#autoLd').attr('checked')){
@@ -1607,7 +1621,7 @@ $(function() {
 			}
 		};
 		
-		pub.setOrderLayers = function(layers, url){
+		pub.setOrderLayers = function(layers, url, mainPage){
 			if($kecoMap.view.orderLayers == null){
 				$kecoMap.view.orderLayers = {};
 			}
@@ -1666,7 +1680,7 @@ $(function() {
 						source : new ol.source.Vector({
 							features : features
 						}),
-						visible: false,
+						visible: mainPage == 'checked' ? true:false,
 						style : function(){
 							return [new ol.style.Style({
 								image: new ol.style.Icon({
@@ -1888,7 +1902,7 @@ $(function() {
 					data = JSON.parse(data); 
 					pub.layerList = data.layers;
 					
-					pub.setOrderLayers(data.layers, url);
+					
 					
 					var html = '<div><h4 class="layerHeader" >수질자동측정지점</h4><ul class="depth">';
 					var checked = '';
@@ -1898,13 +1912,15 @@ $(function() {
 						checked = 'checked';
 					}
 					
+					pub.setOrderLayers(data.layers, url , checked);
+					
 					html +='<li><input id="autoLd" '+checked+' type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(0);"/><label for="autoLd"><em><img src="/gis/new_images/regular/auto_1.png" /></em>국가수질자동측정망</label></li> ';
-					html +='<li><input id="tmsLd" '+checked+' type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(1);"/><label for="tmsLd"><em><img src="/gis/new_images/regular/tms_1.png" alt=""/></em>수질TMS </label></li>';
-					html +='<li><input id="ipLd" '+checked+' type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(2);"/><label for="ipLd"><em><img src="/gis/new_images/regular/usn_1.png" alt=""/></em>이동형측정기기 </label></li>';
+					html +='<li><input id="tmsLd" type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(1);"/><label for="tmsLd"><em><img src="/gis/new_images/regular/tms_1.png" alt=""/></em>수질TMS </label></li>';
+					html +='<li><input id="ipLd" type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(2);"/><label for="ipLd"><em><img src="/gis/new_images/regular/usn_1.png" alt=""/></em>이동형측정기기 </label></li>';
 					
 					
 					html += '</ul></div><div><h4 class="layerHeader">중요 시설물</h4> <ul class="depth">';
-					html +='<li><input id="de4" type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(4);"/><label for="de4"><em><img src="'+url+data.layers[12].layerId+'.png" alt=""/></em> '+data.layers[12].layerName+' </label></li>';
+					html +='<li><input id="de4" type="checkbox" '+checked+' onclick="$kecoMap.model.updateLayerVisibility(4);"/><label for="de4"><em><img src="'+url+data.layers[12].layerId+'.png" alt=""/></em> '+data.layers[12].layerName+' </label></li>';
 					html +='<li><input id="de5" type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(5);"/><label for="de5"><em><img src="'+url+data.layers[13].layerId+'.png" alt=""/></em> '+data.layers[13].layerName+' </label></li>';
 					html +='<li><input id="de6" type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(6);"/><label for="de6"><em><img src="'+url+data.layers[29].layerId+'.png" alt=""/></em> '+data.layers[29].layerName+' </label></li>';
 					html +='<li><input id="de7" type="checkbox" onclick="$kecoMap.model.updateLayerVisibility(7);"/><label for="de7"><em><img src="'+url+data.layers[30].layerId+'.png" alt=""/></em> '+data.layers[30].layerName+' </label></li>';
@@ -1955,12 +1971,16 @@ $(function() {
 					
 					setTimeout(function(){
 						if(window.location.href.indexOf('goDetailFLUX') > -1){
-							$('#11').attr('checked', true);
-							$('#12').attr('checked', true);
+							$('#WT_LVL_OBS').attr('checked', true);
+							$('#FLW_OBS').attr('checked', true);
 						}
 						
 						if(window.location.href.indexOf('goDetailDam') > -1){
-							$('#16').attr('checked', true);
+							$('#DAM_OBS').attr('checked', true);
+						}
+						
+						if(checked == 'checked'){
+							$('#NTN_RVR').attr('checked', true);
 						}
 						
 						$kecoMap.model.updateLayerVisibility();
@@ -2162,7 +2182,6 @@ $(function() {
 								 tempText = fillToValue(tempText, obj);
 							 }
 						 }catch(e) {}
-						 console.log('auto on over');
 					 } else if(featureInfo.featureType == 'TMS'){
 						 return_flag = false;
 						 var obj = $kecoMap.model.baseObj.model.getCheckData('W', featureInfo.FACT_CODE, featureInfo.BRANCH_NO);
@@ -2183,7 +2202,6 @@ $(function() {
 							 }
 							 tempText = fillToValue(tempText, obj);
 						 }
-						 console.log('tms on over');
 					 } else if(featureInfo.featureType == 'IPUSN'){
 						 return_flag = false;
 						 var obj = $kecoMap.model.baseObj.model.getCheckData('U', featureInfo.FACT_CODE, featureInfo.BRANCH_NO);
@@ -2215,7 +2233,6 @@ $(function() {
 							 }
 							 tempText = fillToValue(tempText, obj);
 						 }
-						 console.log('ipusn on over');
 					 } else if(featureInfo.featureType == 'WH'){
 						 var obj = $kecoMap.model.baseObj.model.getWhData(featureInfo.WH_CODE);
 							
@@ -2261,25 +2278,18 @@ $(function() {
 						 }
 						 
 						 tempText = fillToValue(tempText, obj);
-						 console.log('WH on over');
 					 } else if(featureInfo.featureType == 'BO'){
 						 tempText = fillToValue( TEMP_DE['de9'], featureInfo);
-						 console.log('BO on over');
 					 } else if(featureInfo.featureType == 'DAM'){
 						 tempText = fillToValue( TEMP_DE['de8'], featureInfo);
-						 console.log('DAM on over');
 					 } else if(featureInfo.featureType == 'WTR_PRF'){
 						 tempText = fillToValue( TEMP_DE['de7'], featureInfo);
-						 console.log('WTR_PRF on over');
 					 } else if(featureInfo.featureType == 'WTR_DEPOT'){
 						 tempText = fillToValue( TEMP_DE['de6'], featureInfo);
-						 console.log('WTR_DEPOT on over');
 					 } else if(featureInfo.featureType == 'DAM_OBS'){
 						 tempText = fillToValue( TEMP_DE['de5'], featureInfo);
-						 console.log('DAM_OBS on over');
 					 } else if(featureInfo.featureType == 'BO_OBS'){
 						 tempText = fillToValue( TEMP_DE['de4'], featureInfo);
-						 console.log('BO_OBS on over');
 					 } else if(featureInfo.featureType == 'MARKER'){
 						 //pub.markerOverlay
 						 if(featureInfo.iconType == 0 || featureInfo.iconType >= 10 || featureInfo.iconType <= 14){
@@ -2357,19 +2367,12 @@ $(function() {
 //								 dobuffer("u",evt);
 //							 }
 					 }else if(featureInfo.featureType == 'BO'){
-						 console.log('BO on click');
 					 }else if(featureInfo.featureType == 'DAM'){
-						 console.log('DAM on click');
 					 }else if(featureInfo.featureType == 'WTR_PRF'){
-						 console.log('WTR_PRF on click');
 					 }else if(featureInfo.featureType == 'WTR_DEPOT'){
-						 console.log('WTR_DEPOT on click');
 					 }else if(featureInfo.featureType == 'DAM_OBS'){
-						 console.log('DAM_OBS on click');
 					 }else if(featureInfo.featureType == 'BO_OBS'){
-						 console.log('BO_OBS on click');
 					 }else if(featureInfo.featureType == 'MARKER'){
-						 console.log('MARKER on click');
 						 if(featureInfo.datatype == 'AC'){
 							 window.open("/waterpollution/waterPollutionDetail.do?clickMenu=32120&wpCode="+featureInfo.wpcode, 
 										'wpView','width='+window.screen.width+',height='+window.screen.height+',toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,left=0,top=0');

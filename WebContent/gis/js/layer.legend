@@ -208,55 +208,64 @@
    "layerId": 40,
    "layerName": "국가하천",
    "geoLayerId": "NTN_RVR",
-     "url": "f2371d514e7df2b0c39ce7a7347e8dd4"
+   "url": "f2371d514e7df2b0c39ce7a7347e8dd4",
+   "zindex":11
   },
   {
    "layerId": 41,
    "layerName": "지방하천",
    "geoLayerId": "LCL_RVR",
-     "url": "cbfb2dd58e698d8a0f2dbe3161944505"
+   "url": "cbfb2dd58e698d8a0f2dbe3161944505",
+   "zindex":12
   },
   {
    "layerId": 43,
    "layerName": "대권역",
    "geoLayerId": "GREAT",
-     "url": "ad224aec03d628e5988113338260f783"
+   "url": "ad224aec03d628e5988113338260f783",
+   "zindex":8
   },
   {
    "layerId": 44,
    "layerName": "중권역",
    "geoLayerId": "MEDIUM",
-     "url": "91629e18cd39db0857e7bb15b38585a2"
+   "url": "91629e18cd39db0857e7bb15b38585a2",
+   "zindex":9
   },
   {
    "layerId": 45,
    "layerName": "소권역",
    "geoLayerId": "SMALL",
-     "url": "01215f66657f7d1ce307555980ca8b5f"
+   "url": "01215f66657f7d1ce307555980ca8b5f",
+   "zindex":10
   },
   {
    "layerId": 47,
    "layerName": "법정동_시도",
    "geoLayerId": "CITY",
-     "url": "9176ab8eb08dd8ced41429668b08dd1e"
+   "url": "9176ab8eb08dd8ced41429668b08dd1e",
+   "zindex":4
   },
   {
    "layerId": 48,
    "layerName": "법정동_시군구",
    "geoLayerId": "CITY_DSTRC",
-     "url": "2616cf4010c129470b9f8a13d36c0a96"
+   "url": "2616cf4010c129470b9f8a13d36c0a96",
+   "zindex":5
   },
   {
    "layerId": 49,
    "layerName": "법정동_읍면동",
    "geoLayerId": "TOWN",
-     "url": "2c367004d6ef0667b1a7b44972578bc1"
+   "url": "2c367004d6ef0667b1a7b44972578bc1",
+   "zindex":6
   },
   {
    "layerId": 50,
    "layerName": "법정동_동리",
    "geoLayerId": "DONG_LI",
-     "url": "d3576afe2b87400986098a290c927beb"
+   "url": "d3576afe2b87400986098a290c927beb",
+   "zindex":7
   }
  ]
 }

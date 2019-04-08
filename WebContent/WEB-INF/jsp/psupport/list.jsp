@@ -46,7 +46,7 @@ String menuID = (String)request.getSession().getAttribute("clickMenu");
 <style>
 .mapst {  position: absolute; right: 20px; top: 50px; }
 .mapst li { float: left; }
-.mapst li a { width: 73px; height: 28px; padding-top: 7px; display: block; font-size: 13px; letter-spacing: -1px; text-align: center; color: #bbb; background-position: -73px 0 !important; }
+.mapst li a { width: 55px; height: 24px; padding-top: 5px; display: block; font-size: 12px; letter-spacing: -1px; text-align: center; color: #bbb; background-position: -55px 0 !important; background-repeat: no-repeat; } 
 .mapst li a.basic { background: url(/gis/new_images/m_st_left.png); }
 .mapst li a.stellite { background: url(/gis/new_images/m_st_right.png);}
 .mapst li a.on { background-position: 0 0 !important; color: #fff; }
@@ -69,7 +69,7 @@ String menuID = (String)request.getSession().getAttribute("clickMenu");
 <script type="text/javascript" src="/gis/new_js/lib/coreMap.js"></script>
 
 <style>
- 
+
 	/*20190403추가*/
 .tooltip { position: absolute; right: 20px; top: 10px; background: #fff; }
 .tooltip:after { display: block; clear: both; content: ''; }
