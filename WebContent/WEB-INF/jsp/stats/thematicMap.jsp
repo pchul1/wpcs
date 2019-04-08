@@ -55,6 +55,26 @@
 <script type="text/javascript" src="/gis/new_js/lib/coreMap.js"></script>
 
 <style>
+.info_box { width: 274px; height: 295px; padding: 45px 10px 10px 10px;  background: url(/gis/new_images/info_box.png); position: absolute; background-size: 294px 350px;}
+.info_box> dt { border-bottom: 2px solid #4e4040; padding: 0 0 7px 15px; background: url(/gis/new_images/blit_05.gif) left 6px no-repeat; font-size: 16px; letter-spacing: -1px; }
+
+.summary { }
+.summary:after { display: block; clear: both; content: ''; }
+.summary dt { width: 70px; padding-left: 15px; background: url(/gis/new_images/blit_06.gif) 5px 9px no-repeat; float: left; }
+.summary dd { width: 178px; padding-left: 10px; float: left; background: url(/gis/new_images/blit_07.gif) left 7px no-repeat; }
+.summary dt, .summary dd { font-size: 12px; border-bottom: 1px solid #e2e2e2; padding-top: 3px; padding-bottom: 3px; letter-spacing: -1px; }
+.result { width: 920px; height: 250px; border: 1px solid #3a4950; background: #e5e5e5; padding: 5px; position: absolute; left: 309px; bottom: 0px; }
+.result> div { height: 230px; overflow: scroll; padding: 10px; background: #fff; }
+.result_btn { position: absolute; left: 0px; z-index: 999; top: -23px; }
+.result_off, .result_on { width: 100px; height: 21px; padding: 2px 0 0 18px; cursor: pointer; font-size: 12px; letter-spacing: -1px; color: #fff; }
+.result_off { background: url(/gis/new_images/btn_close2.png) no-repeat; }
+.result_on { background: url(/gis/new_images/btn_open2.png) no-repeat; }
+
+.item { width: 60px; padding: 10px 15px; border: 1px solid #0d0d0d; background: #fff; position: absolute; right: 20px; bottom: 20px; }
+.item li { margin-bottom: 3px; font-size: 12px; letter-spacing: -1px; color: #434548; }
+.item li:last-child { margin-bottom: 0; }
+.item li> img { margin-right: 7px; vertical-align: middle; }
+
 	/*20190403추가*/
 .tooltip { position: absolute; right: 20px; top: 10px; background: #fff; }
 .tooltip:after { display: block; clear: both; content: ''; }
