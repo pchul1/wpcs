@@ -11,7 +11,7 @@ try
 	 
 	Statement stmt=null;
 	sql  = "SELECT OBJECTID, X, Y, FACI_NM, FACI_ADDR, RV_CD, FACT_CODE, BRANCH_NO FROM T_GIS_AUTO WHERE 1=1 "; //USE_FLAG = 'Y' 
-	if(!"A".equals(rvCd)){
+	if(!"A".equals(rvCd) && !"".equals(rvCd)){
 		sql += " AND RV_CD = '"+rvCd+"'";
 	}
 	
