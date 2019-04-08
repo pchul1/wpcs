@@ -1672,7 +1672,7 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[12].layerId+'.png',
-									anchor: [0.5, 0.5],
+									anchor: [0.5, 1.0],
 							        anchorXUnits: 'fraction',
 							        anchorYUnits: 'fraction',
 									crossOrigin: 'Anonymous'
@@ -1712,7 +1712,7 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[13].layerId+'.png',
-									anchor: [0.5, 0.5],
+									anchor: [0.5, 1.0],
 							        anchorXUnits: 'fraction',
 							        anchorYUnits: 'fraction',
 									crossOrigin: 'Anonymous'
@@ -1752,7 +1752,7 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[29].layerId+'.png',
-									anchor: [0.5, 0.5],
+									anchor: [0.5, 1.0],
 							        anchorXUnits: 'fraction',
 							        anchorYUnits: 'fraction',
 									crossOrigin: 'Anonymous'
@@ -1790,7 +1790,7 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[30].layerId+'.png',
-									anchor: [0.5, 0.5],
+									anchor: [0.5, 1.0],
 							        anchorXUnits: 'fraction',
 							        anchorYUnits: 'fraction',
 									crossOrigin: 'Anonymous'
@@ -1828,7 +1828,7 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[31].layerId+'.png',
-									anchor: [0.5, 0.5],
+									anchor: [0.5, 1.0],
 							        anchorXUnits: 'fraction',
 							        anchorYUnits: 'fraction',
 									crossOrigin: 'Anonymous'
@@ -1866,7 +1866,7 @@ $(function() {
 								image: new ol.style.Icon({
 									opacity: 1,
 									src: url+layers[32].layerId+'.png',
-									anchor: [0.5, 0.5],
+									anchor: [0.5, 1.0],
 							        anchorXUnits: 'fraction',
 							        anchorYUnits: 'fraction',
 									crossOrigin: 'Anonymous'
@@ -2475,7 +2475,7 @@ $(function() {
 						image: new ol.style.Icon({
 							opacity: 1,
 							src: tmsIconUrl,
-							anchor: [0.5, 0.5],
+							anchor: [0.5, 1.0],
 					        anchorXUnits: 'fraction',
 					        anchorYUnits: 'fraction',
 							crossOrigin: 'Anonymous'
@@ -2601,7 +2601,7 @@ $(function() {
 						image: new ol.style.Icon({
 							opacity: 1,
 							src: ipusnIconUrl,
-							anchor: [0.5, 0.5],
+							anchor: [0.5, 1.0],
 					        anchorXUnits: 'fraction',
 					        anchorYUnits: 'fraction',
 							crossOrigin: 'Anonymous'
@@ -2726,7 +2726,7 @@ $(function() {
 						image: new ol.style.Icon({
 							opacity: 1,
 							src: autoIconUrl,
-							anchor: [0.5, 0.5],
+							anchor: [0.5, 1.0],
 					        anchorXUnits: 'fraction',
 					        anchorYUnits: 'fraction',
 							crossOrigin: 'Anonymous' 
@@ -2794,7 +2794,7 @@ $(function() {
 						image: new ol.style.Icon({
 							opacity: 1,
 							src: whIconUrl,
-							anchor: [0.5, 0.5],
+							anchor: [0.5, 1.0],
 					        anchorXUnits: 'fraction',
 					        anchorYUnits: 'fraction',
 							crossOrigin: 'Anonymous'
@@ -2984,7 +2984,7 @@ $(function() {
 				image: new ol.style.Icon({
 					opacity: 1,
 					src: img,
-					anchor: [0.5, 0.5],
+					anchor: [0.5, 1.0],
 			        anchorXUnits: 'fraction',
 			        anchorYUnits: 'fraction',
 					crossOrigin: 'Anonymous'

@@ -28,8 +28,31 @@
 <title>한국환경공단 수질오염 방제정보 시스템</title>
 <c:import url="/WEB-INF/jsp/include/common/include_commonjs.jsp" />
 <style>
+.tooltip { position: absolute; right: 20px; top: 10px; background: #fff; }
+.tooltip:after { display: block; clear: both; content: ''; }
+.tooltip li { padding: 4px 8px 5px 6px; display: block; float: left; font-size: 11px; color: #434548; letter-spacing: -1px;border-left: 1px solid #0d0d0d; border-top: 1px solid #0d0d0d; border-bottom: 1px solid #0d0d0d; font-family: 'notokr-bold'; cursor: pointer; }
+.tooltip li:last-child { border-right: 1px solid #0d0d0d; }
+.tooltip li.on {background: #1388e6;color: #fff;}
+.tooltip li> span { width: 21px; height: 16px; display: inline-block; margin-right: 3px; margin-bottom: -4px; background-position: 0 0; background-repeat: no-repeat; }
+.tooltip li.on> span { background-position: -21px 0px; }
+.tt01 { background: url(/gis/new_images/tt_01.png) no-repeat; }
+.tt02 { background: url(/gis/new_images/tt_02.png) no-repeat; }
+.tt03 { background: url(/gis/new_images/tt_03.png) no-repeat; }
+.tt04 { background: url(/gis/new_images/tt_04.png) no-repeat; }
+.tt05 { background: url(/gis/new_images/tt_05.png) no-repeat; }
+.tt06 { background: url(/gis/new_images/tt_06.png) no-repeat; }
+.tt07 { background: url(/gis/new_images/tt_07.png) no-repeat; }
+.tt08 { background: url(/gis/new_images/tt_08.png) no-repeat; }
 
 
+.mapst {  position: absolute; right: 20px; top: 50px; }
+.mapst li { float: left; }
+.mapst li a { width: 73px; height: 28px; padding-top: 7px; display: block; font-size: 13px; letter-spacing: -1px; text-align: center; color: #bbb; background-position: -73px 0 !important; }
+.mapst li a.basic { background: url(/gis/new_images/m_st_left.png); }
+.mapst li a.stellite { background: url(/gis/new_images/m_st_right.png);}
+.mapst li a.on { background-position: 0 0 !important; color: #fff; }
+	
+	
 
 .remarks {height: 265px !important; 
     overflow-y: scroll;
@@ -768,9 +791,6 @@ h4.off { background: url(/gis/new_images/folder_open.gif) 10px 10px no-repeat, #
 <!--									</div> -->
 								<div id="data_map" class="data_map" style="position:relative; width:480px;height:271px;border:solid 2px #CCC;">
 									<div id="map" class="claro" style="border:1px solid #000; width:100%; height:100%;">
-										<div id="layerTool" style="right: 1px; top: 10px; width:150px; height:24px;  position: absolute;  z-index: 1000;"> 
-											<div class="tool_bu2"><a href="javascript:showLayerDiv();" onmouseout="$kecoMap.controller.MM_swapImgRestore('Image3','/gis/images/btn_smapLegend_off.png')" onMouseOver="$kecoMap.controller.MM_swapImage('Image3','/gis/images/btn_smapLegend_over.png',1)" ><img idx="3" src="/gis/images/btn_smapLegend_off.png" id="Image3" border="0" /></a></div>
-										</div>
 										<div id="layerDiv"style="position:absolute; bottom:-130px;right:1px;border:1px solid #0066cc; text-align:left;  width:292px;height:100px;background:#fff;overflow-y:auto;padding:10px;  z-index: 1000; display: none;}">
 											<span class="title" style="font-size:14px;text-align:left;font-weight:600;height:32px;display:inline-block;">측정소 정보</span>
 											<div id="chkInfoBx" class="remarks">
@@ -792,13 +812,13 @@ h4.off { background: url(/gis/new_images/folder_open.gif) 10px 10px no-repeat, #
 									<script type="text/javascript" src="/gis/new_js/mapService.js"></script>
 									<script type="text/javascript" src="/gis/new_js/lib/vworldLayer.js"></script>
 									<script type="text/javascript" src="/gis/new_js/lib/coreMap.js"></script>
-									<script type="text/javascript" src="/gis/new_js/lib/jquery-ui.js"></script>
 									
 									
 									<script type="text/javascript">
 										$(function () {
 											_CoreMap.init('map',{
-												satellite: true
+												satellite: true,
+												layers: true
 											});
 										});
 									</script>

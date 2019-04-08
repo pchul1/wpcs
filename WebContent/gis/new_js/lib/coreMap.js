@@ -17,6 +17,7 @@ var _CoreMap = function() {
 	var TOOL_TYPE_SEARCH = 6;
 	var TOOL_TYPE_TEMP_INPUT = 7;
 	var TOOL_TYPE_RESET = 8;
+	var TOOL_TYPE_LAYER = 9;
 	
 	var coreMap;
 	var mapLayers = [];
@@ -333,7 +334,7 @@ var _CoreMap = function() {
 							image: new ol.style.Icon({
 								opacity: 1,
 								src: '/gis/new_images/message.png',
-								anchor: [0.5, 0.5],
+								anchor: [0.5, 1.0],
 						        anchorXUnits: 'fraction',
 						        anchorYUnits: 'fraction',
 								crossOrigin: 'Anonymous'	
@@ -435,6 +436,11 @@ var _CoreMap = function() {
 				tools += '<li class="tools" type="8"><span class="tt07" ></span>초기화</li>';
 			}
 			
+			if(settings.layers){
+				tools += '<li class="tools" type="9"><span class="tt08"></span>기초시설물</li>';
+			}
+			
+			
 			tools += '</ul>'; 
 			
 			$('#'+mapDiv).parent().append(tools); 
@@ -448,7 +454,7 @@ var _CoreMap = function() {
 						$(this).removeClass('on');
 					}
 					
-					if(currentToolType == TOOL_TYPE_SAVE || currentToolType == TOOL_TYPE_PRINT || currentToolType == TOOL_TYPE_SEARCH){
+					if(currentToolType == TOOL_TYPE_SAVE || currentToolType == TOOL_TYPE_PRINT || currentToolType == TOOL_TYPE_SEARCH || currentToolType == TOOL_TYPE_LAYER){
 						$(this).removeClass('on');
 					}
 			}); 
@@ -525,6 +531,8 @@ var _CoreMap = function() {
 			}else if(toolType == TOOL_TYPE_RESET){
 				clearMap();
 				currentToolType = -1;
+			}else if(toolType == TOOL_TYPE_LAYER){
+				showLayerDiv();
 			}
 			
 			if(toolType != TOOL_TYPE_RESET){
