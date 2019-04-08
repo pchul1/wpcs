@@ -27,9 +27,53 @@
 <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
 <title>한국환경공단 수질오염 방제정보 시스템</title>
 <c:import url="/WEB-INF/jsp/include/common/include_commonjs.jsp" />
+<style>
+.tooltip { position: absolute; right: 20px; top: 10px; background: #fff; }
+.tooltip:after { display: block; clear: both; content: ''; }
+.tooltip li { padding: 4px 8px 5px 6px; display: block; float: left; font-size: 11px; color: #434548; letter-spacing: -1px;border-left: 1px solid #0d0d0d; border-top: 1px solid #0d0d0d; border-bottom: 1px solid #0d0d0d; font-family: 'notokr-bold'; cursor: pointer; }
+.tooltip li:last-child { border-right: 1px solid #0d0d0d; }
+.tooltip li.on {background: #1388e6;color: #fff;}
+.tooltip li> span { width: 21px; height: 16px; display: inline-block; margin-right: 3px; margin-bottom: -4px; background-position: 0 0; background-repeat: no-repeat; }
+.tooltip li.on> span { background-position: -21px 0px; }
+.tt01 { background: url(/gis/new_images/tt_01.png) no-repeat; }
+.tt02 { background: url(/gis/new_images/tt_02.png) no-repeat; }
+.tt03 { background: url(/gis/new_images/tt_03.png) no-repeat; }
+.tt04 { background: url(/gis/new_images/tt_04.png) no-repeat; }
+.tt05 { background: url(/gis/new_images/tt_05.png) no-repeat; }
+.tt06 { background: url(/gis/new_images/tt_06.png) no-repeat; }
+.tt07 { background: url(/gis/new_images/tt_07.png) no-repeat; }
+.tt08 { background: url(/gis/new_images/tt_08.png) no-repeat; }
 
 
-<link rel="stylesheet" type="text/css" href="/gis/new_css/gis.css"/>
+.mapst {  position: absolute; right: 20px; top: 50px; }
+.mapst li { float: left; }
+.mapst li a { width: 55px; height: 24px; padding-top: 5px; display: block; font-size: 12px; letter-spacing: -1px; text-align: center; color: #bbb; background-position: -55px 0 !important; background-repeat: no-repeat; }
+.mapst li a.basic { background: url(/gis/new_images/m_st_left.png); }
+.mapst li a.stellite { background: url(/gis/new_images/m_st_right.png);}
+.mapst li a.on { background-position: 0 0 !important; color: #fff; }
+	
+	
+
+.remarks {height: 265px !important; 
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 283px;
+    border: 1px solid #ccc;}
+h4 { height: 22px; padding-top: 10px; padding-left: 47px; border-bottom: 1px solid #ccc; background: url(/gis/new_images/folder_close.gif) 10px 10px no-repeat, #f5f5f5; font-family: 'Dotum'; font-size: 12px; letter-spacing: -1px; font-weight: bold; cursor: pointer; }
+h4.off { background: url(/gis/new_images/folder_open.gif) 10px 10px no-repeat, #f5f5f5; }
+
+.depth {   width: 100%;}
+.depth> li { padding: 5px 0 5px 25px; border-bottom: 1px solid #ccc; }
+.depth> li label { font-family: 'Dotum'; font-size: 12px; letter-spacing: -1px; }
+.depth> li label em { width: 18px; height: 30px; vertical-align: middle; display: inline-block; margin: 0px 10px; }
+.depth input { width: 12px; height: 12px; }
+
+.remarks> div:last-child> ul> li:last-child { border-bottom: 0; }
+
+
+
+
+</style>
 
 <script type="text/javascript">
 //<![CDATA[
