@@ -785,6 +785,34 @@ $(function() {
 		
 //		// 4대강 경보현황 세팅
 		pub.writeTotalMnt = function(rflag) {
+
+//			if(rflag == 'All')
+//			{
+//				this['totalMntAll'] = {
+//										u:{total:0,normal:0,interest:0,caution:0,alert:0,over:0,norecv:0},
+//										a:{total:0,normal:0,interest:0,caution:0,alert:0,over:0,norecv:0}
+//									};
+//				
+//				for(var i=1; i<5; i++)
+//				{
+//					var ffix = 'u'; 
+//					
+//					for(var j=0; j<2; j++)
+//					{
+//						if(j == 1)
+//							ffix = 'a';
+//							
+//						this['totalMntAll'][ffix].total	+= parseInt( this['totalMntR0'+i][ffix].total);
+//						this['totalMntAll'][ffix].normal	+= parseInt( this['totalMntR0'+i][ffix].normal);
+//						this['totalMntAll'][ffix].interest	+= parseInt( this['totalMntR0'+i][ffix].interest);
+//						this['totalMntAll'][ffix].caution	+= parseInt( this['totalMntR0'+i][ffix].caution);
+//						this['totalMntAll'][ffix].alert	+= parseInt( this['totalMntR0'+i][ffix].alert);
+//						this['totalMntAll'][ffix].over		+= parseInt( this['totalMntR0'+i][ffix].over);
+//						this['totalMntAll'][ffix].norecv	+= parseInt( this['totalMntR0'+i][ffix].norecv);
+//					}
+//				}
+//			}
+			
 			var ffix = 'u'; 
 			
 			for(var i=0; i<2; i++) {
@@ -1872,7 +1900,7 @@ $(function() {
 			});
 			
 //			page.model.getDetailRiverAlert();
-//			page.model.getTotalMnt();
+			page.model.getTotalMnt();
 			page.model.getWaterPollutionStatus();
 			
 			page.view.system.trigger('change');
