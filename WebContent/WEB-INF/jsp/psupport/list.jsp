@@ -60,7 +60,7 @@ String menuID = (String)request.getSession().getAttribute("clickMenu");
 <script type="text/javascript" src="/gis/new_js/lib/proj4.js" ></script>
 <script type="text/javascript" src="/gis/new_js/lib/mapEventBus.js" ></script>
 <!-- <script type="text/javascript" src="/gis/new_js/lib/ol/ol.js"></script> -->
-<script type="text/javascript" src="http://tsauerwein.github.io/ol3/mapbox-gl-js/build/ol.js"></script>
+<script type="text/javascript" src="https://tsauerwein.github.io/ol3/mapbox-gl-js/build/ol.js"></script>
  
 <script type="text/javascript" src="/gis/new_js/lib/jsts/jsts.min.js"></script>
 

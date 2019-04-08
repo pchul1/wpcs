@@ -27,20 +27,22 @@
 <link type="text/css" rel="stylesheet" href="<c:url value='/css/com.css' />" />
 <link type="text/css" rel="stylesheet" href="<c:url value='/css/popup.css' />" />
 
-<link type="text/css" rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<link type="text/css" rel="stylesheet" href="/js/JQuery/ui/style/jquery-ui-1.7.1.css" />
+
 <link type="text/css" rel="stylesheet" href="/gis/css/common.css" />
 <link type="text/css" rel="stylesheet" href="/gis/css/gis_bj.css" />
-<link type="text/css" rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css" />
-<link type="text/css" rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css" />
+<!-- <link type="text/css" rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css" /> -->
+<!-- <link type="text/css" rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css" /> -->
 
 <title>좌표지정</title>
 <script type='text/javascript'>
 	var user_riverid = 'null';
 	
 </script>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <link rel="stylesheet" type="text/css" href="/js/JQuery/css/ui.all.css" />
-<script type="text/javascript" src="/js/mobile/jquery-ui-1.9.1.min.js"></script>
+
+<script type="text/javascript" src="/js/JQuery/jquery-1.7.2.js"></script>
+<script type="text/javascript" src="/js/JQuery/ui/jquery-ui-1.7.2.custom.min.js"></script>
 
 <script type="text/javascript" src="/gis/js/organictabs.jquery.js"></script>
 <script type="text/javascript" src="/gis/js/acco.js"></script>
@@ -61,7 +63,7 @@
 
 <script type="text/javascript" src="/gis/new_js/lib/proj4.js" ></script>
 <script type="text/javascript" src="/gis/new_js/lib/mapEventBus.js" ></script>
-<script type="text/javascript" src="http://tsauerwein.github.io/ol3/mapbox-gl-js/build/ol.js"></script>
+<script type="text/javascript" src="https://tsauerwein.github.io/ol3/mapbox-gl-js/build/ol.js"></script>
 <script type="text/javascript" src="/gis/new_js/mapService.js"></script>
 <script type="text/javascript" src="/gis/new_js/lib/vworldLayer.js"></script>
 <script type="text/javascript" src="/gis/new_js/lib/coreMap.js"></script>
@@ -72,7 +74,7 @@
 <!-- <SCRIPT language="JavaScript" type="text/javascript" src="http://map.vworld.kr/js/vworldMapInit.js.do?apiKey=C4246B58-A669-3643-A7FD-F545A61ECE20"></SCRIPT>    -->
 <!-- 210.99.81.159:9090-->
 <!-- <SCRIPT language="JavaScript" type="text/javascript" src="http://map.vworld.kr/js/vworldMapInit.js.do?apiKey=4EA77A23-29BC-37C9-A4EE-D3BCABCD9846"></SCRIPT> -->
-<script language="JavaScript" type="text/javascript" src="http://map.vworld.kr/js/vworldMapInit.js.do?apiKey=C4246B58-A669-3643-A7FD-F545A61ECE20"></script>
+<script language="JavaScript" type="text/javascript" src="https://map.vworld.kr/js/vworldMapInit.js.do?apiKey=C4246B58-A669-3643-A7FD-F545A61ECE20"></script>
 <script language="javascript" type="text/javascript" src="/js/mobile/Vworld.js"></script>
 </head>
 <body class="subPop"><!-- 추가 및 수정 -->

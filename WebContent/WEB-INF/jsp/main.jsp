@@ -12,7 +12,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
 <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
 
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
+<!-- <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/> -->
+<link rel="stylesheet" type="text/css" href="/js/JQuery/css/ui.all.css" />
+
 <!-- <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css"/> -->
 <!-- <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css"/> -->
 <link rel="stylesheet" type="text/css" href="/css/common.css"/>
@@ -26,8 +28,6 @@
 <link rel="stylesheet" type="text/css" href="/css/site.css"/>
 
 <link rel="stylesheet" type="text/css" href="/gis/new_css/gis.css"/>
-
-
 
 <!-- <link rel="stylesheet" type="text/css" href="/gis/new_css/BasicSet.css"/> -->
 <!-- <link rel="stylesheet" type="text/css" href="/gis/new_css/gis.css"/> -->
@@ -47,8 +47,10 @@ cookie.setPath("/");
 response.addCookie(cookie); */
 %>
 
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.js"></script>
-<script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<!-- <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.js"></script> -->
+<script type="text/javascript" src="/js/JQuery/jquery-1.7.2.js"></script>
+<script type="text/javascript" src="/js/JQuery/ui/jquery-ui-1.7.2.custom.min.js"></script>
+
 <script type="text/javascript" src="/js/organictabs.jquery.js"></script>
 <script type="text/javascript" src="/js/UI.js"></script>
 
@@ -79,7 +81,7 @@ response.addCookie(cookie); */
 <script type="text/javascript" src="/gis/new_js/lib/proj4.js" ></script>
 <script type="text/javascript" src="/gis/new_js/lib/mapEventBus.js" ></script>
 <!-- <script type="text/javascript" src="/gis/new_js/lib/ol/ol.js"></script> -->
-<script type="text/javascript" src="http://tsauerwein.github.io/ol3/mapbox-gl-js/build/ol.js"></script>
+<script type="text/javascript" src="https://tsauerwein.github.io/ol3/mapbox-gl-js/build/ol.js"></script>
  
 <script type="text/javascript" src="/gis/new_js/lib/jsts/jsts.min.js"></script>
 

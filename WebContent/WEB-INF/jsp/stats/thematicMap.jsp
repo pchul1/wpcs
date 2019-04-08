@@ -32,8 +32,7 @@
 <c:import url="/WEB-INF/jsp/include/common/include_commonjs.jsp" />
 
 <link rel="stylesheet" type="text/css" href="<c:url value='/gis/css/gis_style.css'/>"/>
-<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css">
-<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
+
 <!-- <script type="text/javascript" src="/gis/gis/jsapi_vsdoc10_v36.js"></script> -->
 
 <!-- <script src="http://js.arcgis.com/3.8/"></script> -->
@@ -47,7 +46,7 @@
 <script type="text/javascript" src="/gis/new_js/lib/proj4.js" ></script>
 <script type="text/javascript" src="/gis/new_js/lib/mapEventBus.js" ></script>
 <!-- <script type="text/javascript" src="/gis/new_js/lib/ol/ol.js"></script> -->
-<script type="text/javascript" src="http://tsauerwein.github.io/ol3/mapbox-gl-js/build/ol.js"></script>
+<script type="text/javascript" src="https://tsauerwein.github.io/ol3/mapbox-gl-js/build/ol.js"></script>
  
 <script type="text/javascript" src="/gis/new_js/lib/jsts/jsts.min.js"></script>
 
