@@ -96,31 +96,31 @@
 		
 		var symbols = {};			
 		
-		symbols['W0'] = './images/t_1.png';
-		symbols['W1'] = './images/t_3.png';
-		symbols['W2'] = './images/t_4.png';
-		symbols['W3'] = './images/t_5.png';
-		symbols['W9'] = './images/t_6.png';
+		symbols['W0'] = '/gis/new_images/regular/tms_1.png';
+		symbols['W1'] = '/gis/new_images/regular/tms_3.png';
+		symbols['W2'] = '/gis/new_images/regular/tms_4.png';
+		symbols['W3'] = '/gis/new_images/regular/tms_5.png';
+		symbols['W9'] = '/gis/new_images/regular/tms_6.png';
 		
-		symbols['A0'] = './images/a_1.png';
-		symbols['A1'] = './images/a_2.png';
-		symbols['A2'] = './images/a_3.png';
-		symbols['A3'] = './images/a_4.png';
-		symbols['A4'] = './images/a_5.png';
-		symbols['A9'] = './images/a_6.png';
+		symbols['A0'] = '/gis/new_images/regular/auto_1.png';
+		symbols['A1'] = '/gis/new_images/regular/auto_2.png';
+		symbols['A2'] = '/gis/new_images/regular/auto_3.png';
+		symbols['A3'] = '/gis/new_images/regular/auto_4.png';
+		symbols['A4'] = '/gis/new_images/regular/auto_5.png';
+		symbols['A9'] = '/gis/new_images/regular/auto_6.png';
 		
-		symbols['U0'] = './images/u_1.png';
-		symbols['U1'] = './images/u_2.png';
-		symbols['U2'] = './images/u_3.png';
-		symbols['U3'] = './images/u_4.png';
-		symbols['U4'] = './images/u_5.png';
-		symbols['U9'] = './images/u_6.png';
+		symbols['U0'] = '/gis/new_images/regular/usn_1.png';
+		symbols['U1'] = '/gis/new_images/regular/usn_2.png';
+		symbols['U2'] = '/gis/new_images/regular/usn_3.png';
+		symbols['U3'] = '/gis/new_images/regular/usn_4.png';
+		symbols['U4'] = '/gis/new_images/regular/usn_5.png';
+		symbols['U9'] = '/gis/new_images/regular/usn_6.png';
 		
 		return new ol.style.Icon({
 			opacity: 1,
 			src: symbols[p.SYS_KIND+p.MIN_OR],
-			scale:1.5
-		});
+			anchor: [0.5, 1.0],
+		}); 
 	};
 	
 	var writeLayer = function(){
