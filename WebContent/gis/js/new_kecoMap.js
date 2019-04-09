@@ -1476,10 +1476,9 @@ $(function() {
 				q.returnGeometry = true;
 				q.outFields = ["*"];
 				
-//				var qt = new esri.tasks.QueryTask("http://118.37.180.151:5006/rest/services/map_weis_new_ver1_1/MapServer/4");
-				var qt = new esri.tasks.QueryTask(ARC_SERVER_IP+':'+ARC_SERVER_PORT+"/rest/services/WPCS/MapServer/13");
-				
-				qt.execute(q, $kecoMap.controller.handleCounties2);
+//				var qt = new esri.tasks.QueryTask(ARC_SERVER_IP+':'+ARC_SERVER_PORT+"/rest/services/WPCS/MapServer/13");
+//				
+//				qt.execute(q, $kecoMap.controller.handleCounties2);
 			} else if (page.view.dtype == 2) {
 //				page.view.map.graphics.clear();
 				page.view.gsvc.project([geometry],MAP_SPATIALREFERENCE , function(graphics){

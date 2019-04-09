@@ -12,9 +12,6 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
 <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
 
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
-<!-- <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css"/>
-<link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css"/> -->
 <link rel="stylesheet" type="text/css" href="/css/common.css"/>
 <link rel="stylesheet" type="text/css" href="/gis/css/gis2.css"/>
 
@@ -38,12 +35,15 @@ cookie.setPath("/");
 response.addCookie(cookie);
 --%>
 
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.js"></script>
-<script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<!-- <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.js"></script> -->
+<!-- <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script> -->
+<script type="text/javascript" src="/js/JQuery/jquery-1.7.2.js"></script>
+<script type="text/javascript" src="/js/JQuery/ui/jquery-ui-1.7.2.custom.min.js"></script>
+	
 <script type="text/javascript" src="/js/organictabs.jquery.js"></script>
 <script type="text/javascript" src="/js/UI2.js"></script>
 
-<script type="text/javascript" src="/gis/gis/jsapi_vsdoc10_v36.js"></script>
+<!-- <script type="text/javascript" src="/gis/gis/jsapi_vsdoc10_v36.js"></script> -->
 <script type="text/javascript" src="/gis/js/jquery.dialog.custom.js"></script>
 
 <script src="/gis/js/xml2json.js"></script>
@@ -64,13 +64,6 @@ response.addCookie(cookie);
 <script src="/gis/js/define.js"></script>
 <script src="/gis/js/common.js"></script>
 <script src="/gis/js/main2.js"></script>
-
-
-<!-- <script src="/gis/js/kecoMap.js"></script>
-<script src="/gis/js/CustomPrintTask.js"></script> -->
-
- 
-
 
 <script type="text/javascript">
 //<![CDATA[
