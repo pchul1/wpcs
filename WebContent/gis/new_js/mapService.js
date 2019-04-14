@@ -3,7 +3,7 @@ var _MapServiceInfo = {
 	type : "&typeName=wpcs",
 	property : "&PROPERTYNAME=",
 	sort : "&SORTBY=",
-	serviceUrl: 'http://112.218.1.243:48002',
+	serviceUrl: '/psupport/jsps/proxy.jsp?',
 	wmsBaseUrl: '/geoserver/wpcs/wms?'
 }
 
