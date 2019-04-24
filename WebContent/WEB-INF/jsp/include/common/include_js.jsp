@@ -13,8 +13,8 @@
 <script type="text/javascript" src="<c:url value='/js/JQuery/plugin/jquery.treeview.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/JQuery/jquery.form.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/JQuery/plugin/jquery.validate.customizing.js'/>"></script>
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.js"></script>
-<script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.8.3.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 
 <script type="text/javascript" src="<c:url value='/slickgrid/js/jquery.event.drag-2.2.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/slickgrid/js/slick.core.js'/>"></script>
@@ -28,6 +28,7 @@
 <!-- <script type="text/javascript" src="http://js.arcgis.com/3.8/"></script> --><!-- 사용시 에러 남 -->
 <%-- <script type="text/javascript" src="<c:url value='/gis/js/define.js'/>"></script> --%>
 <%-- <script type="text/javascript" src="<c:url value='/gis/js/editMap.js'/>"></script> --%>
+
 
 <!-- <script> --> 
 <%-- // 	var ROOT_PATH = '<c:url value="/"/>'; --%>

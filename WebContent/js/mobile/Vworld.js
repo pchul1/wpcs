@@ -95,17 +95,17 @@ function PointToAddr(X,Y,Q,T){
 	var epsg = "EPSG:4326";
 	if(T==1){
 		Q = encodeURIComponent(Q);
-		_url = "http://apis.vworld.kr/jibun2coord.do";
+		_url = "https://apis.vworld.kr/jibun2coord.do";
 		_data = "?k=1&q="+Q+"&apiKey="+apiKey+"&domain="+domain+"&output=json&epsg="+epsg;
 	}else if(T==2){
 		Q = encodeURIComponent(Q);
-		_url = "http://apis.vworld.kr/new2coord.do";
+		_url = "https://apis.vworld.kr/new2coord.do";
 		_data = "?k=1&q="+Q+"&apiKey="+apiKey+"&domain="+domain+"&output=json&epsg="+epsg;
 	}else if(T==3){
-		_url = "http://apis.vworld.kr/coord2jibun.do";
+		_url = "https://apis.vworld.kr/coord2jibun.do";
 		_data = "?k=1&x="+Y+"&y="+X+"&apiKey="+apiKey+"&domain="+domain+"&output=json&epsg="+epsg;
 	}else if(T==4){
-		_url = "http://apis.vworld.kr/coord2new.do";
+		_url = "https://apis.vworld.kr/coord2new.do";
 		_data = "?k=1&x="+Y+"&y="+X+"&apiKey="+apiKey+"&domain="+domain+"&output=json&epsg="+epsg;
 	}
 	/**브이월드 GEOCODDING
@@ -158,17 +158,17 @@ function PointToAddr_Onetouch(X,Y,Q,T){
 	var epsg = "EPSG:4326";
 	if(T==1){
 		Q = encodeURIComponent(Q);
-		_url = "http://apis.vworld.kr/jibun2coord.do";
+		_url = "https://apis.vworld.kr/jibun2coord.do";
 		_data = "?k=1&q="+Q+"&apiKey="+apiKey+"&domain="+domain+"&output=json&epsg="+epsg;
 	}else if(T==2){
 		Q = encodeURIComponent(Q);
-		_url = "http://apis.vworld.kr/new2coord.do";
+		_url = "https://apis.vworld.kr/new2coord.do";
 		_data = "?k=1&q="+Q+"&apiKey="+apiKey+"&domain="+domain+"&output=json&epsg="+epsg;
 	}else if(T==3){
-		_url = "http://apis.vworld.kr/coord2jibun.do";
+		_url = "https://apis.vworld.kr/coord2jibun.do";
 		_data = "?k=1&x="+Y+"&y="+X+"&apiKey="+apiKey+"&domain="+domain+"&output=json&epsg="+epsg;
 	}else if(T==4){
-		_url = "http://apis.vworld.kr/coord2new.do";
+		_url = "https://apis.vworld.kr/coord2new.do";
 		_data = "?k=1&x="+Y+"&y="+X+"&apiKey="+apiKey+"&domain="+domain+"&output=json&epsg="+epsg;
 	}
 	/**브이월드 GEOCODDING
